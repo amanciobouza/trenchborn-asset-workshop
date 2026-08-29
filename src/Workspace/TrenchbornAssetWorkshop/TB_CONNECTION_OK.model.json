@@ -1,0 +1,14 @@
+{
+  "Name": "TB_CONNECTION_OK",
+  "ClassName": "Part",
+  "Properties": {
+    "Anchored": true,
+    "CanCollide": true,
+    "Color": [0.180392, 0.8, 0.443137],
+    "Material": "Neon",
+    "Position": [0, 6, 0],
+    "Size": [12, 1, 12],
+    "TopSurface": "Smooth",
+    "BottomSurface": "Smooth"
+  }
+}
