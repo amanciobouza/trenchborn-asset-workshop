@@ -42,8 +42,13 @@ return {
 		PermanentLights = 0,
 		PerPartScripts = 0,
 	},
+	DressingRules = {
+		UsesAdditionalBaseParts = false,
+		TextLabelsScaled = true,
+		PermanentLights = 0,
+		PermanentParticles = 0,
+	},
 	ExcludedFromPhase = {
-		"Dressing",
 		"Effects",
 		"Animation",
 		"CombatLogic",
