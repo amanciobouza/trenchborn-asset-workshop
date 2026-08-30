@@ -95,10 +95,12 @@ local function addShield(equipment, hitboxes)
 	local shieldX = -11.9
 	block(shield, "CenterUpperPlate", Vector3.new(7.8, 9.4, 1.25), Vector3.new(shieldX, 23.25, -5.25), COLORS.Armor)
 	block(shield, "CenterLowerPlate", Vector3.new(6.4, 8.2, 1.2), Vector3.new(shieldX, 14.45, -5.22), COLORS.Armor)
-	block(shield, "OuterUpperWing", Vector3.new(2.8, 8.8, 1.15), Vector3.new(shieldX - 4.9, 23.0, -4.88), COLORS.Body, Vector3.new(0, -11, 0))
-	block(shield, "OuterLowerWing", Vector3.new(2.2, 7.4, 1.1), Vector3.new(shieldX - 3.95, 14.7, -4.95), COLORS.Body, Vector3.new(0, -9, 0))
-	block(shield, "InnerUpperWing", Vector3.new(2.8, 8.8, 1.15), Vector3.new(shieldX + 4.9, 23.0, -4.88), COLORS.Body, Vector3.new(0, 11, 0))
-	block(shield, "InnerLowerWing", Vector3.new(2.2, 7.4, 1.1), Vector3.new(shieldX + 3.95, 14.7, -4.95), COLORS.Body, Vector3.new(0, 9, 0))
+	-- Both borders fold rearward toward the Guardian, creating a shallow
+	-- protective curve instead of a point projecting toward the opponent.
+	block(shield, "OuterUpperWing", Vector3.new(2.8, 8.8, 1.15), Vector3.new(shieldX - 4.9, 23.0, -4.88), COLORS.Body, Vector3.new(0, 11, 0))
+	block(shield, "OuterLowerWing", Vector3.new(2.2, 7.4, 1.1), Vector3.new(shieldX - 3.95, 14.7, -4.95), COLORS.Body, Vector3.new(0, 9, 0))
+	block(shield, "InnerUpperWing", Vector3.new(2.8, 8.8, 1.15), Vector3.new(shieldX + 4.9, 23.0, -4.88), COLORS.Body, Vector3.new(0, -11, 0))
+	block(shield, "InnerLowerWing", Vector3.new(2.2, 7.4, 1.1), Vector3.new(shieldX + 3.95, 14.7, -4.95), COLORS.Body, Vector3.new(0, -9, 0))
 	block(shield, "TopRail", Vector3.new(10.4, 1.35, 1.55), Vector3.new(shieldX, 28.25, -5.3), COLORS.Chassis)
 	block(shield, "LowerKeel", Vector3.new(4.8, 3.2, 1.45), Vector3.new(shieldX, 8.55, -5.2), COLORS.DarkMetal)
 	block(shield, "ForearmCradle", Vector3.new(3.8, 6.6, 2.0), Vector3.new(-10.0, 20.4, -3.55), COLORS.Chassis, Vector3.new(0, 0, -6))
