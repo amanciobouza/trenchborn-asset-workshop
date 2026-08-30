@@ -150,6 +150,7 @@ function Harness.Attach(workshop, model, config)
 	local shoulderPivotPart = model:FindFirstChild("RightShoulderBearingDrum", true)
 	local shieldArmParts = {}
 	local shieldArmRest = {}
+	local shieldFollowers = {}
 	local shieldShoulderPivot = model:FindFirstChild("LeftShoulderBearingDrum", true)
 	for _, item in ipairs(model:GetDescendants()) do
 		if item:IsA("BasePart") then
@@ -170,6 +171,7 @@ function Harness.Attach(workshop, model, config)
 			if (inLeftHand or leftArmName) and not item:FindFirstAncestor("RiotShield") then
 				table.insert(shieldArmParts, item)
 				shieldArmRest[item] = item.CFrame
+				shieldFollowers[item] = inLeftHand or string.find(item.Name, "LeftForearm", 1, true) ~= nil
 			end
 		end
 	end
@@ -196,12 +198,16 @@ function Harness.Attach(workshop, model, config)
 		end
 	end
 
-	local function shieldArmPose(angleDegrees)
+	local function shieldArmPose(angleDegrees, shieldOffset)
 		local result = {}
 		local pivot = shieldShoulderPivot.Position
 		local rotation = CFrame.new(pivot) * CFrame.Angles(0, 0, math.rad(angleDegrees)) * CFrame.new(-pivot)
 		for item, restCFrame in pairs(shieldArmRest) do
-			result[item] = rotation * restCFrame
+			if shieldFollowers[item] then
+				result[item] = CFrame.new(shieldOffset or Vector3.zero) * restCFrame
+			else
+				result[item] = rotation * restCFrame
+			end
 		end
 		return result
 	end
@@ -429,9 +435,10 @@ function Harness.Attach(workshop, model, config)
 		elseif name == "RiotShield" then
 			show("SHIELD MOVING TO BLOCK\n85% FRONTAL REDUCTION")
 			if shieldModel and shieldRestCFrame then
-				local blockCFrame = shieldRestCFrame + Vector3.new(10.5, 1.8, -1.2)
+				local shieldOffset = Vector3.new(10.5, 1.8, -1.2)
+				local blockCFrame = shieldRestCFrame + shieldOffset
 				tweenModel(shieldModel, blockCFrame, 0.32)
-				tweenShieldArm(shieldArmPose(48), 0.32)
+				tweenShieldArm(shieldArmPose(48, shieldOffset), 0.32)
 				task.delay(math.max(0.4, ability.Duration - 0.35), function()
 					if shieldModel.Parent then
 						tweenModel(shieldModel, shieldRestCFrame, 0.32)
