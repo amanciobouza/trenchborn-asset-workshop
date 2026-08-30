@@ -1,0 +1,191 @@
+local WardenBuilder = require(script.Parent:WaitForChild("WardenShepherdGoldenMaster"))
+
+local Builder = {}
+
+local COLORS = {
+	Chassis = Color3.fromRGB(22, 29, 36),
+	Body = Color3.fromRGB(54, 68, 80),
+	Armor = Color3.fromRGB(176, 190, 199),
+	Accent = Color3.fromRGB(63, 199, 255),
+	DarkMetal = Color3.fromRGB(32, 40, 48),
+}
+
+local WARDEN_COLORS = {
+	[Color3.fromRGB(28, 35, 32)] = COLORS.Chassis,
+	[Color3.fromRGB(91, 103, 92)] = COLORS.Body,
+	[Color3.fromRGB(171, 178, 151)] = COLORS.Armor,
+	[Color3.fromRGB(92, 231, 151)] = COLORS.Accent,
+	[Color3.fromRGB(45, 49, 47)] = COLORS.DarkMetal,
+}
+
+local function part(parent, name, size, cf, color, material, shape)
+	local item = Instance.new("Part")
+	item.Name = name
+	item.Size = size
+	item.CFrame = cf
+	item.Color = color
+	item.Material = material or Enum.Material.Metal
+	item.Shape = shape or Enum.PartType.Block
+	item.Anchored = true
+	item.CanCollide = false
+	item.CastShadow = true
+	item.TopSurface = Enum.SurfaceType.Smooth
+	item.BottomSurface = Enum.SurfaceType.Smooth
+	item.Parent = parent
+	return item
+end
+
+local function block(parent, name, size, position, color, rotation)
+	local cf = CFrame.new(position)
+	if rotation then
+		cf *= CFrame.Angles(math.rad(rotation.X), math.rad(rotation.Y), math.rad(rotation.Z))
+	end
+	return part(parent, name, size, cf, color or COLORS.Body)
+end
+
+local function cylinder(parent, name, size, position, color, rotation)
+	local r = rotation or Vector3.zero
+	return part(parent, name, size, CFrame.new(position) * CFrame.Angles(math.rad(r.X), math.rad(r.Y), math.rad(r.Z)), color, Enum.Material.Metal, Enum.PartType.Cylinder)
+end
+
+local function folder(parent, name)
+	local result = Instance.new("Folder")
+	result.Name = name
+	result.Parent = parent
+	return result
+end
+
+local function removeWardenSystems(model)
+	local equipment = model:FindFirstChild("Equipment")
+	if equipment then
+		local baton = equipment:FindFirstChild("ShockBaton")
+		if baton then baton:Destroy() end
+	end
+	local systems = model:FindFirstChild("Systems")
+	if systems then
+		local scanner = systems:FindFirstChild("SearchlightScanner")
+		if scanner then scanner:Destroy() end
+	end
+end
+
+local function recolor(model)
+	for _, item in ipairs(model:GetDescendants()) do
+		if item:IsA("BasePart") then
+			local replacement = WARDEN_COLORS[item.Color]
+			if replacement then item.Color = replacement end
+		end
+	end
+end
+
+local function addShield(equipment, hitboxes)
+	local shield = Instance.new("Model")
+	shield.Name = "RiotShield"
+	shield:SetAttribute("EquipmentType", "PhysicalDefense")
+	shield:SetAttribute("FrontCoveragePercent", 38)
+	shield.Parent = equipment
+
+	-- Shield is offset forward and outward from the left forearm. The three panels
+	-- overlap in volume, never on a shared exterior plane.
+	block(shield, "CenterPlate", Vector3.new(7.4, 18.0, 1.25), Vector3.new(-11.9, 19.0, -5.25), COLORS.Armor, Vector3.new(-2, 0, -3))
+	block(shield, "OuterWing", Vector3.new(3.0, 15.8, 1.15), Vector3.new(-16.55, 19.15, -4.7), COLORS.Body, Vector3.new(-2, -13, -7))
+	block(shield, "InnerWing", Vector3.new(2.6, 14.7, 1.05), Vector3.new(-7.35, 19.0, -4.78), COLORS.Body, Vector3.new(-2, 12, 3))
+	block(shield, "TopRail", Vector3.new(10.4, 1.35, 1.55), Vector3.new(-12.0, 28.25, -5.3), COLORS.Chassis, Vector3.new(0, 0, -3))
+	block(shield, "LowerKeel", Vector3.new(4.8, 3.2, 1.45), Vector3.new(-11.55, 8.55, -5.2), COLORS.DarkMetal, Vector3.new(0, 0, -3))
+	block(shield, "ForearmCradle", Vector3.new(3.5, 6.6, 2.0), Vector3.new(-10.2, 20.4, -3.65), COLORS.Chassis, Vector3.new(0, 0, -6))
+	block(shield, "UpperBrace", Vector3.new(1.1, 7.2, 1.0), Vector3.new(-10.7, 24.0, -3.8), COLORS.DarkMetal, Vector3.new(-24, 0, -8))
+	block(shield, "LowerBrace", Vector3.new(1.1, 6.2, 1.0), Vector3.new(-10.45, 16.6, -3.75), COLORS.DarkMetal, Vector3.new(25, 0, -5))
+	block(shield, "StatusChannel", Vector3.new(0.55, 10.8, 0.22), Vector3.new(-11.85, 20.0, -5.99), COLORS.Accent, Vector3.new(0, 0, -3)).Material = Enum.Material.Neon
+
+	local shieldHitbox = block(hitboxes, "ShieldHitbox", Vector3.new(12.5, 20.5, 2.3), Vector3.new(-12.0, 19.0, -5.0), Color3.new(1, 0, 0), Vector3.new(0, 0, -3))
+	shieldHitbox.Transparency = 1
+	shieldHitbox.CanQuery = false
+	shield.PrimaryPart = shield:FindFirstChild("ForearmCradle")
+end
+
+local function addPulseCannon(equipment)
+	local cannon = Instance.new("Model")
+	cannon.Name = "PulseCannon"
+	cannon:SetAttribute("EquipmentType", "ImpulseControlWeapon")
+	cannon.Parent = equipment
+
+	block(cannon, "ForearmHousing", Vector3.new(5.2, 7.4, 5.2), Vector3.new(10.15, 20.1, -0.8), COLORS.Body, Vector3.new(0, -3, 6))
+	block(cannon, "UpperBreech", Vector3.new(4.5, 2.2, 5.8), Vector3.new(10.0, 23.15, -1.15), COLORS.Armor, Vector3.new(-4, -3, 6))
+	cylinder(cannon, "BarrelShroud", Vector3.new(3.8, 4.5, 4.5), Vector3.new(10.35, 16.15, -1.15), COLORS.Chassis, Vector3.new(0, 0, 90))
+	cylinder(cannon, "MuzzleRing", Vector3.new(1.05, 5.0, 5.0), Vector3.new(10.55, 14.05, -1.35), COLORS.DarkMetal, Vector3.new(0, 0, 90))
+	cylinder(cannon, "MuzzleCore", Vector3.new(0.35, 3.0, 3.0), Vector3.new(10.6, 13.45, -1.4), COLORS.Accent, Vector3.new(0, 0, 90)).Material = Enum.Material.Neon
+	block(cannon, "SideReinforcement", Vector3.new(1.2, 5.8, 5.65), Vector3.new(12.55, 19.7, -0.85), COLORS.Armor, Vector3.new(0, -3, 7))
+	cannon.PrimaryPart = cannon:FindFirstChild("ForearmHousing")
+end
+
+local function addContainmentNet(systems, hitboxes)
+	local launcher = Instance.new("Model")
+	launcher.Name = "ContainmentNetLauncher"
+	launcher:SetAttribute("EquipmentType", "ContainmentSystem")
+	launcher:SetAttribute("DeployedNetPermanent", false)
+	launcher.Parent = systems
+
+	block(launcher, "LauncherSpine", Vector3.new(5.8, 7.4, 2.4), Vector3.new(0, 31.2, 5.75), COLORS.Chassis, Vector3.new(-5, 0, 0))
+	for _, sign in ipairs({-1, 1}) do
+		local side = sign < 0 and "Left" or "Right"
+		block(launcher, side .. "Cartridge", Vector3.new(4.2, 6.3, 3.0), Vector3.new(sign * 4.15, 32.0, 5.65), COLORS.Body, Vector3.new(-8, sign * 5, sign * 7))
+		block(launcher, side .. "CartridgeCap", Vector3.new(4.45, 1.0, 3.25), Vector3.new(sign * 4.2, 35.0, 5.25), COLORS.Armor, Vector3.new(-8, sign * 5, sign * 7))
+		block(launcher, side .. "Status", Vector3.new(2.5, 0.35, 0.2), Vector3.new(sign * 4.15, 32.7, 4.08), COLORS.Accent, Vector3.new(0, 0, sign * 7)).Material = Enum.Material.Neon
+	end
+	block(launcher, "LaunchMouth", Vector3.new(4.4, 1.7, 2.0), Vector3.new(0, 35.0, 4.55), COLORS.DarkMetal, Vector3.new(-18, 0, 0))
+
+	local netHitbox = block(hitboxes, "NetTargetingReference", Vector3.new(1, 1, 1), Vector3.new(0, 35, 3.5), Color3.new(1, 0, 0))
+	netHitbox.Transparency = 1
+	netHitbox.CanQuery = false
+	launcher.PrimaryPart = launcher:FindFirstChild("LauncherSpine")
+end
+
+local function countGeometry(model)
+	local visible = 0
+	local hitboxes = 0
+	for _, item in ipairs(model:GetDescendants()) do
+		if item:IsA("BasePart") then
+			if item:FindFirstAncestor("Hitboxes") then hitboxes += 1 elseif item.Transparency < 1 then visible += 1 end
+		end
+	end
+	model:SetAttribute("VisiblePartCount", visible)
+	model:SetAttribute("GameplayHitboxCount", hitboxes)
+	model:SetAttribute("VisiblePartBudgetPassed", visible <= 120)
+	model:SetAttribute("HitboxBudgetPassed", hitboxes <= 8)
+end
+
+function Builder.Build(parent)
+	local existing = parent:FindFirstChild("Marshal_II_Roadblock_GoldenMaster")
+	if existing then existing:Destroy() end
+
+	local model = WardenBuilder.Build(parent)
+	model.Name = "Marshal_II_Roadblock_GoldenMaster"
+	model:ScaleTo(46 / 42)
+	removeWardenSystems(model)
+	recolor(model)
+
+	model:SetAttribute("AssetName", "Marshal-II Roadblock")
+	model:SetAttribute("AssetClass", "Guardian Defense Platform")
+	model:SetAttribute("GuardianGeneration", 2)
+	model:SetAttribute("BuiltFromGuardian", "Warden-I Shepherd")
+	model:SetAttribute("PipelinePhase", 4)
+	model:SetAttribute("QualityGateA", "Approved")
+	model:SetAttribute("QualityGateB", "Pending")
+	model:SetAttribute("GeometryOnly", true)
+	model:SetAttribute("MinimumSurfaceOffsetStuds", 0.03)
+
+	local equipment = model:FindFirstChild("Equipment") or folder(model, "Equipment")
+	local systems = model:FindFirstChild("Systems") or folder(model, "Systems")
+	local hitboxes = model:FindFirstChild("Hitboxes") or folder(model, "Hitboxes")
+	local metadata = model:FindFirstChild("Metadata") or folder(model, "Metadata")
+	metadata:SetAttribute("TargetHeightStuds", 46)
+	metadata:SetAttribute("TargetShoulderWidthStuds", 26)
+	metadata:SetAttribute("FleetBaseChassis", "Warden-I Shepherd")
+
+	addShield(equipment, hitboxes)
+	addPulseCannon(equipment)
+	addContainmentNet(systems, hitboxes)
+	countGeometry(model)
+	return model
+end
+
+return Builder
