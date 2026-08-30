@@ -1,3 +1,5 @@
+local TweenService = game:GetService("TweenService")
+
 local TestHarness = {}
 
 local COLORS = {
@@ -66,6 +68,8 @@ function TestHarness.Attach(workshop, model)
 	local resetGuardian = gameplay:WaitForChild("ResetGuardian")
 	local protectedBuilding = gameplay:WaitForChild("ProtectedBuilding")
 	local isProtectingBuilding = gameplay:WaitForChild("IsProtectingBuilding")
+	local batonStrikeRequested = gameplay:WaitForChild("BatonStrikeRequested")
+	local warningPulseRequested = gameplay:WaitForChild("WarningPulseRequested")
 
 	local origin = Vector3.new(20, 0.6, -10)
 	local board = Instance.new("Part")
@@ -87,12 +91,118 @@ function TestHarness.Attach(workshop, model)
 	testBuilding.CanCollide = true
 	testBuilding.Material = Enum.Material.Concrete
 	testBuilding.Color = Color3.fromRGB(112, 116, 118)
+	testBuilding:SetAttribute("MaxHealth", 500)
+	testBuilding:SetAttribute("Health", 500)
 	testBuilding.Parent = console
-	addText(testBuilding, "BuildingLabel", "TEST BUILDING", Enum.NormalId.Top)
+	local buildingLabel = addText(testBuilding, "BuildingLabel", "TEST BUILDING\nHP 500", Enum.NormalId.Top)
+
+	local targetNearCFrame = CFrame.new(0, 6, -10)
+	local targetFarCFrame = CFrame.new(0, 6, -24)
+	local targetNear = true
+	local testTarget = Instance.new("Part")
+	testTarget.Name = "TestKaijuTarget"
+	testTarget.Size = Vector3.new(6, 12, 6)
+	testTarget.CFrame = targetNearCFrame
+	testTarget.Anchored = true
+	testTarget.CanCollide = true
+	testTarget.Material = Enum.Material.SmoothPlastic
+	testTarget.Color = Color3.fromRGB(105, 72, 91)
+	testTarget:SetAttribute("MaxHealth", 1000)
+	testTarget:SetAttribute("Health", 1000)
+	testTarget.Parent = console
+	local targetLabel = addText(testTarget, "TargetLabel", "KAIJU TARGET\nHP 1000", Enum.NormalId.Front)
 
 	local function show(message)
 		statusLabel.Text = message
 	end
+
+	local function refreshTarget()
+		targetLabel.Text = string.format("KAIJU TARGET\nHP %d", testTarget:GetAttribute("Health"))
+	end
+
+	local function refreshBuilding()
+		buildingLabel.Text = string.format("TEST BUILDING\nHP %d", testBuilding:GetAttribute("Health"))
+	end
+
+	local function targetMetrics()
+		local root = model.PrimaryPart
+		if not root then
+			return math.huge, -1
+		end
+		local delta = testTarget.Position - root.Position
+		local planar = Vector3.new(delta.X, 0, delta.Z)
+		if planar.Magnitude <= 0.001 then
+			return 0, 1
+		end
+		local facing = Vector3.new(root.CFrame.LookVector.X, 0, root.CFrame.LookVector.Z).Unit
+		return planar.Magnitude, facing:Dot(planar.Unit)
+	end
+
+	local function flashAndPushTarget(distance)
+		local originalColor = testTarget.Color
+		local originalCFrame = testTarget.CFrame
+		testTarget.Color = Color3.fromRGB(232, 91, 104)
+		local direction = Vector3.new(
+			testTarget.Position.X - model.PrimaryPart.Position.X,
+			0,
+			testTarget.Position.Z - model.PrimaryPart.Position.Z
+		).Unit
+		local pushedCFrame = originalCFrame + direction * distance
+		local outward = TweenService:Create(
+			testTarget,
+			TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+			{CFrame = pushedCFrame}
+		)
+		outward:Play()
+		outward.Completed:Connect(function()
+			testTarget.Color = originalColor
+			task.delay(0.18, function()
+				TweenService:Create(
+					testTarget,
+					TweenInfo.new(0.22, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+					{CFrame = originalCFrame}
+				):Play()
+			end)
+		end)
+	end
+
+	batonStrikeRequested.Event:Connect(function(target, batonConfig)
+		if target ~= testTarget then
+			return
+		end
+		local distance, facingDot = targetMetrics()
+		local requiredDot = math.cos(math.rad(batonConfig.ArcDegrees * 0.5))
+		task.delay(0.05, function()
+			if distance > batonConfig.Range then
+				show(string.format("BATON MISSED\nOUT OF RANGE %.1f / %.1f", distance, batonConfig.Range))
+				return
+			end
+			if facingDot < requiredDot then
+				show("BATON MISSED\nOUTSIDE ATTACK ARC")
+				return
+			end
+			local health = math.max(0, testTarget:GetAttribute("Health") - batonConfig.Damage)
+			testTarget:SetAttribute("Health", health)
+			refreshTarget()
+			flashAndPushTarget(math.min(4, batonConfig.Knockback * 0.08))
+			show(string.format("BATON HIT\n%d DAMAGE | TARGET HP %d", batonConfig.Damage, health))
+		end)
+	end)
+
+	warningPulseRequested.Event:Connect(function(target, pulseConfig)
+		if target ~= testTarget then
+			return
+		end
+		local distance = targetMetrics()
+		task.delay(pulseConfig.TelegraphDuration, function()
+			if distance > pulseConfig.Radius then
+				show(string.format("PULSE MISSED\nOUT OF RANGE %.1f / %.1f", distance, pulseConfig.Radius))
+				return
+			end
+			flashAndPushTarget(math.min(6, pulseConfig.Knockback * 0.08))
+			show(string.format("PULSE HIT\nKNOCKBACK | RANGE %.1f", distance))
+		end)
+	end)
 
 	button(console, "Damage100", "DAMAGE 100", origin + Vector3.new(-3.2, 0, 0), COLORS.Damage, function()
 		local health, result = applyDamage:Invoke(100, "WorkshopButton")
@@ -104,15 +214,13 @@ function TestHarness.Attach(workshop, model)
 		show(string.format("500 DAMAGE\n%s | HP %d", result, health))
 	end)
 
-	button(console, "ShockBaton", "SHOCK BATON", origin + Vector3.new(-3.2, 0, 3.8), COLORS.Ability, function(player)
-		local target = player.Character
-		local accepted, result = requestAbility:Invoke("ShockBaton", target)
+	button(console, "ShockBaton", "SHOCK BATON", origin + Vector3.new(-3.2, 0, 3.8), COLORS.Ability, function()
+		local accepted, result = requestAbility:Invoke("ShockBaton", testTarget)
 		show(string.format("SHOCK BATON\n%s | %s", accepted and "ACCEPTED" or "BLOCKED", result))
 	end)
 
-	button(console, "WarningPulse", "WARNING PULSE", origin + Vector3.new(3.2, 0, 3.8), COLORS.Ability, function(player)
-		local target = player.Character
-		local accepted, result = requestAbility:Invoke("WarningPulse", target)
+	button(console, "WarningPulse", "WARNING PULSE", origin + Vector3.new(3.2, 0, 3.8), COLORS.Ability, function()
+		local accepted, result = requestAbility:Invoke("WarningPulse", testTarget)
 		show(string.format("WARNING PULSE\n%s | %s", accepted and "ACCEPTED" or "BLOCKED", result))
 	end)
 
@@ -122,9 +230,32 @@ function TestHarness.Attach(workshop, model)
 		show(active and "BUILDING PROTECTED" or "PROTECTION FAILED")
 	end)
 
-	button(console, "ResetGuardian", "RESET", origin + Vector3.new(3.2, 0, 7.6), COLORS.Reset, function()
+	button(console, "AttackBuilding", "ATTACK BUILDING", origin + Vector3.new(3.2, 0, 7.6), COLORS.Damage, function()
+		if isProtectingBuilding:Invoke(testBuilding) then
+			show(string.format("BUILDING DAMAGE BLOCKED\nHP %d", testBuilding:GetAttribute("Health")))
+			return
+		end
+		local health = math.max(0, testBuilding:GetAttribute("Health") - 100)
+		testBuilding:SetAttribute("Health", health)
+		refreshBuilding()
+		show(string.format("BUILDING DAMAGED\nHP %d", health))
+	end)
+
+	button(console, "ToggleTargetRange", "TARGET NEAR / FAR", origin + Vector3.new(-3.2, 0, 11.4), COLORS.Ability, function()
+		targetNear = not targetNear
+		testTarget.CFrame = targetNear and targetNearCFrame or targetFarCFrame
+		show(targetNear and "TARGET NEAR\nIN RANGE" or "TARGET FAR\nBATON OUT OF RANGE")
+	end)
+
+	button(console, "ResetGuardian", "RESET ALL", origin + Vector3.new(3.2, 0, 11.4), COLORS.Reset, function()
 		resetGuardian:Invoke()
-		show("RESET\nIDLE | HP 2500")
+		targetNear = true
+		testTarget.CFrame = targetNearCFrame
+		testTarget:SetAttribute("Health", 1000)
+		testBuilding:SetAttribute("Health", 500)
+		refreshTarget()
+		refreshBuilding()
+		show("RESET ALL\nWARDEN | TARGET | BUILDING")
 	end)
 
 	model:GetAttributeChangedSignal("GuardianState"):Connect(function()
