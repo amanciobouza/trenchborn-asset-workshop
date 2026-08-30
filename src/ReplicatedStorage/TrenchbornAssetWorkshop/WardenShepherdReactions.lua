@@ -68,6 +68,29 @@ local function flash(parts, colors, flashColor, duration)
 	end)
 end
 
+local function appendPart(parts, value)
+	if value and value:IsA("BasePart") then
+		table.insert(parts, value)
+	end
+end
+
+local function appendDescendantParts(parts, container)
+	if not container then
+		return
+	end
+	for _, descendant in ipairs(container:GetDescendants()) do
+		appendPart(parts, descendant)
+	end
+end
+
+local function captureCFrames(parts)
+	local result = {}
+	for _, part in ipairs(parts) do
+		result[part] = part.CFrame
+	end
+	return result
+end
+
 function Reactions.Attach(model)
 	local gameplay = model:WaitForChild("Gameplay")
 	local healthChanged = gameplay:WaitForChild("HealthChanged")
@@ -81,7 +104,23 @@ function Reactions.Attach(model)
 	local armorColors = captureColors(armorParts)
 	local restPivot = model:GetPivot()
 	local baton = model:FindFirstChild("ShockBaton", true)
-	local batonRestPivot = baton and baton:GetPivot()
+	local shoulderBearing = model:FindFirstChild("LeftShoulderBearingDrum", true)
+	local elbowBearing = model:FindFirstChild("LeftElbowBearing", true)
+	local upperArmParts = {}
+	local lowerArmParts = {}
+	appendPart(upperArmParts, model:FindFirstChild("LeftUpperArm", true))
+	appendPart(upperArmParts, model:FindFirstChild("LeftUpperArmPlate", true))
+	appendPart(upperArmParts, elbowBearing)
+	appendPart(lowerArmParts, model:FindFirstChild("LeftForearm", true))
+	appendPart(lowerArmParts, model:FindFirstChild("LeftForearmPlate", true))
+	appendDescendantParts(lowerArmParts, model:FindFirstChild("LeftHand", true))
+	appendDescendantParts(lowerArmParts, baton)
+	local upperArmCFrames = captureCFrames(upperArmParts)
+	local lowerArmCFrames = captureCFrames(lowerArmParts)
+	local shoulderPivot = shoulderBearing and CFrame.new(shoulderBearing.Position)
+	local elbowPivot = elbowBearing and CFrame.new(elbowBearing.Position)
+	local strikeBusy = false
+	local currentArmPose = Vector3.zero
 	local visor = model:FindFirstChild("VisorSensor", true)
 	local pulseCore = model:FindFirstChild("ChestPulseCore", true)
 	local pulseParts = collectVisibleParts(pulseCore)
@@ -90,12 +129,54 @@ function Reactions.Attach(model)
 	end
 	local pulseColors = captureColors(pulseParts)
 
+	local function applyArmPose(shoulderDegrees, elbowDegrees)
+		if not shoulderPivot or not elbowPivot then
+			return
+		end
+		local shoulderTransform = shoulderPivot
+			* CFrame.Angles(math.rad(shoulderDegrees), 0, 0)
+			* shoulderPivot:Inverse()
+		local elbowTransform = elbowPivot
+			* CFrame.Angles(math.rad(elbowDegrees), 0, 0)
+			* elbowPivot:Inverse()
+		for part, original in pairs(upperArmCFrames) do
+			if part.Parent then
+				part.CFrame = shoulderTransform * original
+			end
+		end
+		for part, original in pairs(lowerArmCFrames) do
+			if part.Parent then
+				part.CFrame = shoulderTransform * elbowTransform * original
+			end
+		end
+	end
+
+	local function tweenArmPose(targetPose, duration, easingStyle)
+		local driver = Instance.new("Vector3Value")
+		driver.Value = currentArmPose
+		local connection = driver:GetPropertyChangedSignal("Value"):Connect(function()
+			currentArmPose = driver.Value
+			applyArmPose(driver.Value.X, driver.Value.Y)
+		end)
+		local tween = TweenService:Create(
+			driver,
+			TweenInfo.new(duration, easingStyle or Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+			{Value = targetPose}
+		)
+		tween.Completed:Connect(function()
+			connection:Disconnect()
+			driver:Destroy()
+		end)
+		tween:Play()
+		return tween
+	end
+
 	healthChanged.Event:Connect(function(_, _, source)
 		if source == "Reset" then
 			model:PivotTo(restPivot)
-			if baton and batonRestPivot then
-				baton:PivotTo(batonRestPivot)
-			end
+			applyArmPose(0, 0)
+			currentArmPose = Vector3.zero
+			strikeBusy = false
 			restoreColors(armorColors)
 			restoreColors(pulseColors)
 			return
@@ -114,16 +195,20 @@ function Reactions.Attach(model)
 	end)
 
 	batonStrikeRequested.Event:Connect(function()
-		if not baton or not batonRestPivot then
+		if strikeBusy or not shoulderPivot or not elbowPivot then
 			return
 		end
-		local windup = batonRestPivot * CFrame.Angles(0, 0, math.rad(-32))
-		local swing = batonRestPivot * CFrame.Angles(0, 0, math.rad(38))
-		local windupTween = tweenPivot(baton, windup, 0.12, Enum.EasingStyle.Quad)
+		strikeBusy = true
+		local windupTween = tweenArmPose(Vector3.new(-12, -8, 0), 0.14, Enum.EasingStyle.Quad)
 		windupTween.Completed:Connect(function()
-			local swingTween = tweenPivot(baton, swing, 0.16, Enum.EasingStyle.Quart)
+			local swingTween = tweenArmPose(Vector3.new(48, 22, 0), 0.18, Enum.EasingStyle.Quart)
 			swingTween.Completed:Connect(function()
-				tweenPivot(baton, batonRestPivot, 0.18, Enum.EasingStyle.Quad)
+				local returnTween = tweenArmPose(Vector3.zero, 0.22, Enum.EasingStyle.Quad)
+				returnTween.Completed:Connect(function()
+					applyArmPose(0, 0)
+					currentArmPose = Vector3.zero
+					strikeBusy = false
+				end)
 			end)
 		end)
 	end)
