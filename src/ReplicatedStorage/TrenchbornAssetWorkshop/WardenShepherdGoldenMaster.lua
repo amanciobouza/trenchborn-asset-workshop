@@ -233,9 +233,9 @@ function Builder.Build(parent)
 	model.Name = "Warden_I_Shepherd_GoldenMaster"
 	model:SetAttribute("AssetName", "Warden-I Shepherd")
 	model:SetAttribute("AssetClass", "Guardian Defense Platform")
-	model:SetAttribute("PipelinePhase", 4)
+	model:SetAttribute("PipelinePhase", 5)
 	model:SetAttribute("QualityGateA", "Approved")
-	model:SetAttribute("QualityGateB", "Pending")
+	model:SetAttribute("QualityGateB", "Approved")
 	model:SetAttribute("GeometryOnly", true)
 	model:SetAttribute("NoCoplanarOverlappingFaces", true)
 	model:SetAttribute("AvoidOrthogonalBoxSilhouette", true)
@@ -282,7 +282,7 @@ function Builder.Build(parent)
 	model:SetAttribute("VisiblePartBudget", 110)
 	model:SetAttribute("GameplayHitboxCount", gameplayHitboxCount)
 	model:SetAttribute("GeometryBudgetPassed", visiblePartCount <= 110 and gameplayHitboxCount <= 6)
-	model:SetAttribute("TechnicalAudit", "QualityGateB_Candidate")
+	model:SetAttribute("TechnicalAudit", "QualityGateB_Approved")
 
 	return model
 end

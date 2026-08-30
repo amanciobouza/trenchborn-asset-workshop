@@ -5,10 +5,10 @@ return {
 	AssetClass = "Guardian Defense Platform",
 	Tier = 1,
 	City = "Village",
-	PipelinePhase = 4,
-	Status = "GoldenMasterGeometry",
+	PipelinePhase = 5,
+	Status = "RobloxDressing",
 	QualityGateA = "Approved",
-	QualityGateB = "Pending",
+	QualityGateB = "Approved",
 	Scale = {
 		HeightStuds = 42,
 		ShoulderWidthStuds = 18,
