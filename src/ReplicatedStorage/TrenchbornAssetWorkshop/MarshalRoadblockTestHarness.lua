@@ -185,9 +185,9 @@ function Harness.Attach(workshop, model, config)
 	end
 
 	local function tweenArm(destinationMap, duration)
-		for _, item in ipairs(cannonArmParts) do
-			if item.Parent and destinationMap[item] then
-				TweenService:Create(item, TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {CFrame = destinationMap[item]}):Play()
+		for item, destination in pairs(destinationMap) do
+			if item.Parent then
+				TweenService:Create(item, TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {CFrame = destination}):Play()
 			end
 		end
 	end
