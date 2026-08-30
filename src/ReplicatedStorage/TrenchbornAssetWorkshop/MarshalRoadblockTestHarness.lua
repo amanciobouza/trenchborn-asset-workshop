@@ -98,6 +98,27 @@ function Harness.Attach(workshop, model, config)
 	groundLock.Color = Color3.fromRGB(255, 73, 73)
 	groundLock.Transparency = 1
 	groundLock.Parent = console
+	local visor = model:FindFirstChild("VisorSensor", true)
+	local scanSource = Instance.new("Attachment")
+	scanSource.Name = "ContainmentScanSource"
+	scanSource.Parent = visor
+	local scanTarget = Instance.new("Attachment")
+	scanTarget.Name = "ContainmentScanTarget"
+	scanTarget.Parent = target
+	local scanBeam = Instance.new("Beam")
+	scanBeam.Name = "BlueContainmentScan"
+	scanBeam.Attachment0 = scanSource
+	scanBeam.Attachment1 = scanTarget
+	scanBeam.Color = ColorSequence.new({
+		ColorSequenceKeypoint.new(0, Color3.fromRGB(125, 232, 255)),
+		ColorSequenceKeypoint.new(1, Color3.fromRGB(43, 150, 255)),
+	})
+	scanBeam.Width0 = 0.16
+	scanBeam.Width1 = 0.08
+	scanBeam.FaceCamera = true
+	scanBeam.LightEmission = 0.75
+	scanBeam.Enabled = false
+	scanBeam.Parent = visor
 	local netModel
 	local netSourceAttachment
 	local netToken = 0
@@ -127,18 +148,26 @@ function Harness.Attach(workshop, model, config)
 		targetLabel.Text = "KAIJU TARGET\nFREE"
 		lockGui.Enabled = false
 		groundLock.Transparency = 1
+		scanBeam.Enabled = false
 	end
 
 	local function deployNet(ability)
 		clearNet()
 		local token = netToken
-		targetLabel.Text = "LOCKED\nTELEGRAPH 1.2s"
-		lockGui.Enabled = true
-		groundLock.CFrame = CFrame.new(target.Position.X, 0.12, target.Position.Z) * CFrame.Angles(0, 0, math.rad(90))
-		groundLock.Transparency = 0.48
-		TweenService:Create(groundLock, TweenInfo.new(ability.TelegraphDuration, Enum.EasingStyle.Linear), {Transparency = 0.12, Size = Vector3.new(0.18, 13, 13)}):Play()
+		targetLabel.Text = "SCANNING\nBLUE ACQUISITION LASER"
+		scanBeam.Enabled = true
+		local lockDelay = math.min(0.55, ability.TelegraphDuration * 0.46)
+		task.delay(lockDelay, function()
+			if token ~= netToken then return end
+			targetLabel.Text = "LOCKED\nNET INCOMING"
+			lockGui.Enabled = true
+			groundLock.CFrame = CFrame.new(target.Position.X, 0.12, target.Position.Z) * CFrame.Angles(0, 0, math.rad(90))
+			groundLock.Transparency = 0.48
+			TweenService:Create(groundLock, TweenInfo.new(ability.TelegraphDuration - lockDelay, Enum.EasingStyle.Linear), {Transparency = 0.12, Size = Vector3.new(0.18, 13, 13)}):Play()
+		end)
 		task.delay(ability.TelegraphDuration, function()
 			if token ~= netToken then return end
+			scanBeam.Enabled = false
 			lockGui.Enabled = false
 			groundLock.Transparency = 1
 			groundLock.Size = Vector3.new(0.18, 10, 10)
