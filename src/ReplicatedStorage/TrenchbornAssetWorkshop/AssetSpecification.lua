@@ -32,6 +32,8 @@ return {
 		NoCoplanarOverlappingFaces = true,
 		MinimumSurfaceOffsetStuds = 0.03,
 		NoZFighting = true,
+		AvoidOrthogonalBoxSilhouette = true,
+		UseTiltOrStepOnMajorArmor = true,
 	},
 	ExcludedFromPhase = {
 		"Dressing",

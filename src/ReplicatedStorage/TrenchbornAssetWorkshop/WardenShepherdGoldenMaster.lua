@@ -107,8 +107,9 @@ end
 local function addArm(rig, armor, side, sign)
 	local x = sign * 8.0
 	local armLean = sign * 5
+	local shoulderTilt = sign * 12
 	addJointDisc(rig, side, Vector3.new(x, 30.4, 0))
-	block(armor, side .. "ShoulderCap", Vector3.new(5.3, 4.5, 5.4), Vector3.new(sign * 8.7, 30.7, 0), COLORS.Armor, Vector3.new(0, 0, armLean))
+	block(armor, side .. "ShoulderCap", Vector3.new(5.6, 4.35, 5.4), Vector3.new(sign * 9.0, 30.55, 0), COLORS.Armor, Vector3.new(0, -sign * 3, shoulderTilt))
 	block(rig, side .. "UpperArm", Vector3.new(3.1, 6.2, 3.1), Vector3.new(sign * 8.65, 26.2, 0), COLORS.Chassis, Vector3.new(0, 0, armLean))
 	block(armor, side .. "UpperArmPlate", Vector3.new(3.7, 4.8, 3.7), Vector3.new(sign * 8.65, 26.5, -0.15), COLORS.Body, Vector3.new(0, 0, armLean))
 	cylinder(rig, side .. "ElbowBearing", Vector3.new(1.9, 3.1, 3.1), Vector3.new(sign * 9.05, 22.3, 0), COLORS.DarkMetal)
@@ -231,7 +232,8 @@ function Builder.Build(parent)
 	model:SetAttribute("QualityGateB", "Pending")
 	model:SetAttribute("GeometryOnly", true)
 	model:SetAttribute("NoCoplanarOverlappingFaces", true)
-	model:SetAttribute("GoldenMasterIteration", 5)
+	model:SetAttribute("AvoidOrthogonalBoxSilhouette", true)
+	model:SetAttribute("GoldenMasterIteration", 6)
 	model.Parent = parent
 
 	local rig = folder(model, "Rig")
