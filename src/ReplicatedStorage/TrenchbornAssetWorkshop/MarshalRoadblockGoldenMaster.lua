@@ -11,11 +11,11 @@ local COLORS = {
 }
 
 local WARDEN_COLORS = {
-	[Color3.fromRGB(28, 35, 32)] = COLORS.Chassis,
-	[Color3.fromRGB(91, 103, 92)] = COLORS.Body,
-	[Color3.fromRGB(171, 178, 151)] = COLORS.Armor,
-	[Color3.fromRGB(92, 231, 151)] = COLORS.Accent,
-	[Color3.fromRGB(45, 49, 47)] = COLORS.DarkMetal,
+	{Color3.fromRGB(28, 35, 32), COLORS.Chassis},
+	{Color3.fromRGB(91, 103, 92), COLORS.Body},
+	{Color3.fromRGB(171, 178, 151), COLORS.Armor},
+	{Color3.fromRGB(92, 231, 151), COLORS.Accent},
+	{Color3.fromRGB(45, 49, 47), COLORS.DarkMetal},
 }
 
 local function part(parent, name, size, cf, color, material, shape)
@@ -71,8 +71,14 @@ end
 local function recolor(model)
 	for _, item in ipairs(model:GetDescendants()) do
 		if item:IsA("BasePart") then
-			local replacement = WARDEN_COLORS[item.Color]
-			if replacement then item.Color = replacement end
+			for _, mapping in ipairs(WARDEN_COLORS) do
+				local source = mapping[1]
+				local delta = Vector3.new(item.Color.R - source.R, item.Color.G - source.G, item.Color.B - source.B)
+				if delta.Magnitude < 0.01 then
+					item.Color = mapping[2]
+					break
+				end
+			end
 		end
 	end
 end
@@ -86,12 +92,17 @@ local function addShield(equipment, hitboxes)
 
 	-- Shield is offset forward and outward from the left forearm. The three panels
 	-- overlap in volume, never on a shared exterior plane.
-	block(shield, "CenterPlate", Vector3.new(7.4, 18.0, 1.25), Vector3.new(-11.9, 19.0, -5.25), COLORS.Armor, Vector3.new(-2, 0, -3))
-	block(shield, "OuterWing", Vector3.new(3.0, 15.8, 1.15), Vector3.new(-16.55, 19.15, -4.7), COLORS.Body, Vector3.new(-2, -13, -7))
-	block(shield, "InnerWing", Vector3.new(2.6, 14.7, 1.05), Vector3.new(-7.35, 19.0, -4.78), COLORS.Body, Vector3.new(-2, 12, 3))
+	block(shield, "CenterUpperPlate", Vector3.new(7.8, 9.4, 1.25), Vector3.new(-11.9, 23.25, -5.25), COLORS.Armor, Vector3.new(-2, 0, -3))
+	block(shield, "CenterLowerPlate", Vector3.new(6.4, 8.2, 1.2), Vector3.new(-11.65, 14.45, -5.18), COLORS.Armor, Vector3.new(-2, 0, -2))
+	block(shield, "OuterUpperWing", Vector3.new(3.0, 8.8, 1.15), Vector3.new(-16.55, 23.0, -4.7), COLORS.Body, Vector3.new(-2, -13, -7))
+	block(shield, "OuterLowerWing", Vector3.new(2.4, 7.4, 1.1), Vector3.new(-15.85, 14.7, -4.72), COLORS.Body, Vector3.new(-2, -11, -5))
+	block(shield, "InnerUpperWing", Vector3.new(2.6, 8.3, 1.05), Vector3.new(-7.35, 22.85, -4.78), COLORS.Body, Vector3.new(-2, 12, 3))
+	block(shield, "InnerLowerWing", Vector3.new(2.0, 6.9, 1.0), Vector3.new(-7.95, 14.55, -4.75), COLORS.Body, Vector3.new(-2, 10, 2))
 	block(shield, "TopRail", Vector3.new(10.4, 1.35, 1.55), Vector3.new(-12.0, 28.25, -5.3), COLORS.Chassis, Vector3.new(0, 0, -3))
 	block(shield, "LowerKeel", Vector3.new(4.8, 3.2, 1.45), Vector3.new(-11.55, 8.55, -5.2), COLORS.DarkMetal, Vector3.new(0, 0, -3))
-	block(shield, "ForearmCradle", Vector3.new(3.5, 6.6, 2.0), Vector3.new(-10.2, 20.4, -3.65), COLORS.Chassis, Vector3.new(0, 0, -6))
+	block(shield, "ForearmCradle", Vector3.new(3.8, 6.6, 2.0), Vector3.new(-10.0, 20.4, -3.55), COLORS.Chassis, Vector3.new(0, 0, -6))
+	block(shield, "UpperArmLink", Vector3.new(4.8, 1.15, 1.25), Vector3.new(-9.15, 22.75, -2.45), COLORS.DarkMetal, Vector3.new(0, 18, -8))
+	block(shield, "LowerArmLink", Vector3.new(4.6, 1.15, 1.25), Vector3.new(-9.15, 18.25, -2.4), COLORS.DarkMetal, Vector3.new(0, 18, 5))
 	block(shield, "UpperBrace", Vector3.new(1.1, 7.2, 1.0), Vector3.new(-10.7, 24.0, -3.8), COLORS.DarkMetal, Vector3.new(-24, 0, -8))
 	block(shield, "LowerBrace", Vector3.new(1.1, 6.2, 1.0), Vector3.new(-10.45, 16.6, -3.75), COLORS.DarkMetal, Vector3.new(25, 0, -5))
 	block(shield, "StatusChannel", Vector3.new(0.55, 10.8, 0.22), Vector3.new(-11.85, 20.0, -5.99), COLORS.Accent, Vector3.new(0, 0, -3)).Material = Enum.Material.Neon
@@ -110,9 +121,9 @@ local function addPulseCannon(equipment)
 
 	block(cannon, "ForearmHousing", Vector3.new(5.2, 7.4, 5.2), Vector3.new(10.15, 20.1, -0.8), COLORS.Body, Vector3.new(0, -3, 6))
 	block(cannon, "UpperBreech", Vector3.new(4.5, 2.2, 5.8), Vector3.new(10.0, 23.15, -1.15), COLORS.Armor, Vector3.new(-4, -3, 6))
-	cylinder(cannon, "BarrelShroud", Vector3.new(3.8, 4.5, 4.5), Vector3.new(10.35, 16.15, -1.15), COLORS.Chassis, Vector3.new(0, 0, 90))
-	cylinder(cannon, "MuzzleRing", Vector3.new(1.05, 5.0, 5.0), Vector3.new(10.55, 14.05, -1.35), COLORS.DarkMetal, Vector3.new(0, 0, 90))
-	cylinder(cannon, "MuzzleCore", Vector3.new(0.35, 3.0, 3.0), Vector3.new(10.6, 13.45, -1.4), COLORS.Accent, Vector3.new(0, 0, 90)).Material = Enum.Material.Neon
+	cylinder(cannon, "BarrelShroud", Vector3.new(3.8, 4.5, 4.5), Vector3.new(10.2, 19.1, -3.15), COLORS.Chassis, Vector3.new(0, 90, 0))
+	cylinder(cannon, "MuzzleRing", Vector3.new(1.05, 5.0, 5.0), Vector3.new(10.2, 19.1, -5.25), COLORS.DarkMetal, Vector3.new(0, 90, 0))
+	cylinder(cannon, "MuzzleCore", Vector3.new(0.35, 3.0, 3.0), Vector3.new(10.2, 19.1, -5.85), COLORS.Accent, Vector3.new(0, 90, 0)).Material = Enum.Material.Neon
 	block(cannon, "SideReinforcement", Vector3.new(1.2, 5.8, 5.65), Vector3.new(12.55, 19.7, -0.85), COLORS.Armor, Vector3.new(0, -3, 7))
 	cannon.PrimaryPart = cannon:FindFirstChild("ForearmHousing")
 end
