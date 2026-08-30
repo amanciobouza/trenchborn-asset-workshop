@@ -124,14 +124,18 @@ local function addBaton(equipment)
 	baton:SetAttribute("EquipmentType", "BluntControlWeapon")
 	baton.Parent = equipment
 
-	local x = -10.1
-	local handle = cylinder(baton, "Grip", Vector3.new(5.0, 1.1, 1.1), Vector3.new(x, 13.4, 0), COLORS.DarkMetal, Vector3.new(0, 0, 90))
-	block(baton, "HandGuard", Vector3.new(2.5, 0.65, 1.7), Vector3.new(x, 15.8, 0), COLORS.Armor)
-	cylinder(baton, "Shaft", Vector3.new(7.5, 1.35, 1.35), Vector3.new(x, 20.0, 0), COLORS.Chassis, Vector3.new(0, 0, 90))
-	cylinder(baton, "StrikeHead", Vector3.new(2.5, 2.0, 2.0), Vector3.new(x, 24.8, 0), COLORS.DarkMetal, Vector3.new(0, 0, 90))
+	local gripX = -10.75
+	local shaftX = -11.75
+	local headX = -12.95
+	local batonTilt = 105
+	local handle = cylinder(baton, "Grip", Vector3.new(5.0, 1.1, 1.1), Vector3.new(gripX, 13.4, 0), COLORS.DarkMetal, Vector3.new(0, 0, 90))
+	block(baton, "HandGuard", Vector3.new(2.5, 0.65, 1.7), Vector3.new(-10.9, 15.8, 0), COLORS.Armor, Vector3.new(0, 0, 15))
+	cylinder(baton, "Shaft", Vector3.new(7.5, 1.35, 1.35), Vector3.new(shaftX, 20.0, 0), COLORS.Chassis, Vector3.new(0, 0, batonTilt))
+	cylinder(baton, "StrikeHead", Vector3.new(2.5, 2.0, 2.0), Vector3.new(headX, 24.65, 0), COLORS.DarkMetal, Vector3.new(0, 0, batonTilt))
 	for index = 1, 3 do
-		local y = 23.6 + index * 0.6
-		neon(baton, "Contact" .. index, Vector3.new(0.18, 2.15, 2.15), CFrame.new(x, y, 0) * CFrame.Angles(0, 0, math.rad(90)))
+		local y = 23.25 + index * 0.58
+		local x = -12.55 - index * 0.15
+		neon(baton, "Contact" .. index, Vector3.new(0.18, 2.15, 2.15), CFrame.new(x, y, 0) * CFrame.Angles(0, 0, math.rad(batonTilt)))
 	end
 	baton.PrimaryPart = handle
 	return baton
