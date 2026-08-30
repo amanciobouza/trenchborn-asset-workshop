@@ -151,8 +151,8 @@ end
 
 local function addTorso(rig, armor, systems)
 	block(rig, "Pelvis", Vector3.new(7.5, 4.4, 5.2), Vector3.new(0, 21.2, 0.5), COLORS.Chassis)
-	block(armor, "HipPlateLeft", Vector3.new(3.6, 3.0, 5.8), Vector3.new(-3.6, 21.4, 0.2), COLORS.Body, Vector3.new(0, 0, -5))
-	block(armor, "HipPlateRight", Vector3.new(3.6, 3.0, 5.8), Vector3.new(3.6, 21.4, 0.2), COLORS.Body, Vector3.new(0, 0, 5))
+	block(armor, "HipPlateLeft", Vector3.new(3.6, 3.0, 5.4), Vector3.new(-3.6, 21.4, 0.0), COLORS.Body, Vector3.new(0, 0, -5))
+	block(armor, "HipPlateRight", Vector3.new(3.6, 3.0, 5.4), Vector3.new(3.6, 21.4, 0.0), COLORS.Body, Vector3.new(0, 0, 5))
 	block(rig, "TorsoLower", Vector3.new(7.0, 4.4, 5.2), Vector3.new(0, 24.6, 0.35), COLORS.Chassis)
 	block(rig, "TorsoUpper", Vector3.new(11.0, 8.5, 6.1), Vector3.new(0, 29.2, 0), COLORS.Chassis)
 	block(armor, "ChestMain", Vector3.new(8.2, 6.9, 1.45), Vector3.new(0, 29.45, -3.35), COLORS.Body)
@@ -230,6 +230,7 @@ function Builder.Build(parent)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Pending")
 	model:SetAttribute("GeometryOnly", true)
+	model:SetAttribute("NoCoplanarOverlappingFaces", true)
 	model:SetAttribute("GoldenMasterIteration", 5)
 	model.Parent = parent
 

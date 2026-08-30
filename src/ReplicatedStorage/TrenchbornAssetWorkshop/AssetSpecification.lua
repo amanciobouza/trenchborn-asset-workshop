@@ -28,6 +28,11 @@ return {
 		"Hitboxes",
 		"Metadata",
 	},
+	GeometryRules = {
+		NoCoplanarOverlappingFaces = true,
+		MinimumSurfaceOffsetStuds = 0.03,
+		NoZFighting = true,
+	},
 	ExcludedFromPhase = {
 		"Dressing",
 		"Effects",
