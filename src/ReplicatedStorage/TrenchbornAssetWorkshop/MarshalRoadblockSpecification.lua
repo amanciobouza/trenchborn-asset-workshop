@@ -1,0 +1,36 @@
+return {
+	SchemaVersion = 1,
+	AssetName = "Marshal-II Roadblock",
+	AssetId = "Marshal_II_Roadblock",
+	AssetClass = "Guardian Defense Platform",
+	Tier = 2,
+	City = "Small Town",
+	PipelinePhase = 4,
+	Status = "GoldenMaster",
+	QualityGateA = "Approved",
+	QualityGateB = "Pending",
+	Scale = {
+		HeightStuds = 46,
+		ShoulderWidthStuds = 26,
+		ShieldCoveragePercent = 38,
+	},
+	Palette = {
+		Chassis = Color3.fromRGB(22, 29, 36),
+		Body = Color3.fromRGB(54, 68, 80),
+		Armor = Color3.fromRGB(176, 190, 199),
+		Accent = Color3.fromRGB(63, 199, 255),
+	},
+	GeometryRules = {
+		NoCoplanarOverlappingFaces = true,
+		MinimumSurfaceOffsetStuds = 0.03,
+		AvoidOrthogonalBoxSilhouette = true,
+		UseTiltOrStepOnMajorArmor = true,
+	},
+	PerformanceBudget = {
+		MaxVisibleParts = 120,
+		MaxGameplayHitboxes = 8,
+		PermanentParticleEmitters = 0,
+		PermanentLights = 0,
+		PerPartScripts = 0,
+	},
+}
