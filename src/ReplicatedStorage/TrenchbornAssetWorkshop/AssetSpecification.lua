@@ -5,10 +5,11 @@ return {
 	AssetClass = "Guardian Defense Platform",
 	Tier = 1,
 	City = "Village",
-	PipelinePhase = 5,
-	Status = "RobloxDressing",
+	PipelinePhase = 6,
+	Status = "GameplayAndDestruction",
 	QualityGateA = "Approved",
 	QualityGateB = "Approved",
+	QualityGateC = "Pending",
 	Scale = {
 		HeightStuds = 42,
 		ShoulderWidthStuds = 18,
@@ -49,9 +50,7 @@ return {
 		PermanentParticles = 0,
 	},
 	ExcludedFromPhase = {
-		"Effects",
 		"Animation",
-		"CombatLogic",
-		"Gameplay",
+		"FinalInstaller",
 	},
 }
