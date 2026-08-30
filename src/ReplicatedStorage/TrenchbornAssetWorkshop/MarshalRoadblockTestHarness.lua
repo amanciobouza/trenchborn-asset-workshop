@@ -148,6 +148,9 @@ function Harness.Attach(workshop, model, config)
 	local cannonArmParts = {}
 	local cannonArmRest = {}
 	local shoulderPivotPart = model:FindFirstChild("RightShoulderBearingDrum", true)
+	local shieldArmParts = {}
+	local shieldArmRest = {}
+	local shieldShoulderPivot = model:FindFirstChild("LeftShoulderBearingDrum", true)
 	for _, item in ipairs(model:GetDescendants()) do
 		if item:IsA("BasePart") then
 			local inRightHand = item:FindFirstAncestor("RightHand") ~= nil
@@ -159,6 +162,14 @@ function Harness.Attach(workshop, model, config)
 			if inRightHand or inCannon or rightArmName then
 				table.insert(cannonArmParts, item)
 				cannonArmRest[item] = item.CFrame
+			end
+			local inLeftHand = item:FindFirstAncestor("LeftHand") ~= nil
+			local leftArmName = string.find(item.Name, "LeftUpperArm", 1, true)
+				or string.find(item.Name, "LeftElbow", 1, true)
+				or string.find(item.Name, "LeftForearm", 1, true)
+			if (inLeftHand or leftArmName) and not item:FindFirstAncestor("RiotShield") then
+				table.insert(shieldArmParts, item)
+				shieldArmRest[item] = item.CFrame
 			end
 		end
 	end
@@ -179,6 +190,24 @@ function Harness.Attach(workshop, model, config)
 
 	local function tweenArm(destinationMap, duration)
 		for _, item in ipairs(cannonArmParts) do
+			if item.Parent and destinationMap[item] then
+				TweenService:Create(item, TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {CFrame = destinationMap[item]}):Play()
+			end
+		end
+	end
+
+	local function shieldArmPose(angleDegrees)
+		local result = {}
+		local pivot = shieldShoulderPivot.Position
+		local rotation = CFrame.new(pivot) * CFrame.Angles(0, 0, math.rad(angleDegrees)) * CFrame.new(-pivot)
+		for item, restCFrame in pairs(shieldArmRest) do
+			result[item] = rotation * restCFrame
+		end
+		return result
+	end
+
+	local function tweenShieldArm(destinationMap, duration)
+		for _, item in ipairs(shieldArmParts) do
 			if item.Parent and destinationMap[item] then
 				TweenService:Create(item, TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {CFrame = destinationMap[item]}):Play()
 			end
@@ -402,8 +431,12 @@ function Harness.Attach(workshop, model, config)
 			if shieldModel and shieldRestCFrame then
 				local blockCFrame = shieldRestCFrame + Vector3.new(10.5, 1.8, -1.2)
 				tweenModel(shieldModel, blockCFrame, 0.32)
+				tweenShieldArm(shieldArmPose(48), 0.32)
 				task.delay(math.max(0.4, ability.Duration - 0.35), function()
-					if shieldModel.Parent then tweenModel(shieldModel, shieldRestCFrame, 0.32) end
+					if shieldModel.Parent then
+						tweenModel(shieldModel, shieldRestCFrame, 0.32)
+						tweenShieldArm(shieldArmRest, 0.32)
+					end
 				end)
 			end
 		end
@@ -414,7 +447,7 @@ function Harness.Attach(workshop, model, config)
 	button(console, "Cannon", "PULSE CANNON", origin, blue, function() local ok, why = request:Invoke("PulseCannon", target); show("CANNON: " .. tostring(ok) .. "\n" .. why) end)
 	button(console, "Net", "CONTAINMENT NET", origin + Vector3.new(6, 0, 0), blue, function() local ok, why = request:Invoke("ContainmentNet", target); show("NET: " .. tostring(ok) .. "\n" .. why) end)
 	button(console, "Damage", "FRONTAL DAMAGE", origin + Vector3.new(-3, 0, 4), Color3.fromRGB(160, 72, 67), function() local hp, shield, blocked = damage:Invoke(1000, true); show(string.format("HP %d | SHIELD %d\nBLOCKED %d", hp, shield, blocked)) end)
-	button(console, "Reset", "RESET", origin + Vector3.new(3, 0, 4), Color3.fromRGB(100, 105, 110), function() reset:Invoke(); clearNet(); model:PivotTo(guardianRestCFrame); target.CFrame = CFrame.new(-15, 6, -24); tweenArm(cannonArmRest, 0.15); if shieldModel and shieldRestCFrame then shieldModel:PivotTo(shieldRestCFrame) end; show("RESET COMPLETE") end)
+	button(console, "Reset", "RESET", origin + Vector3.new(3, 0, 4), Color3.fromRGB(100, 105, 110), function() reset:Invoke(); clearNet(); model:PivotTo(guardianRestCFrame); target.CFrame = CFrame.new(-15, 6, -24); tweenArm(cannonArmRest, 0.15); tweenShieldArm(shieldArmRest, 0.15); if shieldModel and shieldRestCFrame then shieldModel:PivotTo(shieldRestCFrame) end; show("RESET COMPLETE") end)
 	workshop:SetAttribute("RoadblockTestConsoleReady", true)
 	return console
 end
