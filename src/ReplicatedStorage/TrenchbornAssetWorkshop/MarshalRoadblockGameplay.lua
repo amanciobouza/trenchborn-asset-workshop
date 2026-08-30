@@ -23,6 +23,7 @@ function Gameplay.Attach(model, config)
 
 	local abilityRequested = bindEvent(api, "AbilityRequested")
 	local stateChanged = bindEvent(api, "StateChanged")
+	local damageTaken = bindEvent(api, "DamageTaken")
 	local requestAbility = bindFunction(api, "RequestAbility")
 	local applyDamage = bindFunction(api, "ApplyDamage")
 	local reset = bindFunction(api, "Reset")
@@ -30,6 +31,8 @@ function Gameplay.Attach(model, config)
 	local health = config.Guardian.MaxHealth
 	local shield = config.Guardian.MaxShield
 	local shieldBlocking = false
+	local staggerDamage = 0
+	local defeated = false
 
 	local function state(name)
 		model:SetAttribute("GuardianState", name)
@@ -45,6 +48,7 @@ function Gameplay.Attach(model, config)
 	end
 
 	requestAbility.OnInvoke = function(name, target)
+		if defeated then return false, "Defeated" end
 		local ability = config[name]
 		if not ability then return false, "UnknownAbility" end
 		if os.clock() < nowReady[name] then return false, "Cooldown" end
@@ -67,15 +71,30 @@ function Gameplay.Attach(model, config)
 	end
 
 	applyDamage.OnInvoke = function(amount, frontal)
+		if defeated then return health, shield, 0 end
 		amount = math.max(0, tonumber(amount) or 0)
 		local blocked = 0
 		if frontal and shieldBlocking and shield > 0 then
 			blocked = math.min(shield, amount * config.RiotShield.BlockReduction)
 			shield -= blocked
 		end
-		health = math.max(0, health - (amount - blocked))
+		local healthDamage = amount - blocked
+		health = math.max(0, health - healthDamage)
+		staggerDamage += healthDamage
 		expose()
-		if health <= 0 then state("Defeated") end
+		damageTaken:Fire(healthDamage, blocked, frontal)
+		if health <= 0 then
+			defeated = true
+			shieldBlocking = false
+			expose()
+			state("Defeated")
+		elseif staggerDamage >= config.Guardian.StaggerThreshold then
+			staggerDamage = 0
+			state("Staggered")
+			task.delay(config.Guardian.StaggerDuration, function()
+				if not defeated and model:GetAttribute("GuardianState") == "Staggered" then state("Idle") end
+			end)
+		end
 		return health, shield, blocked
 	end
 
@@ -83,6 +102,8 @@ function Gameplay.Attach(model, config)
 		health = config.Guardian.MaxHealth
 		shield = config.Guardian.MaxShield
 		shieldBlocking = false
+		staggerDamage = 0
+		defeated = false
 		for name in pairs(nowReady) do nowReady[name] = 0 end
 		expose()
 		state("Idle")
