@@ -47,6 +47,7 @@ function Gameplay.Attach(model, config)
 	local applyDamage = createBindableFunction(api, "ApplyDamage")
 	local requestAbility = createBindableFunction(api, "RequestAbility")
 	local isProtectingBuilding = createBindableFunction(api, "IsProtectingBuilding")
+	local resetGuardian = createBindableFunction(api, "ResetGuardian")
 
 	local currentHealth = config.Guardian.MaxHealth
 	local accumulatedStaggerDamage = 0
@@ -135,6 +136,19 @@ function Gameplay.Attach(model, config)
 			and building ~= nil
 			and protectedBuilding.Value == building
 			and config.Protection.BlocksBuildingDamage
+	end
+
+	resetGuardian.OnInvoke = function()
+		currentHealth = config.Guardian.MaxHealth
+		accumulatedStaggerDamage = 0
+		defeatedState = false
+		nextUseTime.ShockBaton = 0
+		nextUseTime.WarningPulse = 0
+		protectedBuilding.Value = nil
+		model:SetAttribute("Health", currentHealth)
+		model:SetAttribute("GuardianState", "Idle")
+		healthChanged:Fire(currentHealth, config.Guardian.MaxHealth, "Reset")
+		return true
 	end
 
 	model:SetAttribute("PipelinePhase", 6)
