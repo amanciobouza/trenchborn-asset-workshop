@@ -256,7 +256,6 @@ function Builder.Build(parent)
 	root.Transparency = 1
 	root.CanQuery = false
 	model.PrimaryPart = root
-	model:PivotTo(CFrame.new(0, 0, 0))
 
 	return model
 end
