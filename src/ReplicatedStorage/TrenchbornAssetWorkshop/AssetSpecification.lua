@@ -5,11 +5,11 @@ return {
 	AssetClass = "Guardian Defense Platform",
 	Tier = 1,
 	City = "Village",
-	PipelinePhase = 6,
-	Status = "GameplayAndDestruction",
+	PipelinePhase = 7,
+	Status = "FinalInstaller",
 	QualityGateA = "Approved",
 	QualityGateB = "Approved",
-	QualityGateC = "Pending",
+	QualityGateC = "Approved",
 	Scale = {
 		HeightStuds = 42,
 		ShoulderWidthStuds = 18,
@@ -49,8 +49,5 @@ return {
 		PermanentLights = 0,
 		PermanentParticles = 0,
 	},
-	ExcludedFromPhase = {
-		"Animation",
-		"FinalInstaller",
-	},
+	ExcludedFromPhase = {},
 }
