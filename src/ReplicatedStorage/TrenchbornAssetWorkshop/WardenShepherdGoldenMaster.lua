@@ -62,8 +62,8 @@ local function folder(parent, name)
 end
 
 local function addJointDisc(parent, side, center)
-	cylinder(parent, side .. "ShoulderBearing", Vector3.new(1.5, 4.2, 4.2), center, COLORS.DarkMetal)
-	cylinder(parent, side .. "ShoulderHub", Vector3.new(1.7, 2.7, 2.7), center, COLORS.Chassis)
+	cylinder(parent, side .. "ShoulderBearingDrum", Vector3.new(3.2, 4.4, 4.4), center, COLORS.DarkMetal)
+	cylinder(parent, side .. "ShoulderAxle", Vector3.new(3.5, 2.8, 2.8), center, COLORS.Chassis)
 end
 
 local function addLeg(rig, armor, side, sign)
@@ -110,8 +110,9 @@ local function addArm(rig, armor, side, sign)
 	local shoulderTilt = -sign * 12
 	addJointDisc(rig, side, Vector3.new(x, 30.4, 0))
 	block(armor, side .. "ShoulderCap", Vector3.new(4.25, 3.85, 4.9), Vector3.new(sign * 10.15, 30.4, 0.2), COLORS.Armor, Vector3.new(0, -sign * 4, shoulderTilt))
-	cylinder(armor, side .. "ShoulderFaceRing", Vector3.new(0.52, 3.45, 3.45), Vector3.new(sign * 7.35, 30.4, -3.2), COLORS.DarkMetal, Vector3.new(0, 90, 0))
-	cylinder(armor, side .. "ShoulderFaceHub", Vector3.new(0.58, 2.25, 2.25), Vector3.new(sign * 7.35, 30.4, -3.52), COLORS.Chassis, Vector3.new(0, 90, 0))
+	block(rig, side .. "ShoulderYoke", Vector3.new(3.0, 2.4, 3.15), Vector3.new(sign * 8.45, 28.55, 0), COLORS.Chassis, Vector3.new(0, 0, armLean))
+	cylinder(armor, side .. "ShoulderJointCover", Vector3.new(1.3, 3.55, 3.55), Vector3.new(sign * 7.35, 30.4, -3.18), COLORS.DarkMetal, Vector3.new(0, 90, 0))
+	cylinder(armor, side .. "ShoulderJointHub", Vector3.new(0.8, 2.35, 2.35), Vector3.new(sign * 7.35, 30.4, -4.18), COLORS.Chassis, Vector3.new(0, 90, 0))
 	block(rig, side .. "UpperArm", Vector3.new(3.1, 6.2, 3.1), Vector3.new(sign * 8.65, 26.2, 0), COLORS.Chassis, Vector3.new(0, 0, armLean))
 	block(armor, side .. "UpperArmPlate", Vector3.new(3.7, 4.8, 3.7), Vector3.new(sign * 8.65, 26.5, -0.15), COLORS.Body, Vector3.new(0, 0, armLean))
 	cylinder(rig, side .. "ElbowBearing", Vector3.new(1.9, 3.1, 3.1), Vector3.new(sign * 9.05, 22.3, 0), COLORS.DarkMetal)
@@ -237,7 +238,7 @@ function Builder.Build(parent)
 	model:SetAttribute("GeometryOnly", true)
 	model:SetAttribute("NoCoplanarOverlappingFaces", true)
 	model:SetAttribute("AvoidOrthogonalBoxSilhouette", true)
-	model:SetAttribute("GoldenMasterIteration", 7)
+	model:SetAttribute("GoldenMasterIteration", 8)
 	model.Parent = parent
 
 	local rig = folder(model, "Rig")
