@@ -35,6 +35,13 @@ return {
 		AvoidOrthogonalBoxSilhouette = true,
 		UseTiltOrStepOnMajorArmor = true,
 	},
+	PerformanceBudget = {
+		MaxVisibleParts = 110,
+		MaxGameplayHitboxes = 6,
+		PermanentParticleEmitters = 0,
+		PermanentLights = 0,
+		PerPartScripts = 0,
+	},
 	ExcludedFromPhase = {
 		"Dressing",
 		"Effects",

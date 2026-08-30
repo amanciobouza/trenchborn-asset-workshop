@@ -259,12 +259,30 @@ function Builder.Build(parent)
 	addHardpoints(systems)
 	addSearchlight(systems)
 	addBaton(equipment)
-	addHitboxes(model)
+	local hitboxes = addHitboxes(model)
 
 	local root = block(rig, "Root", Vector3.new(2, 2, 2), Vector3.new(0, 21, 0), COLORS.Chassis)
 	root.Transparency = 1
 	root.CanQuery = false
 	model.PrimaryPart = root
+
+	local visiblePartCount = 0
+	local gameplayHitboxCount = 0
+	for _, descendant in ipairs(model:GetDescendants()) do
+		if descendant:IsA("BasePart") then
+			if descendant.Transparency < 1 then
+				visiblePartCount += 1
+			end
+			if descendant.Parent == hitboxes then
+				gameplayHitboxCount += 1
+			end
+		end
+	end
+	model:SetAttribute("VisiblePartCount", visiblePartCount)
+	model:SetAttribute("VisiblePartBudget", 110)
+	model:SetAttribute("GameplayHitboxCount", gameplayHitboxCount)
+	model:SetAttribute("GeometryBudgetPassed", visiblePartCount <= 110 and gameplayHitboxCount <= 6)
+	model:SetAttribute("TechnicalAudit", "QualityGateB_Candidate")
 
 	return model
 end
