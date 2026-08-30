@@ -190,6 +190,8 @@ function Harness.Attach(workshop, model, config)
 		return result
 	end
 
+	local function show(text) status.Text = text end
+
 	local function firePulse(targetPart, ability)
 		local pulse = Instance.new("Part")
 		pulse.Name = "SimulatedPulseProjectile"
@@ -250,7 +252,6 @@ function Harness.Attach(workshop, model, config)
 		end)
 	end
 
-	local function show(text) status.Text = text end
 	local function clearNet()
 		netToken += 1
 		if netModel then netModel:Destroy(); netModel = nil end
