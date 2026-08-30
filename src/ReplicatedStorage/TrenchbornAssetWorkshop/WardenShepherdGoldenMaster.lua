@@ -67,20 +67,25 @@ local function addJointDisc(parent, side, center)
 end
 
 local function addLeg(rig, armor, side, sign)
-	local x = sign * 4.1
-	cylinder(rig, side .. "HipBearing", Vector3.new(2.4, 3.3, 3.3), Vector3.new(x, 19.8, 0), COLORS.Chassis)
-	block(rig, side .. "UpperLeg", Vector3.new(4.4, 7.2, 4.1), Vector3.new(x, 16.1, 0), COLORS.Chassis)
-	block(armor, side .. "ThighPlate", Vector3.new(4.8, 5.6, 4.5), Vector3.new(x, 16.6, -0.15), COLORS.Body)
-	cylinder(rig, side .. "KneeBearing", Vector3.new(2.1, 3.7, 3.7), Vector3.new(x, 11.9, 0), COLORS.DarkMetal)
-	block(armor, side .. "KneeGuard", Vector3.new(4.1, 2.6, 4.7), Vector3.new(x, 11.9, -0.55), COLORS.Armor)
-	block(rig, side .. "LowerLeg", Vector3.new(3.5, 7.1, 3.4), Vector3.new(x, 7.8, 0.4), COLORS.Chassis)
-	block(armor, side .. "ShinPlate", Vector3.new(4.6, 6.7, 4.5), Vector3.new(x, 7.9, -0.15), COLORS.Body)
-	block(rig, side .. "Ankle", Vector3.new(3.3, 1.7, 3.0), Vector3.new(x, 3.75, 0.45), COLORS.Chassis)
-	block(armor, side .. "FootHeel", Vector3.new(5.1, 2.1, 3.0), Vector3.new(x, 1.65, 1.1), COLORS.DarkMetal)
-	block(armor, side .. "FootMain", Vector3.new(5.4, 2.4, 5.7), Vector3.new(x, 1.8, -0.65), COLORS.Armor)
-	block(armor, side .. "ToeOuter", Vector3.new(2.35, 1.8, 2.5), Vector3.new(x + sign * 1.35, 1.25, -3.2), COLORS.DarkMetal)
-	block(armor, side .. "ToeInner", Vector3.new(2.35, 1.8, 2.5), Vector3.new(x - sign * 1.35, 1.25, -3.2), COLORS.DarkMetal)
-	block(rig, side .. "RearHydraulic", Vector3.new(0.7, 5.4, 0.7), Vector3.new(x, 8.0, 2.2), COLORS.DarkMetal, Vector3.new(-6, 0, 0))
+	local hipX = sign * 3.75
+	local thighX = sign * 4.05
+	local kneeX = sign * 4.45
+	local shinX = sign * 4.8
+	local footX = sign * 5.15
+	local legLean = sign * 6
+	cylinder(rig, side .. "HipBearing", Vector3.new(2.4, 3.3, 3.3), Vector3.new(hipX, 19.8, 0), COLORS.Chassis)
+	block(rig, side .. "UpperLeg", Vector3.new(4.2, 7.2, 4.1), Vector3.new(thighX, 16.1, 0), COLORS.Chassis, Vector3.new(0, 0, legLean))
+	block(armor, side .. "ThighPlate", Vector3.new(4.6, 5.6, 4.5), Vector3.new(thighX, 16.6, -0.15), COLORS.Body, Vector3.new(0, 0, legLean))
+	cylinder(rig, side .. "KneeBearing", Vector3.new(2.1, 3.7, 3.7), Vector3.new(kneeX, 11.9, 0), COLORS.DarkMetal)
+	block(armor, side .. "KneeGuard", Vector3.new(4.1, 2.6, 4.7), Vector3.new(kneeX, 11.9, -0.55), COLORS.Armor, Vector3.new(0, 0, legLean))
+	block(rig, side .. "LowerLeg", Vector3.new(3.5, 7.1, 3.4), Vector3.new(shinX, 7.8, 0.4), COLORS.Chassis, Vector3.new(0, 0, legLean))
+	block(armor, side .. "ShinPlate", Vector3.new(4.6, 6.7, 4.5), Vector3.new(shinX, 7.9, -0.15), COLORS.Body, Vector3.new(0, 0, legLean))
+	block(rig, side .. "Ankle", Vector3.new(3.3, 1.7, 3.0), Vector3.new(footX, 3.75, 0.45), COLORS.Chassis)
+	block(armor, side .. "FootHeel", Vector3.new(5.1, 2.1, 3.0), Vector3.new(footX, 1.65, 1.1), COLORS.DarkMetal)
+	block(armor, side .. "FootMain", Vector3.new(5.4, 2.4, 5.7), Vector3.new(footX, 1.8, -0.65), COLORS.Armor, Vector3.new(0, -sign * 4, 0))
+	block(armor, side .. "ToeOuter", Vector3.new(2.35, 1.8, 2.5), Vector3.new(footX + sign * 1.35, 1.25, -3.2), COLORS.DarkMetal, Vector3.new(0, -sign * 4, 0))
+	block(armor, side .. "ToeInner", Vector3.new(2.35, 1.8, 2.5), Vector3.new(footX - sign * 1.35, 1.25, -3.2), COLORS.DarkMetal, Vector3.new(0, -sign * 4, 0))
+	block(rig, side .. "RearHydraulic", Vector3.new(0.7, 5.4, 0.7), Vector3.new(shinX, 8.0, 2.2), COLORS.DarkMetal, Vector3.new(-6, 0, legLean))
 end
 
 local function addHand(rig, side, sign)
@@ -101,13 +106,14 @@ end
 
 local function addArm(rig, armor, side, sign)
 	local x = sign * 8.0
+	local armLean = sign * 5
 	addJointDisc(rig, side, Vector3.new(x, 30.4, 0))
-	block(armor, side .. "ShoulderCap", Vector3.new(4.9, 4.5, 5.4), Vector3.new(sign * 8.55, 30.7, 0), COLORS.Armor, Vector3.new(0, 0, sign * 5))
-	block(rig, side .. "UpperArm", Vector3.new(3.1, 6.2, 3.1), Vector3.new(sign * 8.35, 26.2, 0), COLORS.Chassis)
-	block(armor, side .. "UpperArmPlate", Vector3.new(3.7, 4.8, 3.7), Vector3.new(sign * 8.35, 26.5, -0.15), COLORS.Body)
-	cylinder(rig, side .. "ElbowBearing", Vector3.new(1.9, 3.1, 3.1), Vector3.new(sign * 8.55, 22.3, 0), COLORS.DarkMetal)
-	block(rig, side .. "Forearm", Vector3.new(3.4, 6.0, 3.3), Vector3.new(sign * 8.75, 19.4, 0), COLORS.Chassis)
-	block(armor, side .. "ForearmPlate", Vector3.new(4.1, 5.5, 4.0), Vector3.new(sign * 8.75, 19.8, -0.15), COLORS.Body)
+	block(armor, side .. "ShoulderCap", Vector3.new(5.3, 4.5, 5.4), Vector3.new(sign * 8.7, 30.7, 0), COLORS.Armor, Vector3.new(0, 0, armLean))
+	block(rig, side .. "UpperArm", Vector3.new(3.1, 6.2, 3.1), Vector3.new(sign * 8.65, 26.2, 0), COLORS.Chassis, Vector3.new(0, 0, armLean))
+	block(armor, side .. "UpperArmPlate", Vector3.new(3.7, 4.8, 3.7), Vector3.new(sign * 8.65, 26.5, -0.15), COLORS.Body, Vector3.new(0, 0, armLean))
+	cylinder(rig, side .. "ElbowBearing", Vector3.new(1.9, 3.1, 3.1), Vector3.new(sign * 9.05, 22.3, 0), COLORS.DarkMetal)
+	block(rig, side .. "Forearm", Vector3.new(3.4, 6.0, 3.3), Vector3.new(sign * 9.25, 19.4, 0), COLORS.Chassis, Vector3.new(0, 0, armLean))
+	block(armor, side .. "ForearmPlate", Vector3.new(4.1, 5.5, 4.0), Vector3.new(sign * 9.25, 19.8, -0.15), COLORS.Body, Vector3.new(0, 0, armLean))
 	addHand(rig, side, sign)
 end
 
@@ -144,15 +150,17 @@ local function addSearchlight(systems)
 end
 
 local function addTorso(rig, armor, systems)
-	block(rig, "Pelvis", Vector3.new(8.8, 4.4, 5.2), Vector3.new(0, 21.2, 0.5), COLORS.Chassis)
+	block(rig, "Pelvis", Vector3.new(7.5, 4.4, 5.2), Vector3.new(0, 21.2, 0.5), COLORS.Chassis)
 	block(armor, "HipPlateLeft", Vector3.new(3.6, 3.0, 5.8), Vector3.new(-3.6, 21.4, 0.2), COLORS.Body, Vector3.new(0, 0, -5))
 	block(armor, "HipPlateRight", Vector3.new(3.6, 3.0, 5.8), Vector3.new(3.6, 21.4, 0.2), COLORS.Body, Vector3.new(0, 0, 5))
-	block(rig, "TorsoLower", Vector3.new(8.2, 4.2, 5.2), Vector3.new(0, 24.7, 0.35), COLORS.Chassis)
-	block(rig, "TorsoUpper", Vector3.new(13.0, 8.5, 6.1), Vector3.new(0, 29.2, 0), COLORS.Chassis)
-	block(armor, "ChestMain", Vector3.new(12.9, 8.3, 1.4), Vector3.new(0, 29.25, -3.1), COLORS.Body)
-	block(armor, "ChestTop", Vector3.new(9.0, 2.2, 1.7), Vector3.new(0, 33.2, -3.0), COLORS.Armor)
-	block(armor, "ChestSideLeft", Vector3.new(3.0, 7.0, 1.7), Vector3.new(-5.35, 29.1, -3.0), COLORS.Armor, Vector3.new(0, 0, -6))
-	block(armor, "ChestSideRight", Vector3.new(3.0, 7.0, 1.7), Vector3.new(5.35, 29.1, -3.0), COLORS.Armor, Vector3.new(0, 0, 6))
+	block(rig, "TorsoLower", Vector3.new(7.0, 4.4, 5.2), Vector3.new(0, 24.6, 0.35), COLORS.Chassis)
+	block(rig, "TorsoUpper", Vector3.new(11.0, 8.5, 6.1), Vector3.new(0, 29.2, 0), COLORS.Chassis)
+	block(armor, "ChestMain", Vector3.new(7.8, 8.0, 1.4), Vector3.new(0, 29.25, -3.1), COLORS.Body)
+	block(armor, "ChestTop", Vector3.new(10.6, 2.2, 1.7), Vector3.new(0, 33.2, -3.0), COLORS.Armor)
+	block(armor, "ChestWingLeft", Vector3.new(4.8, 7.5, 1.7), Vector3.new(-5.0, 30.0, -3.0), COLORS.Armor, Vector3.new(0, 0, -15))
+	block(armor, "ChestWingRight", Vector3.new(4.8, 7.5, 1.7), Vector3.new(5.0, 30.0, -3.0), COLORS.Armor, Vector3.new(0, 0, 15))
+	block(armor, "WaistGuardLeft", Vector3.new(2.7, 4.2, 1.55), Vector3.new(-3.65, 25.8, -3.0), COLORS.Body, Vector3.new(0, 0, -12))
+	block(armor, "WaistGuardRight", Vector3.new(2.7, 4.2, 1.55), Vector3.new(3.65, 25.8, -3.0), COLORS.Body, Vector3.new(0, 0, 12))
 
 	local core = folder(systems, "ChestPulseCore")
 	neon(core, "ShieldAngleLeft", Vector3.new(0.55, 4.8, 0.35), CFrame.new(-1.15, 29.0, -3.88) * CFrame.Angles(0, 0, math.rad(-25)))
@@ -219,6 +227,7 @@ function Builder.Build(parent)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Pending")
 	model:SetAttribute("GeometryOnly", true)
+	model:SetAttribute("GoldenMasterIteration", 2)
 	model.Parent = parent
 
 	local rig = folder(model, "Rig")
