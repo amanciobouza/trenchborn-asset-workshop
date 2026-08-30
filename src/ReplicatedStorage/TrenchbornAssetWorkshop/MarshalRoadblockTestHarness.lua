@@ -48,6 +48,9 @@ function Harness.Attach(workshop, model, config)
 	local damage = api:WaitForChild("ApplyDamage")
 	local reset = api:WaitForChild("Reset")
 	local event = api:WaitForChild("AbilityRequested")
+	local stateChanged = api:WaitForChild("StateChanged")
+	local damageTaken = api:WaitForChild("DamageTaken")
+	local guardianRestCFrame = model:GetPivot()
 
 	local origin = Vector3.new(2, 0.6, -26)
 	local board = Instance.new("Part")
@@ -137,9 +140,6 @@ function Harness.Attach(workshop, model, config)
 	local netToken = 0
 	local shieldModel = model:FindFirstChild("RiotShield", true)
 	local shieldRestCFrame = shieldModel and shieldModel:GetPivot()
-	local shieldArmParts = {}
-	local shieldArmRest = {}
-	local shieldShoulderPivotPart = model:FindFirstChild("LeftShoulderBearingDrum", true)
 	local launcherMouth = model:FindFirstChild("LaunchMouth", true)
 	local cannonMuzzle = model:FindFirstChild("MuzzleCore", true)
 	local cannonArmParts = {}
@@ -149,23 +149,13 @@ function Harness.Attach(workshop, model, config)
 		if item:IsA("BasePart") then
 			local inRightHand = item:FindFirstAncestor("RightHand") ~= nil
 			local inCannon = item:FindFirstAncestor("PulseCannon") ~= nil
-			local inLeftHand = item:FindFirstAncestor("LeftHand") ~= nil
-			local inShield = item:FindFirstAncestor("RiotShield") ~= nil
 			local rightArmName = string.find(item.Name, "RightShoulder", 1, true)
 				or string.find(item.Name, "RightUpperArm", 1, true)
 				or string.find(item.Name, "RightElbow", 1, true)
 				or string.find(item.Name, "RightForearm", 1, true)
-			local leftArmName = string.find(item.Name, "LeftShoulder", 1, true)
-				or string.find(item.Name, "LeftUpperArm", 1, true)
-				or string.find(item.Name, "LeftElbow", 1, true)
-				or string.find(item.Name, "LeftForearm", 1, true)
 			if inRightHand or inCannon or rightArmName then
 				table.insert(cannonArmParts, item)
 				cannonArmRest[item] = item.CFrame
-			end
-			if inLeftHand or inShield or leftArmName then
-				table.insert(shieldArmParts, item)
-				shieldArmRest[item] = item.CFrame
 			end
 		end
 	end
@@ -185,9 +175,9 @@ function Harness.Attach(workshop, model, config)
 	end
 
 	local function tweenArm(destinationMap, duration)
-		for item, destination in pairs(destinationMap) do
-			if item.Parent then
-				TweenService:Create(item, TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {CFrame = destination}):Play()
+		for _, item in ipairs(cannonArmParts) do
+			if item.Parent and destinationMap[item] then
+				TweenService:Create(item, TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {CFrame = destinationMap[item]}):Play()
 			end
 		end
 	end
@@ -202,24 +192,6 @@ function Harness.Attach(workshop, model, config)
 		end
 		return result
 	end
-
-	local function shieldBlockPose(targetShieldPosition)
-		local result = {}
-		if not shieldShoulderPivotPart or not shieldRestCFrame then return result end
-		local pivot = shieldShoulderPivotPart.Position
-		local restDirection = shieldRestCFrame.Position - pivot
-		local targetDirection = targetShieldPosition - pivot
-		if restDirection.Magnitude < 0.01 or targetDirection.Magnitude < 0.01 then return result end
-		local restAim = CFrame.lookAt(pivot, pivot + restDirection.Unit)
-		local targetAim = CFrame.lookAt(pivot, pivot + targetDirection.Unit)
-		local shoulderRotation = targetAim * restAim:Inverse()
-		for item, restCFrame in pairs(shieldArmRest) do
-			result[item] = shoulderRotation * restCFrame
-		end
-		return result
-	end
-
-	local function show(text) status.Text = text end
 
 	local function firePulse(targetPart, ability)
 		local pulse = Instance.new("Part")
@@ -253,6 +225,44 @@ function Harness.Attach(workshop, model, config)
 		end)
 	end
 
+	local flashSequence = 0
+	local function flashGuardian(blocked)
+		flashSequence += 1
+		local token = flashSequence
+		local originals = {}
+		for _, item in ipairs(model:GetDescendants()) do
+			if item:IsA("BasePart") and item.Transparency < 1 then
+				originals[item] = item.Color
+				item.Color = blocked and Color3.fromRGB(255, 166, 92) or Color3.fromRGB(255, 62, 62)
+			end
+		end
+		task.delay(0.2, function()
+			if token ~= flashSequence then return end
+			for item, color in pairs(originals) do
+				if item.Parent then item.Color = color end
+			end
+		end)
+	end
+
+	damageTaken.Event:Connect(function(healthDamage, blocked)
+		flashGuardian(blocked > healthDamage)
+	end)
+
+	stateChanged.Event:Connect(function(newState)
+		if newState == "Staggered" then
+			show("GUARDIAN STAGGERED\nBALANCE BROKEN")
+			local staggerPose = guardianRestCFrame * CFrame.new(0, -0.5, 0) * CFrame.Angles(0, 0, math.rad(-7))
+			tweenModel(model, staggerPose, 0.16)
+			task.delay(0.62, function()
+				if model:GetAttribute("GuardianState") ~= "Defeated" then tweenModel(model, guardianRestCFrame, 0.28) end
+			end)
+		elseif newState == "Defeated" then
+			show("ROADBLOCK DEFEATED\nSYSTEMS OFFLINE")
+			local defeatPose = guardianRestCFrame * CFrame.new(0, -2.2, 1.2) * CFrame.Angles(math.rad(-8), 0, math.rad(11))
+			tweenModel(model, defeatPose, 0.65)
+		end
+	end)
+
 	local function launchInArc(projectile, destination, duration, arcHeight, token)
 		local start = projectile.Position
 		local elapsed = 0
@@ -281,6 +291,7 @@ function Harness.Attach(workshop, model, config)
 		end)
 	end
 
+	local function show(text) status.Text = text end
 	local function clearNet()
 		netToken += 1
 		if netModel then netModel:Destroy(); netModel = nil end
@@ -386,11 +397,11 @@ function Harness.Attach(workshop, model, config)
 		elseif name == "ContainmentNet" then deployNet(ability)
 		elseif name == "RiotShield" then
 			show("SHIELD MOVING TO BLOCK\n85% FRONTAL REDUCTION")
-			if shieldModel and shieldRestCFrame and shieldShoulderPivotPart then
-				local targetShieldPosition = shieldRestCFrame.Position + Vector3.new(10.5, 1.8, -1.2)
-				tweenArm(shieldBlockPose(targetShieldPosition), 0.38)
-				task.delay(math.max(0.4, ability.Duration - 0.4), function()
-					if shieldModel.Parent then tweenArm(shieldArmRest, 0.38) end
+			if shieldModel and shieldRestCFrame then
+				local blockCFrame = shieldRestCFrame + Vector3.new(10.5, 1.8, -1.2)
+				tweenModel(shieldModel, blockCFrame, 0.32)
+				task.delay(math.max(0.4, ability.Duration - 0.35), function()
+					if shieldModel.Parent then tweenModel(shieldModel, shieldRestCFrame, 0.32) end
 				end)
 			end
 		end
@@ -401,7 +412,7 @@ function Harness.Attach(workshop, model, config)
 	button(console, "Cannon", "PULSE CANNON", origin, blue, function() local ok, why = request:Invoke("PulseCannon", target); show("CANNON: " .. tostring(ok) .. "\n" .. why) end)
 	button(console, "Net", "CONTAINMENT NET", origin + Vector3.new(6, 0, 0), blue, function() local ok, why = request:Invoke("ContainmentNet", target); show("NET: " .. tostring(ok) .. "\n" .. why) end)
 	button(console, "Damage", "FRONTAL DAMAGE", origin + Vector3.new(-3, 0, 4), Color3.fromRGB(160, 72, 67), function() local hp, shield, blocked = damage:Invoke(1000, true); show(string.format("HP %d | SHIELD %d\nBLOCKED %d", hp, shield, blocked)) end)
-	button(console, "Reset", "RESET", origin + Vector3.new(3, 0, 4), Color3.fromRGB(100, 105, 110), function() reset:Invoke(); clearNet(); target.CFrame = CFrame.new(-15, 6, -24); tweenArm(cannonArmRest, 0.15); if shieldModel and shieldRestCFrame then tweenArm(shieldArmRest, 0.15) end; show("RESET COMPLETE") end)
+	button(console, "Reset", "RESET", origin + Vector3.new(3, 0, 4), Color3.fromRGB(100, 105, 110), function() reset:Invoke(); clearNet(); model:PivotTo(guardianRestCFrame); target.CFrame = CFrame.new(-15, 6, -24); tweenArm(cannonArmRest, 0.15); if shieldModel and shieldRestCFrame then shieldModel:PivotTo(shieldRestCFrame) end; show("RESET COMPLETE") end)
 	workshop:SetAttribute("RoadblockTestConsoleReady", true)
 	return console
 end
