@@ -65,6 +65,39 @@ function Harness.Attach(workshop, model, config)
 	target.Color = Color3.fromRGB(105, 72, 91)
 	target.Parent = console
 	local targetLabel = label(target, "KAIJU TARGET\nFREE", Enum.NormalId.Front)
+	local lockGui = Instance.new("BillboardGui")
+	lockGui.Name = "EnemyLockedWarning"
+	lockGui.Size = UDim2.fromOffset(280, 74)
+	lockGui.StudsOffset = Vector3.new(0, 8.5, 0)
+	lockGui.AlwaysOnTop = true
+	lockGui.Enabled = false
+	lockGui.Parent = target
+	local lockLabel = Instance.new("TextLabel")
+	lockLabel.Size = UDim2.fromScale(1, 1)
+	lockLabel.BackgroundColor3 = Color3.fromRGB(107, 24, 30)
+	lockLabel.BackgroundTransparency = 0.12
+	lockLabel.BorderSizePixel = 0
+	lockLabel.Text = "⚠ ENEMY LOCKED ⚠"
+	lockLabel.TextColor3 = Color3.fromRGB(255, 226, 184)
+	lockLabel.Font = Enum.Font.GothamBlack
+	lockLabel.TextScaled = true
+	lockLabel.Parent = lockGui
+	local lockStroke = Instance.new("UIStroke")
+	lockStroke.Color = Color3.fromRGB(255, 91, 91)
+	lockStroke.Thickness = 3
+	lockStroke.Parent = lockLabel
+	local groundLock = Instance.new("Part")
+	groundLock.Name = "NetTargetGroundWarning"
+	groundLock.Shape = Enum.PartType.Cylinder
+	groundLock.Size = Vector3.new(0.18, 10, 10)
+	groundLock.CFrame = CFrame.new(target.Position.X, 0.12, target.Position.Z) * CFrame.Angles(0, 0, math.rad(90))
+	groundLock.Anchored = true
+	groundLock.CanCollide = false
+	groundLock.CanQuery = false
+	groundLock.Material = Enum.Material.Neon
+	groundLock.Color = Color3.fromRGB(255, 73, 73)
+	groundLock.Transparency = 1
+	groundLock.Parent = console
 	local netModel
 	local netSourceAttachment
 	local netToken = 0
@@ -92,14 +125,23 @@ function Harness.Attach(workshop, model, config)
 		if netModel then netModel:Destroy(); netModel = nil end
 		if netSourceAttachment then netSourceAttachment:Destroy(); netSourceAttachment = nil end
 		targetLabel.Text = "KAIJU TARGET\nFREE"
+		lockGui.Enabled = false
+		groundLock.Transparency = 1
 	end
 
 	local function deployNet(ability)
 		clearNet()
 		local token = netToken
 		targetLabel.Text = "LOCKED\nTELEGRAPH 1.2s"
+		lockGui.Enabled = true
+		groundLock.CFrame = CFrame.new(target.Position.X, 0.12, target.Position.Z) * CFrame.Angles(0, 0, math.rad(90))
+		groundLock.Transparency = 0.48
+		TweenService:Create(groundLock, TweenInfo.new(ability.TelegraphDuration, Enum.EasingStyle.Linear), {Transparency = 0.12, Size = Vector3.new(0.18, 13, 13)}):Play()
 		task.delay(ability.TelegraphDuration, function()
 			if token ~= netToken then return end
+			lockGui.Enabled = false
+			groundLock.Transparency = 1
+			groundLock.Size = Vector3.new(0.18, 10, 10)
 			netModel = Instance.new("Model")
 			netModel.Name = "SimulatedContainmentNet"
 			netModel.Parent = console
