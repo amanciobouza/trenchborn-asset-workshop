@@ -5,8 +5,8 @@ return {
 	AssetClass = "Guardian Defense Platform",
 	Tier = 2,
 	City = "Small Town",
-	PipelinePhase = 5,
-	Status = "RobloxDressing",
+	PipelinePhase = 6,
+	Status = "GameplayAndReactions",
 	QualityGateA = "Approved",
 	QualityGateB = "Approved",
 	Scale = {
