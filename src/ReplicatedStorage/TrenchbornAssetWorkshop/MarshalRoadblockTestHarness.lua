@@ -247,7 +247,10 @@ function Harness.Attach(workshop, model, config)
 				tether.FaceCamera = true
 				tether.Parent = node
 				local destination = target.Position + Vector3.new(math.cos(angle) * 4, (index % 2) * 5 - 2, math.sin(angle) * 4)
-				launchInArc(node, destination, 0.72 + index * 0.045, 9 + index * 0.65, token)
+				-- The launcher already sits high above the target. A 9-stud lift only
+				-- softened the descent; this larger lift creates a visibly ballistic
+				-- apex above the Guardian before the node drops around the Kaiju.
+				launchInArc(node, destination, 1.18 + index * 0.055, 22 + index * 0.9, token)
 				local click = Instance.new("ClickDetector")
 				click.MaxActivationDistance = 45
 				click.Parent = node
