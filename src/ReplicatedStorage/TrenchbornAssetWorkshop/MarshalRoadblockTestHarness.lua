@@ -66,12 +66,31 @@ function Harness.Attach(workshop, model, config)
 	target.Parent = console
 	local targetLabel = label(target, "KAIJU TARGET\nFREE", Enum.NormalId.Front)
 	local netModel
+	local netSourceAttachment
 	local netToken = 0
+	local shieldModel = model:FindFirstChild("RiotShield", true)
+	local shieldRestCFrame = shieldModel and shieldModel:GetPivot()
+	local launcherMouth = model:FindFirstChild("LaunchMouth", true)
+
+	local function tweenModel(targetModel, destination, duration)
+		local driver = Instance.new("CFrameValue")
+		driver.Value = targetModel:GetPivot()
+		local connection = driver:GetPropertyChangedSignal("Value"):Connect(function()
+			if targetModel.Parent then targetModel:PivotTo(driver.Value) end
+		end)
+		local tween = TweenService:Create(driver, TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {Value = destination})
+		tween.Completed:Connect(function()
+			connection:Disconnect()
+			driver:Destroy()
+		end)
+		tween:Play()
+	end
 
 	local function show(text) status.Text = text end
 	local function clearNet()
 		netToken += 1
 		if netModel then netModel:Destroy(); netModel = nil end
+		if netSourceAttachment then netSourceAttachment:Destroy(); netSourceAttachment = nil end
 		targetLabel.Text = "KAIJU TARGET\nFREE"
 	end
 
@@ -84,18 +103,42 @@ function Harness.Attach(workshop, model, config)
 			netModel = Instance.new("Model")
 			netModel.Name = "SimulatedContainmentNet"
 			netModel.Parent = console
+			netSourceAttachment = Instance.new("Attachment")
+			netSourceAttachment.Name = "NetLauncherSource"
+			netSourceAttachment.Parent = launcherMouth
+			local activeNodes = ability.NodeCount
 			for index = 1, ability.NodeCount do
 				local angle = (index - 1) / ability.NodeCount * math.pi * 2
 				local node = Instance.new("Part")
 				node.Name = "NetNode" .. index
-				node.Shape = Enum.PartType.Ball
-				node.Size = Vector3.new(1.1, 1.1, 1.1)
-				node.Position = target.Position + Vector3.new(math.cos(angle) * 4, (index % 2) * 5 - 2, math.sin(angle) * 4)
+				node.Shape = Enum.PartType.Cylinder
+				node.Size = Vector3.new(2.2, 0.85, 0.85)
+				node.CFrame = launcherMouth.CFrame
 				node.Anchored = true
 				node.Material = Enum.Material.Neon
 				node.Color = Color3.fromRGB(63, 199, 255)
 				node:SetAttribute("HitsRemaining", ability.NodeHealth)
 				node.Parent = netModel
+				local nodeAttachment = Instance.new("Attachment")
+				nodeAttachment.Parent = node
+				local tether = Instance.new("Beam")
+				tether.Name = "LauncherTether"
+				tether.Attachment0 = netSourceAttachment
+				tether.Attachment1 = nodeAttachment
+				tether.Color = ColorSequence.new(Color3.fromRGB(63, 199, 255))
+				tether.Width0 = 0.16
+				tether.Width1 = 0.09
+				tether.FaceCamera = true
+				tether.Parent = node
+				local destination = target.Position + Vector3.new(math.cos(angle) * 4, (index % 2) * 5 - 2, math.sin(angle) * 4)
+				local flight = TweenService:Create(node, TweenInfo.new(0.42 + index * 0.035, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = destination})
+				flight:Play()
+				flight.Completed:Connect(function()
+					if node.Parent then
+						node.Shape = Enum.PartType.Ball
+						node.Size = Vector3.new(1.1, 1.1, 1.1)
+					end
+				end)
 				local click = Instance.new("ClickDetector")
 				click.MaxActivationDistance = 45
 				click.Parent = node
@@ -103,8 +146,11 @@ function Harness.Attach(workshop, model, config)
 					local hits = node:GetAttribute("HitsRemaining") - 1
 					node:SetAttribute("HitsRemaining", hits)
 					node.Size *= 0.72
-					if hits <= 0 then node:Destroy() end
-					if netModel and #netModel:GetChildren() == 0 then clearNet(); show("NET DESTROYED\nTARGET ESCAPED") end
+					if hits <= 0 then
+						activeNodes -= 1
+						node:Destroy()
+					end
+					if netModel and activeNodes <= 0 then clearNet(); show("NET DESTROYED\nTARGET ESCAPED") end
 				end)
 			end
 			targetLabel.Text = "CONTAINED\n50% SLOW | NO JUMP/DASH"
@@ -127,7 +173,16 @@ function Harness.Attach(workshop, model, config)
 				task.delay(0.8, function() target.CFrame = original end)
 			end)
 		elseif name == "ContainmentNet" then deployNet(ability)
-		elseif name == "RiotShield" then show("SHIELD BLOCK ACTIVE\n85% FRONTAL REDUCTION") end
+		elseif name == "RiotShield" then
+			show("SHIELD MOVING TO BLOCK\n85% FRONTAL REDUCTION")
+			if shieldModel and shieldRestCFrame then
+				local blockCFrame = shieldRestCFrame + Vector3.new(10.5, 1.8, -1.2)
+				tweenModel(shieldModel, blockCFrame, 0.32)
+				task.delay(math.max(0.4, ability.Duration - 0.35), function()
+					if shieldModel.Parent then tweenModel(shieldModel, shieldRestCFrame, 0.32) end
+				end)
+			end
+		end
 	end)
 
 	local blue = Color3.fromRGB(48, 128, 158)
@@ -135,7 +190,7 @@ function Harness.Attach(workshop, model, config)
 	button(console, "Cannon", "PULSE CANNON", origin, blue, function() local ok, why = request:Invoke("PulseCannon", target); show("CANNON: " .. tostring(ok) .. "\n" .. why) end)
 	button(console, "Net", "CONTAINMENT NET", origin + Vector3.new(6, 0, 0), blue, function() local ok, why = request:Invoke("ContainmentNet", target); show("NET: " .. tostring(ok) .. "\n" .. why) end)
 	button(console, "Damage", "FRONTAL DAMAGE", origin + Vector3.new(-3, 0, 4), Color3.fromRGB(160, 72, 67), function() local hp, shield, blocked = damage:Invoke(1000, true); show(string.format("HP %d | SHIELD %d\nBLOCKED %d", hp, shield, blocked)) end)
-	button(console, "Reset", "RESET", origin + Vector3.new(3, 0, 4), Color3.fromRGB(100, 105, 110), function() reset:Invoke(); clearNet(); target.CFrame = CFrame.new(-15, 6, -24); show("RESET COMPLETE") end)
+	button(console, "Reset", "RESET", origin + Vector3.new(3, 0, 4), Color3.fromRGB(100, 105, 110), function() reset:Invoke(); clearNet(); target.CFrame = CFrame.new(-15, 6, -24); if shieldModel and shieldRestCFrame then shieldModel:PivotTo(shieldRestCFrame) end; show("RESET COMPLETE") end)
 	workshop:SetAttribute("RoadblockTestConsoleReady", true)
 	return console
 end
