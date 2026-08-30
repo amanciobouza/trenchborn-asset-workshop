@@ -1,0 +1,252 @@
+local Builder = {}
+
+local COLORS = {
+	Chassis = Color3.fromRGB(28, 35, 32),
+	Body = Color3.fromRGB(91, 103, 92),
+	Armor = Color3.fromRGB(171, 178, 151),
+	Accent = Color3.fromRGB(92, 231, 151),
+	DarkMetal = Color3.fromRGB(45, 49, 47),
+	Hazard = Color3.fromRGB(207, 177, 74),
+}
+
+local function part(parent, name, size, cf, color, material, shape)
+	local item = Instance.new("Part")
+	item.Name = name
+	item.Size = size
+	item.CFrame = cf
+	item.Color = color or COLORS.Body
+	item.Material = material or Enum.Material.Metal
+	item.Shape = shape or Enum.PartType.Block
+	item.Anchored = true
+	item.CanCollide = false
+	item.CastShadow = true
+	item.TopSurface = Enum.SurfaceType.Smooth
+	item.BottomSurface = Enum.SurfaceType.Smooth
+	item.Parent = parent
+	return item
+end
+
+local function block(parent, name, size, position, color, rotation)
+	local cf = CFrame.new(position)
+	if rotation then
+		cf *= CFrame.Angles(math.rad(rotation.X), math.rad(rotation.Y), math.rad(rotation.Z))
+	end
+	return part(parent, name, size, cf, color)
+end
+
+local function cylinder(parent, name, size, position, color, rotation)
+	return part(
+		parent,
+		name,
+		size,
+		CFrame.new(position) * CFrame.Angles(
+			math.rad(rotation and rotation.X or 0),
+			math.rad(rotation and rotation.Y or 0),
+			math.rad(rotation and rotation.Z or 0)
+		),
+		color,
+		Enum.Material.Metal,
+		Enum.PartType.Cylinder
+	)
+end
+
+local function neon(parent, name, size, cf)
+	return part(parent, name, size, cf, COLORS.Accent, Enum.Material.Neon)
+end
+
+local function folder(parent, name)
+	local value = Instance.new("Folder")
+	value.Name = name
+	value.Parent = parent
+	return value
+end
+
+local function addJointDisc(parent, side, center)
+	cylinder(parent, side .. "ShoulderBearing", Vector3.new(1.5, 4.2, 4.2), center, COLORS.DarkMetal)
+	cylinder(parent, side .. "ShoulderHub", Vector3.new(1.7, 2.7, 2.7), center, COLORS.Chassis)
+end
+
+local function addLeg(rig, armor, side, sign)
+	local x = sign * 4.1
+	cylinder(rig, side .. "HipBearing", Vector3.new(2.4, 3.3, 3.3), Vector3.new(x, 19.8, 0), COLORS.Chassis)
+	block(rig, side .. "UpperLeg", Vector3.new(4.4, 7.2, 4.1), Vector3.new(x, 16.1, 0), COLORS.Chassis)
+	block(armor, side .. "ThighPlate", Vector3.new(4.8, 5.6, 4.5), Vector3.new(x, 16.6, -0.15), COLORS.Body)
+	cylinder(rig, side .. "KneeBearing", Vector3.new(2.1, 3.7, 3.7), Vector3.new(x, 11.9, 0), COLORS.DarkMetal)
+	block(armor, side .. "KneeGuard", Vector3.new(4.1, 2.6, 4.7), Vector3.new(x, 11.9, -0.55), COLORS.Armor)
+	block(rig, side .. "LowerLeg", Vector3.new(3.5, 7.1, 3.4), Vector3.new(x, 7.8, 0.4), COLORS.Chassis)
+	block(armor, side .. "ShinPlate", Vector3.new(4.6, 6.7, 4.5), Vector3.new(x, 7.9, -0.15), COLORS.Body)
+	block(rig, side .. "Ankle", Vector3.new(3.3, 1.7, 3.0), Vector3.new(x, 3.75, 0.45), COLORS.Chassis)
+	block(armor, side .. "FootHeel", Vector3.new(5.1, 2.1, 3.0), Vector3.new(x, 1.65, 1.1), COLORS.DarkMetal)
+	block(armor, side .. "FootMain", Vector3.new(5.4, 2.4, 5.7), Vector3.new(x, 1.8, -0.65), COLORS.Armor)
+	block(armor, side .. "ToeOuter", Vector3.new(2.35, 1.8, 2.5), Vector3.new(x + sign * 1.35, 1.25, -3.2), COLORS.DarkMetal)
+	block(armor, side .. "ToeInner", Vector3.new(2.35, 1.8, 2.5), Vector3.new(x - sign * 1.35, 1.25, -3.2), COLORS.DarkMetal)
+	block(rig, side .. "RearHydraulic", Vector3.new(0.7, 5.4, 0.7), Vector3.new(x, 8.0, 2.2), COLORS.DarkMetal, Vector3.new(-6, 0, 0))
+end
+
+local function addHand(rig, side, sign)
+	local hand = folder(rig, side .. "Hand")
+	local x = sign * 9.2
+	block(hand, "Palm", Vector3.new(2.6, 2.4, 2.8), Vector3.new(x, 17.1, 0), COLORS.Chassis)
+	for index = 1, 4 do
+		block(
+			hand,
+			"Finger" .. index,
+			Vector3.new(0.48, 1.7, 0.58),
+			Vector3.new(x + (index - 2.5) * 0.58, 15.45, -0.35),
+			COLORS.DarkMetal
+		)
+	end
+	block(hand, "Thumb", Vector3.new(0.65, 1.65, 0.7), Vector3.new(x - sign * 1.5, 16.4, -0.25), COLORS.DarkMetal, Vector3.new(0, 0, sign * 28))
+end
+
+local function addArm(rig, armor, side, sign)
+	local x = sign * 8.0
+	addJointDisc(rig, side, Vector3.new(x, 30.4, 0))
+	block(armor, side .. "ShoulderCap", Vector3.new(4.9, 4.5, 5.4), Vector3.new(sign * 8.55, 30.7, 0), COLORS.Armor, Vector3.new(0, 0, sign * 5))
+	block(rig, side .. "UpperArm", Vector3.new(3.1, 6.2, 3.1), Vector3.new(sign * 8.35, 26.2, 0), COLORS.Chassis)
+	block(armor, side .. "UpperArmPlate", Vector3.new(3.7, 4.8, 3.7), Vector3.new(sign * 8.35, 26.5, -0.15), COLORS.Body)
+	cylinder(rig, side .. "ElbowBearing", Vector3.new(1.9, 3.1, 3.1), Vector3.new(sign * 8.55, 22.3, 0), COLORS.DarkMetal)
+	block(rig, side .. "Forearm", Vector3.new(3.4, 6.0, 3.3), Vector3.new(sign * 8.75, 19.4, 0), COLORS.Chassis)
+	block(armor, side .. "ForearmPlate", Vector3.new(4.1, 5.5, 4.0), Vector3.new(sign * 8.75, 19.8, -0.15), COLORS.Body)
+	addHand(rig, side, sign)
+end
+
+local function addBaton(equipment)
+	local baton = Instance.new("Model")
+	baton.Name = "ShockBaton"
+	baton:SetAttribute("EquipmentType", "BluntControlWeapon")
+	baton.Parent = equipment
+
+	local x = -10.1
+	local handle = cylinder(baton, "Grip", Vector3.new(5.0, 1.1, 1.1), Vector3.new(x, 13.4, 0), COLORS.DarkMetal, Vector3.new(0, 0, 90))
+	block(baton, "HandGuard", Vector3.new(2.5, 0.65, 1.7), Vector3.new(x, 15.8, 0), COLORS.Armor)
+	cylinder(baton, "Shaft", Vector3.new(7.5, 1.35, 1.35), Vector3.new(x, 20.0, 0), COLORS.Chassis, Vector3.new(0, 0, 90))
+	cylinder(baton, "StrikeHead", Vector3.new(2.5, 2.0, 2.0), Vector3.new(x, 24.8, 0), COLORS.DarkMetal, Vector3.new(0, 0, 90))
+	for index = 1, 3 do
+		local y = 23.6 + index * 0.6
+		neon(baton, "Contact" .. index, Vector3.new(0.18, 2.15, 2.15), CFrame.new(x, y, 0) * CFrame.Angles(0, 0, math.rad(90)))
+	end
+	baton.PrimaryPart = handle
+	return baton
+end
+
+local function addSearchlight(systems)
+	local scanner = Instance.new("Model")
+	scanner.Name = "SearchlightScanner"
+	scanner:SetAttribute("Purpose", "DetectionOnly")
+	scanner.Parent = systems
+
+	cylinder(scanner, "YawBase", Vector3.new(1.0, 2.2, 2.2), Vector3.new(-6.2, 34.25, 0), COLORS.DarkMetal)
+	local housing = cylinder(scanner, "Housing", Vector3.new(2.1, 2.7, 2.7), Vector3.new(-6.2, 35.2, -0.25), COLORS.Body, Vector3.new(0, 90, 0))
+	part(scanner, "Lens", Vector3.new(0.22, 2.15, 2.15), CFrame.new(-6.2, 35.2, -1.36) * CFrame.Angles(0, math.rad(90), 0), Color3.fromRGB(213, 224, 209), Enum.Material.Glass, Enum.PartType.Cylinder)
+	block(scanner, "GuardTop", Vector3.new(3.2, 0.35, 3.4), Vector3.new(-6.2, 36.75, -0.1), COLORS.DarkMetal)
+	scanner.PrimaryPart = housing
+end
+
+local function addTorso(rig, armor, systems)
+	block(rig, "Pelvis", Vector3.new(8.8, 4.4, 5.2), Vector3.new(0, 21.2, 0.5), COLORS.Chassis)
+	block(armor, "HipPlateLeft", Vector3.new(3.6, 3.0, 5.8), Vector3.new(-3.6, 21.4, 0.2), COLORS.Body, Vector3.new(0, 0, -5))
+	block(armor, "HipPlateRight", Vector3.new(3.6, 3.0, 5.8), Vector3.new(3.6, 21.4, 0.2), COLORS.Body, Vector3.new(0, 0, 5))
+	block(rig, "TorsoLower", Vector3.new(8.2, 4.2, 5.2), Vector3.new(0, 24.7, 0.35), COLORS.Chassis)
+	block(rig, "TorsoUpper", Vector3.new(13.0, 8.5, 6.1), Vector3.new(0, 29.2, 0), COLORS.Chassis)
+	block(armor, "ChestMain", Vector3.new(12.9, 8.3, 1.4), Vector3.new(0, 29.25, -3.1), COLORS.Body)
+	block(armor, "ChestTop", Vector3.new(9.0, 2.2, 1.7), Vector3.new(0, 33.2, -3.0), COLORS.Armor)
+	block(armor, "ChestSideLeft", Vector3.new(3.0, 7.0, 1.7), Vector3.new(-5.35, 29.1, -3.0), COLORS.Armor, Vector3.new(0, 0, -6))
+	block(armor, "ChestSideRight", Vector3.new(3.0, 7.0, 1.7), Vector3.new(5.35, 29.1, -3.0), COLORS.Armor, Vector3.new(0, 0, 6))
+
+	local core = folder(systems, "ChestPulseCore")
+	neon(core, "ShieldAngleLeft", Vector3.new(0.55, 4.8, 0.35), CFrame.new(-1.15, 29.0, -3.88) * CFrame.Angles(0, 0, math.rad(-25)))
+	neon(core, "ShieldAngleRight", Vector3.new(0.55, 4.8, 0.35), CFrame.new(1.15, 29.0, -3.88) * CFrame.Angles(0, 0, math.rad(25)))
+	core:SetAttribute("System", "WarningPulse")
+
+	block(rig, "NeckGimbal", Vector3.new(4.8, 1.7, 3.7), Vector3.new(0, 34.2, -0.1), COLORS.Chassis)
+	block(rig, "SensorHead", Vector3.new(5.1, 2.5, 3.5), Vector3.new(0, 35.1, -0.5), COLORS.DarkMetal)
+	block(armor, "HeadBrow", Vector3.new(5.8, 0.65, 3.9), Vector3.new(0, 36.25, -0.5), COLORS.Armor)
+	part(systems, "VisorSensor", Vector3.new(3.7, 0.5, 0.25), CFrame.new(0, 35.25, -2.3), COLORS.Accent, Enum.Material.Neon)
+end
+
+local function addBackpack(systems)
+	local backpack = folder(systems, "BackpackCore")
+	block(backpack, "CoreBlock", Vector3.new(8.2, 6.4, 2.3), Vector3.new(0, 29.3, 4.0), COLORS.Chassis)
+	for _, sign in ipairs({-1, 1}) do
+		local side = sign < 0 and "Left" or "Right"
+		cylinder(backpack, "CoolingFan" .. side, Vector3.new(0.55, 2.7, 2.7), Vector3.new(sign * 2.3, 30.2, 5.25), COLORS.DarkMetal, Vector3.new(0, 90, 0))
+		block(backpack, "BackHardpoint" .. side, Vector3.new(1.4, 1.4, 0.7), Vector3.new(sign * 3.35, 27.15, 5.4), COLORS.Armor)
+	end
+end
+
+local function addHardpoints(systems)
+	for _, data in ipairs({
+		{"ShoulderHardpointLeft", Vector3.new(-6.0, 33.2, 0)},
+		{"ShoulderHardpointRight", Vector3.new(6.0, 33.2, 0)},
+		{"ForearmHardpointLeft", Vector3.new(-10.86, 20.0, -0.2)},
+		{"ForearmHardpointRight", Vector3.new(10.86, 20.0, -0.2)},
+	}) do
+		local item = block(systems, data[1], Vector3.new(0.55, 1.8, 2.2), data[2], COLORS.Hazard)
+		item:SetAttribute("FleetUpgradeMount", true)
+	end
+end
+
+local function addHitboxes(parent)
+	local hitboxes = folder(parent, "Hitboxes")
+	local definitions = {
+		{"HeadHitbox", Vector3.new(6, 4, 5), Vector3.new(0, 35, 0)},
+		{"TorsoHitbox", Vector3.new(15, 13, 8), Vector3.new(0, 28, 0)},
+		{"LeftArmHitbox", Vector3.new(6, 18, 6), Vector3.new(-8.5, 24, 0)},
+		{"RightArmHitbox", Vector3.new(6, 18, 6), Vector3.new(8.5, 24, 0)},
+		{"LeftLegHitbox", Vector3.new(6, 20, 7), Vector3.new(-4.1, 11, 0)},
+		{"RightLegHitbox", Vector3.new(6, 20, 7), Vector3.new(4.1, 11, 0)},
+	}
+	for _, definition in ipairs(definitions) do
+		local item = block(hitboxes, definition[1], definition[2], definition[3], Color3.new(1, 0, 0))
+		item.Transparency = 1
+		item.CanQuery = false
+	end
+	return hitboxes
+end
+
+function Builder.Build(parent)
+	local existing = parent:FindFirstChild("Warden_I_Shepherd_GoldenMaster")
+	if existing then
+		existing:Destroy()
+	end
+
+	local model = Instance.new("Model")
+	model.Name = "Warden_I_Shepherd_GoldenMaster"
+	model:SetAttribute("AssetName", "Warden-I Shepherd")
+	model:SetAttribute("AssetClass", "Guardian Defense Platform")
+	model:SetAttribute("PipelinePhase", 4)
+	model:SetAttribute("QualityGateA", "Approved")
+	model:SetAttribute("QualityGateB", "Pending")
+	model:SetAttribute("GeometryOnly", true)
+	model.Parent = parent
+
+	local rig = folder(model, "Rig")
+	local armor = folder(model, "Armor")
+	local systems = folder(model, "Systems")
+	local equipment = folder(model, "Equipment")
+	local metadata = folder(model, "Metadata")
+	metadata:SetAttribute("TargetHeightStuds", 42)
+	metadata:SetAttribute("FleetBaseChassis", true)
+
+	addLeg(rig, armor, "Left", -1)
+	addLeg(rig, armor, "Right", 1)
+	addTorso(rig, armor, systems)
+	addArm(rig, armor, "Left", -1)
+	addArm(rig, armor, "Right", 1)
+	addBackpack(systems)
+	addHardpoints(systems)
+	addSearchlight(systems)
+	addBaton(equipment)
+	addHitboxes(model)
+
+	local root = block(rig, "Root", Vector3.new(2, 2, 2), Vector3.new(0, 21, 0), COLORS.Chassis)
+	root.Transparency = 1
+	root.CanQuery = false
+	model.PrimaryPart = root
+	model:PivotTo(CFrame.new(0, 0, 0))
+
+	return model
+end
+
+return Builder

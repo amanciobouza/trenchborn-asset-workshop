@@ -1,6 +1,38 @@
--- Machine-readable specification agreed with Amancio.
 return {
 	SchemaVersion = 1,
-	AssetName = "Pending",
-	Status = "SpecificationPending",
+	AssetName = "Warden-I Shepherd",
+	AssetId = "Warden_I_Shepherd",
+	AssetClass = "Guardian Defense Platform",
+	Tier = 1,
+	City = "Village",
+	PipelinePhase = 4,
+	Status = "GoldenMasterGeometry",
+	QualityGateA = "Approved",
+	QualityGateB = "Pending",
+	Scale = {
+		HeightStuds = 42,
+		ShoulderWidthStuds = 18,
+		BatonLengthStuds = 15,
+	},
+	Palette = {
+		Chassis = Color3.fromRGB(28, 35, 32),
+		Body = Color3.fromRGB(91, 103, 92),
+		Armor = Color3.fromRGB(171, 178, 151),
+		Accent = Color3.fromRGB(92, 231, 151),
+	},
+	RequiredAssemblies = {
+		"Rig",
+		"Armor",
+		"Systems",
+		"Equipment",
+		"Hitboxes",
+		"Metadata",
+	},
+	ExcludedFromPhase = {
+		"Dressing",
+		"Effects",
+		"Animation",
+		"CombatLogic",
+		"Gameplay",
+	},
 }
