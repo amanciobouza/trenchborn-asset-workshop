@@ -1,4 +1,5 @@
 local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
 local Harness = {}
 
 local function label(part, text, face)
@@ -98,6 +99,18 @@ function Harness.Attach(workshop, model, config)
 	groundLock.Color = Color3.fromRGB(255, 73, 73)
 	groundLock.Transparency = 1
 	groundLock.Parent = console
+	local lockCenter = Instance.new("Part")
+	lockCenter.Name = "CyanLockCenter"
+	lockCenter.Shape = Enum.PartType.Cylinder
+	lockCenter.Size = Vector3.new(0.22, 2.2, 2.2)
+	lockCenter.CFrame = groundLock.CFrame + Vector3.new(0, 0.03, 0)
+	lockCenter.Anchored = true
+	lockCenter.CanCollide = false
+	lockCenter.CanQuery = false
+	lockCenter.Material = Enum.Material.Neon
+	lockCenter.Color = Color3.fromRGB(63, 199, 255)
+	lockCenter.Transparency = 1
+	lockCenter.Parent = console
 	local visor = model:FindFirstChild("VisorSensor", true)
 	local scanSource = Instance.new("Attachment")
 	scanSource.Name = "ContainmentScanSource"
@@ -140,6 +153,34 @@ function Harness.Attach(workshop, model, config)
 		tween:Play()
 	end
 
+	local function launchInArc(projectile, destination, duration, arcHeight, token)
+		local start = projectile.Position
+		local elapsed = 0
+		task.spawn(function()
+			while projectile.Parent and token == netToken and elapsed < duration do
+				elapsed += RunService.Heartbeat:Wait()
+				local alpha = math.clamp(elapsed / duration, 0, 1)
+				local linear = start:Lerp(destination, alpha)
+				local lift = 4 * arcHeight * alpha * (1 - alpha)
+				local position = linear + Vector3.new(0, lift, 0)
+				local nextAlpha = math.min(1, alpha + 0.025)
+				local nextLinear = start:Lerp(destination, nextAlpha)
+				local nextLift = 4 * arcHeight * nextAlpha * (1 - nextAlpha)
+				local nextPosition = nextLinear + Vector3.new(0, nextLift, 0)
+				if (nextPosition - position).Magnitude > 0.01 then
+					projectile.CFrame = CFrame.lookAt(position, nextPosition) * CFrame.Angles(0, math.rad(90), 0)
+				else
+					projectile.Position = position
+				end
+			end
+			if projectile.Parent and token == netToken then
+				projectile.Position = destination
+				projectile.Shape = Enum.PartType.Ball
+				projectile.Size = Vector3.new(1.1, 1.1, 1.1)
+			end
+		end)
+	end
+
 	local function show(text) status.Text = text end
 	local function clearNet()
 		netToken += 1
@@ -148,6 +189,7 @@ function Harness.Attach(workshop, model, config)
 		targetLabel.Text = "KAIJU TARGET\nFREE"
 		lockGui.Enabled = false
 		groundLock.Transparency = 1
+		lockCenter.Transparency = 1
 		scanBeam.Enabled = false
 	end
 
@@ -163,6 +205,8 @@ function Harness.Attach(workshop, model, config)
 			lockGui.Enabled = true
 			groundLock.CFrame = CFrame.new(target.Position.X, 0.12, target.Position.Z) * CFrame.Angles(0, 0, math.rad(90))
 			groundLock.Transparency = 0.48
+			lockCenter.CFrame = CFrame.new(target.Position.X, 0.16, target.Position.Z) * CFrame.Angles(0, 0, math.rad(90))
+			lockCenter.Transparency = 0.08
 			TweenService:Create(groundLock, TweenInfo.new(ability.TelegraphDuration - lockDelay, Enum.EasingStyle.Linear), {Transparency = 0.12, Size = Vector3.new(0.18, 13, 13)}):Play()
 		end)
 		task.delay(ability.TelegraphDuration, function()
@@ -170,6 +214,7 @@ function Harness.Attach(workshop, model, config)
 			scanBeam.Enabled = false
 			lockGui.Enabled = false
 			groundLock.Transparency = 1
+			lockCenter.Transparency = 1
 			groundLock.Size = Vector3.new(0.18, 10, 10)
 			netModel = Instance.new("Model")
 			netModel.Name = "SimulatedContainmentNet"
@@ -202,14 +247,7 @@ function Harness.Attach(workshop, model, config)
 				tether.FaceCamera = true
 				tether.Parent = node
 				local destination = target.Position + Vector3.new(math.cos(angle) * 4, (index % 2) * 5 - 2, math.sin(angle) * 4)
-				local flight = TweenService:Create(node, TweenInfo.new(0.42 + index * 0.035, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = destination})
-				flight:Play()
-				flight.Completed:Connect(function()
-					if node.Parent then
-						node.Shape = Enum.PartType.Ball
-						node.Size = Vector3.new(1.1, 1.1, 1.1)
-					end
-				end)
+				launchInArc(node, destination, 0.72 + index * 0.045, 9 + index * 0.65, token)
 				local click = Instance.new("ClickDetector")
 				click.MaxActivationDistance = 45
 				click.Parent = node
