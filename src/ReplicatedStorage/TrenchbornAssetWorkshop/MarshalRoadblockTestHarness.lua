@@ -60,6 +60,9 @@ function Harness.Attach(workshop, model, config)
 	board.Color = Color3.fromRGB(22, 29, 36)
 	board.Parent = console
 	local status = label(board, "ROADBLOCK TEST READY", Enum.NormalId.Front)
+	local function show(text)
+		status.Text = text
+	end
 
 	local target = Instance.new("Part")
 	target.Name = "TestKaijuTarget"
@@ -291,7 +294,6 @@ function Harness.Attach(workshop, model, config)
 		end)
 	end
 
-	local function show(text) status.Text = text end
 	local function clearNet()
 		netToken += 1
 		if netModel then netModel:Destroy(); netModel = nil end
