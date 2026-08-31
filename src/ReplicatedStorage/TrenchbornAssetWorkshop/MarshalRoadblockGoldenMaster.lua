@@ -1,5 +1,9 @@
 local WardenBuilder = require(script.Parent:WaitForChild("WardenShepherdGoldenMaster"))
 
+-- Budgets aus der Spezifikation, nicht als Zahlen hier im Code -- vorher standen 120 und 8
+-- hartcodiert NEBEN der MarshalRoadblockSpecification, die dieselben Werte führt.
+local Specification = require(script.Parent:WaitForChild("MarshalRoadblockSpecification"))
+
 local Builder = {}
 
 local COLORS = {
@@ -163,10 +167,15 @@ local function countGeometry(model)
 			if item:FindFirstAncestor("Hitboxes") then hitboxes += 1 elseif item.Transparency < 1 then visible += 1 end
 		end
 	end
+	local budget = Specification.PerformanceBudget
 	model:SetAttribute("VisiblePartCount", visible)
 	model:SetAttribute("GameplayHitboxCount", hitboxes)
-	model:SetAttribute("VisiblePartBudgetPassed", visible <= 120)
-	model:SetAttribute("HitboxBudgetPassed", hitboxes <= 8)
+	-- Budgets als Attribut mitgeben, damit eine Regel Ist UND Soll am Modell ablesen kann,
+	-- ohne die Spezifikation selbst zu kennen (gleiche Namen wie beim Warden).
+	model:SetAttribute("VisiblePartBudget", budget.MaxVisibleParts)
+	model:SetAttribute("GameplayHitboxBudget", budget.MaxGameplayHitboxes)
+	model:SetAttribute("VisiblePartBudgetPassed", visible <= budget.MaxVisibleParts)
+	model:SetAttribute("HitboxBudgetPassed", hitboxes <= budget.MaxGameplayHitboxes)
 end
 
 function Builder.Build(parent)

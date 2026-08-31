@@ -1,3 +1,12 @@
+-- Rückfall für Umgebungen ohne Roblox-API: der kopflose Spec-Prüfer (luau) lädt diese
+-- Datei ebenfalls, kennt Color3 aber nicht. In Studio greift der echte Global, ausserhalb
+-- diese Ersatzfassung -- die Zahlen bleiben in beiden Fällen dieselben.
+local Color3 = Color3 or {
+	fromRGB = function(r, g, b)
+		return { R = r / 255, G = g / 255, B = b / 255 }
+	end,
+}
+
 return {
 	SchemaVersion = 1,
 	AssetName = "Warden-I Shepherd",

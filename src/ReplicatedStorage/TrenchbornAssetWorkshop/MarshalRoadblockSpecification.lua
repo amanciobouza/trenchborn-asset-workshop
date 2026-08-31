@@ -1,3 +1,10 @@
+-- Rückfall für Umgebungen ohne Roblox-API -- siehe AssetSpecification.lua.
+local Color3 = Color3 or {
+	fromRGB = function(r, g, b)
+		return { R = r / 255, G = g / 255, B = b / 255 }
+	end,
+}
+
 return {
 	SchemaVersion = 1,
 	AssetName = "Marshal-II Roadblock",

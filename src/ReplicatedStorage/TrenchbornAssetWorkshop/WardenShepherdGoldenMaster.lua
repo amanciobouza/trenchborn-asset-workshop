@@ -1,5 +1,11 @@
 local Builder = {}
 
+-- Budgets kommen aus der Spezifikation, nicht aus Zahlen hier im Code. Vorher standen
+-- 110 und 6 unten hartcodiert NEBEN der AssetSpecification, die dieselben Werte führt --
+-- zwei Quellen, die stillschweigend auseinanderlaufen konnten: ein gesenktes Budget in
+-- der Spec hätte den Prüfcode hier nicht erreicht, und niemand hätte es gemerkt.
+local Specification = require(script.Parent:WaitForChild("AssetSpecification"))
+
 local COLORS = {
 	Chassis = Color3.fromRGB(28, 35, 32),
 	Body = Color3.fromRGB(91, 103, 92),
@@ -278,10 +284,18 @@ function Builder.Build(parent)
 			end
 		end
 	end
+	local budget = Specification.PerformanceBudget
+	local maxVisibleParts = budget.MaxVisibleParts
+	local maxGameplayHitboxes = budget.MaxGameplayHitboxes
+
 	model:SetAttribute("VisiblePartCount", visiblePartCount)
-	model:SetAttribute("VisiblePartBudget", 110)
+	model:SetAttribute("VisiblePartBudget", maxVisibleParts)
 	model:SetAttribute("GameplayHitboxCount", gameplayHitboxCount)
-	model:SetAttribute("GeometryBudgetPassed", visiblePartCount <= 110 and gameplayHitboxCount <= 6)
+	model:SetAttribute("GameplayHitboxBudget", maxGameplayHitboxes)
+	model:SetAttribute(
+		"GeometryBudgetPassed",
+		visiblePartCount <= maxVisibleParts and gameplayHitboxCount <= maxGameplayHitboxes
+	)
 	model:SetAttribute("TechnicalAudit", "QualityGateB_Approved")
 
 	return model
