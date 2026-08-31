@@ -97,31 +97,31 @@ function Harness.Attach(model)
 
 	button(console, "LeftShoulderTest", "LEFT SHOULDER", origin + Vector3.new(-9, 0, 0), blue, function()
 		pose({
-			LeftShoulder = CFrame.Angles(math.rad(-28), math.rad(-12), math.rad(-30)),
+			LeftShoulder = CFrame.Angles(math.rad(28), math.rad(-12), math.rad(-30)),
 		}, 0.45)
 	end)
 
 	button(console, "LeftElbowTest", "LEFT ELBOW", origin + Vector3.new(-3, 0, 0), blue, function()
 		pose({
-			LeftShoulder = CFrame.Angles(math.rad(-18), math.rad(-8), math.rad(-18)),
-			LeftElbow = CFrame.Angles(math.rad(-62), 0, 0),
+			LeftShoulder = CFrame.Angles(math.rad(18), math.rad(-8), math.rad(-18)),
+			LeftElbow = CFrame.Angles(math.rad(62), 0, 0),
 			LeftWrist = CFrame.Angles(0, math.rad(12), 0),
 		}, 0.45)
 	end)
 
 	button(console, "RightArmTest", "RIGHT ARM", origin + Vector3.new(3, 0, 0), blue, function()
 		pose({
-			RightShoulder = CFrame.Angles(math.rad(-42), 0, math.rad(22)),
-			RightElbow = CFrame.Angles(math.rad(-38), 0, 0),
+			RightShoulder = CFrame.Angles(math.rad(42), 0, math.rad(22)),
+			RightElbow = CFrame.Angles(math.rad(38), 0, 0),
 		}, 0.45)
 	end)
 
 	button(console, "KneeTest", "KNEE LOAD", origin + Vector3.new(9, 0, 0), green, function()
 		pose({
-			LeftHip = CFrame.Angles(math.rad(-10), 0, 0),
-			RightHip = CFrame.Angles(math.rad(-10), 0, 0),
-			LeftKnee = CFrame.Angles(math.rad(24), 0, 0),
-			RightKnee = CFrame.Angles(math.rad(24), 0, 0),
+			LeftHip = CFrame.Angles(math.rad(10), 0, 0),
+			RightHip = CFrame.Angles(math.rad(10), 0, 0),
+			LeftKnee = CFrame.Angles(math.rad(-24), 0, 0),
+			RightKnee = CFrame.Angles(math.rad(-24), 0, 0),
 		}, 0.45)
 	end)
 
