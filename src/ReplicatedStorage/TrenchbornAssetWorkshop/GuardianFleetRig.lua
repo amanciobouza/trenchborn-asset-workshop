@@ -5,18 +5,18 @@ local SEGMENTS = {
 	{"LowerTorso", "Pelvis", Vector3.new(6, 4, 4)},
 	{"UpperTorso", "TorsoUpper", Vector3.new(9, 7, 5)},
 	{"Head", "SensorHead", Vector3.new(4, 2, 3)},
-	{"LeftUpperArm", "LeftUpperArm", Vector3.new(3, 6, 3)},
-	{"LeftLowerArm", "LeftForearm", Vector3.new(3, 6, 3)},
+	{"LeftUpperArm", "LeftShoulderBearingDrum", Vector3.new(3, 6, 3)},
+	{"LeftLowerArm", "LeftElbowBearing", Vector3.new(3, 6, 3)},
 	{"LeftHand", "LeftHand/Palm", Vector3.new(3, 3, 3)},
-	{"RightUpperArm", "RightUpperArm", Vector3.new(3, 6, 3)},
-	{"RightLowerArm", "RightForearm", Vector3.new(3, 6, 3)},
+	{"RightUpperArm", "RightShoulderBearingDrum", Vector3.new(3, 6, 3)},
+	{"RightLowerArm", "RightElbowBearing", Vector3.new(3, 6, 3)},
 	{"RightHand", "RightHand/Palm", Vector3.new(3, 3, 3)},
-	{"LeftUpperLeg", "LeftUpperLeg", Vector3.new(4, 7, 4)},
-	{"LeftLowerLeg", "LeftLowerLeg", Vector3.new(4, 7, 4)},
-	{"LeftFoot", "LeftFootMain", Vector3.new(5, 2, 5)},
-	{"RightUpperLeg", "RightUpperLeg", Vector3.new(4, 7, 4)},
-	{"RightLowerLeg", "RightLowerLeg", Vector3.new(4, 7, 4)},
-	{"RightFoot", "RightFootMain", Vector3.new(5, 2, 5)},
+	{"LeftUpperLeg", "LeftHipBearing", Vector3.new(4, 7, 4)},
+	{"LeftLowerLeg", "LeftKneeBearing", Vector3.new(4, 7, 4)},
+	{"LeftFoot", "LeftAnkle", Vector3.new(5, 2, 5)},
+	{"RightUpperLeg", "RightHipBearing", Vector3.new(4, 7, 4)},
+	{"RightLowerLeg", "RightKneeBearing", Vector3.new(4, 7, 4)},
+	{"RightFoot", "RightAnkle", Vector3.new(5, 2, 5)},
 }
 
 local JOINTS = {
@@ -91,10 +91,10 @@ local function bodySegment(item)
 	if starts(name, "RightShoulder") or starts(name, "RightUpperArm") then return "RightUpperArm" end
 	if starts(name, "RightElbow") or starts(name, "RightForearm") then return "RightLowerArm" end
 	if starts(name, "LeftHip") or starts(name, "LeftUpperLeg") or starts(name, "LeftThigh") then return "LeftUpperLeg" end
-	if starts(name, "LeftKnee") or starts(name, "LeftLowerLeg") or starts(name, "LeftShin") then return "LeftLowerLeg" end
+	if starts(name, "LeftKnee") or starts(name, "LeftLowerLeg") or starts(name, "LeftShin") or starts(name, "LeftRearHydraulic") then return "LeftLowerLeg" end
 	if starts(name, "LeftAnkle") or starts(name, "LeftFoot") or starts(name, "LeftToe") then return "LeftFoot" end
 	if starts(name, "RightHip") or starts(name, "RightUpperLeg") or starts(name, "RightThigh") then return "RightUpperLeg" end
-	if starts(name, "RightKnee") or starts(name, "RightLowerLeg") or starts(name, "RightShin") then return "RightLowerLeg" end
+	if starts(name, "RightKnee") or starts(name, "RightLowerLeg") or starts(name, "RightShin") or starts(name, "RightRearHydraulic") then return "RightLowerLeg" end
 	if starts(name, "RightAnkle") or starts(name, "RightFoot") or starts(name, "RightToe") then return "RightFoot" end
 	if string.find(name, "Head", 1, true) or string.find(name, "Sensor", 1, true) or string.find(name, "Brow", 1, true) then return "Head" end
 	if string.find(name, "Pelvis", 1, true) or string.find(name, "HipPlate", 1, true) or string.find(name, "TorsoLower", 1, true) then return "LowerTorso" end
