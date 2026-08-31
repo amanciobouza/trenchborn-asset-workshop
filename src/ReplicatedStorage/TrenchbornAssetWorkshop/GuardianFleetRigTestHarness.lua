@@ -1,4 +1,6 @@
 local TweenService = game:GetService("TweenService")
+local KeyframeSequenceProvider = game:GetService("KeyframeSequenceProvider")
+local animationLibrary = require(script.Parent:WaitForChild("GuardianAnimationLibrary"))
 
 local Harness = {}
 
@@ -79,7 +81,34 @@ function Harness.Attach(model)
 		neutralC0[name] = joint.C0
 	end
 
+	local animator = model:FindFirstChildWhichIsA("Animator", true)
+	assert(animator, "Missing Guardian Fleet Rig Animator")
+	local idleTrack
+
+	local function stopAnimation()
+		if idleTrack and idleTrack.IsPlaying then
+			idleTrack:Stop(0.2)
+		end
+	end
+
+	local function playIdle()
+		stopAnimation()
+		for name, joint in pairs(joints) do
+			joint.C0 = neutralC0[name]
+		end
+		local sequence = animationLibrary.BuildIdle()
+		local temporaryId = KeyframeSequenceProvider:RegisterKeyframeSequence(sequence)
+		local animation = Instance.new("Animation")
+		animation.Name = "GuardianIdlePreview"
+		animation.AnimationId = temporaryId
+		idleTrack = animator:LoadAnimation(animation)
+		idleTrack.Looped = true
+		idleTrack.Priority = Enum.AnimationPriority.Idle
+		idleTrack:Play(0.35)
+	end
+
 	local function pose(targets, duration)
+		stopAnimation()
 		for name, joint in pairs(joints) do
 			local offset = targets[name] or CFrame.identity
 			TweenService:Create(
@@ -125,12 +154,17 @@ function Harness.Attach(model)
 		}, 0.45)
 	end)
 
-	button(console, "Neutral", "NEUTRAL", origin + Vector3.new(0, 0, 4), gray, function()
+	button(console, "IdleLoop", "IDLE LOOP", origin + Vector3.new(-3, 0, 4), green, function()
+		playIdle()
+	end)
+
+	button(console, "Neutral", "NEUTRAL", origin + Vector3.new(3, 0, 4), gray, function()
 		pose({}, 0.35)
 	end)
 
 	model:SetAttribute("FleetRigMotionTestReady", true)
 	model:SetAttribute("FleetRigMotionDriver", "Motor6D.C0")
+	model:SetAttribute("GuardianIdlePreviewReady", true)
 	return console
 end
 
