@@ -1,8 +1,6 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
-local KeyframeSequenceProvider = game:GetService("KeyframeSequenceProvider")
-local animationLibrary = require(script.Parent:WaitForChild("GuardianAnimationLibrary"))
 
 local Harness = {}
 
@@ -55,33 +53,9 @@ function Harness.Attach(model)
 
 	local animator = model:FindFirstChildWhichIsA("Animator", true)
 	assert(animator, "Missing Guardian Fleet Rig Animator")
-	local idleTrack
 	local lastRequest = {}
 
-	local function stopAnimation()
-		if idleTrack and idleTrack.IsPlaying then
-			idleTrack:Stop(0.2)
-		end
-	end
-
-	local function playIdle()
-		stopAnimation()
-		for name, joint in pairs(joints) do
-			joint.C0 = neutralC0[name]
-		end
-		local sequence = animationLibrary.BuildIdle()
-		local temporaryId = KeyframeSequenceProvider:RegisterKeyframeSequence(sequence)
-		local animation = Instance.new("Animation")
-		animation.Name = "GuardianIdlePreview"
-		animation.AnimationId = temporaryId
-		idleTrack = animator:LoadAnimation(animation)
-		idleTrack.Looped = true
-		idleTrack.Priority = Enum.AnimationPriority.Idle
-		idleTrack:Play(0.35)
-	end
-
 	local function pose(targets, duration)
-		stopAnimation()
 		for name, joint in pairs(joints) do
 			local offset = targets[name] or CFrame.identity
 			TweenService:Create(
@@ -117,7 +91,7 @@ function Harness.Attach(model)
 				RightKnee = CFrame.Angles(math.rad(-24), 0, 0),
 			}, 0.45)
 		end,
-		IdleLoop = playIdle,
+		IdleLoop = function() end,
 		Neutral = function()
 			pose({}, 0.35)
 		end,
@@ -128,7 +102,11 @@ function Harness.Attach(model)
 		local now = os.clock()
 		if lastRequest[player] and now - lastRequest[player] < 0.12 then return end
 		lastRequest[player] = now
-		actions[actionName]()
+		if actionName == "IdleLoop" then
+			remote:FireClient(player, "PlayIdle", model)
+		else
+			actions[actionName]()
+		end
 		remote:FireClient(player, "Completed", actionName)
 	end)
 
