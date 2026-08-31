@@ -13,6 +13,7 @@ local gameplayConfig = require(packageFolder:WaitForChild("MarshalRoadblockGamep
 local gameplay = require(packageFolder:WaitForChild("MarshalRoadblockGameplay"))
 local testHarness = require(packageFolder:WaitForChild("MarshalRoadblockTestHarness"))
 local fleetRig = require(packageFolder:WaitForChild("GuardianFleetRig"))
+local fleetRigTestHarness = require(packageFolder:WaitForChild("GuardianFleetRigTestHarness"))
 local wardenGoldenMaster = require(packageFolder:WaitForChild("WardenShepherdGoldenMaster"))
 
 workshop:SetAttribute("CurrentAsset", specification.AssetName)
@@ -27,6 +28,7 @@ rigPrototype:SetAttribute("AnimationPrototype", true)
 rigPrototype.Parent = workshop
 rigPrototype:PivotTo(model:GetPivot() + Vector3.new(50, 0, 0))
 fleetRig.Apply(rigPrototype, {AnchorRoot = true})
+fleetRigTestHarness.Attach(rigPrototype)
 
 gameplay.Attach(model, gameplayConfig)
 testHarness.Attach(workshop, model, gameplayConfig)
