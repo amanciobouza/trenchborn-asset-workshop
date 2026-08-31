@@ -9,6 +9,7 @@ local function label(part, text)
 	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
 	gui.Parent = part
 	local value = Instance.new("TextLabel")
+	value.Name = "ButtonLabel"
 	value.Size = UDim2.fromScale(1, 1)
 	value.BackgroundTransparency = 1
 	value.TextColor3 = Color3.fromRGB(235, 245, 248)
@@ -17,6 +18,7 @@ local function label(part, text)
 	value.TextWrapped = true
 	value.Text = text
 	value.Parent = gui
+	return value
 end
 
 local function button(parent, name, text, position, color, callback)
@@ -28,11 +30,21 @@ local function button(parent, name, text, position, color, callback)
 	item.Color = color
 	item.Material = Enum.Material.SmoothPlastic
 	item.Parent = parent
-	label(item, text)
+	local value = label(item, text)
 	local click = Instance.new("ClickDetector")
 	click.MaxActivationDistance = 50
 	click.Parent = item
-	click.MouseClick:Connect(callback)
+	click.MouseClick:Connect(function(player)
+		item.Color = Color3.fromRGB(235, 178, 55)
+		value.Text = "RUNNING"
+		callback(player)
+		task.delay(0.55, function()
+			if item.Parent then
+				item.Color = color
+				value.Text = text
+			end
+		end)
+	end)
 	return item
 end
 
@@ -62,13 +74,18 @@ function Harness.Attach(model)
 		RightKnee = motor(model, "RightKnee"),
 	}
 
+	local neutralC0 = {}
+	for name, joint in pairs(joints) do
+		neutralC0[name] = joint.C0
+	end
+
 	local function pose(targets, duration)
 		for name, joint in pairs(joints) do
-			local destination = targets[name] or CFrame.identity
+			local offset = targets[name] or CFrame.identity
 			TweenService:Create(
 				joint,
 				TweenInfo.new(duration or 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
-				{Transform = destination}
+				{C0 = neutralC0[name] * offset}
 			):Play()
 		end
 	end
@@ -113,6 +130,7 @@ function Harness.Attach(model)
 	end)
 
 	model:SetAttribute("FleetRigMotionTestReady", true)
+	model:SetAttribute("FleetRigMotionDriver", "Motor6D.C0")
 	return console
 end
 
