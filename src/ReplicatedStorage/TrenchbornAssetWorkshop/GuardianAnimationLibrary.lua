@@ -1,0 +1,108 @@
+local Library = {}
+
+local HIERARCHY = {
+	HumanoidRootPart = {
+		LowerTorso = {
+			UpperTorso = {
+				Head = {},
+				LeftUpperArm = {
+					LeftLowerArm = {LeftHand = {}},
+				},
+				RightUpperArm = {
+					RightLowerArm = {RightHand = {}},
+				},
+			},
+			LeftUpperLeg = {
+				LeftLowerLeg = {LeftFoot = {}},
+			},
+			RightUpperLeg = {
+				RightLowerLeg = {RightFoot = {}},
+			},
+		},
+	},
+}
+
+local function poseTree(name, children, transforms)
+	local pose = Instance.new("Pose")
+	pose.Name = name
+	pose.Weight = 1
+	pose.EasingStyle = Enum.PoseEasingStyle.Sine
+	pose.EasingDirection = Enum.PoseEasingDirection.InOut
+	pose.CFrame = transforms[name] or CFrame.identity
+	for childName, grandchildren in pairs(children) do
+		poseTree(childName, grandchildren, transforms).Parent = pose
+	end
+	return pose
+end
+
+local function keyframe(sequence, time, transforms)
+	local frame = Instance.new("Keyframe")
+	frame.Name = string.format("Idle_%03d", math.floor(time * 100))
+	frame.Time = time
+	for rootName, children in pairs(HIERARCHY) do
+		poseTree(rootName, children, transforms).Parent = frame
+	end
+	frame.Parent = sequence
+end
+
+function Library.BuildIdle()
+	local sequence = Instance.new("KeyframeSequence")
+	sequence.Name = "GuardianIdle"
+	sequence.Loop = true
+	sequence.Priority = Enum.AnimationPriority.Idle
+
+	local guarded = {
+		LeftShoulder = CFrame.Angles(math.rad(5), 0, math.rad(-2)),
+		LeftElbow = CFrame.Angles(math.rad(8), 0, 0),
+		RightShoulder = CFrame.Angles(math.rad(3), 0, math.rad(2)),
+		RightElbow = CFrame.Angles(math.rad(5), 0, 0),
+	}
+
+	keyframe(sequence, 0, {
+		UpperTorso = CFrame.Angles(math.rad(1), 0, math.rad(-0.4)),
+		Head = CFrame.Angles(0, math.rad(-4), 0),
+		LeftUpperArm = guarded.LeftShoulder,
+		LeftLowerArm = guarded.LeftElbow,
+		RightUpperArm = guarded.RightShoulder,
+		RightLowerArm = guarded.RightElbow,
+	})
+	keyframe(sequence, 1, {
+		UpperTorso = CFrame.new(0, 0.06, 0) * CFrame.Angles(math.rad(0.5), 0, math.rad(0.5)),
+		Head = CFrame.Angles(math.rad(-1), 0, 0),
+		LeftUpperArm = guarded.LeftShoulder * CFrame.Angles(math.rad(1), 0, 0),
+		LeftLowerArm = guarded.LeftElbow,
+		RightUpperArm = guarded.RightShoulder,
+		RightLowerArm = guarded.RightElbow * CFrame.Angles(math.rad(1), 0, 0),
+	})
+	keyframe(sequence, 2, {
+		UpperTorso = CFrame.Angles(math.rad(1), 0, math.rad(0.4)),
+		Head = CFrame.Angles(0, math.rad(4), 0),
+		LeftUpperArm = guarded.LeftShoulder,
+		LeftLowerArm = guarded.LeftElbow,
+		RightUpperArm = guarded.RightShoulder,
+		RightLowerArm = guarded.RightElbow,
+	})
+	keyframe(sequence, 3, {
+		UpperTorso = CFrame.new(0, -0.04, 0) * CFrame.Angles(math.rad(1.4), 0, math.rad(-0.25)),
+		Head = CFrame.Angles(math.rad(0.6), 0, 0),
+		LeftUpperArm = guarded.LeftShoulder,
+		LeftLowerArm = guarded.LeftElbow * CFrame.Angles(math.rad(1), 0, 0),
+		RightUpperArm = guarded.RightShoulder * CFrame.Angles(math.rad(1), 0, 0),
+		RightLowerArm = guarded.RightElbow,
+	})
+	keyframe(sequence, 4, {
+		UpperTorso = CFrame.Angles(math.rad(1), 0, math.rad(-0.4)),
+		Head = CFrame.Angles(0, math.rad(-4), 0),
+		LeftUpperArm = guarded.LeftShoulder,
+		LeftLowerArm = guarded.LeftElbow,
+		RightUpperArm = guarded.RightShoulder,
+		RightLowerArm = guarded.RightElbow,
+	})
+
+	sequence:SetAttribute("GuardianAnimation", "Idle")
+	sequence:SetAttribute("DurationSeconds", 4)
+	sequence:SetAttribute("SpecificationVersion", "1.0")
+	return sequence
+end
+
+return Library
