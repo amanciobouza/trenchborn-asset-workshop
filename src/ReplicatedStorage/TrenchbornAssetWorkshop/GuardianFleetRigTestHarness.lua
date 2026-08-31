@@ -1,3 +1,4 @@
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local KeyframeSequenceProvider = game:GetService("KeyframeSequenceProvider")
@@ -20,6 +21,20 @@ function Harness.Attach(model)
 	local remote = Instance.new("RemoteEvent")
 	remote.Name = "GuardianFleetRigTestRemote"
 	remote.Parent = ReplicatedStorage
+
+	local hudTemplate = script.Parent:WaitForChild("GuardianFleetRigTestHUD")
+	local function installHud(player)
+		local playerGui = player:WaitForChild("PlayerGui")
+		local oldClient = playerGui:FindFirstChild("GuardianFleetRigTestHUDClient")
+		if oldClient then oldClient:Destroy() end
+		local client = hudTemplate:Clone()
+		client.Name = "GuardianFleetRigTestHUDClient"
+		client.Parent = playerGui
+	end
+	for _, player in ipairs(Players:GetPlayers()) do
+		task.spawn(installHud, player)
+	end
+	Players.PlayerAdded:Connect(installHud)
 
 	local joints = {
 		LeftShoulder = motor(model, "LeftShoulder"),
