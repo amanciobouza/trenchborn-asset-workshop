@@ -1,8 +1,33 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local KeyframeSequenceProvider = game:GetService("KeyframeSequenceProvider")
 
 local player = Players.LocalPlayer
 local remote = ReplicatedStorage:WaitForChild("GuardianFleetRigTestRemote")
+local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
+local animationLibrary = require(packageFolder:WaitForChild("GuardianAnimationLibrary"))
+local idleTrack
+
+local function stopIdle()
+	if idleTrack and idleTrack.IsPlaying then
+		idleTrack:Stop(0.2)
+	end
+end
+
+local function playIdle(model)
+	stopIdle()
+	local animator = model and model:FindFirstChildWhichIsA("Animator", true)
+	assert(animator, "Guardian Animator not found")
+	local sequence = animationLibrary.BuildIdle()
+	local temporaryId = KeyframeSequenceProvider:RegisterKeyframeSequence(sequence)
+	local animation = Instance.new("Animation")
+	animation.Name = "GuardianIdlePreview"
+	animation.AnimationId = temporaryId
+	idleTrack = animator:LoadAnimation(animation)
+	idleTrack.Looped = true
+	idleTrack.Priority = Enum.AnimationPriority.Idle
+	idleTrack:Play(0.35)
+end
 
 local old = player.PlayerGui:FindFirstChild("GuardianFleetRigTestHUD")
 if old then old:Destroy() end
@@ -108,6 +133,7 @@ for order, definition in ipairs(definitions) do
 	buttonCorner.CornerRadius = UDim.new(0, 8)
 	buttonCorner.Parent = button
 	button.Activated:Connect(function()
+		if definition[2] ~= "IdleLoop" then stopIdle() end
 		status.Text = "RUNNING: " .. definition[1]
 		status.TextColor3 = Color3.fromRGB(235, 178, 55)
 		remote:FireServer(definition[2])
@@ -115,9 +141,18 @@ for order, definition in ipairs(definitions) do
 	buttons[definition[2]] = button
 end
 
-remote.OnClientEvent:Connect(function(message, actionName)
+remote.OnClientEvent:Connect(function(message, payload)
+	if message == "PlayIdle" then
+		local success, err = pcall(playIdle, payload)
+		if not success then
+			status.Text = "IDLE ERROR"
+			status.TextColor3 = Color3.fromRGB(235, 92, 82)
+			warn("Guardian Idle preview failed:", err)
+		end
+		return
+	end
 	if message ~= "Completed" then return end
-	local button = buttons[actionName]
+	local button = buttons[payload]
 	status.Text = button and ("ACTIVE: " .. button.Text) or "READY"
 	status.TextColor3 = Color3.fromRGB(116, 220, 169)
 end)
