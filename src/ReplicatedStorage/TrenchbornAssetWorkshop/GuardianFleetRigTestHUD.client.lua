@@ -18,6 +18,7 @@ local wasMoving = false
 local walkStartedAt = 0
 local plantedSide
 local footLocks = {}
+local hipJoints = {}
 
 local function stopIdle()
 	if idleTrack and idleTrack.IsPlaying then
@@ -292,6 +293,10 @@ local function setControl(enabled, model)
 			Enum.KeyCode.Up, Enum.KeyCode.Left, Enum.KeyCode.Down, Enum.KeyCode.Right
 		)
 		setupFootLocks(model)
+		hipJoints = {
+			model:FindFirstChild("LeftHip", true),
+			model:FindFirstChild("RightHip", true),
+		}
 		buttons.ControlGuardian.Text = "RELEASE GUARDIAN"
 		status.Text = "GUARDIAN CONTROL: WASD"
 		status.TextColor3 = Color3.fromRGB(194, 146, 235)
@@ -302,12 +307,25 @@ local function setControl(enabled, model)
 		local humanoid = player.Character and player.Character:FindFirstChildWhichIsA("Humanoid")
 		camera.CameraSubject = previousCameraSubject or humanoid
 		clearFootLocks()
+		hipJoints = {}
 		buttons.ControlGuardian.Text = "CONTROL GUARDIAN"
 		status.Text = "GUARDIAN RELEASED"
 		status.TextColor3 = Color3.fromRGB(116, 220, 169)
 		stopIdle()
 	end
 end
+
+
+RunService.PreSimulation:Connect(function()
+	if not controlEnabled then return end
+	for _, joint in ipairs(hipJoints) do
+		if joint and joint:IsA("Motor6D") then
+			local transform = joint.Transform
+			local flexion = select(1, transform:ToOrientation())
+			joint.Transform = CFrame.new(transform.Position) * CFrame.Angles(flexion, 0, 0)
+		end
+	end
+end)
 
 RunService.RenderStepped:Connect(function()
 	if not controlEnabled or not controlledModel then return end
