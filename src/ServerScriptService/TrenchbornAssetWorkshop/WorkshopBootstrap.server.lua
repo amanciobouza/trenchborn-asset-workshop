@@ -16,6 +16,9 @@ local fleetRig = require(packageFolder:WaitForChild("GuardianFleetRig"))
 local fleetRigTestHarness = require(packageFolder:WaitForChild("GuardianFleetRigTestHarness"))
 local guardianSoundController = require(packageFolder:WaitForChild("GuardianSoundController"))
 local wardenGoldenMaster = require(packageFolder:WaitForChild("WardenShepherdGoldenMaster"))
+local wardenDressing = require(packageFolder:WaitForChild("WardenShepherdDressing"))
+local wardenGameplayConfig = require(packageFolder:WaitForChild("WardenShepherdGameplayConfig"))
+local wardenGameplay = require(packageFolder:WaitForChild("WardenShepherdGameplay"))
 
 workshop:SetAttribute("CurrentAsset", specification.AssetName)
 workshop:SetAttribute("CurrentPhase", specification.PipelinePhase)
@@ -31,12 +34,17 @@ rigPrototype:PivotTo(model:GetPivot() + Vector3.new(50, 0, 0))
 fleetRig.Apply(rigPrototype, {AnchorRoot = true})
 gameplay.Attach(rigPrototype, gameplayConfig)
 guardianSoundController.Attach(rigPrototype)
-fleetRigTestHarness.Attach(rigPrototype)
 
 gameplay.Attach(model, gameplayConfig)
 testHarness.Attach(workshop, model, gameplayConfig)
 
 local comparisonWarden = wardenGoldenMaster.Build(workshop)
-comparisonWarden.Name = "Warden_I_Shepherd_Comparison"
-comparisonWarden:SetAttribute("ComparisonReference", true)
+comparisonWarden.Name = "Warden_I_Shepherd_AnimationPrototype"
+comparisonWarden:SetAttribute("AnimationPrototype", true)
 comparisonWarden:PivotTo(comparisonWarden:GetPivot() + Vector3.new(16, 0, 50))
+wardenDressing.Apply(comparisonWarden)
+fleetRig.Apply(comparisonWarden, {AnchorRoot = true})
+wardenGameplay.Attach(comparisonWarden, wardenGameplayConfig)
+fleetRigTestHarness.Attach(comparisonWarden)
+
+workshop:SetAttribute("AnimationTestTarget", "Warden-I Shepherd")
