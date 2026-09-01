@@ -3,6 +3,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local KeyframeSequenceProvider = game:GetService("KeyframeSequenceProvider")
 local ContextActionService = game:GetService("ContextActionService")
 local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 
 local player = Players.LocalPlayer
 local remote = ReplicatedStorage:WaitForChild("GuardianFleetRigTestRemote")
@@ -25,6 +26,7 @@ local plantedSide
 local footLocks = {}
 local staggering = false
 local defeated = false
+local defeatedVisualState = {}
 
 local function stopIdle()
 	if idleTrack and idleTrack.IsPlaying then
@@ -181,7 +183,10 @@ for order, definition in ipairs(definitions) do
 	buttonCorner.CornerRadius = UDim.new(0, 8)
 	buttonCorner.Parent = button
 	button.Activated:Connect(function()
-		if definition[2] ~= "Defeat" then defeated = false end
+		if definition[2] ~= "Defeat" then
+			defeated = false
+			restoreGuardianPower()
+		end
 		if definition[2] ~= "IdleLoop" and definition[2] ~= "AlertIdle" and definition[2] ~= "ControlGuardian" then stopIdle() end
 		status.Text = "RUNNING: " .. definition[1]
 		status.TextColor3 = Color3.fromRGB(235, 178, 55)
@@ -412,6 +417,46 @@ RunService.RenderStepped:Connect(function()
 end)
 
 
+
+local function restoreGuardianPower()
+	for instance, state in pairs(defeatedVisualState) do
+		if instance and instance.Parent then
+			if instance:IsA("BasePart") then
+				instance.Color = state.Color
+				instance.Material = state.Material
+			elseif instance:IsA("Light") or instance:IsA("ParticleEmitter")
+				or instance:IsA("Beam") or instance:IsA("Trail") then
+				instance.Enabled = state.Enabled
+			end
+		end
+	end
+	defeatedVisualState = {}
+end
+
+local function powerDownGuardian(model)
+	restoreGuardianPower()
+	for _, instance in ipairs(model:GetDescendants()) do
+		if instance:IsA("BasePart") and instance.Material == Enum.Material.Neon then
+			defeatedVisualState[instance] = {
+				Color = instance.Color,
+				Material = instance.Material,
+			}
+			TweenService:Create(instance, TweenInfo.new(0.42, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+				Color = Color3.fromRGB(8, 17, 20),
+			}):Play()
+			task.delay(0.42, function()
+				if defeated and instance.Parent then
+					instance.Material = Enum.Material.SmoothPlastic
+				end
+			end)
+		elseif instance:IsA("Light") or instance:IsA("ParticleEmitter")
+			or instance:IsA("Beam") or instance:IsA("Trail") then
+			defeatedVisualState[instance] = {Enabled = instance.Enabled}
+			instance.Enabled = false
+		end
+	end
+end
+
 local function flashDamage(model)
 	local highlight = Instance.new("Highlight")
 	highlight.Name = "GuardianDamageFlash"
@@ -449,6 +494,9 @@ remote.OnClientEvent:Connect(function(message, payload)
 			clearFootLocks()
 			flashDamage(payload)
 			playSequence(payload, "BuildDefeat", "GuardianDefeatPreview")
+			task.delay(0.22, function()
+				if defeated then powerDownGuardian(payload) end
+			end)
 			task.delay(1.3, function()
 				if defeated and idleTrack and idleTrack.IsPlaying then
 					idleTrack:AdjustSpeed(0)
