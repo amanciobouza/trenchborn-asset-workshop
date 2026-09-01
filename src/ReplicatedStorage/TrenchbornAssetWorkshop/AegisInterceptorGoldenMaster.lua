@@ -125,23 +125,15 @@ local function addMissilePod(systems, side, sign)
 				index += 1
 				local cellX = x + sign * ((column - 2) * 1.55)
 				local cellY = 40.2 + (2 - row) * 1.65
-				local tube = cylinder(
+				local cell = cylinder(
 					pod,
 					"MissileCell" .. index,
-					Vector3.new(0.55, 1.1, 1.1),
-					Vector3.new(cellX, cellY, -4.0),
-					COLORS.DarkMetal,
-					Vector3.new(0, 90, 0)
-				)
-				local cap = cylinder(
-					pod,
-					"MissileStatus" .. index,
-					Vector3.new(0.18, 0.52, 0.52),
-					Vector3.new(cellX, cellY, -4.4),
+					Vector3.new(0.38, 1.05, 1.05),
+					Vector3.new(cellX, cellY, -4.18),
 					COLORS.Warning,
 					Vector3.new(0, 90, 0)
 				)
-				cap.Material = Enum.Material.Neon
+				cell.Material = Enum.Material.Neon
 			end
 		end
 	end
