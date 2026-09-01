@@ -9,7 +9,7 @@ local HIERARCHY = {
 					LeftLowerArm = {LeftHand = {}, RiotShieldControl = {}},
 				},
 				RightUpperArm = {
-					RightLowerArm = {RightHand = {}},
+					RightLowerArm = {RightHand = {}, PulseCannonControl = {}},
 				},
 			},
 			LeftUpperLeg = {
@@ -629,6 +629,47 @@ function Library.BuildShieldBlock()
 	sequence:SetAttribute("DurationSeconds", 0.82)
 	sequence:SetAttribute("HeldState", true)
 	sequence:SetAttribute("SpecificationVersion", "1.5-SightlineClearance")
+	return sequence
+end
+
+
+function Library.BuildPulseCannonFire()
+	local sequence = Instance.new("KeyframeSequence")
+	sequence.Name = "GuardianPulseCannonFire"
+	sequence.Loop = false
+	sequence.Priority = Enum.AnimationPriority.Action3
+
+	local function aimedPose(recoil)
+		return {
+			LowerTorso = CFrame.new(0, -0.28 - recoil * 0.18, 0)
+				* CFrame.Angles(math.rad(2 + recoil * 3), math.rad(3), math.rad(1)),
+			UpperTorso = CFrame.Angles(math.rad(-3 + recoil * 14), math.rad(7), math.rad(-2)),
+			Head = CFrame.Angles(math.rad(-2 + recoil * 5), math.rad(-5), math.rad(1)),
+			LeftUpperArm = CFrame.Angles(math.rad(28), math.rad(-5), math.rad(-13)),
+			LeftLowerArm = CFrame.Angles(math.rad(36), 0, 0),
+			RightUpperArm = CFrame.Angles(math.rad(82 - recoil * 13), math.rad(2), math.rad(-7)),
+			RightLowerArm = CFrame.Angles(math.rad(-20 + recoil * 8), 0, math.rad(-2)),
+			LeftUpperLeg = CFrame.Angles(math.rad(14 + recoil * 5), 0, 0),
+			LeftLowerLeg = CFrame.Angles(math.rad(-34 - recoil * 5), 0, 0),
+			LeftFoot = CFrame.Angles(math.rad(18), 0, 0),
+			RightUpperLeg = CFrame.Angles(math.rad(8 + recoil * 4), 0, 0),
+			RightLowerLeg = CFrame.Angles(math.rad(-23 - recoil * 6), 0, 0),
+			RightFoot = CFrame.Angles(math.rad(14), 0, 0),
+		}
+	end
+
+	keyframe(sequence, 0, {})
+	keyframe(sequence, 0.24, aimedPose(0))
+	-- Discharge: the cannon arm and upper body recoil as one mechanical mass.
+	keyframe(sequence, 0.34, aimedPose(1))
+	keyframe(sequence, 0.5, aimedPose(0.35))
+	keyframe(sequence, 0.72, aimedPose(0))
+	keyframe(sequence, 1.02, {})
+
+	sequence:SetAttribute("GuardianAnimation", "PulseCannonFire")
+	sequence:SetAttribute("DurationSeconds", 1.02)
+	sequence:SetAttribute("DischargeTimeSeconds", 0.34)
+	sequence:SetAttribute("SpecificationVersion", "1.0")
 	return sequence
 end
 
