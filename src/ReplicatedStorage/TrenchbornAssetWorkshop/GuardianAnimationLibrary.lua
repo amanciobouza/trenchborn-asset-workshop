@@ -719,4 +719,67 @@ function Library.BuildContainmentNetLaunch()
 	return sequence
 end
 
+
+function Library.BuildShockBaton()
+	local sequence = Instance.new("KeyframeSequence")
+	sequence.Name = "WardenShockBaton"
+	sequence.Loop = false
+	sequence.Priority = Enum.AnimationPriority.Action3
+
+	keyframe(sequence, 0, {})
+	-- Mechanical wind-up: the torso counter-rotates while the baton arm loads behind the shoulder.
+	keyframe(sequence, 0.2, {
+		LowerTorso = CFrame.new(0, -0.18, 0) * CFrame.Angles(math.rad(3), math.rad(8), math.rad(-2)),
+		UpperTorso = CFrame.Angles(math.rad(-3), math.rad(14), math.rad(-4)),
+		Head = CFrame.Angles(math.rad(-1), math.rad(-10), math.rad(2)),
+		LeftUpperArm = CFrame.Angles(math.rad(-34), math.rad(-8), math.rad(-28)),
+		LeftLowerArm = CFrame.Angles(math.rad(-48), math.rad(2), math.rad(-8)),
+		LeftUpperLeg = CFrame.Angles(math.rad(8), 0, 0),
+		LeftLowerLeg = CFrame.Angles(math.rad(-20), 0, 0),
+		RightUpperLeg = CFrame.Angles(math.rad(5), 0, 0),
+		RightLowerLeg = CFrame.Angles(math.rad(-15), 0, 0),
+	})
+	-- Fast diagonal strike; the complete chassis commits its mass into the baton.
+	keyframe(sequence, 0.46, {
+		LowerTorso = CFrame.new(0, -0.42, -0.15) * CFrame.Angles(math.rad(-5), math.rad(-12), math.rad(3)),
+		UpperTorso = CFrame.Angles(math.rad(-11), math.rad(-20), math.rad(7)),
+		Head = CFrame.Angles(math.rad(5), math.rad(13), math.rad(-3)),
+		LeftUpperArm = CFrame.Angles(math.rad(66), math.rad(8), math.rad(24)),
+		LeftLowerArm = CFrame.Angles(math.rad(18), math.rad(-3), math.rad(8)),
+		LeftUpperLeg = CFrame.Angles(math.rad(15), 0, 0),
+		LeftLowerLeg = CFrame.Angles(math.rad(-33), 0, 0),
+		LeftFoot = CFrame.Angles(math.rad(17), 0, 0),
+		RightUpperLeg = CFrame.Angles(math.rad(8), 0, 0),
+		RightLowerLeg = CFrame.Angles(math.rad(-21), 0, 0),
+		RightFoot = CFrame.Angles(math.rad(12), 0, 0),
+	})
+	-- Short impact hold makes the contact readable at Kaiju scale.
+	keyframe(sequence, 0.56, {
+		LowerTorso = CFrame.new(0, -0.48, -0.22) * CFrame.Angles(math.rad(-7), math.rad(-15), math.rad(4)),
+		UpperTorso = CFrame.Angles(math.rad(-13), math.rad(-23), math.rad(8)),
+		Head = CFrame.Angles(math.rad(6), math.rad(15), math.rad(-3)),
+		LeftUpperArm = CFrame.Angles(math.rad(78), math.rad(10), math.rad(28)),
+		LeftLowerArm = CFrame.Angles(math.rad(24), math.rad(-4), math.rad(10)),
+		LeftUpperLeg = CFrame.Angles(math.rad(17), 0, 0),
+		LeftLowerLeg = CFrame.Angles(math.rad(-36), 0, 0),
+		LeftFoot = CFrame.Angles(math.rad(18), 0, 0),
+		RightUpperLeg = CFrame.Angles(math.rad(9), 0, 0),
+		RightLowerLeg = CFrame.Angles(math.rad(-23), 0, 0),
+		RightFoot = CFrame.Angles(math.rad(13), 0, 0),
+	})
+	keyframe(sequence, 0.78, {
+		LowerTorso = CFrame.new(0, -0.2, 0) * CFrame.Angles(math.rad(-2), math.rad(-5), math.rad(1)),
+		UpperTorso = CFrame.Angles(math.rad(-5), math.rad(-8), math.rad(3)),
+		LeftUpperArm = CFrame.Angles(math.rad(34), math.rad(3), math.rad(12)),
+		LeftLowerArm = CFrame.Angles(math.rad(20), 0, math.rad(4)),
+	})
+	keyframe(sequence, 1.05, {})
+
+	sequence:SetAttribute("GuardianAnimation", "ShockBaton")
+	sequence:SetAttribute("DurationSeconds", 1.05)
+	sequence:SetAttribute("ImpactTimeSeconds", 0.56)
+	sequence:SetAttribute("SpecificationVersion", "1.0-MechanicalDiagonalStrike")
+	return sequence
+end
+
 return Library
