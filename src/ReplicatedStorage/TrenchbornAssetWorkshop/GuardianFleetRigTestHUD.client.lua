@@ -539,6 +539,24 @@ remote.OnClientEvent:Connect(function(message, payload)
 		setControl(false)
 		return
 	end
+	if message == "PlayShieldBlock" then
+		local success, err = pcall(function()
+			playSequence(payload, "BuildShieldBlock", "GuardianShieldBlockPreview")
+			task.delay(0.72, function()
+				if idleTrack and idleTrack.IsPlaying then
+					idleTrack:AdjustSpeed(0)
+					status.Text = "SHIELD BLOCK HELD — NEUTRAL TO RESET"
+					status.TextColor3 = Color3.fromRGB(92, 188, 220)
+				end
+			end)
+		end)
+		if not success then
+			status.Text = "SHIELD BLOCK ERROR"
+			status.TextColor3 = Color3.fromRGB(235, 92, 82)
+			warn("Guardian shield block failed:", err)
+		end
+		return
+	end
 	if message == "PlayDefeat" then
 		local success, err = pcall(function()
 			staggering = false
@@ -610,7 +628,7 @@ remote.OnClientEvent:Connect(function(message, payload)
 		if not success then warn("Guardian damage reaction failed:", err) end
 		return
 	end
-	if message == "PlayIdle" or message == "PlayAlertIdle" or message == "PlayWalk" or message == "PlayRun" or message == "PlayTurnLeft" or message == "PlayTurnRight" or message == "PlayFall" or message == "PlayLand" or message == "PlayWalkBackward" or message == "PlayShieldBlock" then
+	if message == "PlayIdle" or message == "PlayAlertIdle" or message == "PlayWalk" or message == "PlayRun" or message == "PlayTurnLeft" or message == "PlayTurnRight" or message == "PlayFall" or message == "PlayLand" or message == "PlayWalkBackward" then
 		local builders = {
 			PlayIdle = {"BuildIdle", "GuardianIdlePreview"},
 			PlayAlertIdle = {"BuildAlertIdle", "GuardianAlertIdlePreview"},
@@ -621,7 +639,6 @@ remote.OnClientEvent:Connect(function(message, payload)
 			PlayFall = {"BuildFall", "GuardianFallPreview"},
 			PlayLand = {"BuildLand", "GuardianLandPreview"},
 			PlayWalkBackward = {"BuildWalkBackward", "GuardianWalkBackwardPreview"},
-			PlayShieldBlock = {"BuildShieldBlock", "GuardianShieldBlockPreview"},
 		}
 		local selection = builders[message]
 		local builderName = selection[1]
