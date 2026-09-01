@@ -390,4 +390,52 @@ function Library.BuildWalkBackward()
 	return sequence
 end
 
+
+function Library.BuildDamageReact()
+	local sequence = Instance.new("KeyframeSequence")
+	sequence.Name = "GuardianDamageReact"
+	sequence.Loop = false
+	sequence.Priority = Enum.AnimationPriority.Action2
+
+	keyframe(sequence, 0, {})
+	keyframe(sequence, 0.07, {
+		LowerTorso = CFrame.new(0, -0.12, 0) * CFrame.Angles(math.rad(-4), 0, math.rad(-2)),
+		UpperTorso = CFrame.Angles(math.rad(-13), math.rad(-5), math.rad(4)),
+		Head = CFrame.Angles(math.rad(10), math.rad(4), math.rad(-3)),
+		LeftUpperArm = CFrame.Angles(math.rad(25), math.rad(-10), math.rad(-19)),
+		LeftLowerArm = CFrame.Angles(math.rad(38), 0, 0),
+		RightUpperArm = CFrame.Angles(math.rad(28), math.rad(7), math.rad(17)),
+		RightLowerArm = CFrame.Angles(math.rad(34), 0, 0),
+		LeftUpperLeg = CFrame.Angles(math.rad(8), 0, 0),
+		LeftLowerLeg = CFrame.Angles(math.rad(-25), 0, 0),
+		RightUpperLeg = CFrame.Angles(math.rad(3), 0, 0),
+		RightLowerLeg = CFrame.Angles(math.rad(-13), 0, 0),
+	})
+	keyframe(sequence, 0.2, {
+		LowerTorso = CFrame.new(0, -0.05, 0) * CFrame.Angles(math.rad(3), 0, math.rad(1)),
+		UpperTorso = CFrame.Angles(math.rad(7), math.rad(2), math.rad(-2)),
+		Head = CFrame.Angles(math.rad(-5), 0, 0),
+		LeftUpperArm = CFrame.Angles(math.rad(18), math.rad(-7), math.rad(-14)),
+		LeftLowerArm = CFrame.Angles(math.rad(29), 0, 0),
+		RightUpperArm = CFrame.Angles(math.rad(20), math.rad(5), math.rad(12)),
+		RightLowerArm = CFrame.Angles(math.rad(27), 0, 0),
+		LeftUpperLeg = CFrame.Angles(math.rad(5), 0, 0),
+		LeftLowerLeg = CFrame.Angles(math.rad(-17), 0, 0),
+		RightUpperLeg = CFrame.Angles(math.rad(5), 0, 0),
+		RightLowerLeg = CFrame.Angles(math.rad(-17), 0, 0),
+	})
+	keyframe(sequence, 0.42, {
+		UpperTorso = CFrame.Angles(math.rad(3), 0, 0),
+		Head = CFrame.Angles(math.rad(-2), 0, 0),
+		LeftUpperArm = CFrame.Angles(math.rad(12), 0, math.rad(-7)),
+		LeftLowerArm = CFrame.Angles(math.rad(18), 0, 0),
+		RightUpperArm = CFrame.Angles(math.rad(11), 0, math.rad(7)),
+		RightLowerArm = CFrame.Angles(math.rad(16), 0, 0),
+	})
+	sequence:SetAttribute("GuardianAnimation", "DamageReact")
+	sequence:SetAttribute("DurationSeconds", 0.42)
+	sequence:SetAttribute("SpecificationVersion", "1.0")
+	return sequence
+end
+
 return Library
