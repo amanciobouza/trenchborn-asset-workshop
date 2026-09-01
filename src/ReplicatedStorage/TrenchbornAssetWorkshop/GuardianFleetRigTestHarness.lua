@@ -188,6 +188,38 @@ function Harness.Attach(model)
 	end
 
 
+	local function setEnemyLocked(enabled)
+		local target = workspace:FindFirstChild("TestKaijuTarget", true)
+		if not target or not target:IsA("BasePart") then return end
+		local lockGui = target:FindFirstChild("EnemyLockedWarning")
+		if not lockGui then
+			lockGui = Instance.new("BillboardGui")
+			lockGui.Name = "EnemyLockedWarning"
+			lockGui.Size = UDim2.fromOffset(300, 78)
+			lockGui.StudsOffset = Vector3.new(0, 8.5, 0)
+			lockGui.AlwaysOnTop = true
+			lockGui.Parent = target
+
+			local lockLabel = Instance.new("TextLabel")
+			lockLabel.Name = "LockLabel"
+			lockLabel.Size = UDim2.fromScale(1, 1)
+			lockLabel.BackgroundColor3 = Color3.fromRGB(107, 24, 30)
+			lockLabel.BackgroundTransparency = 0.08
+			lockLabel.BorderSizePixel = 0
+			lockLabel.Text = "⚠ ENEMY LOCKED ⚠"
+			lockLabel.TextColor3 = Color3.fromRGB(255, 226, 184)
+			lockLabel.Font = Enum.Font.GothamBlack
+			lockLabel.TextScaled = true
+			lockLabel.Parent = lockGui
+
+			local lockStroke = Instance.new("UIStroke")
+			lockStroke.Color = Color3.fromRGB(255, 91, 91)
+			lockStroke.Thickness = 3
+			lockStroke.Parent = lockLabel
+		end
+		lockGui.Enabled = enabled
+	end
+
 	local function launchNetPreview()
 		local mouth = model:FindFirstChild("LaunchMouth", true)
 		if not mouth or not mouth:IsA("BasePart") then
@@ -461,7 +493,11 @@ function Harness.Attach(model)
 			task.delay(0.9, firePulsePreview)
 		elseif actionName == "ContainmentNetLaunch" then
 			remote:FireClient(player, "PlayContainmentNetLaunch", model)
-			task.delay(0.82, launchNetPreview)
+			setEnemyLocked(true)
+			task.delay(0.82, function()
+				setEnemyLocked(false)
+				launchNetPreview()
+			end)
 		else
 			actions[actionName]()
 		end
