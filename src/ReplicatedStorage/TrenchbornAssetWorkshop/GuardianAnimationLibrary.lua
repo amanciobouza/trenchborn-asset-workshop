@@ -156,10 +156,10 @@ function Library.BuildWalk()
 			LeftLowerArm = CFrame.Angles(math.rad(20), 0, 0),
 			RightUpperArm = CFrame.Angles(math.rad(12 - rightHip * 0.28), math.rad(4), math.rad(7)),
 			RightLowerArm = CFrame.Angles(math.rad(17), 0, 0),
-			LeftUpperLeg = CFrame.Angles(math.rad(leftHip), 0, math.rad(-1)),
+			LeftUpperLeg = CFrame.Angles(math.rad(leftHip), 0, 0),
 			LeftLowerLeg = CFrame.Angles(math.rad(leftKnee), 0, 0),
 			LeftFoot = CFrame.Angles(math.rad(leftFoot), 0, 0),
-			RightUpperLeg = CFrame.Angles(math.rad(rightHip), 0, math.rad(1)),
+			RightUpperLeg = CFrame.Angles(math.rad(rightHip), 0, 0),
 			RightLowerLeg = CFrame.Angles(math.rad(rightKnee), 0, 0),
 			RightFoot = CFrame.Angles(math.rad(rightFoot), 0, 0),
 		}
