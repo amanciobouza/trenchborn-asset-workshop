@@ -28,6 +28,7 @@ rigPrototype:SetAttribute("AnimationPrototype", true)
 rigPrototype.Parent = workshop
 rigPrototype:PivotTo(model:GetPivot() + Vector3.new(50, 0, 0))
 fleetRig.Apply(rigPrototype, {AnchorRoot = true})
+gameplay.Attach(rigPrototype, gameplayConfig)
 fleetRigTestHarness.Attach(rigPrototype)
 
 gameplay.Attach(model, gameplayConfig)
