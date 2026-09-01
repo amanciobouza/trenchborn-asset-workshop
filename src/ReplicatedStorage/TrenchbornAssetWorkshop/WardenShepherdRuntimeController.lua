@@ -58,8 +58,14 @@ function Controller.Attach(model, gameplay)
 			if model.Parent and model:GetAttribute("GuardianState") ~= "Defeated" then play("Idle") end
 		end)
 	end)
-	connect(gameplay:WaitForChild("Defeated").Event, function()
+	local resetGuardian = gameplay:WaitForChild("ResetGuardian")
+	connect(gameplay:WaitForChild("Defeated").Event, function(_, delaySeconds)
 		play("Defeat")
+		task.delay(delaySeconds or 3, function()
+			if model.Parent and model:GetAttribute("GuardianState") == "Defeated" then
+				resetGuardian:Invoke()
+			end
+		end)
 	end)
 	connect(gameplay:WaitForChild("BatonStrikeRequested").Event, function()
 		play("ShockBaton")
