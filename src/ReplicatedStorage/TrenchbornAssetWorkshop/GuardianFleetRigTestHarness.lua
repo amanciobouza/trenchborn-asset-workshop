@@ -2,6 +2,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
+local Debris = game:GetService("Debris")
 
 local Harness = {}
 
@@ -177,6 +178,104 @@ function Harness.Attach(model)
 		end,
 	}
 
+
+	local effects = workspace:FindFirstChild("GuardianFleetRigEffects")
+	if not effects then
+		effects = Instance.new("Folder")
+		effects.Name = "GuardianFleetRigEffects"
+		effects.Parent = workspace
+	end
+
+	local function firePulsePreview()
+		local muzzle = model:FindFirstChild("MuzzleCore", true)
+		if not muzzle or not muzzle:IsA("BasePart") then
+			warn("Guardian Pulse Cannon MuzzleCore not found")
+			return
+		end
+		local target = workspace:FindFirstChild("TestKaijuTarget", true)
+		local destination = target and target.Position
+			or (muzzle.Position + root.CFrame.LookVector * 42)
+
+		local pulse = Instance.new("Part")
+		pulse.Name = "GuardianPulseProjectile"
+		pulse.Shape = Enum.PartType.Ball
+		pulse.Size = Vector3.new(3.2, 3.2, 3.2)
+		pulse.CFrame = CFrame.new(muzzle.Position)
+		pulse.Anchored = true
+		pulse.CanCollide = false
+		pulse.CanTouch = false
+		pulse.CanQuery = false
+		pulse.Material = Enum.Material.Neon
+		pulse.Color = Color3.fromRGB(63, 217, 255)
+		pulse.Parent = effects
+		Debris:AddItem(pulse, 2)
+
+		local light = Instance.new("PointLight")
+		light.Color = pulse.Color
+		light.Brightness = 7
+		light.Range = 22
+		light.Shadows = true
+		light.Parent = pulse
+
+		local glow = Instance.new("Highlight")
+		glow.Adornee = pulse
+		glow.FillColor = pulse.Color
+		glow.FillTransparency = 0.18
+		glow.OutlineColor = Color3.fromRGB(205, 250, 255)
+		glow.OutlineTransparency = 0.15
+		glow.Parent = pulse
+
+		local distance = (destination - muzzle.Position).Magnitude
+		local duration = math.clamp(distance / 105, 0.18, 0.55)
+		local travel = TweenService:Create(pulse, TweenInfo.new(duration, Enum.EasingStyle.Linear), {
+			Position = destination,
+			Size = Vector3.new(4.2, 4.2, 4.2),
+		})
+		travel:Play()
+		travel.Completed:Connect(function()
+			if not pulse.Parent then return end
+			pulse:Destroy()
+
+			local core = Instance.new("Part")
+			core.Name = "GuardianPulseImpact"
+			core.Shape = Enum.PartType.Ball
+			core.Size = Vector3.new(4, 4, 4)
+			core.Position = destination
+			core.Anchored = true
+			core.CanCollide = false
+			core.CanTouch = false
+			core.CanQuery = false
+			core.Material = Enum.Material.Neon
+			core.Color = Color3.fromRGB(110, 231, 255)
+			core.Transparency = 0.12
+			core.Parent = effects
+			Debris:AddItem(core, 0.35)
+			TweenService:Create(core, TweenInfo.new(0.28, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+				Size = Vector3.new(11, 11, 11),
+				Transparency = 1,
+			}):Play()
+
+			local pressureWave = Instance.new("Part")
+			pressureWave.Name = "GuardianPulsePressureWave"
+			pressureWave.Shape = Enum.PartType.Ball
+			pressureWave.Size = Vector3.new(5, 5, 5)
+			pressureWave.Position = destination
+			pressureWave.Anchored = true
+			pressureWave.CanCollide = false
+			pressureWave.CanTouch = false
+			pressureWave.CanQuery = false
+			pressureWave.Material = Enum.Material.ForceField
+			pressureWave.Color = Color3.fromRGB(151, 239, 255)
+			pressureWave.Transparency = 0.38
+			pressureWave.Parent = effects
+			Debris:AddItem(pressureWave, 0.55)
+			TweenService:Create(pressureWave, TweenInfo.new(0.48, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+				Size = Vector3.new(24, 24, 24),
+				Transparency = 1,
+			}):Play()
+		end)
+	end
+
 	remote.OnServerEvent:Connect(function(player, actionName, payload, option, backwardOption)
 		if type(actionName) ~= "string" then return end
 		if actionName == "ControlMove" then
@@ -240,17 +339,7 @@ function Harness.Attach(model)
 			remote:FireClient(player, "PlayShieldBlock", model)
 		elseif actionName == "PulseCannonFire" then
 			remote:FireClient(player, "PlayPulseCannonFire", model)
-			local gameplay = model:FindFirstChild("Gameplay")
-			local requestAbility = gameplay and gameplay:FindFirstChild("RequestAbility")
-			local testTarget = workspace:FindFirstChild("TestKaijuTarget", true)
-			if requestAbility and requestAbility:IsA("BindableFunction") and testTarget then
-				task.delay(0.25, function()
-					local ok, reason = requestAbility:Invoke("PulseCannon", testTarget)
-					if not ok then warn("Guardian Pulse Cannon gameplay request rejected:", reason) end
-				end)
-			else
-				warn("Guardian Pulse Cannon preview requires Gameplay.RequestAbility and TestKaijuTarget")
-			end
+			task.delay(0.9, firePulsePreview)
 		else
 			actions[actionName]()
 		end
