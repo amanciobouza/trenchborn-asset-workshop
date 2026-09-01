@@ -11,6 +11,8 @@ local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
 local animationLibrary = require(packageFolder:WaitForChild("GuardianAnimationLibrary"))
 local idleTrack
 local reactionTrack
+local lastAnimatedModel
+local playbackGeneration = 0
 local controlEnabled = false
 local controlledModel
 local previousCameraSubject
@@ -30,13 +32,24 @@ local defeatedVisualState = {}
 local defeatPowerCycle = 0
 
 local function stopIdle()
-	if idleTrack and idleTrack.IsPlaying then
-		idleTrack:Stop(0.2)
+	playbackGeneration += 1
+	local animator = lastAnimatedModel and lastAnimatedModel:FindFirstChildWhichIsA("Animator", true)
+	if animator then
+		for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
+			track:AdjustSpeed(1)
+			track:Stop(0.12)
+		end
+	elseif idleTrack and idleTrack.IsPlaying then
+		idleTrack:AdjustSpeed(1)
+		idleTrack:Stop(0.12)
 	end
+	idleTrack = nil
+	reactionTrack = nil
 end
 
 local function playSequence(model, builderName, previewName)
 	stopIdle()
+	lastAnimatedModel = model
 	local animator = model and model:FindFirstChildWhichIsA("Animator", true)
 	assert(animator, "Guardian Animator not found")
 	local builder = animationLibrary[builderName]
@@ -49,7 +62,8 @@ local function playSequence(model, builderName, previewName)
 	idleTrack = animator:LoadAnimation(animation)
 	idleTrack.Looped = sequence.Loop
 	idleTrack.Priority = sequence.Priority
-	idleTrack:Play(0.35)
+	idleTrack:Play(0.2)
+	return idleTrack, playbackGeneration
 end
 
 
@@ -541,10 +555,10 @@ remote.OnClientEvent:Connect(function(message, payload)
 	end
 	if message == "PlayShieldBlock" then
 		local success, err = pcall(function()
-			playSequence(payload, "BuildShieldBlock", "GuardianShieldBlockPreview")
+			local heldTrack, generation = playSequence(payload, "BuildShieldBlock", "GuardianShieldBlockPreview")
 			task.delay(0.72, function()
-				if idleTrack and idleTrack.IsPlaying then
-					idleTrack:AdjustSpeed(0)
+				if generation == playbackGeneration and idleTrack == heldTrack and heldTrack.IsPlaying then
+					heldTrack:AdjustSpeed(0)
 					status.Text = "SHIELD BLOCK HELD — NEUTRAL TO RESET"
 					status.TextColor3 = Color3.fromRGB(92, 188, 220)
 				end
@@ -564,7 +578,7 @@ remote.OnClientEvent:Connect(function(message, payload)
 			remote:FireServer("ControlMove", Vector3.zero)
 			clearFootLocks()
 			flashDamage(payload)
-			playSequence(payload, "BuildDefeat", "GuardianDefeatPreview")
+			local defeatTrack, generation = playSequence(payload, "BuildDefeat", "GuardianDefeatPreview")
 			task.delay(0.22, function()
 				if defeated then
 					powerDownGuardian(payload)
@@ -572,8 +586,8 @@ remote.OnClientEvent:Connect(function(message, payload)
 				end
 			end)
 			task.delay(1.3, function()
-				if defeated and idleTrack and idleTrack.IsPlaying then
-					idleTrack:AdjustSpeed(0)
+				if defeated and generation == playbackGeneration and idleTrack == defeatTrack and defeatTrack.IsPlaying then
+					defeatTrack:AdjustSpeed(0)
 					status.Text = "DEFEATED — NEUTRAL TO RESET"
 					status.TextColor3 = Color3.fromRGB(190, 92, 92)
 				end
