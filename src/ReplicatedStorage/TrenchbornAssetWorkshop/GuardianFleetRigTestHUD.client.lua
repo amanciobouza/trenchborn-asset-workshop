@@ -191,6 +191,7 @@ local function setupFootLocks(model)
 		target.CFrame = foot.CFrame
 		target.Parent = workspace
 
+		local sideSign = side == "Left" and -1 or 1
 		local pole = Instance.new("Part")
 		pole.Name = side .. "KneePoleTarget"
 		pole.Size = Vector3.new(0.4, 0.4, 0.4)
@@ -199,7 +200,10 @@ local function setupFootLocks(model)
 		pole.CanCollide = false
 		pole.CanTouch = false
 		pole.CanQuery = false
-		pole.Position = knee.Position + root.CFrame.LookVector * 12
+		pole.Position = root.Position
+			+ root.CFrame.RightVector * sideSign * 4.5
+			+ root.CFrame.LookVector * 12
+			- root.CFrame.UpVector * 10
 		pole.Parent = workspace
 
 		local control = Instance.new("IKControl")
@@ -221,13 +225,17 @@ local function setupFootLocks(model)
 			foot = foot,
 			knee = knee,
 			root = root,
+			sideSign = sideSign,
 		}
 	end
 end
 
 local function updateFootLock(moving)
 	for _, lock in pairs(footLocks) do
-		lock.pole.Position = lock.knee.Position + lock.root.CFrame.LookVector * 12
+		lock.pole.Position = lock.root.Position
+			+ lock.root.CFrame.RightVector * lock.sideSign * 4.5
+			+ lock.root.CFrame.LookVector * 12
+			- lock.root.CFrame.UpVector * 10
 	end
 	if not moving then
 		for _, lock in pairs(footLocks) do lock.control.Weight = 0 end
