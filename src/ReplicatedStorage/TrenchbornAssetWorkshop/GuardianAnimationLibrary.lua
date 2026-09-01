@@ -553,8 +553,8 @@ function Library.BuildDefeat()
 		LeftLowerArm = CFrame.Angles(math.rad(2), 0, 0),
 		RightUpperArm = CFrame.Angles(math.rad(0), 0, math.rad(4)),
 		RightLowerArm = CFrame.Angles(math.rad(2), 0, 0),
-		LeftUpperLeg = CFrame.Angles(math.rad(60), 0, 0),
-		LeftLowerLeg = CFrame.Angles(math.rad(-72), 0, 0),
+		LeftUpperLeg = CFrame.Angles(math.rad(88), 0, 0),
+		LeftLowerLeg = CFrame.Angles(math.rad(-100), 0, 0),
 		LeftFoot = CFrame.Angles(math.rad(12), 0, 0),
 		RightUpperLeg = CFrame.Angles(math.rad(2), 0, 0),
 		RightLowerLeg = CFrame.Angles(math.rad(-106), 0, 0),
@@ -568,8 +568,8 @@ function Library.BuildDefeat()
 		LeftLowerArm = CFrame.Angles(math.rad(2), 0, 0),
 		RightUpperArm = CFrame.Angles(math.rad(0), 0, math.rad(4)),
 		RightLowerArm = CFrame.Angles(math.rad(2), 0, 0),
-		LeftUpperLeg = CFrame.Angles(math.rad(60), 0, 0),
-		LeftLowerLeg = CFrame.Angles(math.rad(-72), 0, 0),
+		LeftUpperLeg = CFrame.Angles(math.rad(88), 0, 0),
+		LeftLowerLeg = CFrame.Angles(math.rad(-100), 0, 0),
 		LeftFoot = CFrame.Angles(math.rad(12), 0, 0),
 		RightUpperLeg = CFrame.Angles(math.rad(2), 0, 0),
 		RightLowerLeg = CFrame.Angles(math.rad(-106), 0, 0),
@@ -578,7 +578,7 @@ function Library.BuildDefeat()
 	sequence:SetAttribute("GuardianAnimation", "Defeat")
 	sequence:SetAttribute("DurationSeconds", 1.4)
 	sequence:SetAttribute("HoldFinalPose", true)
-	sequence:SetAttribute("SpecificationVersion", "1.5-RaisedSupportLeg")
+	sequence:SetAttribute("SpecificationVersion", "1.6-HighSupportThigh")
 	return sequence
 end
 
