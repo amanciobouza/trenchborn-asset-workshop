@@ -647,8 +647,8 @@ function Library.BuildPulseCannonFire()
 			Head = CFrame.Angles(math.rad(-2 + recoil * 5), math.rad(-5), math.rad(1)),
 			LeftUpperArm = CFrame.Angles(math.rad(28), math.rad(-5), math.rad(-13)),
 			LeftLowerArm = CFrame.Angles(math.rad(36), 0, 0),
-			RightUpperArm = CFrame.Angles(math.rad(82 - recoil * 13), math.rad(2), math.rad(-7)),
-			RightLowerArm = CFrame.Angles(math.rad(-20 + recoil * 8), 0, math.rad(-2)),
+			RightUpperArm = CFrame.Angles(math.rad(82 - recoil * 25), math.rad(2), math.rad(-7)),
+			RightLowerArm = CFrame.Angles(math.rad(-20 + recoil * 16), 0, math.rad(-2)),
 			LeftUpperLeg = CFrame.Angles(math.rad(14 + recoil * 5), 0, 0),
 			LeftLowerLeg = CFrame.Angles(math.rad(-34 - recoil * 5), 0, 0),
 			LeftFoot = CFrame.Angles(math.rad(18), 0, 0),
@@ -659,17 +659,19 @@ function Library.BuildPulseCannonFire()
 	end
 
 	keyframe(sequence, 0, {})
-	keyframe(sequence, 0.38, aimedPose(0))
+	keyframe(sequence, 0.52, aimedPose(0))
 	-- Discharge: the cannon arm and upper body recoil as one mechanical mass.
-	keyframe(sequence, 0.65, aimedPose(1))
-	keyframe(sequence, 0.81, aimedPose(0.35))
-	keyframe(sequence, 1.02, aimedPose(0))
-	keyframe(sequence, 1.32, {})
+	keyframe(sequence, 0.82, aimedPose(0))
+	keyframe(sequence, 0.9, aimedPose(1))
+	keyframe(sequence, 1.08, aimedPose(0.35))
+	keyframe(sequence, 1.3, aimedPose(0))
+	keyframe(sequence, 1.62, {})
 
 	sequence:SetAttribute("GuardianAnimation", "PulseCannonFire")
-	sequence:SetAttribute("DurationSeconds", 1.32)
-	sequence:SetAttribute("DischargeTimeSeconds", 0.65)
-	sequence:SetAttribute("SpecificationVersion", "1.1-GameplaySynchronized")
+	sequence:SetAttribute("DurationSeconds", 1.62)
+	sequence:SetAttribute("AimCompleteTimeSeconds", 0.52)
+	sequence:SetAttribute("DischargeTimeSeconds", 0.9)
+	sequence:SetAttribute("SpecificationVersion", "1.2-AimHoldRecoil")
 	return sequence
 end
 
