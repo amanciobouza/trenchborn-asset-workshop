@@ -27,6 +27,7 @@ local footLocks = {}
 local staggering = false
 local defeated = false
 local defeatedVisualState = {}
+local defeatPowerCycle = 0
 
 local function stopIdle()
 	if idleTrack and idleTrack.IsPlaying then
@@ -419,6 +420,7 @@ end)
 
 
 local function restoreGuardianPower()
+	defeatPowerCycle += 1
 	for instance, state in pairs(defeatedVisualState) do
 		if instance and instance.Parent then
 			if instance:IsA("BasePart") then
@@ -455,6 +457,56 @@ local function powerDownGuardian(model)
 			instance.Enabled = false
 		end
 	end
+end
+
+
+local function startDefeatPowerFlicker()
+	defeatPowerCycle += 1
+	local cycle = defeatPowerCycle
+	task.spawn(function()
+		while defeated and cycle == defeatPowerCycle do
+			task.wait(math.random(70, 230) / 100)
+			if not defeated or cycle ~= defeatPowerCycle then break end
+
+			local candidates = {}
+			for instance, state in pairs(defeatedVisualState) do
+				if instance:IsA("BasePart") and instance.Parent and state.Material == Enum.Material.Neon then
+					table.insert(candidates, {instance = instance, state = state})
+				end
+			end
+			if #candidates > 0 then
+				-- Only a few circuits receive residual power on each pulse.
+				local pulseCount = math.random(1, math.max(1, math.ceil(#candidates * 0.22)))
+				for index = #candidates, 2, -1 do
+					local swap = math.random(1, index)
+					candidates[index], candidates[swap] = candidates[swap], candidates[index]
+				end
+				for index = 1, pulseCount do
+					local candidate = candidates[index]
+					candidate.instance.Material = Enum.Material.Neon
+					TweenService:Create(candidate.instance, TweenInfo.new(0.045), {
+						Color = candidate.state.Color,
+					}):Play()
+				end
+				task.wait(math.random(5, 13) / 100)
+				for index = 1, pulseCount do
+					local candidate = candidates[index]
+					if candidate.instance.Parent then
+						TweenService:Create(candidate.instance, TweenInfo.new(0.12), {
+							Color = Color3.fromRGB(8, 17, 20),
+						}):Play()
+					end
+				end
+				task.wait(0.13)
+				if defeated and cycle == defeatPowerCycle then
+					for index = 1, pulseCount do
+						local instance = candidates[index].instance
+						if instance.Parent then instance.Material = Enum.Material.SmoothPlastic end
+					end
+				end
+			end
+		end
+	end)
 end
 
 local function flashDamage(model)
@@ -495,7 +547,10 @@ remote.OnClientEvent:Connect(function(message, payload)
 			flashDamage(payload)
 			playSequence(payload, "BuildDefeat", "GuardianDefeatPreview")
 			task.delay(0.22, function()
-				if defeated then powerDownGuardian(payload) end
+				if defeated then
+					powerDownGuardian(payload)
+					startDefeatPowerFlicker()
+				end
 			end)
 			task.delay(1.3, function()
 				if defeated and idleTrack and idleTrack.IsPlaying then
