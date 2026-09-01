@@ -36,4 +36,4 @@ testHarness.Attach(workshop, model, gameplayConfig)
 local comparisonWarden = wardenGoldenMaster.Build(workshop)
 comparisonWarden.Name = "Warden_I_Shepherd_Comparison"
 comparisonWarden:SetAttribute("ComparisonReference", true)
-comparisonWarden:PivotTo(comparisonWarden:GetPivot() + Vector3.new(16, 0, 0))
+comparisonWarden:PivotTo(comparisonWarden:GetPivot() + Vector3.new(16, 0, 50))
