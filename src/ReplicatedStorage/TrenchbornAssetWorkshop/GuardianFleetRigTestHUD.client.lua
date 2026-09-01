@@ -106,7 +106,7 @@ grid.Parent = panel
 
 local layout = Instance.new("UIGridLayout")
 layout.CellPadding = UDim2.fromOffset(8, 8)
-layout.CellSize = UDim2.new(0.5, -4, 0, 66)
+layout.CellSize = UDim2.new(0.333333, -6, 0, 58)
 layout.SortOrder = Enum.SortOrder.LayoutOrder
 layout.Parent = grid
 
@@ -133,6 +133,8 @@ local definitions = {
 	{"RUN", "Run", Color3.fromRGB(151, 77, 75)},
 	{"TURN LEFT", "TurnLeft", Color3.fromRGB(106, 92, 163)},
 	{"TURN RIGHT", "TurnRight", Color3.fromRGB(106, 92, 163)},
+	{"FALL", "Fall", Color3.fromRGB(72, 108, 139)},
+	{"LAND", "Land", Color3.fromRGB(170, 98, 48)},
 	{"CONTROL GUARDIAN", "ControlGuardian", Color3.fromRGB(132, 78, 176)},
 	{"NEUTRAL", "Neutral", Color3.fromRGB(96, 102, 110)},
 }
@@ -382,7 +384,7 @@ remote.OnClientEvent:Connect(function(message, payload)
 		setControl(false)
 		return
 	end
-	if message == "PlayIdle" or message == "PlayAlertIdle" or message == "PlayWalk" or message == "PlayRun" or message == "PlayTurnLeft" or message == "PlayTurnRight" then
+	if message == "PlayIdle" or message == "PlayAlertIdle" or message == "PlayWalk" or message == "PlayRun" or message == "PlayTurnLeft" or message == "PlayTurnRight" or message == "PlayFall" or message == "PlayLand" then
 		local builders = {
 			PlayIdle = {"BuildIdle", "GuardianIdlePreview"},
 			PlayAlertIdle = {"BuildAlertIdle", "GuardianAlertIdlePreview"},
@@ -390,6 +392,8 @@ remote.OnClientEvent:Connect(function(message, payload)
 			PlayRun = {"BuildRun", "GuardianRunPreview"},
 			PlayTurnLeft = {"BuildTurnLeft", "GuardianTurnLeftPreview"},
 			PlayTurnRight = {"BuildTurnRight", "GuardianTurnRightPreview"},
+			PlayFall = {"BuildFall", "GuardianFallPreview"},
+			PlayLand = {"BuildLand", "GuardianLandPreview"},
 		}
 		local selection = builders[message]
 		local builderName = selection[1]
