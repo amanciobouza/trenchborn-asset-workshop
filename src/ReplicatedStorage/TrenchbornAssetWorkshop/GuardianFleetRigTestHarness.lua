@@ -494,7 +494,7 @@ function Harness.Attach(model)
 		elseif actionName == "ContainmentNetLaunch" then
 			remote:FireClient(player, "PlayContainmentNetLaunch", model)
 			setEnemyLocked(true)
-			task.delay(0.82, function()
+			task.delay(1.35, function()
 				setEnemyLocked(false)
 				launchNetPreview()
 			end)
