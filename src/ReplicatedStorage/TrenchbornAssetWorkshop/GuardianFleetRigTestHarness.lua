@@ -186,6 +186,7 @@ function Harness.Attach(model)
 		Stagger = function() end,
 		Defeat = function() end,
 		ShockBaton = function() end,
+		WarningPulse = function() end,
 		ShieldBlock = function() end,
 		PulseCannonFire = function() end,
 		ContainmentNetLaunch = function() end,
@@ -203,6 +204,59 @@ function Harness.Attach(model)
 		effects.Parent = workspace
 	end
 
+
+
+
+	local function warningPulsePreview()
+		local core = model:FindFirstChild("ShieldAngleLeft", true)
+			or model:FindFirstChild("VisorSensor", true)
+			or model:FindFirstChild("UpperTorso")
+		if not core or not core:IsA("BasePart") then return end
+
+		local chargeLight = Instance.new("PointLight")
+		chargeLight.Name = "WarningPulseCharge"
+		chargeLight.Color = Color3.fromRGB(92, 255, 151)
+		chargeLight.Brightness = 0
+		chargeLight.Range = 35
+		chargeLight.Parent = core
+		Debris:AddItem(chargeLight, 1.5)
+		TweenService:Create(chargeLight, TweenInfo.new(1.05, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+			Brightness = 9,
+			Range = 48,
+		}):Play()
+
+		task.delay(1.1, function()
+			if not model.Parent then return end
+			local origin = model:FindFirstChild("UpperTorso") or model.PrimaryPart
+			if not origin then return end
+			chargeLight:Destroy()
+
+			for index = 1, 3 do
+				local wave = Instance.new("Part")
+				wave.Name = "WardenWarningPulseWave" .. index
+				wave.Shape = Enum.PartType.Ball
+				wave.Size = Vector3.new(8, 8, 8)
+				wave.CFrame = CFrame.new(origin.Position)
+				wave.Anchored = true
+				wave.CanCollide = false
+				wave.CanTouch = false
+				wave.CanQuery = false
+				wave.Material = Enum.Material.ForceField
+				wave.Color = Color3.fromRGB(104, 255, 159)
+				wave.Transparency = 0.3 + index * 0.08
+				wave.Parent = effects
+				Debris:AddItem(wave, 0.65 + index * 0.08)
+				task.delay((index - 1) * 0.07, function()
+					if wave.Parent then
+						TweenService:Create(wave, TweenInfo.new(0.55, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+							Size = Vector3.new(56, 56, 56),
+							Transparency = 1,
+						}):Play()
+					end
+				end)
+			end
+		end)
+	end
 
 
 	local function shockBatonPreview()
@@ -701,6 +755,10 @@ function Harness.Attach(model)
 				shockBatonPreview()
 				invokeAbility("ShockBaton")
 			end)
+		elseif actionName == "WarningPulse" then
+			remote:FireClient(player, "PlayWarningPulse", model)
+			warningPulsePreview()
+			invokeAbility("WarningPulse")
 		elseif actionName == "ShieldBlock" then
 			if not invokeAbility("RiotShield") then remote:FireClient(player, "PlayShieldBlock", model) end
 		elseif actionName == "PulseCannonFire" then
@@ -739,6 +797,7 @@ function Harness.Attach(model)
 	model:SetAttribute("GuardianStaggerPreviewReady", true)
 	model:SetAttribute("GuardianDefeatPreviewReady", true)
 	model:SetAttribute("WardenShockBatonPreviewReady", true)
+	model:SetAttribute("WardenWarningPulsePreviewReady", true)
 	model:SetAttribute("GuardianShieldBlockPreviewReady", true)
 	model:SetAttribute("GuardianPulseCannonFirePreviewReady", true)
 	model:SetAttribute("GuardianContainmentNetLaunchPreviewReady", true)
