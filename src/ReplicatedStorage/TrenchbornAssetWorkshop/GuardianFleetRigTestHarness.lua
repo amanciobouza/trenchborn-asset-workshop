@@ -109,7 +109,7 @@ function Harness.Attach(model)
 		local travelDirection = controlBackward and -facingDirection or facingDirection
 		local speedScale = controlBackward and 0.67 or 1
 		local nextPosition = root.Position + travelDirection * stepSpeed(now) * speedScale * deltaTime
-		root.CFrame = CFrame.lookAt(nextPosition, nextPosition + travelDirection)
+		root.CFrame = CFrame.lookAt(nextPosition, nextPosition + facingDirection)
 	end)
 
 	Players.PlayerRemoving:Connect(function(player)
