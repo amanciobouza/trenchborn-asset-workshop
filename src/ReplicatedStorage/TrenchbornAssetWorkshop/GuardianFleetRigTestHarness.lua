@@ -166,6 +166,7 @@ function Harness.Attach(model)
 		Fall = function() end,
 		Land = function() end,
 		WalkBackward = function() end,
+		DamageReact = function() end,
 		ControlGuardian = function() end,
 		Neutral = function()
 			pose({}, 0.35)
@@ -225,6 +226,8 @@ function Harness.Attach(model)
 			remote:FireClient(player, "PlayLand", model)
 		elseif actionName == "WalkBackward" then
 			remote:FireClient(player, "PlayWalkBackward", model)
+		elseif actionName == "DamageReact" then
+			remote:FireClient(player, "PlayDamageReact", model)
 		else
 			actions[actionName]()
 		end
@@ -240,6 +243,7 @@ function Harness.Attach(model)
 	model:SetAttribute("GuardianTurnPreviewReady", true)
 	model:SetAttribute("GuardianAirStatePreviewReady", true)
 	model:SetAttribute("GuardianWalkBackwardPreviewReady", true)
+	model:SetAttribute("GuardianDamageReactPreviewReady", true)
 	model:SetAttribute("FleetRigTestInterface", "HUD")
 	model:SetAttribute("GuardianPossessionTestReady", true)
 	model:SetAttribute("GuardianControlSpeed", controlSpeed)
