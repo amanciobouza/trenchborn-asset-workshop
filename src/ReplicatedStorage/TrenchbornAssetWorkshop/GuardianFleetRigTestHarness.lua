@@ -1,6 +1,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
 
 local Harness = {}
 
@@ -53,7 +54,30 @@ function Harness.Attach(model)
 
 	local animator = model:FindFirstChildWhichIsA("Animator", true)
 	assert(animator, "Missing Guardian Fleet Rig Animator")
+	local root = model:FindFirstChild("HumanoidRootPart")
+	assert(root and root:IsA("BasePart"), "Missing Guardian HumanoidRootPart")
 	local lastRequest = {}
+	local controllerPlayer
+	local controlDirection = Vector3.zero
+	local controlUpdatedAt = 0
+	local controlSpeed = 12
+
+	RunService.Heartbeat:Connect(function(deltaTime)
+		if not controllerPlayer then return end
+		local direction = os.clock() - controlUpdatedAt <= 0.3 and controlDirection or Vector3.zero
+		if direction.Magnitude < 0.01 then return end
+		direction = Vector3.new(direction.X, 0, direction.Z).Unit
+		local nextPosition = root.Position + direction * controlSpeed * deltaTime
+		root.CFrame = CFrame.lookAt(nextPosition, nextPosition + direction)
+	end)
+
+	Players.PlayerRemoving:Connect(function(player)
+		if player == controllerPlayer then
+			controllerPlayer = nil
+			controlDirection = Vector3.zero
+		end
+		lastRequest[player] = nil
+	end)
 
 	local function pose(targets, duration)
 		for name, joint in pairs(joints) do
@@ -94,17 +118,39 @@ function Harness.Attach(model)
 		IdleLoop = function() end,
 		AlertIdle = function() end,
 		Walk = function() end,
+		ControlGuardian = function() end,
 		Neutral = function()
 			pose({}, 0.35)
 		end,
 	}
 
-	remote.OnServerEvent:Connect(function(player, actionName)
-		if type(actionName) ~= "string" or not actions[actionName] then return end
+	remote.OnServerEvent:Connect(function(player, actionName, payload)
+		if type(actionName) ~= "string" then return end
+		if actionName == "ControlMove" then
+			if player == controllerPlayer and typeof(payload) == "Vector3" then
+				local flat = Vector3.new(payload.X, 0, payload.Z)
+				controlDirection = flat.Magnitude > 1 and flat.Unit or flat
+				controlUpdatedAt = os.clock()
+			end
+			return
+		end
+		if not actions[actionName] then return end
 		local now = os.clock()
 		if lastRequest[player] and now - lastRequest[player] < 0.12 then return end
 		lastRequest[player] = now
-		if actionName == "IdleLoop" then
+		if actionName == "ControlGuardian" then
+			if controllerPlayer == player then
+				controllerPlayer = nil
+				controlDirection = Vector3.zero
+				remote:FireClient(player, "ControlDisabled")
+			else
+				if controllerPlayer then remote:FireClient(controllerPlayer, "ControlDisabled") end
+				controllerPlayer = player
+				controlDirection = Vector3.zero
+				controlUpdatedAt = os.clock()
+				remote:FireClient(player, "ControlEnabled", model)
+			end
+		elseif actionName == "IdleLoop" then
 			remote:FireClient(player, "PlayIdle", model)
 		elseif actionName == "AlertIdle" then
 			remote:FireClient(player, "PlayAlertIdle", model)
@@ -122,6 +168,8 @@ function Harness.Attach(model)
 	model:SetAttribute("GuardianAlertIdlePreviewReady", true)
 	model:SetAttribute("GuardianWalkPreviewReady", true)
 	model:SetAttribute("FleetRigTestInterface", "HUD")
+	model:SetAttribute("GuardianPossessionTestReady", true)
+	model:SetAttribute("GuardianControlSpeed", controlSpeed)
 	return remote
 end
 
