@@ -540,9 +540,9 @@ function Library.BuildDefeat()
 		LeftUpperLeg = CFrame.Angles(math.rad(-8), 0, 0),
 		LeftLowerLeg = CFrame.Angles(math.rad(-18), 0, 0),
 		LeftFoot = CFrame.Angles(math.rad(10), 0, 0),
-		RightUpperLeg = CFrame.Angles(math.rad(48), 0, 0),
-		RightLowerLeg = CFrame.Angles(math.rad(-104), 0, 0),
-		RightFoot = CFrame.Angles(math.rad(38), 0, 0),
+		RightUpperLeg = CFrame.Angles(math.rad(12), 0, 0),
+		RightLowerLeg = CFrame.Angles(math.rad(-96), 0, 0),
+		RightFoot = CFrame.Angles(math.rad(62), 0, 0),
 	})
 	-- Final powered-down pose; the preview freezes on this keyframe.
 	keyframe(sequence, 1.18, {
@@ -556,9 +556,9 @@ function Library.BuildDefeat()
 		LeftUpperLeg = CFrame.Angles(math.rad(18), 0, 0),
 		LeftLowerLeg = CFrame.Angles(math.rad(-42), 0, 0),
 		LeftFoot = CFrame.Angles(math.rad(13), 0, 0),
-		RightUpperLeg = CFrame.Angles(math.rad(55), 0, 0),
-		RightLowerLeg = CFrame.Angles(math.rad(-112), 0, 0),
-		RightFoot = CFrame.Angles(math.rad(44), 0, 0),
+		RightUpperLeg = CFrame.Angles(math.rad(6), 0, 0),
+		RightLowerLeg = CFrame.Angles(math.rad(-108), 0, 0),
+		RightFoot = CFrame.Angles(math.rad(72), 0, 0),
 	})
 	keyframe(sequence, 1.4, {
 		LowerTorso = CFrame.new(0, -7.2, 0.35) * CFrame.Angles(math.rad(18), math.rad(2), math.rad(4)),
@@ -571,14 +571,14 @@ function Library.BuildDefeat()
 		LeftUpperLeg = CFrame.Angles(math.rad(18), 0, 0),
 		LeftLowerLeg = CFrame.Angles(math.rad(-42), 0, 0),
 		LeftFoot = CFrame.Angles(math.rad(13), 0, 0),
-		RightUpperLeg = CFrame.Angles(math.rad(55), 0, 0),
-		RightLowerLeg = CFrame.Angles(math.rad(-112), 0, 0),
-		RightFoot = CFrame.Angles(math.rad(44), 0, 0),
+		RightUpperLeg = CFrame.Angles(math.rad(6), 0, 0),
+		RightLowerLeg = CFrame.Angles(math.rad(-108), 0, 0),
+		RightFoot = CFrame.Angles(math.rad(72), 0, 0),
 	})
 	sequence:SetAttribute("GuardianAnimation", "Defeat")
 	sequence:SetAttribute("DurationSeconds", 1.4)
 	sequence:SetAttribute("HoldFinalPose", true)
-	sequence:SetAttribute("SpecificationVersion", "1.1-KneeContact")
+	sequence:SetAttribute("SpecificationVersion", "1.2-TrueKneel")
 	return sequence
 end
 
