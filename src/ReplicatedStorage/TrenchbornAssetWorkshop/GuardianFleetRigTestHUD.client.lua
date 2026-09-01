@@ -24,6 +24,7 @@ local walkStartedAt = 0
 local plantedSide
 local footLocks = {}
 local staggering = false
+local defeated = false
 
 local function stopIdle()
 	if idleTrack and idleTrack.IsPlaying then
@@ -157,6 +158,7 @@ local definitions = {
 	{"LAND", "Land", Color3.fromRGB(170, 98, 48)},
 	{"DAMAGE", "DamageReact", Color3.fromRGB(184, 61, 61)},
 	{"STAGGER", "Stagger", Color3.fromRGB(153, 48, 48)},
+	{"DEFEAT", "Defeat", Color3.fromRGB(91, 43, 48)},
 	{"CONTROL GUARDIAN", "ControlGuardian", Color3.fromRGB(132, 78, 176)},
 	{"NEUTRAL", "Neutral", Color3.fromRGB(96, 102, 110)},
 }
@@ -179,6 +181,7 @@ for order, definition in ipairs(definitions) do
 	buttonCorner.CornerRadius = UDim.new(0, 8)
 	buttonCorner.Parent = button
 	button.Activated:Connect(function()
+		if definition[2] ~= "Defeat" then defeated = false end
 		if definition[2] ~= "IdleLoop" and definition[2] ~= "AlertIdle" and definition[2] ~= "ControlGuardian" then stopIdle() end
 		status.Text = "RUNNING: " .. definition[1]
 		status.TextColor3 = Color3.fromRGB(235, 178, 55)
@@ -346,7 +349,7 @@ end
 
 RunService.RenderStepped:Connect(function()
 	if not controlEnabled or not controlledModel then return end
-	if staggering then return end
+	if staggering or defeated then return end
 	local x = ((keyState[Enum.KeyCode.D] or keyState[Enum.KeyCode.Right]) and 1 or 0)
 		- ((keyState[Enum.KeyCode.A] or keyState[Enum.KeyCode.Left]) and 1 or 0)
 	local z = ((keyState[Enum.KeyCode.S] or keyState[Enum.KeyCode.Down]) and 1 or 0)
@@ -436,6 +439,28 @@ remote.OnClientEvent:Connect(function(message, payload)
 		return
 	elseif message == "ControlDisabled" then
 		setControl(false)
+		return
+	end
+	if message == "PlayDefeat" then
+		local success, err = pcall(function()
+			staggering = false
+			defeated = true
+			remote:FireServer("ControlMove", Vector3.zero)
+			clearFootLocks()
+			flashDamage(payload)
+			playSequence(payload, "BuildDefeat", "GuardianDefeatPreview")
+			task.delay(1.3, function()
+				if defeated and idleTrack and idleTrack.IsPlaying then
+					idleTrack:AdjustSpeed(0)
+					status.Text = "DEFEATED — NEUTRAL TO RESET"
+					status.TextColor3 = Color3.fromRGB(190, 92, 92)
+				end
+			end)
+		end)
+		if not success then
+			defeated = false
+			warn("Guardian defeat failed:", err)
+		end
 		return
 	end
 	if message == "PlayStagger" then
