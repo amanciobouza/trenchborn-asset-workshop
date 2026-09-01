@@ -113,6 +113,11 @@ local function addMissilePod(systems, side, sign)
 	pod.Parent = systems
 
 	local x = sign * 11.7
+	-- The pylon visibly transfers the pod load into the upper torso; the bearing
+	-- remains readable as the future elevation pivot.
+	block(pod, "ShoulderPylon", Vector3.new(5.4, 3.4, 4.8), Vector3.new(sign * 8.9, 38.5, 0.2), COLORS.Chassis, Vector3.new(-2, sign * 3, sign * 5))
+	cylinder(pod, "PodElevationBearing", Vector3.new(3.2, 4.5, 4.5), Vector3.new(sign * 10.0, 39.7, 0.15), COLORS.DarkMetal)
+	cylinder(pod, "PodElevationHub", Vector3.new(3.45, 2.8, 2.8), Vector3.new(sign * 10.0, 39.7, 0.15), COLORS.Body)
 	block(pod, "PodHousing", Vector3.new(6.6, 7.2, 7.0), Vector3.new(x, 40.2, 0.1), COLORS.DarkMetal, Vector3.new(-2, sign * 2, 0))
 	block(pod, "PodArmorTop", Vector3.new(6.9, 1.2, 7.3), Vector3.new(x, 43.7, 0.15), COLORS.Armor, Vector3.new(-2, sign * 2, 0))
 	block(pod, "PodArmorSide", Vector3.new(1.0, 6.3, 7.25), Vector3.new(x + sign * 3.55, 40.2, 0.15), COLORS.Body, Vector3.new(-2, sign * 2, 0))
