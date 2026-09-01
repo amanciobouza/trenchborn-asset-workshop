@@ -137,6 +137,7 @@ local definitions = {
 	{"TURN RIGHT", "TurnRight", Color3.fromRGB(106, 92, 163)},
 	{"FALL", "Fall", Color3.fromRGB(72, 108, 139)},
 	{"LAND", "Land", Color3.fromRGB(170, 98, 48)},
+	{"DAMAGE", "DamageReact", Color3.fromRGB(184, 61, 61)},
 	{"CONTROL GUARDIAN", "ControlGuardian", Color3.fromRGB(132, 78, 176)},
 	{"NEUTRAL", "Neutral", Color3.fromRGB(96, 102, 110)},
 }
@@ -387,6 +388,28 @@ RunService.RenderStepped:Connect(function()
 	end
 end)
 
+
+local function flashDamage(model)
+	local highlight = Instance.new("Highlight")
+	highlight.Name = "GuardianDamageFlash"
+	highlight.Adornee = model
+	highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+	highlight.FillColor = Color3.fromRGB(255, 38, 38)
+	highlight.OutlineColor = Color3.fromRGB(255, 150, 120)
+	highlight.FillTransparency = 0.2
+	highlight.OutlineTransparency = 0.05
+	highlight.Parent = model
+	task.spawn(function()
+		for pulse = 1, 2 do
+			highlight.Enabled = true
+			task.wait(0.07)
+			highlight.Enabled = false
+			task.wait(0.045)
+		end
+		highlight:Destroy()
+	end)
+end
+
 remote.OnClientEvent:Connect(function(message, payload)
 	if message == "ControlEnabled" then
 		setControl(true, payload)
@@ -395,7 +418,7 @@ remote.OnClientEvent:Connect(function(message, payload)
 		setControl(false)
 		return
 	end
-	if message == "PlayIdle" or message == "PlayAlertIdle" or message == "PlayWalk" or message == "PlayRun" or message == "PlayTurnLeft" or message == "PlayTurnRight" or message == "PlayFall" or message == "PlayLand" or message == "PlayWalkBackward" then
+	if message == "PlayIdle" or message == "PlayAlertIdle" or message == "PlayWalk" or message == "PlayRun" or message == "PlayTurnLeft" or message == "PlayTurnRight" or message == "PlayFall" or message == "PlayLand" or message == "PlayWalkBackward" or message == "PlayDamageReact" then
 		local builders = {
 			PlayIdle = {"BuildIdle", "GuardianIdlePreview"},
 			PlayAlertIdle = {"BuildAlertIdle", "GuardianAlertIdlePreview"},
@@ -406,8 +429,10 @@ remote.OnClientEvent:Connect(function(message, payload)
 			PlayFall = {"BuildFall", "GuardianFallPreview"},
 			PlayLand = {"BuildLand", "GuardianLandPreview"},
 			PlayWalkBackward = {"BuildWalkBackward", "GuardianWalkBackwardPreview"},
+			PlayDamageReact = {"BuildDamageReact", "GuardianDamageReactPreview"},
 		}
 		local selection = builders[message]
+		if message == "PlayDamageReact" then flashDamage(payload) end
 		local builderName = selection[1]
 		local previewName = selection[2]
 		local success, err = pcall(playSequence, payload, builderName, previewName)
