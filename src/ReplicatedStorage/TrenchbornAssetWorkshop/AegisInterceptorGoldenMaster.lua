@@ -115,13 +115,13 @@ local function addMissilePod(systems, side, sign)
 	local x = sign * 11.7
 	-- The pylon visibly transfers the pod load into the upper torso; the bearing
 	-- remains readable as the future elevation pivot.
-	block(pod, "ShoulderPylon", Vector3.new(5.4, 3.4, 4.8), Vector3.new(sign * 8.9, 38.5, 0.2), COLORS.Chassis, Vector3.new(-2, sign * 3, sign * 5))
-	cylinder(pod, "PodElevationBearing", Vector3.new(3.2, 4.5, 4.5), Vector3.new(sign * 10.0, 39.7, 0.15), COLORS.DarkMetal)
-	cylinder(pod, "PodElevationHub", Vector3.new(3.45, 2.8, 2.8), Vector3.new(sign * 10.0, 39.7, 0.15), COLORS.Body)
-	block(pod, "PodHousing", Vector3.new(6.6, 7.2, 7.0), Vector3.new(x, 40.2, 0.1), COLORS.DarkMetal, Vector3.new(-2, sign * 2, 0))
-	block(pod, "PodArmorTop", Vector3.new(6.9, 1.2, 7.3), Vector3.new(x, 43.7, 0.15), COLORS.Armor, Vector3.new(-2, sign * 2, 0))
-	block(pod, "PodArmorSide", Vector3.new(1.0, 6.3, 7.25), Vector3.new(x + sign * 3.55, 40.2, 0.15), COLORS.Body, Vector3.new(-2, sign * 2, 0))
-	block(pod, "LauncherFace", Vector3.new(5.6, 6.2, 0.7), Vector3.new(x, 40.2, -3.58), COLORS.Chassis, Vector3.new(-2, sign * 2, 0))
+	block(pod, "ShoulderPylon", Vector3.new(5.4, 3.4, 4.8), Vector3.new(sign * 8.9, 35.0, 0.2), COLORS.Chassis, Vector3.new(-2, sign * 3, sign * 5))
+	cylinder(pod, "PodElevationBearing", Vector3.new(3.2, 4.5, 4.5), Vector3.new(sign * 10.0, 36.2, 0.15), COLORS.DarkMetal)
+	cylinder(pod, "PodElevationHub", Vector3.new(3.45, 2.8, 2.8), Vector3.new(sign * 10.0, 36.2, 0.15), COLORS.Body)
+	block(pod, "PodHousing", Vector3.new(6.6, 7.2, 7.0), Vector3.new(x, 36.8, 0.1), COLORS.DarkMetal, Vector3.new(-2, sign * 2, 0))
+	block(pod, "PodArmorTop", Vector3.new(6.9, 1.2, 7.3), Vector3.new(x, 40.3, 0.15), COLORS.Armor, Vector3.new(-2, sign * 2, 0))
+	block(pod, "PodArmorSide", Vector3.new(1.0, 6.3, 7.25), Vector3.new(x + sign * 3.55, 36.8, 0.15), COLORS.Body, Vector3.new(-2, sign * 2, 0))
+	block(pod, "LauncherFace", Vector3.new(5.6, 6.2, 0.7), Vector3.new(x, 36.8, -3.58), COLORS.Chassis, Vector3.new(-2, sign * 2, 0))
 
 	local index = 0
 	for row = 1, 3 do
@@ -129,7 +129,7 @@ local function addMissilePod(systems, side, sign)
 			if not (row == 2 and column == 2) then
 				index += 1
 				local cellX = x + sign * ((column - 2) * 1.55)
-				local cellY = 40.2 + (2 - row) * 1.65
+				local cellY = 36.8 + (2 - row) * 1.65
 				local cell = cylinder(
 					pod,
 					"MissileCell" .. index,
@@ -142,7 +142,7 @@ local function addMissilePod(systems, side, sign)
 			end
 		end
 	end
-	block(pod, "WarningStrip", Vector3.new(3.6, 0.28, 0.2), Vector3.new(x, 36.8, -4.0), COLORS.Warning).Material = Enum.Material.Neon
+	block(pod, "WarningStrip", Vector3.new(3.6, 0.28, 0.2), Vector3.new(x, 33.4, -4.0), COLORS.Warning).Material = Enum.Material.Neon
 	pod.PrimaryPart = pod:FindFirstChild("PodHousing")
 	return pod
 end
