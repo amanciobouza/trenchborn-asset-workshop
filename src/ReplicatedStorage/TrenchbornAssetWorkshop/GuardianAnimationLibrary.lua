@@ -105,4 +105,39 @@ function Library.BuildIdle()
 	return sequence
 end
 
+
+function Library.BuildAlertIdle()
+	local sequence = Instance.new("KeyframeSequence")
+	sequence.Name = "GuardianAlertIdle"
+	sequence.Loop = true
+	sequence.Priority = Enum.AnimationPriority.Idle
+
+	local function alertPose(headYaw, torsoRoll, armPulse)
+		return {
+			LowerTorso = CFrame.new(0, -0.18, 0) * CFrame.Angles(math.rad(2), 0, 0),
+			UpperTorso = CFrame.Angles(math.rad(5), math.rad(headYaw * 0.2), math.rad(torsoRoll)),
+			Head = CFrame.Angles(math.rad(-2), math.rad(headYaw), 0),
+			LeftUpperArm = CFrame.Angles(math.rad(18 + armPulse), math.rad(-8), math.rad(-16)),
+			LeftLowerArm = CFrame.Angles(math.rad(26 + armPulse), 0, 0),
+			RightUpperArm = CFrame.Angles(math.rad(20 + armPulse), math.rad(5), math.rad(10)),
+			RightLowerArm = CFrame.Angles(math.rad(22 + armPulse), 0, 0),
+			LeftUpperLeg = CFrame.Angles(math.rad(4), 0, math.rad(-1)),
+			LeftLowerLeg = CFrame.Angles(math.rad(-9), 0, 0),
+			RightUpperLeg = CFrame.Angles(math.rad(4), 0, math.rad(1)),
+			RightLowerLeg = CFrame.Angles(math.rad(-9), 0, 0),
+		}
+	end
+
+	keyframe(sequence, 0, alertPose(-8, -1.5, 0))
+	keyframe(sequence, 0.6, alertPose(0, 0.5, 2))
+	keyframe(sequence, 1.2, alertPose(8, 1.5, 0))
+	keyframe(sequence, 1.8, alertPose(0, -0.5, 3))
+	keyframe(sequence, 2.4, alertPose(-8, -1.5, 0))
+
+	sequence:SetAttribute("GuardianAnimation", "AlertIdle")
+	sequence:SetAttribute("DurationSeconds", 2.4)
+	sequence:SetAttribute("SpecificationVersion", "1.0")
+	return sequence
+end
+
 return Library
