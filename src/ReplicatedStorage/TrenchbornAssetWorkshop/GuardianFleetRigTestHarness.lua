@@ -185,6 +185,7 @@ function Harness.Attach(model)
 		DamageReact = function() end,
 		Stagger = function() end,
 		Defeat = function() end,
+		ShockBaton = function() end,
 		ShieldBlock = function() end,
 		PulseCannonFire = function() end,
 		ContainmentNetLaunch = function() end,
@@ -604,6 +605,9 @@ function Harness.Attach(model)
 			else
 				remote:FireClient(player, "PlayDefeat", model)
 			end
+		elseif actionName == "ShockBaton" then
+			remote:FireClient(player, "PlayShockBaton", model)
+			invokeAbility("ShockBaton")
 		elseif actionName == "ShieldBlock" then
 			if not invokeAbility("RiotShield") then remote:FireClient(player, "PlayShieldBlock", model) end
 		elseif actionName == "PulseCannonFire" then
@@ -641,6 +645,7 @@ function Harness.Attach(model)
 	model:SetAttribute("GuardianDamageReactPreviewReady", true)
 	model:SetAttribute("GuardianStaggerPreviewReady", true)
 	model:SetAttribute("GuardianDefeatPreviewReady", true)
+	model:SetAttribute("WardenShockBatonPreviewReady", true)
 	model:SetAttribute("GuardianShieldBlockPreviewReady", true)
 	model:SetAttribute("GuardianPulseCannonFirePreviewReady", true)
 	model:SetAttribute("GuardianContainmentNetLaunchPreviewReady", true)
