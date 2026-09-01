@@ -178,6 +178,7 @@ local definitions = {
 	{"STAGGER", "Stagger", Color3.fromRGB(153, 48, 48)},
 	{"DEFEAT", "Defeat", Color3.fromRGB(91, 43, 48)},
 	{"SHOCK BATON", "ShockBaton", Color3.fromRGB(74, 145, 86)},
+	{"WARNING PULSE", "WarningPulse", Color3.fromRGB(53, 129, 87)},
 	{"SHIELD BLOCK", "ShieldBlock", Color3.fromRGB(42, 104, 135)},
 	{"PULSE FIRE", "PulseCannonFire", Color3.fromRGB(33, 137, 161)},
 	{"NET LAUNCH", "ContainmentNetLaunch", Color3.fromRGB(38, 151, 142)},
@@ -646,7 +647,7 @@ remote.OnClientEvent:Connect(function(message, payload)
 		if not success then warn("Guardian damage reaction failed:", err) end
 		return
 	end
-	if message == "PlayIdle" or message == "PlayAlertIdle" or message == "PlayWalk" or message == "PlayRun" or message == "PlayTurnLeft" or message == "PlayTurnRight" or message == "PlayFall" or message == "PlayLand" or message == "PlayWalkBackward" or message == "PlayShockBaton" or message == "PlayPulseCannonFire" or message == "PlayContainmentNetLaunch" then
+	if message == "PlayIdle" or message == "PlayAlertIdle" or message == "PlayWalk" or message == "PlayRun" or message == "PlayTurnLeft" or message == "PlayTurnRight" or message == "PlayFall" or message == "PlayLand" or message == "PlayWalkBackward" or message == "PlayShockBaton" or message == "PlayWarningPulse" or message == "PlayPulseCannonFire" or message == "PlayContainmentNetLaunch" then
 		local builders = {
 			PlayIdle = {"BuildIdle", "GuardianIdlePreview"},
 			PlayAlertIdle = {"BuildAlertIdle", "GuardianAlertIdlePreview"},
@@ -658,6 +659,7 @@ remote.OnClientEvent:Connect(function(message, payload)
 			PlayLand = {"BuildLand", "GuardianLandPreview"},
 			PlayWalkBackward = {"BuildWalkBackward", "GuardianWalkBackwardPreview"},
 			PlayShockBaton = {"BuildShockBaton", "WardenShockBatonPreview"},
+			PlayWarningPulse = {"BuildWarningPulse", "WardenWarningPulsePreview"},
 			PlayPulseCannonFire = {"BuildPulseCannonFire", "GuardianPulseCannonFirePreview"},
 			PlayContainmentNetLaunch = {"BuildContainmentNetLaunch", "GuardianContainmentNetLaunchPreview"},
 		}
