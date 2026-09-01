@@ -659,17 +659,17 @@ function Library.BuildPulseCannonFire()
 	end
 
 	keyframe(sequence, 0, {})
-	keyframe(sequence, 0.24, aimedPose(0))
+	keyframe(sequence, 0.38, aimedPose(0))
 	-- Discharge: the cannon arm and upper body recoil as one mechanical mass.
-	keyframe(sequence, 0.34, aimedPose(1))
-	keyframe(sequence, 0.5, aimedPose(0.35))
-	keyframe(sequence, 0.72, aimedPose(0))
-	keyframe(sequence, 1.02, {})
+	keyframe(sequence, 0.65, aimedPose(1))
+	keyframe(sequence, 0.81, aimedPose(0.35))
+	keyframe(sequence, 1.02, aimedPose(0))
+	keyframe(sequence, 1.32, {})
 
 	sequence:SetAttribute("GuardianAnimation", "PulseCannonFire")
-	sequence:SetAttribute("DurationSeconds", 1.02)
-	sequence:SetAttribute("DischargeTimeSeconds", 0.34)
-	sequence:SetAttribute("SpecificationVersion", "1.0")
+	sequence:SetAttribute("DurationSeconds", 1.32)
+	sequence:SetAttribute("DischargeTimeSeconds", 0.65)
+	sequence:SetAttribute("SpecificationVersion", "1.1-GameplaySynchronized")
 	return sequence
 end
 
