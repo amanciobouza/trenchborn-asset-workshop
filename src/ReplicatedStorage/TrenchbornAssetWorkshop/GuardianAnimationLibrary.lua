@@ -505,4 +505,81 @@ function Library.BuildStagger()
 	return sequence
 end
 
+
+function Library.BuildDefeat()
+	local sequence = Instance.new("KeyframeSequence")
+	sequence.Name = "GuardianDefeat"
+	sequence.Loop = false
+	sequence.Priority = Enum.AnimationPriority.Action4
+
+	keyframe(sequence, 0, {})
+	-- Systems fail: the torso pitches forward while the right leg loses load.
+	keyframe(sequence, 0.18, {
+		LowerTorso = CFrame.new(0, -0.35, 0) * CFrame.Angles(math.rad(11), 0, math.rad(4)),
+		UpperTorso = CFrame.Angles(math.rad(17), math.rad(-4), math.rad(-5)),
+		Head = CFrame.Angles(math.rad(8), math.rad(3), math.rad(3)),
+		LeftUpperArm = CFrame.Angles(math.rad(28), math.rad(-7), math.rad(-17)),
+		LeftLowerArm = CFrame.Angles(math.rad(35), 0, 0),
+		RightUpperArm = CFrame.Angles(math.rad(23), math.rad(5), math.rad(15)),
+		RightLowerArm = CFrame.Angles(math.rad(30), 0, 0),
+		LeftUpperLeg = CFrame.Angles(math.rad(11), 0, 0),
+		LeftLowerLeg = CFrame.Angles(math.rad(-29), 0, 0),
+		RightUpperLeg = CFrame.Angles(math.rad(18), 0, 0),
+		RightLowerLeg = CFrame.Angles(math.rad(-44), 0, 0),
+		RightFoot = CFrame.Angles(math.rad(13), 0, 0),
+	})
+	-- One-knee impact keeps the silhouette readable and avoids a weightless ragdoll.
+	keyframe(sequence, 0.58, {
+		LowerTorso = CFrame.new(0, -2.4, 0.25) * CFrame.Angles(math.rad(19), math.rad(3), math.rad(7)),
+		UpperTorso = CFrame.Angles(math.rad(24), math.rad(-5), math.rad(-8)),
+		Head = CFrame.Angles(math.rad(13), math.rad(4), math.rad(5)),
+		LeftUpperArm = CFrame.Angles(math.rad(38), math.rad(-10), math.rad(-27)),
+		LeftLowerArm = CFrame.Angles(math.rad(54), 0, 0),
+		RightUpperArm = CFrame.Angles(math.rad(31), math.rad(8), math.rad(22)),
+		RightLowerArm = CFrame.Angles(math.rad(48), 0, 0),
+		LeftUpperLeg = CFrame.Angles(math.rad(-8), 0, 0),
+		LeftLowerLeg = CFrame.Angles(math.rad(-18), 0, 0),
+		LeftFoot = CFrame.Angles(math.rad(10), 0, 0),
+		RightUpperLeg = CFrame.Angles(math.rad(31), 0, 0),
+		RightLowerLeg = CFrame.Angles(math.rad(-72), 0, 0),
+		RightFoot = CFrame.Angles(math.rad(22), 0, 0),
+	})
+	-- Final powered-down pose; the preview freezes on this keyframe.
+	keyframe(sequence, 1.18, {
+		LowerTorso = CFrame.new(0, -3.05, 0.65) * CFrame.Angles(math.rad(28), math.rad(5), math.rad(9)),
+		UpperTorso = CFrame.Angles(math.rad(35), math.rad(-7), math.rad(-10)),
+		Head = CFrame.Angles(math.rad(24), math.rad(5), math.rad(7)),
+		LeftUpperArm = CFrame.Angles(math.rad(48), math.rad(-11), math.rad(-31)),
+		LeftLowerArm = CFrame.Angles(math.rad(63), 0, 0),
+		RightUpperArm = CFrame.Angles(math.rad(43), math.rad(8), math.rad(27)),
+		RightLowerArm = CFrame.Angles(math.rad(59), 0, 0),
+		LeftUpperLeg = CFrame.Angles(math.rad(-13), 0, 0),
+		LeftLowerLeg = CFrame.Angles(math.rad(-22), 0, 0),
+		LeftFoot = CFrame.Angles(math.rad(13), 0, 0),
+		RightUpperLeg = CFrame.Angles(math.rad(38), 0, 0),
+		RightLowerLeg = CFrame.Angles(math.rad(-82), 0, 0),
+		RightFoot = CFrame.Angles(math.rad(28), 0, 0),
+	})
+	keyframe(sequence, 1.4, {
+		LowerTorso = CFrame.new(0, -3.05, 0.65) * CFrame.Angles(math.rad(28), math.rad(5), math.rad(9)),
+		UpperTorso = CFrame.Angles(math.rad(35), math.rad(-7), math.rad(-10)),
+		Head = CFrame.Angles(math.rad(24), math.rad(5), math.rad(7)),
+		LeftUpperArm = CFrame.Angles(math.rad(48), math.rad(-11), math.rad(-31)),
+		LeftLowerArm = CFrame.Angles(math.rad(63), 0, 0),
+		RightUpperArm = CFrame.Angles(math.rad(43), math.rad(8), math.rad(27)),
+		RightLowerArm = CFrame.Angles(math.rad(59), 0, 0),
+		LeftUpperLeg = CFrame.Angles(math.rad(-13), 0, 0),
+		LeftLowerLeg = CFrame.Angles(math.rad(-22), 0, 0),
+		LeftFoot = CFrame.Angles(math.rad(13), 0, 0),
+		RightUpperLeg = CFrame.Angles(math.rad(38), 0, 0),
+		RightLowerLeg = CFrame.Angles(math.rad(-82), 0, 0),
+		RightFoot = CFrame.Angles(math.rad(28), 0, 0),
+	})
+	sequence:SetAttribute("GuardianAnimation", "Defeat")
+	sequence:SetAttribute("DurationSeconds", 1.4)
+	sequence:SetAttribute("HoldFinalPose", true)
+	sequence:SetAttribute("SpecificationVersion", "1.0")
+	return sequence
+end
+
 return Library
