@@ -140,4 +140,46 @@ function Library.BuildAlertIdle()
 	return sequence
 end
 
+
+function Library.BuildWalk()
+	local sequence = Instance.new("KeyframeSequence")
+	sequence.Name = "GuardianWalk"
+	sequence.Loop = true
+	sequence.Priority = Enum.AnimationPriority.Movement
+
+	local function walkPose(leftHip, leftKnee, leftFoot, rightHip, rightKnee, rightFoot, height, roll)
+		return {
+			LowerTorso = CFrame.new(0, height, 0) * CFrame.Angles(math.rad(3), 0, math.rad(roll)),
+			UpperTorso = CFrame.Angles(math.rad(3), math.rad(-roll * 0.6), math.rad(-roll * 0.7)),
+			Head = CFrame.Angles(math.rad(-2), math.rad(roll * 0.8), math.rad(roll * 0.25)),
+			LeftUpperArm = CFrame.Angles(math.rad(10 - leftHip * 0.22), math.rad(-5), math.rad(-8)),
+			LeftLowerArm = CFrame.Angles(math.rad(20), 0, 0),
+			RightUpperArm = CFrame.Angles(math.rad(12 - rightHip * 0.28), math.rad(4), math.rad(7)),
+			RightLowerArm = CFrame.Angles(math.rad(17), 0, 0),
+			LeftUpperLeg = CFrame.Angles(math.rad(leftHip), 0, math.rad(-1)),
+			LeftLowerLeg = CFrame.Angles(math.rad(leftKnee), 0, 0),
+			LeftFoot = CFrame.Angles(math.rad(leftFoot), 0, 0),
+			RightUpperLeg = CFrame.Angles(math.rad(rightHip), 0, math.rad(1)),
+			RightLowerLeg = CFrame.Angles(math.rad(rightKnee), 0, 0),
+			RightFoot = CFrame.Angles(math.rad(rightFoot), 0, 0),
+		}
+	end
+
+	-- Left contact, right leg trailing.
+	keyframe(sequence, 0, walkPose(18, -7, -9, -16, -13, 8, 0, -1.5))
+	-- Left leg takes the weight while the right leg passes.
+	keyframe(sequence, 0.5, walkPose(7, -12, 2, 4, -28, -5, -0.32, 2))
+	-- Right contact, left leg trailing.
+	keyframe(sequence, 1.0, walkPose(-16, -13, 8, 18, -7, -9, 0, 1.5))
+	-- Right leg takes the weight while the left leg passes.
+	keyframe(sequence, 1.5, walkPose(4, -28, -5, 7, -12, 2, -0.32, -2))
+	keyframe(sequence, 2.0, walkPose(18, -7, -9, -16, -13, 8, 0, -1.5))
+
+	sequence:SetAttribute("GuardianAnimation", "Walk")
+	sequence:SetAttribute("DurationSeconds", 2)
+	sequence:SetAttribute("SpecificationVersion", "1.0")
+	sequence:SetAttribute("RootMotion", false)
+	return sequence
+end
+
 return Library
