@@ -86,6 +86,8 @@ local function bodySegment(item)
 	if net then return "NetLauncherControl" end
 	if item:FindFirstAncestor("LeftHand") then return "LeftHand" end
 	if item:FindFirstAncestor("RightHand") then return "RightHand" end
+	if name == "ForearmHardpointLeft" then return "LeftLowerArm" end
+	if name == "ForearmHardpointRight" then return "RightLowerArm" end
 	if starts(name, "LeftShoulder") or starts(name, "LeftUpperArm") then return "LeftUpperArm" end
 	if starts(name, "LeftElbow") or starts(name, "LeftForearm") then return "LeftLowerArm" end
 	if starts(name, "RightShoulder") or starts(name, "RightUpperArm") then return "RightUpperArm" end
