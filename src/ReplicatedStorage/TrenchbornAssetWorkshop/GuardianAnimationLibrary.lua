@@ -166,18 +166,18 @@ function Library.BuildWalk()
 	end
 
 	-- Left contact, right leg trailing.
-	keyframe(sequence, 0, walkPose(18, -7, -9, -16, -13, 8, 0, -1.5))
+	keyframe(sequence, 0, walkPose(18, -7, -14, -16, -13, 12, 0, -1.5))
 	-- Left leg takes the weight while the right leg passes.
-	keyframe(sequence, 0.5, walkPose(7, -12, 2, 4, -28, -5, -0.32, 2))
+	keyframe(sequence, 0.5, walkPose(7, -12, 6, 4, -28, -12, -0.32, 2))
 	-- Right contact, left leg trailing.
-	keyframe(sequence, 1.0, walkPose(-16, -13, 8, 18, -7, -9, 0, 1.5))
+	keyframe(sequence, 1.0, walkPose(-16, -13, 12, 18, -7, -14, 0, 1.5))
 	-- Right leg takes the weight while the left leg passes.
-	keyframe(sequence, 1.5, walkPose(4, -28, -5, 7, -12, 2, -0.32, -2))
-	keyframe(sequence, 2.0, walkPose(18, -7, -9, -16, -13, 8, 0, -1.5))
+	keyframe(sequence, 1.5, walkPose(4, -28, -12, 7, -12, 6, -0.32, -2))
+	keyframe(sequence, 2.0, walkPose(18, -7, -14, -16, -13, 12, 0, -1.5))
 
 	sequence:SetAttribute("GuardianAnimation", "Walk")
 	sequence:SetAttribute("DurationSeconds", 2)
-	sequence:SetAttribute("SpecificationVersion", "1.0")
+	sequence:SetAttribute("SpecificationVersion", "1.1-FootLockReady")
 	sequence:SetAttribute("RootMotion", false)
 	return sequence
 end
