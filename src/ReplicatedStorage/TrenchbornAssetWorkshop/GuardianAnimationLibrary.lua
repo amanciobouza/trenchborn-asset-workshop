@@ -6,7 +6,7 @@ local HIERARCHY = {
 			UpperTorso = {
 				Head = {},
 				LeftUpperArm = {
-					LeftLowerArm = {LeftHand = {}},
+					LeftLowerArm = {LeftHand = {}, RiotShieldControl = {}},
 				},
 				RightUpperArm = {
 					RightLowerArm = {RightHand = {}},
@@ -590,13 +590,17 @@ function Library.BuildShieldBlock()
 	sequence.Priority = Enum.AnimationPriority.Action3
 
 	local function blockPose(load)
+		local leftUpper = CFrame.Angles(math.rad(80 + load * 6), math.rad(-3), math.rad(38))
+		local leftLower = CFrame.Angles(math.rad(-22), math.rad(-3), math.rad(12))
 		return {
 			LowerTorso = CFrame.new(0, -0.2 - load, 0) * CFrame.Angles(math.rad(3), math.rad(-3), math.rad(-2)),
 			UpperTorso = CFrame.Angles(math.rad(-4), math.rad(-7), math.rad(3)),
 			Head = CFrame.Angles(math.rad(-2), math.rad(5), math.rad(-2)),
 			-- The shield is welded to LeftLowerArm, so both arm joints carry it.
-			LeftUpperArm = CFrame.Angles(math.rad(80 + load * 6), math.rad(-3), math.rad(38)),
-			LeftLowerArm = CFrame.Angles(math.rad(-22), math.rad(-3), math.rad(12)),
+			LeftUpperArm = leftUpper,
+			LeftLowerArm = leftLower,
+			-- Counter-rotate the mount so the shield remains vertical in world space.
+			RiotShieldControl = (leftUpper * leftLower):Inverse(),
 			-- Cannon arm remains tucked behind the shield line.
 			RightUpperArm = CFrame.Angles(math.rad(25), math.rad(7), math.rad(13)),
 			RightLowerArm = CFrame.Angles(math.rad(38), 0, 0),
@@ -615,6 +619,8 @@ function Library.BuildShieldBlock()
 		UpperTorso = CFrame.Angles(math.rad(-2), math.rad(-3), math.rad(1)),
 		LeftUpperArm = CFrame.Angles(math.rad(36), math.rad(-2), math.rad(18)),
 		LeftLowerArm = CFrame.Angles(math.rad(-10), math.rad(-1), math.rad(6)),
+		RiotShieldControl = (CFrame.Angles(math.rad(36), math.rad(-2), math.rad(18))
+			* CFrame.Angles(math.rad(-10), math.rad(-1), math.rad(6))):Inverse(),
 	})
 	keyframe(sequence, 0.48, blockPose(0.08))
 	keyframe(sequence, 0.82, blockPose(0))
@@ -622,7 +628,7 @@ function Library.BuildShieldBlock()
 	sequence:SetAttribute("GuardianAnimation", "ShieldBlock")
 	sequence:SetAttribute("DurationSeconds", 0.82)
 	sequence:SetAttribute("HeldState", true)
-	sequence:SetAttribute("SpecificationVersion", "1.2-CenterShield")
+	sequence:SetAttribute("SpecificationVersion", "1.3-VerticalShieldMount")
 	return sequence
 end
 
