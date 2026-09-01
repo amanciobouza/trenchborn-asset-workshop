@@ -26,7 +26,7 @@ local function poseTree(name, children, transforms)
 	local pose = Instance.new("Pose")
 	pose.Name = name
 	pose.Weight = 1
-	pose.EasingStyle = Enum.PoseEasingStyle.Sine
+	pose.EasingStyle = Enum.PoseEasingStyle.CubicV2
 	pose.EasingDirection = Enum.PoseEasingDirection.InOut
 	pose.CFrame = transforms[name] or CFrame.identity
 	for childName, grandchildren in pairs(children) do
