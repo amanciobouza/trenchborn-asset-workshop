@@ -19,6 +19,7 @@ local wardenGoldenMaster = require(packageFolder:WaitForChild("WardenShepherdGol
 local wardenDressing = require(packageFolder:WaitForChild("WardenShepherdDressing"))
 local wardenGameplayConfig = require(packageFolder:WaitForChild("WardenShepherdGameplayConfig"))
 local wardenGameplay = require(packageFolder:WaitForChild("WardenShepherdGameplay"))
+local wardenSoundController = require(packageFolder:WaitForChild("WardenShepherdSoundController"))
 
 workshop:SetAttribute("CurrentAsset", specification.AssetName)
 workshop:SetAttribute("CurrentPhase", specification.PipelinePhase)
@@ -45,6 +46,7 @@ comparisonWarden:PivotTo(comparisonWarden:GetPivot() + Vector3.new(16, 0, 50))
 wardenDressing.Apply(comparisonWarden)
 fleetRig.Apply(comparisonWarden, {AnchorRoot = true})
 wardenGameplay.Attach(comparisonWarden, wardenGameplayConfig)
+wardenSoundController.Attach(comparisonWarden)
 fleetRigTestHarness.Attach(comparisonWarden)
 
 workshop:SetAttribute("AnimationTestTarget", "Warden-I Shepherd")
