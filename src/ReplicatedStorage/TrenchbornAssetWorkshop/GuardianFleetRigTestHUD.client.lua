@@ -30,6 +30,7 @@ local staggering = false
 local defeated = false
 local defeatedVisualState = {}
 local defeatPowerCycle = 0
+local restoreGuardianPower
 
 local function stopIdle()
 	playbackGeneration += 1
@@ -434,7 +435,7 @@ end)
 
 
 
-local function restoreGuardianPower()
+restoreGuardianPower = function()
 	defeatPowerCycle += 1
 	for instance, state in pairs(defeatedVisualState) do
 		if instance and instance.Parent then
