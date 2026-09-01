@@ -170,6 +170,7 @@ function Harness.Attach(model)
 		Stagger = function() end,
 		Defeat = function() end,
 		ShieldBlock = function() end,
+		PulseCannonFire = function() end,
 		ControlGuardian = function() end,
 		Neutral = function()
 			pose({}, 0.35)
@@ -237,6 +238,8 @@ function Harness.Attach(model)
 			remote:FireClient(player, "PlayDefeat", model)
 		elseif actionName == "ShieldBlock" then
 			remote:FireClient(player, "PlayShieldBlock", model)
+		elseif actionName == "PulseCannonFire" then
+			remote:FireClient(player, "PlayPulseCannonFire", model)
 		else
 			actions[actionName]()
 		end
@@ -256,6 +259,7 @@ function Harness.Attach(model)
 	model:SetAttribute("GuardianStaggerPreviewReady", true)
 	model:SetAttribute("GuardianDefeatPreviewReady", true)
 	model:SetAttribute("GuardianShieldBlockPreviewReady", true)
+	model:SetAttribute("GuardianPulseCannonFirePreviewReady", true)
 	model:SetAttribute("FleetRigTestInterface", "HUD")
 	model:SetAttribute("GuardianPossessionTestReady", true)
 	model:SetAttribute("GuardianControlSpeed", controlSpeed)
