@@ -549,36 +549,36 @@ function Library.BuildDefeat()
 		LowerTorso = CFrame.new(0, -8.2, 0.2) * CFrame.Angles(math.rad(-4), math.rad(1), math.rad(2)),
 		UpperTorso = CFrame.Angles(math.rad(-28), math.rad(-3), math.rad(-5)),
 		Head = CFrame.Angles(math.rad(-12), math.rad(2), math.rad(2)),
-		LeftUpperArm = CFrame.Angles(math.rad(48), math.rad(-11), math.rad(-31)),
-		LeftLowerArm = CFrame.Angles(math.rad(63), 0, 0),
-		RightUpperArm = CFrame.Angles(math.rad(43), math.rad(8), math.rad(27)),
-		RightLowerArm = CFrame.Angles(math.rad(59), 0, 0),
-		LeftUpperLeg = CFrame.Angles(math.rad(22), 0, 0),
-		LeftLowerLeg = CFrame.Angles(math.rad(-44), 0, 0),
-		LeftFoot = CFrame.Angles(math.rad(22), 0, 0),
+		LeftUpperArm = CFrame.Angles(math.rad(0), 0, math.rad(-4)),
+		LeftLowerArm = CFrame.Angles(math.rad(2), 0, 0),
+		RightUpperArm = CFrame.Angles(math.rad(0), 0, math.rad(4)),
+		RightLowerArm = CFrame.Angles(math.rad(2), 0, 0),
+		LeftUpperLeg = CFrame.Angles(math.rad(45), 0, 0),
+		LeftLowerLeg = CFrame.Angles(math.rad(-56), 0, 0),
+		LeftFoot = CFrame.Angles(math.rad(11), 0, 0),
 		RightUpperLeg = CFrame.Angles(math.rad(2), 0, 0),
 		RightLowerLeg = CFrame.Angles(math.rad(-106), 0, 0),
-		RightFoot = CFrame.Angles(math.rad(104), 0, 0),
+		RightFoot = CFrame.Angles(math.rad(76), 0, 0),
 	})
 	keyframe(sequence, 1.4, {
 		LowerTorso = CFrame.new(0, -8.2, 0.2) * CFrame.Angles(math.rad(-4), math.rad(1), math.rad(2)),
 		UpperTorso = CFrame.Angles(math.rad(-28), math.rad(-3), math.rad(-5)),
 		Head = CFrame.Angles(math.rad(-12), math.rad(2), math.rad(2)),
-		LeftUpperArm = CFrame.Angles(math.rad(48), math.rad(-11), math.rad(-31)),
-		LeftLowerArm = CFrame.Angles(math.rad(63), 0, 0),
-		RightUpperArm = CFrame.Angles(math.rad(43), math.rad(8), math.rad(27)),
-		RightLowerArm = CFrame.Angles(math.rad(59), 0, 0),
-		LeftUpperLeg = CFrame.Angles(math.rad(22), 0, 0),
-		LeftLowerLeg = CFrame.Angles(math.rad(-44), 0, 0),
-		LeftFoot = CFrame.Angles(math.rad(22), 0, 0),
+		LeftUpperArm = CFrame.Angles(math.rad(0), 0, math.rad(-4)),
+		LeftLowerArm = CFrame.Angles(math.rad(2), 0, 0),
+		RightUpperArm = CFrame.Angles(math.rad(0), 0, math.rad(4)),
+		RightLowerArm = CFrame.Angles(math.rad(2), 0, 0),
+		LeftUpperLeg = CFrame.Angles(math.rad(45), 0, 0),
+		LeftLowerLeg = CFrame.Angles(math.rad(-56), 0, 0),
+		LeftFoot = CFrame.Angles(math.rad(11), 0, 0),
 		RightUpperLeg = CFrame.Angles(math.rad(2), 0, 0),
 		RightLowerLeg = CFrame.Angles(math.rad(-106), 0, 0),
-		RightFoot = CFrame.Angles(math.rad(104), 0, 0),
+		RightFoot = CFrame.Angles(math.rad(76), 0, 0),
 	})
 	sequence:SetAttribute("GuardianAnimation", "Defeat")
 	sequence:SetAttribute("DurationSeconds", 1.4)
 	sequence:SetAttribute("HoldFinalPose", true)
-	sequence:SetAttribute("SpecificationVersion", "1.3-AxisCorrectKneel")
+	sequence:SetAttribute("SpecificationVersion", "1.4-PoweredDownKneel")
 	return sequence
 end
 
