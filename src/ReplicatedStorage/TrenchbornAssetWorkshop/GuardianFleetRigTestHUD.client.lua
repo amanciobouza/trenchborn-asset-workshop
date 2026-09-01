@@ -16,6 +16,7 @@ local keyState = {}
 local lastMoveSent = 0
 local wasMoving = false
 local wasRunning = false
+local wasBackward = false
 local locomotionStepDuration = 1
 local currentTurn
 local walkStartedAt = 0
@@ -130,6 +131,7 @@ local definitions = {
 	{"IDLE LOOP", "IdleLoop", Color3.fromRGB(48, 145, 104)},
 	{"ALERT IDLE", "AlertIdle", Color3.fromRGB(188, 112, 45)},
 	{"WALK", "Walk", Color3.fromRGB(94, 116, 184)},
+	{"WALK BACK", "WalkBackward", Color3.fromRGB(79, 116, 151)},
 	{"RUN", "Run", Color3.fromRGB(151, 77, 75)},
 	{"TURN LEFT", "TurnLeft", Color3.fromRGB(106, 92, 163)},
 	{"TURN RIGHT", "TurnRight", Color3.fromRGB(106, 92, 163)},
@@ -337,8 +339,14 @@ RunService.RenderStepped:Connect(function()
 	local direction = right * x + forward * -z
 	if direction.Magnitude > 1 then direction = direction.Unit end
 	local moving = direction.Magnitude > 0.05
+	local backward = moving and z > 0 and x == 0
+	if backward then
+		local root = controlledModel:FindFirstChild("HumanoidRootPart")
+		local facing = root and Vector3.new(root.CFrame.LookVector.X, 0, root.CFrame.LookVector.Z)
+		if facing and facing.Magnitude > 0 then direction = -facing.Unit end
+	end
 	local desiredTurn
-	if moving then
+	if moving and not backward then
 		local root = controlledModel:FindFirstChild("HumanoidRootPart")
 		local facing = root and Vector3.new(root.CFrame.LookVector.X, 0, root.CFrame.LookVector.Z)
 		if facing and facing.Magnitude > 0 then
@@ -349,16 +357,19 @@ RunService.RenderStepped:Connect(function()
 			end
 		end
 	end
-	local running = moving and (keyState[Enum.KeyCode.LeftShift] or keyState[Enum.KeyCode.RightShift]) == true
-	if moving ~= wasMoving or (moving and running ~= wasRunning) then
+	local running = moving and not backward and (keyState[Enum.KeyCode.LeftShift] or keyState[Enum.KeyCode.RightShift]) == true
+	if moving ~= wasMoving or (moving and (running ~= wasRunning or backward ~= wasBackward)) then
 		wasMoving = moving
 		wasRunning = running
+		wasBackward = backward
 		if moving then
 			walkStartedAt = os.clock()
-			locomotionStepDuration = running and 0.6 or 1
+			locomotionStepDuration = running and 0.6 or (backward and 1.1 or 1)
 			plantedSide = nil
 			if running then
 				playSequence(controlledModel, "BuildRun", "GuardianControlledRun")
+			elseif backward then
+				playSequence(controlledModel, "BuildWalkBackward", "GuardianControlledWalkBackward")
 			else
 				playSequence(controlledModel, "BuildWalk", "GuardianControlledWalk")
 			end
@@ -369,10 +380,10 @@ RunService.RenderStepped:Connect(function()
 	-- Curved locomotion must keep the active Walk/Run cycle. A full-body
 	-- turn clip would replace the leg cycle and make both feet appear planted.
 	currentTurn = desiredTurn
-	updateFootLock(moving and not currentTurn, direction)
+	updateFootLock(moving and not currentTurn, backward and -direction or direction)
 	if os.clock() - lastMoveSent >= 0.07 then
 		lastMoveSent = os.clock()
-		remote:FireServer("ControlMove", direction, running)
+		remote:FireServer("ControlMove", direction, running, backward)
 	end
 end)
 
@@ -384,7 +395,7 @@ remote.OnClientEvent:Connect(function(message, payload)
 		setControl(false)
 		return
 	end
-	if message == "PlayIdle" or message == "PlayAlertIdle" or message == "PlayWalk" or message == "PlayRun" or message == "PlayTurnLeft" or message == "PlayTurnRight" or message == "PlayFall" or message == "PlayLand" then
+	if message == "PlayIdle" or message == "PlayAlertIdle" or message == "PlayWalk" or message == "PlayRun" or message == "PlayTurnLeft" or message == "PlayTurnRight" or message == "PlayFall" or message == "PlayLand" or message == "PlayWalkBackward" then
 		local builders = {
 			PlayIdle = {"BuildIdle", "GuardianIdlePreview"},
 			PlayAlertIdle = {"BuildAlertIdle", "GuardianAlertIdlePreview"},
@@ -394,6 +405,7 @@ remote.OnClientEvent:Connect(function(message, payload)
 			PlayTurnRight = {"BuildTurnRight", "GuardianTurnRightPreview"},
 			PlayFall = {"BuildFall", "GuardianFallPreview"},
 			PlayLand = {"BuildLand", "GuardianLandPreview"},
+			PlayWalkBackward = {"BuildWalkBackward", "GuardianWalkBackwardPreview"},
 		}
 		local selection = builders[message]
 		local builderName = selection[1]
