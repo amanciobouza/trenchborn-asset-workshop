@@ -244,7 +244,7 @@ function Harness.Attach(model)
 			local requestAbility = gameplay and gameplay:FindFirstChild("RequestAbility")
 			local testTarget = workspace:FindFirstChild("TestKaijuTarget", true)
 			if requestAbility and requestAbility:IsA("BindableFunction") and testTarget then
-				task.spawn(function()
+				task.delay(0.25, function()
 					local ok, reason = requestAbility:Invoke("PulseCannon", testTarget)
 					if not ok then warn("Guardian Pulse Cannon gameplay request rejected:", reason) end
 				end)
