@@ -1,3 +1,6 @@
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
 local packageFolder = script.Parent
 
 local builder = require(packageFolder:WaitForChild("MarshalRoadblockGoldenMaster"))
@@ -63,14 +66,14 @@ function Installer.Uninstall(parent)
 	local existing = parent:FindFirstChild("Marshal_II_Roadblock_GoldenMaster")
 	if not existing then return false end
 
-	local runtime = existing:FindFirstChild("GuardianRuntime")
-	local remoteName
-	if runtime then
-		local animationRequested = runtime:FindFirstChild("AnimationRequested")
-		if animationRequested then
-			local runtimeApi = nil
-			-- Runtime cleanup is normally performed through api.Runtime.Destroy().
-			-- Model destruction remains a safe fallback for callers that did not retain the API.
+	local remoteName = existing:GetAttribute("GuardianRuntimeRemoteName")
+	if remoteName then
+		local remote = ReplicatedStorage:FindFirstChild(remoteName)
+		if remote then remote:Destroy() end
+		for _, player in ipairs(Players:GetPlayers()) do
+			local playerGui = player:FindFirstChild("PlayerGui")
+			local client = playerGui and playerGui:FindFirstChild(remoteName)
+			if client then client:Destroy() end
 		end
 	end
 	existing:Destroy()
