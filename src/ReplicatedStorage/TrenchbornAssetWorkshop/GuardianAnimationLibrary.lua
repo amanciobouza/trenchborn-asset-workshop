@@ -705,16 +705,17 @@ function Library.BuildContainmentNetLaunch()
 
 	keyframe(sequence, 0, {})
 	keyframe(sequence, 0.35, lockPose(0))
-	keyframe(sequence, 0.72, lockPose(0))
-	keyframe(sequence, 0.82, lockPose(1))
-	keyframe(sequence, 1.02, lockPose(0.3))
-	keyframe(sequence, 1.28, lockPose(0))
-	keyframe(sequence, 1.55, {})
+	keyframe(sequence, 1.2, lockPose(0))
+	keyframe(sequence, 1.35, lockPose(1))
+	keyframe(sequence, 1.55, lockPose(0.3))
+	keyframe(sequence, 1.82, lockPose(0))
+	keyframe(sequence, 2.1, {})
 
 	sequence:SetAttribute("GuardianAnimation", "ContainmentNetLaunch")
-	sequence:SetAttribute("DurationSeconds", 1.55)
-	sequence:SetAttribute("LaunchTimeSeconds", 0.82)
-	sequence:SetAttribute("SpecificationVersion", "1.0")
+	sequence:SetAttribute("DurationSeconds", 2.1)
+	sequence:SetAttribute("TelegraphSeconds", 1.35)
+	sequence:SetAttribute("LaunchTimeSeconds", 1.35)
+	sequence:SetAttribute("SpecificationVersion", "1.1-ReactionWindow")
 	return sequence
 end
 
