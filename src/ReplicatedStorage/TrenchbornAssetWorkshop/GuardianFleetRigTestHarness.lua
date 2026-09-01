@@ -168,6 +168,7 @@ function Harness.Attach(model)
 		WalkBackward = function() end,
 		DamageReact = function() end,
 		Stagger = function() end,
+		Defeat = function() end,
 		ControlGuardian = function() end,
 		Neutral = function()
 			pose({}, 0.35)
@@ -231,6 +232,8 @@ function Harness.Attach(model)
 			remote:FireClient(player, "PlayDamageReact", model)
 		elseif actionName == "Stagger" then
 			remote:FireClient(player, "PlayStagger", model)
+		elseif actionName == "Defeat" then
+			remote:FireClient(player, "PlayDefeat", model)
 		else
 			actions[actionName]()
 		end
@@ -248,6 +251,7 @@ function Harness.Attach(model)
 	model:SetAttribute("GuardianWalkBackwardPreviewReady", true)
 	model:SetAttribute("GuardianDamageReactPreviewReady", true)
 	model:SetAttribute("GuardianStaggerPreviewReady", true)
+	model:SetAttribute("GuardianDefeatPreviewReady", true)
 	model:SetAttribute("FleetRigTestInterface", "HUD")
 	model:SetAttribute("GuardianPossessionTestReady", true)
 	model:SetAttribute("GuardianControlSpeed", controlSpeed)
