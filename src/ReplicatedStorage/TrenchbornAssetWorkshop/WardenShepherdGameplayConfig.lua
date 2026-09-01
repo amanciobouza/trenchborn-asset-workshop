@@ -24,6 +24,7 @@ return {
 		Damage = 120,
 		Cooldown = 2.4,
 		Knockback = 38,
+		ImpactDelay = 0.56,
 	},
 	WarningPulse = {
 		Radius = 28,
