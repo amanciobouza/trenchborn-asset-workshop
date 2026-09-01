@@ -163,6 +163,7 @@ local function clearFootLocks()
 	for _, lock in pairs(footLocks) do
 		if lock.control then lock.control:Destroy() end
 		if lock.target then lock.target:Destroy() end
+		if lock.pole then lock.pole:Destroy() end
 	end
 	footLocks = {}
 	plantedSide = nil
@@ -174,8 +175,10 @@ local function setupFootLocks(model)
 	assert(humanoid, "Guardian Humanoid not found for foot lock")
 	for _, side in ipairs({"Left", "Right"}) do
 		local upperLeg = model:FindFirstChild(side .. "UpperLeg")
+		local knee = model:FindFirstChild(side .. "LowerLeg")
 		local foot = model:FindFirstChild(side .. "Foot")
-		assert(upperLeg and foot, side .. " Guardian leg controls not found")
+		local root = model:FindFirstChild("HumanoidRootPart")
+		assert(upperLeg and knee and foot and root, side .. " Guardian leg controls not found")
 
 		local target = Instance.new("Part")
 		target.Name = side .. "FootLockTarget"
@@ -188,22 +191,48 @@ local function setupFootLocks(model)
 		target.CFrame = foot.CFrame
 		target.Parent = workspace
 
+		local outwardSign = side == "Left" and -1 or 1
+		local pole = Instance.new("Part")
+		pole.Name = side .. "KneePoleTarget"
+		pole.Size = Vector3.new(0.4, 0.4, 0.4)
+		pole.Transparency = 1
+		pole.Anchored = true
+		pole.CanCollide = false
+		pole.CanTouch = false
+		pole.CanQuery = false
+		pole.Position = knee.Position + root.CFrame.LookVector * 10
+			+ root.CFrame.RightVector * outwardSign * 5
+		pole.Parent = workspace
+
 		local control = Instance.new("IKControl")
 		control.Name = side .. "FootLock"
 		control.Type = Enum.IKControlType.Position
 		control.ChainRoot = upperLeg
 		control.EndEffector = foot
 		control.Target = target
+		control.Pole = pole
 		control.SmoothTime = 0.06
 		control.Weight = 0
 		control.Priority = 20
 		control.Parent = humanoid
 
-		footLocks[side] = {control = control, target = target, foot = foot}
+		footLocks[side] = {
+			control = control,
+			target = target,
+			pole = pole,
+			foot = foot,
+			knee = knee,
+			root = root,
+			outwardSign = outwardSign,
+		}
 	end
 end
 
 local function updateFootLock(moving)
+	for _, lock in pairs(footLocks) do
+		lock.pole.Position = lock.knee.Position + lock.root.CFrame.LookVector * 10
+			+ lock.root.CFrame.RightVector * lock.outwardSign * 5
+	end
 	if not moving then
 		for _, lock in pairs(footLocks) do lock.control.Weight = 0 end
 		plantedSide = nil
