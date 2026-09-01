@@ -92,6 +92,7 @@ function Harness.Attach(model)
 			}, 0.45)
 		end,
 		IdleLoop = function() end,
+		AlertIdle = function() end,
 		Neutral = function()
 			pose({}, 0.35)
 		end,
@@ -104,6 +105,8 @@ function Harness.Attach(model)
 		lastRequest[player] = now
 		if actionName == "IdleLoop" then
 			remote:FireClient(player, "PlayIdle", model)
+		elseif actionName == "AlertIdle" then
+			remote:FireClient(player, "PlayAlertIdle", model)
 		else
 			actions[actionName]()
 		end
@@ -113,6 +116,7 @@ function Harness.Attach(model)
 	model:SetAttribute("FleetRigMotionTestReady", true)
 	model:SetAttribute("FleetRigMotionDriver", "Motor6D.C0")
 	model:SetAttribute("GuardianIdlePreviewReady", true)
+	model:SetAttribute("GuardianAlertIdlePreviewReady", true)
 	model:SetAttribute("FleetRigTestInterface", "HUD")
 	return remote
 end
