@@ -52,47 +52,47 @@ function Library.BuildIdle()
 	sequence.Priority = Enum.AnimationPriority.Idle
 
 	local guarded = {
-		LeftShoulder = CFrame.Angles(math.rad(5), 0, math.rad(-2)),
-		LeftElbow = CFrame.Angles(math.rad(8), 0, 0),
-		RightShoulder = CFrame.Angles(math.rad(3), 0, math.rad(2)),
-		RightElbow = CFrame.Angles(math.rad(5), 0, 0),
+		LeftShoulder = CFrame.Angles(math.rad(9), 0, math.rad(-4)),
+		LeftElbow = CFrame.Angles(math.rad(14), 0, 0),
+		RightShoulder = CFrame.Angles(math.rad(7), 0, math.rad(4)),
+		RightElbow = CFrame.Angles(math.rad(11), 0, 0),
 	}
 
 	keyframe(sequence, 0, {
-		UpperTorso = CFrame.Angles(math.rad(1), 0, math.rad(-0.4)),
-		Head = CFrame.Angles(0, math.rad(-4), 0),
+		UpperTorso = CFrame.Angles(math.rad(2), 0, math.rad(-2)),
+		Head = CFrame.Angles(0, math.rad(-12), 0),
 		LeftUpperArm = guarded.LeftShoulder,
 		LeftLowerArm = guarded.LeftElbow,
 		RightUpperArm = guarded.RightShoulder,
 		RightLowerArm = guarded.RightElbow,
 	})
 	keyframe(sequence, 1, {
-		UpperTorso = CFrame.new(0, 0.06, 0) * CFrame.Angles(math.rad(0.5), 0, math.rad(0.5)),
-		Head = CFrame.Angles(math.rad(-1), 0, 0),
-		LeftUpperArm = guarded.LeftShoulder * CFrame.Angles(math.rad(1), 0, 0),
+		UpperTorso = CFrame.new(0, 0.28, 0) * CFrame.Angles(math.rad(1), 0, math.rad(2)),
+		Head = CFrame.Angles(math.rad(-3), 0, 0),
+		LeftUpperArm = guarded.LeftShoulder * CFrame.Angles(math.rad(4), 0, 0),
 		LeftLowerArm = guarded.LeftElbow,
 		RightUpperArm = guarded.RightShoulder,
-		RightLowerArm = guarded.RightElbow * CFrame.Angles(math.rad(1), 0, 0),
+		RightLowerArm = guarded.RightElbow * CFrame.Angles(math.rad(4), 0, 0),
 	})
 	keyframe(sequence, 2, {
-		UpperTorso = CFrame.Angles(math.rad(1), 0, math.rad(0.4)),
-		Head = CFrame.Angles(0, math.rad(4), 0),
+		UpperTorso = CFrame.Angles(math.rad(2), 0, math.rad(2)),
+		Head = CFrame.Angles(0, math.rad(12), 0),
 		LeftUpperArm = guarded.LeftShoulder,
 		LeftLowerArm = guarded.LeftElbow,
 		RightUpperArm = guarded.RightShoulder,
 		RightLowerArm = guarded.RightElbow,
 	})
 	keyframe(sequence, 3, {
-		UpperTorso = CFrame.new(0, -0.04, 0) * CFrame.Angles(math.rad(1.4), 0, math.rad(-0.25)),
-		Head = CFrame.Angles(math.rad(0.6), 0, 0),
+		UpperTorso = CFrame.new(0, -0.22, 0) * CFrame.Angles(math.rad(3), 0, math.rad(-1.5)),
+		Head = CFrame.Angles(math.rad(2), 0, 0),
 		LeftUpperArm = guarded.LeftShoulder,
-		LeftLowerArm = guarded.LeftElbow * CFrame.Angles(math.rad(1), 0, 0),
-		RightUpperArm = guarded.RightShoulder * CFrame.Angles(math.rad(1), 0, 0),
+		LeftLowerArm = guarded.LeftElbow * CFrame.Angles(math.rad(4), 0, 0),
+		RightUpperArm = guarded.RightShoulder * CFrame.Angles(math.rad(4), 0, 0),
 		RightLowerArm = guarded.RightElbow,
 	})
 	keyframe(sequence, 4, {
-		UpperTorso = CFrame.Angles(math.rad(1), 0, math.rad(-0.4)),
-		Head = CFrame.Angles(0, math.rad(-4), 0),
+		UpperTorso = CFrame.Angles(math.rad(2), 0, math.rad(-2)),
+		Head = CFrame.Angles(0, math.rad(-12), 0),
 		LeftUpperArm = guarded.LeftShoulder,
 		LeftLowerArm = guarded.LeftElbow,
 		RightUpperArm = guarded.RightShoulder,
@@ -101,7 +101,7 @@ function Library.BuildIdle()
 
 	sequence:SetAttribute("GuardianAnimation", "Idle")
 	sequence:SetAttribute("DurationSeconds", 4)
-	sequence:SetAttribute("SpecificationVersion", "1.0")
+	sequence:SetAttribute("SpecificationVersion", "1.1-DiagnosticVisible")
 	return sequence
 end
 
