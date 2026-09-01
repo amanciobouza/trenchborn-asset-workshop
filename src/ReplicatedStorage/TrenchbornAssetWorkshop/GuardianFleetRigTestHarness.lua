@@ -276,6 +276,10 @@ function Harness.Attach(model)
 
 		local nodeCount = 5
 		local deployed = {}
+		local launcherAttachment = Instance.new("Attachment")
+		launcherAttachment.Name = "NetLauncherTetherSource"
+		launcherAttachment.Parent = mouth
+		Debris:AddItem(launcherAttachment, 5.2)
 		for index = 1, nodeCount do
 			local projectile = Instance.new("Part")
 			projectile.Name = "ContainmentNetNodeProjectile"
@@ -290,6 +294,23 @@ function Harness.Attach(model)
 			projectile.Color = Color3.fromRGB(63, 226, 255)
 			projectile.Parent = effects
 			Debris:AddItem(projectile, 5.2)
+
+			local nodeAttachment = Instance.new("Attachment")
+			nodeAttachment.Name = "NetNodeTether"
+			nodeAttachment.Parent = projectile
+			local tether = Instance.new("Beam")
+			tether.Name = "LauncherTether" .. index
+			tether.Attachment0 = launcherAttachment
+			tether.Attachment1 = nodeAttachment
+			tether.Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, Color3.fromRGB(141, 239, 255)),
+				ColorSequenceKeypoint.new(1, Color3.fromRGB(42, 184, 255)),
+			})
+			tether.Width0 = 0.18
+			tether.Width1 = 0.1
+			tether.LightEmission = 0.9
+			tether.FaceCamera = true
+			tether.Parent = projectile
 			table.insert(deployed, projectile)
 		end
 
@@ -303,7 +324,7 @@ function Harness.Attach(model)
 				if projectile.Parent then
 					local angle = (index - 1) / nodeCount * math.pi * 2
 					local landing = ground + Vector3.new(math.cos(angle) * 5, 2.4, math.sin(angle) * 5)
-					local apex = (mouth.Position + landing) * 0.5 + Vector3.new(0, 18 + index * 0.5, 0)
+					local apex = (mouth.Position + landing) * 0.5 + Vector3.new(0, 27 + index * 1.2, 0)
 					projectile.Position = oneMinus * oneMinus * mouth.Position
 						+ 2 * oneMinus * alpha * apex
 						+ alpha * alpha * landing
