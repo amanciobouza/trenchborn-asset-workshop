@@ -467,10 +467,13 @@ function Harness.Attach(model)
 	local gameplayApi = model:FindFirstChild("Gameplay")
 	local requestAbility = gameplayApi and gameplayApi:FindFirstChild("RequestAbility")
 	local applyDamage = gameplayApi and gameplayApi:FindFirstChild("ApplyDamage")
-	local resetGameplay = gameplayApi and gameplayApi:FindFirstChild("Reset")
+	local resetGameplay = gameplayApi and (gameplayApi:FindFirstChild("Reset") or gameplayApi:FindFirstChild("ResetGuardian"))
 	local abilityRequested = gameplayApi and gameplayApi:FindFirstChild("AbilityRequested")
 	local stateChanged = gameplayApi and gameplayApi:FindFirstChild("StateChanged")
 	local damageTaken = gameplayApi and gameplayApi:FindFirstChild("DamageTaken")
+	local healthChanged = gameplayApi and gameplayApi:FindFirstChild("HealthChanged")
+	local wardenStaggered = gameplayApi and gameplayApi:FindFirstChild("Staggered")
+	local wardenDefeated = gameplayApi and gameplayApi:FindFirstChild("Defeated")
 
 	local function broadcast(message)
 		remote:FireAllClients(message, model)
@@ -520,6 +523,24 @@ function Harness.Attach(model)
 			elseif newState == "Idle" then
 				broadcast("PlayIdle")
 			end
+		end)
+	end
+
+	-- Warden-I uses dedicated gameplay events instead of Marshal-II's generic events.
+	if healthChanged and healthChanged:IsA("BindableEvent") then
+		healthChanged.Event:Connect(function(currentHealth, _, source)
+			if source ~= "Reset" and currentHealth > 0 then broadcast("PlayDamageReact") end
+			if source == "Reset" then broadcast("PlayIdle") end
+		end)
+	end
+	if wardenStaggered and wardenStaggered:IsA("BindableEvent") then
+		wardenStaggered.Event:Connect(function()
+			broadcast("PlayStagger")
+		end)
+	end
+	if wardenDefeated and wardenDefeated:IsA("BindableEvent") then
+		wardenDefeated.Event:Connect(function()
+			broadcast("PlayDefeat")
 		end)
 	end
 
