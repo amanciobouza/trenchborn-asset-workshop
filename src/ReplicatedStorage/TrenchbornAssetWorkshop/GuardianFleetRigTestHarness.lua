@@ -67,6 +67,7 @@ function Harness.Attach(model)
 	local controlRunning = false
 	local movementStartedAt = 0
 	local wasControlMoving = false
+	local maxTurnRate = math.rad(110)
 
 	local function stepSpeed(now)
 		local duration = controlRunning and runStepDuration or walkStepDuration
@@ -96,8 +97,14 @@ function Harness.Attach(model)
 			movementStartedAt = now
 		end
 		direction = Vector3.new(direction.X, 0, direction.Z).Unit
-		local nextPosition = root.Position + direction * stepSpeed(now) * deltaTime
-		root.CFrame = CFrame.lookAt(nextPosition, nextPosition + direction)
+		local facing = Vector3.new(root.CFrame.LookVector.X, 0, root.CFrame.LookVector.Z).Unit
+		local angle = math.acos(math.clamp(facing:Dot(direction), -1, 1))
+		local target = CFrame.lookAt(root.Position, root.Position + direction)
+		local alpha = angle > 0.001 and math.min(1, maxTurnRate * deltaTime / angle) or 1
+		local turned = root.CFrame:Lerp(target, alpha)
+		local travelDirection = Vector3.new(turned.LookVector.X, 0, turned.LookVector.Z).Unit
+		local nextPosition = root.Position + travelDirection * stepSpeed(now) * deltaTime
+		root.CFrame = CFrame.lookAt(nextPosition, nextPosition + travelDirection)
 	end)
 
 	Players.PlayerRemoving:Connect(function(player)
@@ -149,6 +156,8 @@ function Harness.Attach(model)
 		AlertIdle = function() end,
 		Walk = function() end,
 		Run = function() end,
+		TurnLeft = function() end,
+		TurnRight = function() end,
 		ControlGuardian = function() end,
 		Neutral = function()
 			pose({}, 0.35)
@@ -196,6 +205,10 @@ function Harness.Attach(model)
 			remote:FireClient(player, "PlayWalk", model)
 		elseif actionName == "Run" then
 			remote:FireClient(player, "PlayRun", model)
+		elseif actionName == "TurnLeft" then
+			remote:FireClient(player, "PlayTurnLeft", model)
+		elseif actionName == "TurnRight" then
+			remote:FireClient(player, "PlayTurnRight", model)
 		else
 			actions[actionName]()
 		end
@@ -208,6 +221,7 @@ function Harness.Attach(model)
 	model:SetAttribute("GuardianAlertIdlePreviewReady", true)
 	model:SetAttribute("GuardianWalkPreviewReady", true)
 	model:SetAttribute("GuardianRunPreviewReady", true)
+	model:SetAttribute("GuardianTurnPreviewReady", true)
 	model:SetAttribute("FleetRigTestInterface", "HUD")
 	model:SetAttribute("GuardianPossessionTestReady", true)
 	model:SetAttribute("GuardianControlSpeed", controlSpeed)
