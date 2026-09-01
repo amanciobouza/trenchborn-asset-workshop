@@ -17,6 +17,7 @@ local lastMoveSent = 0
 local wasMoving = false
 local wasRunning = false
 local locomotionStepDuration = 1
+local currentTurn
 local walkStartedAt = 0
 local plantedSide
 local footLocks = {}
@@ -39,7 +40,7 @@ local function playSequence(model, builderName, previewName)
 	animation.Name = previewName
 	animation.AnimationId = temporaryId
 	idleTrack = animator:LoadAnimation(animation)
-	idleTrack.Looped = true
+	idleTrack.Looped = sequence.Loop
 	idleTrack.Priority = sequence.Priority
 	idleTrack:Play(0.35)
 end
@@ -58,7 +59,7 @@ local panel = Instance.new("Frame")
 panel.Name = "Panel"
 panel.AnchorPoint = Vector2.new(1, 0.5)
 panel.Position = UDim2.new(1, -18, 0.5, 0)
-panel.Size = UDim2.fromOffset(310, 480)
+panel.Size = UDim2.fromOffset(310, 550)
 panel.BackgroundColor3 = Color3.fromRGB(20, 27, 31)
 panel.BackgroundTransparency = 0.08
 panel.BorderSizePixel = 0
@@ -66,7 +67,7 @@ panel.Parent = gui
 
 local sizeConstraint = Instance.new("UISizeConstraint")
 sizeConstraint.MinSize = Vector2.new(245, 285)
-sizeConstraint.MaxSize = Vector2.new(340, 510)
+sizeConstraint.MaxSize = Vector2.new(340, 580)
 sizeConstraint.Parent = panel
 
 local corner = Instance.new("UICorner")
@@ -130,6 +131,8 @@ local definitions = {
 	{"ALERT IDLE", "AlertIdle", Color3.fromRGB(188, 112, 45)},
 	{"WALK", "Walk", Color3.fromRGB(94, 116, 184)},
 	{"RUN", "Run", Color3.fromRGB(151, 77, 75)},
+	{"TURN LEFT", "TurnLeft", Color3.fromRGB(106, 92, 163)},
+	{"TURN RIGHT", "TurnRight", Color3.fromRGB(106, 92, 163)},
 	{"CONTROL GUARDIAN", "ControlGuardian", Color3.fromRGB(132, 78, 176)},
 	{"NEUTRAL", "Neutral", Color3.fromRGB(96, 102, 110)},
 }
@@ -332,6 +335,18 @@ RunService.RenderStepped:Connect(function()
 	local direction = right * x + forward * -z
 	if direction.Magnitude > 1 then direction = direction.Unit end
 	local moving = direction.Magnitude > 0.05
+	local desiredTurn
+	if moving then
+		local root = controlledModel:FindFirstChild("HumanoidRootPart")
+		local facing = root and Vector3.new(root.CFrame.LookVector.X, 0, root.CFrame.LookVector.Z)
+		if facing and facing.Magnitude > 0 then
+			local dot = math.clamp(facing.Unit:Dot(direction.Unit), -1, 1)
+			local angle = math.acos(dot)
+			if angle > math.rad(12) then
+				desiredTurn = facing.Unit:Cross(direction.Unit).Y > 0 and "Left" or "Right"
+			end
+		end
+	end
 	local running = moving and (keyState[Enum.KeyCode.LeftShift] or keyState[Enum.KeyCode.RightShift]) == true
 	if moving ~= wasMoving or (moving and running ~= wasRunning) then
 		wasMoving = moving
@@ -349,7 +364,21 @@ RunService.RenderStepped:Connect(function()
 			playSequence(controlledModel, "BuildIdle", "GuardianControlledIdle")
 		end
 	end
-	updateFootLock(moving, direction)
+	if desiredTurn ~= currentTurn then
+		currentTurn = desiredTurn
+		if currentTurn == "Left" then
+			playSequence(controlledModel, "BuildTurnLeft", "GuardianControlledTurnLeft")
+		elseif currentTurn == "Right" then
+			playSequence(controlledModel, "BuildTurnRight", "GuardianControlledTurnRight")
+		elseif moving then
+			playSequence(
+				controlledModel,
+				wasRunning and "BuildRun" or "BuildWalk",
+				wasRunning and "GuardianControlledRun" or "GuardianControlledWalk"
+			)
+		end
+	end
+	updateFootLock(moving and not currentTurn, direction)
 	if os.clock() - lastMoveSent >= 0.07 then
 		lastMoveSent = os.clock()
 		remote:FireServer("ControlMove", direction, running)
@@ -364,12 +393,14 @@ remote.OnClientEvent:Connect(function(message, payload)
 		setControl(false)
 		return
 	end
-	if message == "PlayIdle" or message == "PlayAlertIdle" or message == "PlayWalk" or message == "PlayRun" then
+	if message == "PlayIdle" or message == "PlayAlertIdle" or message == "PlayWalk" or message == "PlayRun" or message == "PlayTurnLeft" or message == "PlayTurnRight" then
 		local builders = {
 			PlayIdle = {"BuildIdle", "GuardianIdlePreview"},
 			PlayAlertIdle = {"BuildAlertIdle", "GuardianAlertIdlePreview"},
 			PlayWalk = {"BuildWalk", "GuardianWalkPreview"},
 			PlayRun = {"BuildRun", "GuardianRunPreview"},
+			PlayTurnLeft = {"BuildTurnLeft", "GuardianTurnLeftPreview"},
+			PlayTurnRight = {"BuildTurnRight", "GuardianTurnRightPreview"},
 		}
 		local selection = builders[message]
 		local builderName = selection[1]
