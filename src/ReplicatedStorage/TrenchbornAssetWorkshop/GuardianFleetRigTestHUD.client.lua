@@ -15,6 +15,9 @@ local previousCameraSubject
 local keyState = {}
 local lastMoveSent = 0
 local wasMoving = false
+local walkStartedAt = 0
+local plantedSide
+local footLocks = {}
 
 local function stopIdle()
 	if idleTrack and idleTrack.IsPlaying then
@@ -155,6 +158,72 @@ for order, definition in ipairs(definitions) do
 end
 
 
+
+local function clearFootLocks()
+	for _, lock in pairs(footLocks) do
+		if lock.control then lock.control:Destroy() end
+		if lock.target then lock.target:Destroy() end
+	end
+	footLocks = {}
+	plantedSide = nil
+end
+
+local function setupFootLocks(model)
+	clearFootLocks()
+	local humanoid = model:FindFirstChildWhichIsA("Humanoid")
+	assert(humanoid, "Guardian Humanoid not found for foot lock")
+	for _, side in ipairs({"Left", "Right"}) do
+		local upperLeg = model:FindFirstChild(side .. "UpperLeg")
+		local foot = model:FindFirstChild(side .. "Foot")
+		assert(upperLeg and foot, side .. " Guardian leg controls not found")
+
+		local target = Instance.new("Part")
+		target.Name = side .. "FootLockTarget"
+		target.Size = Vector3.new(0.4, 0.4, 0.4)
+		target.Transparency = 1
+		target.Anchored = true
+		target.CanCollide = false
+		target.CanTouch = false
+		target.CanQuery = false
+		target.CFrame = foot.CFrame
+		target.Parent = workspace
+
+		local control = Instance.new("IKControl")
+		control.Name = side .. "FootLock"
+		control.Type = Enum.IKControlType.Position
+		control.ChainRoot = upperLeg
+		control.EndEffector = foot
+		control.Target = target
+		control.SmoothTime = 0.06
+		control.Weight = 0
+		control.Priority = 20
+		control.Parent = humanoid
+
+		footLocks[side] = {control = control, target = target, foot = foot}
+	end
+end
+
+local function updateFootLock(moving)
+	if not moving then
+		for _, lock in pairs(footLocks) do lock.control.Weight = 0 end
+		plantedSide = nil
+		return
+	end
+	local cyclePhase = (os.clock() - walkStartedAt) % 2
+	local nextSide = cyclePhase < 1 and "Left" or "Right"
+	if nextSide ~= plantedSide then
+		plantedSide = nextSide
+		for side, lock in pairs(footLocks) do
+			if side == plantedSide then
+				lock.target.CFrame = lock.foot.CFrame
+				lock.control.Weight = 1
+			else
+				lock.control.Weight = 0
+			end
+		end
+	end
+end
+
 local function controlInput(_, inputState, inputObject)
 	local active = inputState ~= Enum.UserInputState.End and inputState ~= Enum.UserInputState.Cancel
 	keyState[inputObject.KeyCode] = active
@@ -179,6 +248,7 @@ local function setControl(enabled, model)
 			Enum.KeyCode.W, Enum.KeyCode.A, Enum.KeyCode.S, Enum.KeyCode.D,
 			Enum.KeyCode.Up, Enum.KeyCode.Left, Enum.KeyCode.Down, Enum.KeyCode.Right
 		)
+		setupFootLocks(model)
 		buttons.ControlGuardian.Text = "RELEASE GUARDIAN"
 		status.Text = "GUARDIAN CONTROL: WASD"
 		status.TextColor3 = Color3.fromRGB(194, 146, 235)
@@ -188,6 +258,7 @@ local function setControl(enabled, model)
 		remote:FireServer("ControlMove", Vector3.zero)
 		local humanoid = player.Character and player.Character:FindFirstChildWhichIsA("Humanoid")
 		camera.CameraSubject = previousCameraSubject or humanoid
+		clearFootLocks()
 		buttons.ControlGuardian.Text = "CONTROL GUARDIAN"
 		status.Text = "GUARDIAN RELEASED"
 		status.TextColor3 = Color3.fromRGB(116, 220, 169)
@@ -213,12 +284,15 @@ RunService.RenderStepped:Connect(function()
 	if moving ~= wasMoving then
 		wasMoving = moving
 		if moving then
+			walkStartedAt = os.clock()
+			plantedSide = nil
 			playSequence(controlledModel, "BuildWalk", "GuardianControlledWalk")
 		else
 			playSequence(controlledModel, "BuildIdle", "GuardianControlledIdle")
 		end
 	end
-	if os.clock() - lastMoveSent >= 0.07 or moving ~= wasMoving then
+	updateFootLock(moving)
+	if os.clock() - lastMoveSent >= 0.07 then
 		lastMoveSent = os.clock()
 		remote:FireServer("ControlMove", direction)
 	end
