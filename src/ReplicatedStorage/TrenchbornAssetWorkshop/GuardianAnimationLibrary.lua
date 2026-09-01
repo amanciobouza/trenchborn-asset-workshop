@@ -182,4 +182,42 @@ function Library.BuildWalk()
 	return sequence
 end
 
+
+function Library.BuildRun()
+	local sequence = Instance.new("KeyframeSequence")
+	sequence.Name = "GuardianRun"
+	sequence.Loop = true
+	sequence.Priority = Enum.AnimationPriority.Movement
+
+	local function runPose(leftHip, leftKnee, leftFoot, rightHip, rightKnee, rightFoot, height, roll)
+		return {
+			LowerTorso = CFrame.new(0, height, 0) * CFrame.Angles(math.rad(8), 0, math.rad(roll)),
+			UpperTorso = CFrame.Angles(math.rad(7), math.rad(-roll * 0.5), math.rad(-roll * 0.6)),
+			Head = CFrame.Angles(math.rad(-5), math.rad(roll * 0.5), 0),
+			LeftUpperArm = CFrame.Angles(math.rad(16 - leftHip * 0.18), math.rad(-7), math.rad(-11)),
+			LeftLowerArm = CFrame.Angles(math.rad(27), 0, 0),
+			RightUpperArm = CFrame.Angles(math.rad(18 - rightHip * 0.22), math.rad(5), math.rad(9)),
+			RightLowerArm = CFrame.Angles(math.rad(24), 0, 0),
+			LeftUpperLeg = CFrame.Angles(math.rad(leftHip), 0, 0),
+			LeftLowerLeg = CFrame.Angles(math.rad(leftKnee), 0, 0),
+			LeftFoot = CFrame.Angles(math.rad(leftFoot), 0, 0),
+			RightUpperLeg = CFrame.Angles(math.rad(rightHip), 0, 0),
+			RightLowerLeg = CFrame.Angles(math.rad(rightKnee), 0, 0),
+			RightFoot = CFrame.Angles(math.rad(rightFoot), 0, 0),
+		}
+	end
+
+	keyframe(sequence, 0, runPose(28, -10, -18, -24, -18, 15, 0, -2.5))
+	keyframe(sequence, 0.3, runPose(8, -16, 8, 8, -40, -16, -0.48, 3.5))
+	keyframe(sequence, 0.6, runPose(-24, -18, 15, 28, -10, -18, 0, 2.5))
+	keyframe(sequence, 0.9, runPose(8, -40, -16, 8, -16, 8, -0.48, -3.5))
+	keyframe(sequence, 1.2, runPose(28, -10, -18, -24, -18, 15, 0, -2.5))
+
+	sequence:SetAttribute("GuardianAnimation", "Run")
+	sequence:SetAttribute("DurationSeconds", 1.2)
+	sequence:SetAttribute("SpecificationVersion", "1.0")
+	sequence:SetAttribute("RootMotion", false)
+	return sequence
+end
+
 return Library
