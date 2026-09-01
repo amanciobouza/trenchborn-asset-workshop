@@ -220,4 +220,48 @@ function Library.BuildRun()
 	return sequence
 end
 
+
+local function buildTurn(name, direction)
+	local sequence = Instance.new("KeyframeSequence")
+	sequence.Name = "Guardian" .. name
+	sequence.Loop = false
+	sequence.Priority = Enum.AnimationPriority.Movement
+
+	local function turnPose(yaw, load, settle)
+		return {
+			LowerTorso = CFrame.new(0, -load, 0) * CFrame.Angles(math.rad(3 + load * 5), math.rad(yaw * direction), math.rad(-2 * direction)),
+			UpperTorso = CFrame.Angles(math.rad(4), math.rad(yaw * 0.7 * direction), math.rad(2 * direction)),
+			Head = CFrame.Angles(math.rad(-2), math.rad((yaw + 5) * direction), 0),
+			LeftUpperArm = CFrame.Angles(math.rad(14 + settle), math.rad(-5), math.rad(-10)),
+			LeftLowerArm = CFrame.Angles(math.rad(24), 0, 0),
+			RightUpperArm = CFrame.Angles(math.rad(16 + settle), math.rad(4), math.rad(9)),
+			RightLowerArm = CFrame.Angles(math.rad(21), 0, 0),
+			LeftUpperLeg = CFrame.Angles(math.rad(5 + load * 12), 0, 0),
+			LeftLowerLeg = CFrame.Angles(math.rad(-10 - load * 18), 0, 0),
+			LeftFoot = CFrame.Angles(math.rad(4), math.rad(5 * direction), 0),
+			RightUpperLeg = CFrame.Angles(math.rad(5 + load * 12), 0, 0),
+			RightLowerLeg = CFrame.Angles(math.rad(-10 - load * 18), 0, 0),
+			RightFoot = CFrame.Angles(math.rad(4), math.rad(5 * direction), 0),
+		}
+	end
+
+	keyframe(sequence, 0, turnPose(0, 0, 0))
+	keyframe(sequence, 0.2, turnPose(4, 0.18, 3))
+	keyframe(sequence, 0.5, turnPose(10, 0.28, 5))
+	keyframe(sequence, 0.75, turnPose(2, 0.05, 1))
+
+	sequence:SetAttribute("GuardianAnimation", name)
+	sequence:SetAttribute("DurationSeconds", 0.75)
+	sequence:SetAttribute("SpecificationVersion", "1.0")
+	return sequence
+end
+
+function Library.BuildTurnLeft()
+	return buildTurn("TurnLeft", 1)
+end
+
+function Library.BuildTurnRight()
+	return buildTurn("TurnRight", -1)
+end
+
 return Library
