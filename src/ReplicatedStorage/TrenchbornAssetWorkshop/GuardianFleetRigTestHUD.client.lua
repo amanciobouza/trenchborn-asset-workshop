@@ -179,6 +179,7 @@ local definitions = {
 	{"DEFEAT", "Defeat", Color3.fromRGB(91, 43, 48)},
 	{"SHIELD BLOCK", "ShieldBlock", Color3.fromRGB(42, 104, 135)},
 	{"PULSE FIRE", "PulseCannonFire", Color3.fromRGB(33, 137, 161)},
+	{"NET LAUNCH", "ContainmentNetLaunch", Color3.fromRGB(38, 151, 142)},
 	{"CONTROL GUARDIAN", "ControlGuardian", Color3.fromRGB(132, 78, 176)},
 	{"NEUTRAL", "Neutral", Color3.fromRGB(96, 102, 110)},
 }
@@ -644,7 +645,7 @@ remote.OnClientEvent:Connect(function(message, payload)
 		if not success then warn("Guardian damage reaction failed:", err) end
 		return
 	end
-	if message == "PlayIdle" or message == "PlayAlertIdle" or message == "PlayWalk" or message == "PlayRun" or message == "PlayTurnLeft" or message == "PlayTurnRight" or message == "PlayFall" or message == "PlayLand" or message == "PlayWalkBackward" or message == "PlayPulseCannonFire" then
+	if message == "PlayIdle" or message == "PlayAlertIdle" or message == "PlayWalk" or message == "PlayRun" or message == "PlayTurnLeft" or message == "PlayTurnRight" or message == "PlayFall" or message == "PlayLand" or message == "PlayWalkBackward" or message == "PlayPulseCannonFire" or message == "PlayContainmentNetLaunch" then
 		local builders = {
 			PlayIdle = {"BuildIdle", "GuardianIdlePreview"},
 			PlayAlertIdle = {"BuildAlertIdle", "GuardianAlertIdlePreview"},
@@ -656,6 +657,7 @@ remote.OnClientEvent:Connect(function(message, payload)
 			PlayLand = {"BuildLand", "GuardianLandPreview"},
 			PlayWalkBackward = {"BuildWalkBackward", "GuardianWalkBackwardPreview"},
 			PlayPulseCannonFire = {"BuildPulseCannonFire", "GuardianPulseCannonFirePreview"},
+			PlayContainmentNetLaunch = {"BuildContainmentNetLaunch", "GuardianContainmentNetLaunchPreview"},
 		}
 		local selection = builders[message]
 		local builderName = selection[1]
