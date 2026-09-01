@@ -364,20 +364,9 @@ RunService.RenderStepped:Connect(function()
 			playSequence(controlledModel, "BuildIdle", "GuardianControlledIdle")
 		end
 	end
-	if desiredTurn ~= currentTurn then
-		currentTurn = desiredTurn
-		if currentTurn == "Left" then
-			playSequence(controlledModel, "BuildTurnLeft", "GuardianControlledTurnLeft")
-		elseif currentTurn == "Right" then
-			playSequence(controlledModel, "BuildTurnRight", "GuardianControlledTurnRight")
-		elseif moving then
-			playSequence(
-				controlledModel,
-				wasRunning and "BuildRun" or "BuildWalk",
-				wasRunning and "GuardianControlledRun" or "GuardianControlledWalk"
-			)
-		end
-	end
+	-- Curved locomotion must keep the active Walk/Run cycle. A full-body
+	-- turn clip would replace the leg cycle and make both feet appear planted.
+	currentTurn = desiredTurn
 	updateFootLock(moving and not currentTurn, direction)
 	if os.clock() - lastMoveSent >= 0.07 then
 		lastMoveSent = os.clock()
