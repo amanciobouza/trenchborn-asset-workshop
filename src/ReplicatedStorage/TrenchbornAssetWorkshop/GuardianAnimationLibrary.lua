@@ -5,6 +5,7 @@ local HIERARCHY = {
 		LowerTorso = {
 			UpperTorso = {
 				Head = {},
+				NetLauncherControl = {},
 				LeftUpperArm = {
 					LeftLowerArm = {LeftHand = {}, RiotShieldControl = {}},
 				},
@@ -672,6 +673,48 @@ function Library.BuildPulseCannonFire()
 	sequence:SetAttribute("AimCompleteTimeSeconds", 0.52)
 	sequence:SetAttribute("DischargeTimeSeconds", 0.9)
 	sequence:SetAttribute("SpecificationVersion", "1.2-AimHoldRecoil")
+	return sequence
+end
+
+
+function Library.BuildContainmentNetLaunch()
+	local sequence = Instance.new("KeyframeSequence")
+	sequence.Name = "GuardianContainmentNetLaunch"
+	sequence.Loop = false
+	sequence.Priority = Enum.AnimationPriority.Action3
+
+	local function lockPose(recoil)
+		return {
+			LowerTorso = CFrame.new(0, -0.32 - recoil * 0.2, 0)
+				* CFrame.Angles(math.rad(4 + recoil * 3), 0, 0),
+			UpperTorso = CFrame.Angles(math.rad(-6 + recoil * 15), 0, 0),
+			Head = CFrame.Angles(math.rad(-5 + recoil * 7), 0, 0),
+			NetLauncherControl = CFrame.Angles(math.rad(-18 + recoil * 12), 0, 0),
+			LeftUpperArm = CFrame.Angles(math.rad(24), math.rad(-5), math.rad(-12)),
+			LeftLowerArm = CFrame.Angles(math.rad(34), 0, 0),
+			RightUpperArm = CFrame.Angles(math.rad(27), math.rad(5), math.rad(12)),
+			RightLowerArm = CFrame.Angles(math.rad(36), 0, 0),
+			LeftUpperLeg = CFrame.Angles(math.rad(14 + recoil * 4), 0, 0),
+			LeftLowerLeg = CFrame.Angles(math.rad(-35 - recoil * 5), 0, 0),
+			LeftFoot = CFrame.Angles(math.rad(19), 0, 0),
+			RightUpperLeg = CFrame.Angles(math.rad(11 + recoil * 4), 0, 0),
+			RightLowerLeg = CFrame.Angles(math.rad(-29 - recoil * 5), 0, 0),
+			RightFoot = CFrame.Angles(math.rad(17), 0, 0),
+		}
+	end
+
+	keyframe(sequence, 0, {})
+	keyframe(sequence, 0.35, lockPose(0))
+	keyframe(sequence, 0.72, lockPose(0))
+	keyframe(sequence, 0.82, lockPose(1))
+	keyframe(sequence, 1.02, lockPose(0.3))
+	keyframe(sequence, 1.28, lockPose(0))
+	keyframe(sequence, 1.55, {})
+
+	sequence:SetAttribute("GuardianAnimation", "ContainmentNetLaunch")
+	sequence:SetAttribute("DurationSeconds", 1.55)
+	sequence:SetAttribute("LaunchTimeSeconds", 0.82)
+	sequence:SetAttribute("SpecificationVersion", "1.0")
 	return sequence
 end
 
