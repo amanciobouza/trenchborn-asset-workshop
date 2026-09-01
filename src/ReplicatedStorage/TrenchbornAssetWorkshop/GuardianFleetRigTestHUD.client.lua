@@ -263,7 +263,9 @@ local function updateFootLock(moving, moveDirection)
 		for side, lock in pairs(footLocks) do
 			if side == plantedSide then
 				lock.target.CFrame = lock.foot.CFrame
-				lock.control.Weight = 1
+				-- Running uses a soft lock: full IK over-constrains the short,
+				-- powerful stride and twists the mechanical knee sideways.
+				lock.control.Weight = wasRunning and 0.35 or 1
 			else
 				lock.control.Weight = 0
 			end
