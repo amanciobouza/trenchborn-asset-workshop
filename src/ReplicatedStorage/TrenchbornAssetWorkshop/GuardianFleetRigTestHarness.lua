@@ -71,6 +71,14 @@ function Harness.Attach(model)
 	local movementStartedAt = 0
 	local wasControlMoving = false
 	local maxTurnRate = math.rad(110)
+	local soundscape = model:FindFirstChild("GuardianSoundscape")
+	local soundRequested = soundscape and soundscape:FindFirstChild("SoundRequested")
+	local lastFootstepIndex = -1
+	local function requestSound(name, speedScale, volumeScale)
+		if soundRequested and soundRequested:IsA("BindableEvent") then
+			soundRequested:Fire(name, speedScale, volumeScale)
+		end
+	end
 
 	local function stepSpeed(now)
 		local duration = controlRunning and runStepDuration or (controlBackward and backwardStepDuration or walkStepDuration)
@@ -98,6 +106,13 @@ function Harness.Attach(model)
 		if not wasControlMoving then
 			wasControlMoving = true
 			movementStartedAt = now
+			lastFootstepIndex = -1
+		end
+		local soundStepDuration = controlRunning and runStepDuration or (controlBackward and backwardStepDuration or walkStepDuration)
+		local footstepIndex = math.floor((now - movementStartedAt) / soundStepDuration)
+		if footstepIndex ~= lastFootstepIndex then
+			lastFootstepIndex = footstepIndex
+			requestSound(controlRunning and "FootstepRun" or "FootstepWalk", 0.96 + math.random() * 0.08)
 		end
 		direction = Vector3.new(direction.X, 0, direction.Z).Unit
 		local desiredFacing = controlBackward and -direction or direction
@@ -556,8 +571,10 @@ function Harness.Attach(model)
 			remote:FireClient(player, "PlayAlertIdle", model)
 		elseif actionName == "Walk" then
 			remote:FireClient(player, "PlayWalk", model)
+			requestSound("FootstepWalk")
 		elseif actionName == "Run" then
 			remote:FireClient(player, "PlayRun", model)
+			requestSound("FootstepRun")
 		elseif actionName == "TurnLeft" then
 			remote:FireClient(player, "PlayTurnLeft", model)
 		elseif actionName == "TurnRight" then
@@ -566,6 +583,7 @@ function Harness.Attach(model)
 			remote:FireClient(player, "PlayFall", model)
 		elseif actionName == "Land" then
 			remote:FireClient(player, "PlayLand", model)
+			requestSound("Land")
 		elseif actionName == "WalkBackward" then
 			remote:FireClient(player, "PlayWalkBackward", model)
 		elseif actionName == "DamageReact" then
