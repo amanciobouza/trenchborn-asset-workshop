@@ -667,14 +667,8 @@ function Harness.Attach(model)
 		end)
 	end
 	if wardenDefeated and wardenDefeated:IsA("BindableEvent") then
-		wardenDefeated.Event:Connect(function(_, delaySeconds)
+		wardenDefeated.Event:Connect(function()
 			broadcast("PlayDefeat")
-			task.delay(delaySeconds or 3, function()
-				if model.Parent and model:GetAttribute("GuardianState") == "Defeated"
-					and resetGameplay and resetGameplay:IsA("BindableFunction") then
-					resetGameplay:Invoke()
-				end
-			end)
 		end)
 	end
 
