@@ -448,6 +448,73 @@ function Harness.Attach(model)
 		end)
 	end
 
+	local gameplayApi = model:FindFirstChild("Gameplay")
+	local requestAbility = gameplayApi and gameplayApi:FindFirstChild("RequestAbility")
+	local applyDamage = gameplayApi and gameplayApi:FindFirstChild("ApplyDamage")
+	local resetGameplay = gameplayApi and gameplayApi:FindFirstChild("Reset")
+	local abilityRequested = gameplayApi and gameplayApi:FindFirstChild("AbilityRequested")
+	local stateChanged = gameplayApi and gameplayApi:FindFirstChild("StateChanged")
+	local damageTaken = gameplayApi and gameplayApi:FindFirstChild("DamageTaken")
+
+	local function broadcast(message)
+		remote:FireAllClients(message, model)
+	end
+
+	if abilityRequested and abilityRequested:IsA("BindableEvent") then
+		abilityRequested.Event:Connect(function(name, target, ability)
+			if name == "RiotShield" then
+				broadcast("PlayShieldBlock")
+				task.delay(ability.Duration, function()
+					if model:GetAttribute("GuardianState") ~= "Defeated" then broadcast("PlayIdle") end
+				end)
+			elseif name == "PulseCannon" then
+				broadcast("PlayPulseCannonFire")
+				task.delay(0.9, firePulsePreview)
+				task.delay(1.62, function()
+					if model:GetAttribute("GuardianState") ~= "Defeated" then broadcast("PlayIdle") end
+				end)
+			elseif name == "ContainmentNet" then
+				broadcast("PlayContainmentNetLaunch")
+				setEnemyLocked(true)
+				task.delay(1.35, function()
+					setEnemyLocked(false)
+					launchNetPreview()
+				end)
+				task.delay(2.1, function()
+					if model:GetAttribute("GuardianState") ~= "Defeated" then broadcast("PlayIdle") end
+				end)
+			end
+		end)
+	end
+
+	if damageTaken and damageTaken:IsA("BindableEvent") then
+		damageTaken.Event:Connect(function(healthDamage)
+			if healthDamage > 0 and model:GetAttribute("GuardianState") ~= "Defeated" then
+				broadcast("PlayDamageReact")
+			end
+		end)
+	end
+
+	if stateChanged and stateChanged:IsA("BindableEvent") then
+		stateChanged.Event:Connect(function(newState)
+			if newState == "Staggered" then
+				broadcast("PlayStagger")
+			elseif newState == "Defeated" then
+				broadcast("PlayDefeat")
+			elseif newState == "Idle" then
+				broadcast("PlayIdle")
+			end
+		end)
+	end
+
+	local function invokeAbility(name)
+		if not requestAbility or not requestAbility:IsA("BindableFunction") then return false end
+		local target = workspace:FindFirstChild("TestKaijuTarget", true)
+		local ok, reason = requestAbility:Invoke(name, target)
+		if not ok then warn("Guardian ability request rejected:", name, reason) end
+		return ok
+	end
+
 	remote.OnServerEvent:Connect(function(player, actionName, payload, option, backwardOption)
 		if type(actionName) ~= "string" then return end
 		if actionName == "ControlMove" then
@@ -502,24 +569,43 @@ function Harness.Attach(model)
 		elseif actionName == "WalkBackward" then
 			remote:FireClient(player, "PlayWalkBackward", model)
 		elseif actionName == "DamageReact" then
-			remote:FireClient(player, "PlayDamageReact", model)
+			if applyDamage and applyDamage:IsA("BindableFunction") then
+				applyDamage:Invoke(250, true)
+			else
+				remote:FireClient(player, "PlayDamageReact", model)
+			end
 		elseif actionName == "Stagger" then
-			remote:FireClient(player, "PlayStagger", model)
+			if applyDamage and applyDamage:IsA("BindableFunction") then
+				applyDamage:Invoke(model:GetAttribute("StaggerThreshold") or 1800, false)
+			else
+				remote:FireClient(player, "PlayStagger", model)
+			end
 		elseif actionName == "Defeat" then
-			remote:FireClient(player, "PlayDefeat", model)
+			if applyDamage and applyDamage:IsA("BindableFunction") then
+				applyDamage:Invoke(model:GetAttribute("Health") or 999999, false)
+			else
+				remote:FireClient(player, "PlayDefeat", model)
+			end
 		elseif actionName == "ShieldBlock" then
-			remote:FireClient(player, "PlayShieldBlock", model)
+			if not invokeAbility("RiotShield") then remote:FireClient(player, "PlayShieldBlock", model) end
 		elseif actionName == "PulseCannonFire" then
-			remote:FireClient(player, "PlayPulseCannonFire", model)
-			task.delay(0.9, firePulsePreview)
+			if not invokeAbility("PulseCannon") then
+				remote:FireClient(player, "PlayPulseCannonFire", model)
+				task.delay(0.9, firePulsePreview)
+			end
 		elseif actionName == "ContainmentNetLaunch" then
-			remote:FireClient(player, "PlayContainmentNetLaunch", model)
-			setEnemyLocked(true)
-			task.delay(1.35, function()
-				setEnemyLocked(false)
-				launchNetPreview()
-			end)
+			if not invokeAbility("ContainmentNet") then
+				remote:FireClient(player, "PlayContainmentNetLaunch", model)
+				setEnemyLocked(true)
+				task.delay(1.35, function()
+					setEnemyLocked(false)
+					launchNetPreview()
+				end)
+			end
 		else
+			if actionName == "Neutral" and resetGameplay and resetGameplay:IsA("BindableFunction") then
+				resetGameplay:Invoke()
+			end
 			actions[actionName]()
 		end
 		remote:FireClient(player, "Completed", actionName)
