@@ -269,8 +269,8 @@ function Harness.Attach(model)
 		source.Parent = strikeHead
 		local contact = Instance.new("Attachment")
 		contact.Name = "ShockArcContact"
-		contact.Position = target.CFrame:PointToObjectSpace(strikeHead.Position)
-		contact.Parent = target
+		contact.Position = Vector3.new(0, 1.1, 0)
+		contact.Parent = strikeHead
 		Debris:AddItem(source, 0.35)
 		Debris:AddItem(contact, 0.35)
 
@@ -311,14 +311,19 @@ function Harness.Attach(model)
 		burst.Name = "ShockBatonContactFlash"
 		burst.Shape = Enum.PartType.Ball
 		burst.Size = Vector3.new(1.8, 1.8, 1.8)
-		burst.CFrame = CFrame.new(strikeHead.Position)
-		burst.Anchored = true
+		burst.CFrame = strikeHead.CFrame
+		burst.Anchored = false
 		burst.CanCollide = false
 		burst.CanTouch = false
 		burst.CanQuery = false
 		burst.Material = Enum.Material.Neon
 		burst.Color = Color3.fromRGB(176, 255, 205)
+		burst.Massless = true
 		burst.Parent = effects
+		local burstWeld = Instance.new("WeldConstraint")
+		burstWeld.Part0 = strikeHead
+		burstWeld.Part1 = burst
+		burstWeld.Parent = burst
 		Debris:AddItem(burst, 0.25)
 		TweenService:Create(burst, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
 			Size = Vector3.new(7, 7, 7),
@@ -751,10 +756,17 @@ function Harness.Attach(model)
 			end
 		elseif actionName == "ShockBaton" then
 			remote:FireClient(player, "PlayShockBaton", model)
+			requestSound("BatonWindup")
+			task.delay(0.56, function()
+				requestSound("BatonShock")
+				requestSound("BatonImpact")
+				shockBatonPreview()
+			end)
 			invokeAbility("ShockBaton")
-			task.delay(0.56, shockBatonPreview)
 		elseif actionName == "WarningPulse" then
 			remote:FireClient(player, "PlayWarningPulse", model)
+			requestSound("PulseCharge")
+			task.delay(1.1, function() requestSound("WarningPulse") end)
 			warningPulsePreview()
 			invokeAbility("WarningPulse")
 		elseif actionName == "ShieldBlock" then
