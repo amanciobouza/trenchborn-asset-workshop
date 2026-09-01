@@ -600,7 +600,7 @@ function Library.BuildShieldBlock()
 			LeftUpperArm = leftUpper,
 			LeftLowerArm = leftLower,
 			-- Counter-rotate the mount so the shield remains vertical in world space.
-			RiotShieldControl = CFrame.new(0, -1.3, -0.85) * (leftUpper * leftLower):Inverse(),
+			RiotShieldControl = CFrame.new(0, -4.0, -0.85) * (leftUpper * leftLower):Inverse(),
 			-- Cannon arm remains tucked behind the shield line.
 			RightUpperArm = CFrame.Angles(math.rad(25), math.rad(7), math.rad(13)),
 			RightLowerArm = CFrame.Angles(math.rad(38), 0, 0),
@@ -619,7 +619,7 @@ function Library.BuildShieldBlock()
 		UpperTorso = CFrame.Angles(math.rad(-2), math.rad(-3), math.rad(1)),
 		LeftUpperArm = CFrame.Angles(math.rad(36), math.rad(-2), math.rad(18)),
 		LeftLowerArm = CFrame.Angles(math.rad(-10), math.rad(-1), math.rad(6)),
-		RiotShieldControl = CFrame.new(0, -0.6, -0.4) * (CFrame.Angles(math.rad(36), math.rad(-2), math.rad(18))
+		RiotShieldControl = CFrame.new(0, -2.0, -0.4) * (CFrame.Angles(math.rad(36), math.rad(-2), math.rad(18))
 			* CFrame.Angles(math.rad(-10), math.rad(-1), math.rad(6))):Inverse(),
 	})
 	keyframe(sequence, 0.48, blockPose(0.08))
@@ -628,7 +628,7 @@ function Library.BuildShieldBlock()
 	sequence:SetAttribute("GuardianAnimation", "ShieldBlock")
 	sequence:SetAttribute("DurationSeconds", 0.82)
 	sequence:SetAttribute("HeldState", true)
-	sequence:SetAttribute("SpecificationVersion", "1.4-LoweredShieldClearHand")
+	sequence:SetAttribute("SpecificationVersion", "1.5-SightlineClearance")
 	return sequence
 end
 
