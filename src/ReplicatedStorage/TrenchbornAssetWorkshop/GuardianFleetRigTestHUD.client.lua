@@ -27,7 +27,7 @@ local function playSequence(model, builderName, previewName)
 	animation.AnimationId = temporaryId
 	idleTrack = animator:LoadAnimation(animation)
 	idleTrack.Looped = true
-	idleTrack.Priority = Enum.AnimationPriority.Idle
+	idleTrack.Priority = sequence.Priority
 	idleTrack:Play(0.35)
 end
 
@@ -115,6 +115,7 @@ local definitions = {
 	{"KNEE LOAD", "KneeLoad", Color3.fromRGB(48, 145, 104)},
 	{"IDLE LOOP", "IdleLoop", Color3.fromRGB(48, 145, 104)},
 	{"ALERT IDLE", "AlertIdle", Color3.fromRGB(188, 112, 45)},
+	{"WALK", "Walk", Color3.fromRGB(94, 116, 184)},
 	{"NEUTRAL", "Neutral", Color3.fromRGB(96, 102, 110)},
 }
 
@@ -145,9 +146,15 @@ for order, definition in ipairs(definitions) do
 end
 
 remote.OnClientEvent:Connect(function(message, payload)
-	if message == "PlayIdle" or message == "PlayAlertIdle" then
-		local builderName = message == "PlayIdle" and "BuildIdle" or "BuildAlertIdle"
-		local previewName = message == "PlayIdle" and "GuardianIdlePreview" or "GuardianAlertIdlePreview"
+	if message == "PlayIdle" or message == "PlayAlertIdle" or message == "PlayWalk" then
+		local builders = {
+			PlayIdle = {"BuildIdle", "GuardianIdlePreview"},
+			PlayAlertIdle = {"BuildAlertIdle", "GuardianAlertIdlePreview"},
+			PlayWalk = {"BuildWalk", "GuardianWalkPreview"},
+		}
+		local selection = builders[message]
+		local builderName = selection[1]
+		local previewName = selection[2]
 		local success, err = pcall(playSequence, payload, builderName, previewName)
 		if not success then
 			status.Text = "ANIMATION ERROR"
