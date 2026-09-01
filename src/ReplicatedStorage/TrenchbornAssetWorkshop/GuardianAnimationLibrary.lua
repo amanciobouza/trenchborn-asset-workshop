@@ -264,4 +264,92 @@ function Library.BuildTurnRight()
 	return buildTurn("TurnRight", -1)
 end
 
+
+function Library.BuildFall()
+	local sequence = Instance.new("KeyframeSequence")
+	sequence.Name = "GuardianFall"
+	sequence.Loop = true
+	sequence.Priority = Enum.AnimationPriority.Action
+
+	local function fallPose(pulse)
+		return {
+			LowerTorso = CFrame.Angles(math.rad(-3 + pulse), 0, 0),
+			UpperTorso = CFrame.Angles(math.rad(7 - pulse), 0, 0),
+			Head = CFrame.Angles(math.rad(-6), 0, 0),
+			LeftUpperArm = CFrame.Angles(math.rad(26 + pulse), math.rad(-8), math.rad(-20)),
+			LeftLowerArm = CFrame.Angles(math.rad(34), 0, 0),
+			RightUpperArm = CFrame.Angles(math.rad(25 + pulse), math.rad(6), math.rad(15)),
+			RightLowerArm = CFrame.Angles(math.rad(31), 0, 0),
+			LeftUpperLeg = CFrame.Angles(math.rad(9), 0, 0),
+			LeftLowerLeg = CFrame.Angles(math.rad(-22 - pulse), 0, 0),
+			LeftFoot = CFrame.Angles(math.rad(18), 0, 0),
+			RightUpperLeg = CFrame.Angles(math.rad(5), 0, 0),
+			RightLowerLeg = CFrame.Angles(math.rad(-18 + pulse), 0, 0),
+			RightFoot = CFrame.Angles(math.rad(16), 0, 0),
+		}
+	end
+
+	keyframe(sequence, 0, fallPose(0))
+	keyframe(sequence, 0.45, fallPose(3))
+	keyframe(sequence, 0.9, fallPose(0))
+	sequence:SetAttribute("GuardianAnimation", "Fall")
+	sequence:SetAttribute("DurationSeconds", 0.9)
+	sequence:SetAttribute("SpecificationVersion", "1.0")
+	return sequence
+end
+
+function Library.BuildLand()
+	local sequence = Instance.new("KeyframeSequence")
+	sequence.Name = "GuardianLand"
+	sequence.Loop = false
+	sequence.Priority = Enum.AnimationPriority.Action
+
+	keyframe(sequence, 0, {
+		UpperTorso = CFrame.Angles(math.rad(7), 0, 0),
+		LeftUpperLeg = CFrame.Angles(math.rad(8), 0, 0),
+		LeftLowerLeg = CFrame.Angles(math.rad(-20), 0, 0),
+		RightUpperLeg = CFrame.Angles(math.rad(8), 0, 0),
+		RightLowerLeg = CFrame.Angles(math.rad(-20), 0, 0),
+	})
+	keyframe(sequence, 0.12, {
+		LowerTorso = CFrame.new(0, -0.65, 0) * CFrame.Angles(math.rad(7), 0, 0),
+		UpperTorso = CFrame.Angles(math.rad(12), 0, 0),
+		Head = CFrame.Angles(math.rad(-9), 0, 0),
+		LeftUpperArm = CFrame.Angles(math.rad(32), math.rad(-8), math.rad(-22)),
+		LeftLowerArm = CFrame.Angles(math.rad(42), 0, 0),
+		RightUpperArm = CFrame.Angles(math.rad(30), math.rad(5), math.rad(17)),
+		RightLowerArm = CFrame.Angles(math.rad(38), 0, 0),
+		LeftUpperLeg = CFrame.Angles(math.rad(16), 0, 0),
+		LeftLowerLeg = CFrame.Angles(math.rad(-42), 0, 0),
+		LeftFoot = CFrame.Angles(math.rad(11), 0, 0),
+		RightUpperLeg = CFrame.Angles(math.rad(16), 0, 0),
+		RightLowerLeg = CFrame.Angles(math.rad(-42), 0, 0),
+		RightFoot = CFrame.Angles(math.rad(11), 0, 0),
+	})
+	keyframe(sequence, 0.46, {
+		LowerTorso = CFrame.new(0, -0.2, 0) * CFrame.Angles(math.rad(3), 0, 0),
+		UpperTorso = CFrame.Angles(math.rad(5), 0, 0),
+		LeftUpperArm = CFrame.Angles(math.rad(18), math.rad(-7), math.rad(-14)),
+		LeftLowerArm = CFrame.Angles(math.rad(27), 0, 0),
+		RightUpperArm = CFrame.Angles(math.rad(19), math.rad(5), math.rad(11)),
+		RightLowerArm = CFrame.Angles(math.rad(24), 0, 0),
+		LeftUpperLeg = CFrame.Angles(math.rad(6), 0, 0),
+		LeftLowerLeg = CFrame.Angles(math.rad(-14), 0, 0),
+		RightUpperLeg = CFrame.Angles(math.rad(6), 0, 0),
+		RightLowerLeg = CFrame.Angles(math.rad(-14), 0, 0),
+	})
+	keyframe(sequence, 0.8, {
+		UpperTorso = CFrame.Angles(math.rad(3), 0, 0),
+		Head = CFrame.Angles(math.rad(-2), 0, 0),
+		LeftUpperArm = CFrame.Angles(math.rad(12), 0, math.rad(-7)),
+		LeftLowerArm = CFrame.Angles(math.rad(18), 0, 0),
+		RightUpperArm = CFrame.Angles(math.rad(11), 0, math.rad(7)),
+		RightLowerArm = CFrame.Angles(math.rad(16), 0, 0),
+	})
+	sequence:SetAttribute("GuardianAnimation", "Land")
+	sequence:SetAttribute("DurationSeconds", 0.8)
+	sequence:SetAttribute("SpecificationVersion", "1.0")
+	return sequence
+end
+
 return Library
