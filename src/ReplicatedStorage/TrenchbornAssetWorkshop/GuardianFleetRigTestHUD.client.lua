@@ -230,7 +230,7 @@ local function setupFootLocks(model)
 	end
 end
 
-local function updateFootLock(moving)
+local function updateFootLock(moving, moveDirection)
 	for _, lock in pairs(footLocks) do
 		lock.pole.Position = lock.root.Position
 			+ lock.root.CFrame.RightVector * lock.sideSign * 4.5
@@ -238,6 +238,16 @@ local function updateFootLock(moving)
 			- lock.root.CFrame.UpVector * 10
 	end
 	if not moving then
+		for _, lock in pairs(footLocks) do lock.control.Weight = 0 end
+		plantedSide = nil
+		return
+	end
+	local root = controlledModel and controlledModel:FindFirstChild("HumanoidRootPart")
+	local flatFacing = root and Vector3.new(root.CFrame.LookVector.X, 0, root.CFrame.LookVector.Z)
+	local aligned = flatFacing and flatFacing.Magnitude > 0
+		and moveDirection.Magnitude > 0
+		and flatFacing.Unit:Dot(moveDirection.Unit) > 0.985
+	if not aligned or os.clock() - walkStartedAt < 0.15 then
 		for _, lock in pairs(footLocks) do lock.control.Weight = 0 end
 		plantedSide = nil
 		return
@@ -324,7 +334,7 @@ RunService.RenderStepped:Connect(function()
 			playSequence(controlledModel, "BuildIdle", "GuardianControlledIdle")
 		end
 	end
-	updateFootLock(moving)
+	updateFootLock(moving, direction)
 	if os.clock() - lastMoveSent >= 0.07 then
 		lastMoveSent = os.clock()
 		remote:FireServer("ControlMove", direction)
