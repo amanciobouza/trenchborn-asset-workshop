@@ -117,7 +117,7 @@ function SoundController.Attach(model)
 		if baton then
 			baton.Event:Connect(function()
 				play("BatonWindup")
-				task.delay(0.05, function()
+				task.delay(0.56, function()
 					play("BatonShock")
 					play("BatonImpact")
 				end)
