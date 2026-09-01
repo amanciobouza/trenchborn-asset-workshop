@@ -240,6 +240,17 @@ function Harness.Attach(model)
 			remote:FireClient(player, "PlayShieldBlock", model)
 		elseif actionName == "PulseCannonFire" then
 			remote:FireClient(player, "PlayPulseCannonFire", model)
+			local gameplay = model:FindFirstChild("Gameplay")
+			local requestAbility = gameplay and gameplay:FindFirstChild("RequestAbility")
+			local testTarget = workspace:FindFirstChild("TestKaijuTarget", true)
+			if requestAbility and requestAbility:IsA("BindableFunction") and testTarget then
+				task.spawn(function()
+					local ok, reason = requestAbility:Invoke("PulseCannon", testTarget)
+					if not ok then warn("Guardian Pulse Cannon gameplay request rejected:", reason) end
+				end)
+			else
+				warn("Guardian Pulse Cannon preview requires Gameplay.RequestAbility and TestKaijuTarget")
+			end
 		else
 			actions[actionName]()
 		end
