@@ -782,4 +782,61 @@ function Library.BuildShockBaton()
 	return sequence
 end
 
+
+function Library.BuildWarningPulse()
+	local sequence = Instance.new("KeyframeSequence")
+	sequence.Name = "WardenWarningPulse"
+	sequence.Loop = false
+	sequence.Priority = Enum.AnimationPriority.Action3
+
+	local function chargePose(load)
+		return {
+			LowerTorso = CFrame.new(0, -0.28 - load * 0.28, 0)
+				* CFrame.Angles(math.rad(3 + load * 3), 0, 0),
+			UpperTorso = CFrame.Angles(math.rad(-4 - load * 4), 0, 0),
+			Head = CFrame.Angles(math.rad(2 + load * 2), 0, 0),
+			LeftUpperArm = CFrame.Angles(math.rad(16 + load * 8), math.rad(-7), math.rad(-22 - load * 5)),
+			LeftLowerArm = CFrame.Angles(math.rad(28 + load * 8), 0, math.rad(-4)),
+			RightUpperArm = CFrame.Angles(math.rad(16 + load * 8), math.rad(7), math.rad(22 + load * 5)),
+			RightLowerArm = CFrame.Angles(math.rad(28 + load * 8), 0, math.rad(4)),
+			LeftUpperLeg = CFrame.Angles(math.rad(13 + load * 4), 0, 0),
+			LeftLowerLeg = CFrame.Angles(math.rad(-31 - load * 6), 0, 0),
+			LeftFoot = CFrame.Angles(math.rad(17), 0, 0),
+			RightUpperLeg = CFrame.Angles(math.rad(13 + load * 4), 0, 0),
+			RightLowerLeg = CFrame.Angles(math.rad(-31 - load * 6), 0, 0),
+			RightFoot = CFrame.Angles(math.rad(17), 0, 0),
+		}
+	end
+
+	keyframe(sequence, 0, {})
+	keyframe(sequence, 0.28, chargePose(0))
+	keyframe(sequence, 0.82, chargePose(0.65))
+	keyframe(sequence, 1.06, chargePose(1))
+	-- Discharge recoil travels through the complete chassis while both feet remain planted.
+	keyframe(sequence, 1.12, {
+		LowerTorso = CFrame.new(0, -0.68, 0.28) * CFrame.Angles(math.rad(10), 0, 0),
+		UpperTorso = CFrame.Angles(math.rad(7), 0, 0),
+		Head = CFrame.Angles(math.rad(-5), 0, 0),
+		LeftUpperArm = CFrame.Angles(math.rad(34), math.rad(-8), math.rad(-34)),
+		LeftLowerArm = CFrame.Angles(math.rad(42), 0, math.rad(-6)),
+		RightUpperArm = CFrame.Angles(math.rad(34), math.rad(8), math.rad(34)),
+		RightLowerArm = CFrame.Angles(math.rad(42), 0, math.rad(6)),
+		LeftUpperLeg = CFrame.Angles(math.rad(19), 0, 0),
+		LeftLowerLeg = CFrame.Angles(math.rad(-42), 0, 0),
+		LeftFoot = CFrame.Angles(math.rad(20), 0, 0),
+		RightUpperLeg = CFrame.Angles(math.rad(19), 0, 0),
+		RightLowerLeg = CFrame.Angles(math.rad(-42), 0, 0),
+		RightFoot = CFrame.Angles(math.rad(20), 0, 0),
+	})
+	keyframe(sequence, 1.32, chargePose(0.25))
+	keyframe(sequence, 1.62, {})
+
+	sequence:SetAttribute("GuardianAnimation", "WarningPulse")
+	sequence:SetAttribute("DurationSeconds", 1.62)
+	sequence:SetAttribute("TelegraphSeconds", 1.1)
+	sequence:SetAttribute("DischargeTimeSeconds", 1.1)
+	sequence:SetAttribute("SpecificationVersion", "1.0-BracedRadialDischarge")
+	return sequence
+end
+
 return Library
