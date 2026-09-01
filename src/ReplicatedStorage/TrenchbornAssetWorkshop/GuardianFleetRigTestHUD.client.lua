@@ -15,6 +15,8 @@ local previousCameraSubject
 local keyState = {}
 local lastMoveSent = 0
 local wasMoving = false
+local wasRunning = false
+local locomotionStepDuration = 1
 local walkStartedAt = 0
 local plantedSide
 local footLocks = {}
@@ -127,6 +129,7 @@ local definitions = {
 	{"IDLE LOOP", "IdleLoop", Color3.fromRGB(48, 145, 104)},
 	{"ALERT IDLE", "AlertIdle", Color3.fromRGB(188, 112, 45)},
 	{"WALK", "Walk", Color3.fromRGB(94, 116, 184)},
+	{"RUN", "Run", Color3.fromRGB(151, 77, 75)},
 	{"CONTROL GUARDIAN", "ControlGuardian", Color3.fromRGB(132, 78, 176)},
 	{"NEUTRAL", "Neutral", Color3.fromRGB(96, 102, 110)},
 }
@@ -252,8 +255,9 @@ local function updateFootLock(moving, moveDirection)
 		plantedSide = nil
 		return
 	end
-	local cyclePhase = (os.clock() - walkStartedAt) % 2
-	local nextSide = cyclePhase < 1 and "Left" or "Right"
+	local fullCycle = locomotionStepDuration * 2
+	local cyclePhase = (os.clock() - walkStartedAt) % fullCycle
+	local nextSide = cyclePhase < locomotionStepDuration and "Left" or "Right"
 	if nextSide ~= plantedSide then
 		plantedSide = nextSide
 		for side, lock in pairs(footLocks) do
@@ -289,7 +293,8 @@ local function setControl(enabled, model)
 			false,
 			Enum.ContextActionPriority.High.Value + 100,
 			Enum.KeyCode.W, Enum.KeyCode.A, Enum.KeyCode.S, Enum.KeyCode.D,
-			Enum.KeyCode.Up, Enum.KeyCode.Left, Enum.KeyCode.Down, Enum.KeyCode.Right
+			Enum.KeyCode.Up, Enum.KeyCode.Left, Enum.KeyCode.Down, Enum.KeyCode.Right,
+			Enum.KeyCode.LeftShift, Enum.KeyCode.RightShift
 		)
 		setupFootLocks(model)
 		buttons.ControlGuardian.Text = "RELEASE GUARDIAN"
@@ -325,12 +330,19 @@ RunService.RenderStepped:Connect(function()
 	local direction = right * x + forward * -z
 	if direction.Magnitude > 1 then direction = direction.Unit end
 	local moving = direction.Magnitude > 0.05
-	if moving ~= wasMoving then
+	local running = moving and (keyState[Enum.KeyCode.LeftShift] or keyState[Enum.KeyCode.RightShift]) == true
+	if moving ~= wasMoving or (moving and running ~= wasRunning) then
 		wasMoving = moving
+		wasRunning = running
 		if moving then
 			walkStartedAt = os.clock()
+			locomotionStepDuration = running and 0.6 or 1
 			plantedSide = nil
-			playSequence(controlledModel, "BuildWalk", "GuardianControlledWalk")
+			if running then
+				playSequence(controlledModel, "BuildRun", "GuardianControlledRun")
+			else
+				playSequence(controlledModel, "BuildWalk", "GuardianControlledWalk")
+			end
 		else
 			playSequence(controlledModel, "BuildIdle", "GuardianControlledIdle")
 		end
@@ -338,7 +350,7 @@ RunService.RenderStepped:Connect(function()
 	updateFootLock(moving, direction)
 	if os.clock() - lastMoveSent >= 0.07 then
 		lastMoveSent = os.clock()
-		remote:FireServer("ControlMove", direction)
+		remote:FireServer("ControlMove", direction, running)
 	end
 end)
 
@@ -350,11 +362,12 @@ remote.OnClientEvent:Connect(function(message, payload)
 		setControl(false)
 		return
 	end
-	if message == "PlayIdle" or message == "PlayAlertIdle" or message == "PlayWalk" then
+	if message == "PlayIdle" or message == "PlayAlertIdle" or message == "PlayWalk" or message == "PlayRun" then
 		local builders = {
 			PlayIdle = {"BuildIdle", "GuardianIdlePreview"},
 			PlayAlertIdle = {"BuildAlertIdle", "GuardianAlertIdlePreview"},
 			PlayWalk = {"BuildWalk", "GuardianWalkPreview"},
+			PlayRun = {"BuildRun", "GuardianRunPreview"},
 		}
 		local selection = builders[message]
 		local builderName = selection[1]
