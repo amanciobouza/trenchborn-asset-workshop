@@ -61,13 +61,36 @@ function Harness.Attach(model)
 	local controlDirection = Vector3.zero
 	local controlUpdatedAt = 0
 	local controlSpeed = 12
+	local stepDuration = 1
+	local movementStartedAt = 0
+	local wasControlMoving = false
+
+	local function stepSpeed(now)
+		local phase = ((now - movementStartedAt) % stepDuration) / stepDuration
+		if phase < 0.12 then
+			return 3 -- Foot contact and chassis compression.
+		elseif phase < 0.52 then
+			return 21 -- Loaded leg drives the Guardian forward.
+		elseif phase < 0.78 then
+			return 9 -- Body passes over the planted foot.
+		end
+		return 4 -- Settle before the opposite foot contacts.
+	end
 
 	RunService.Heartbeat:Connect(function(deltaTime)
 		if not controllerPlayer then return end
-		local direction = os.clock() - controlUpdatedAt <= 0.3 and controlDirection or Vector3.zero
-		if direction.Magnitude < 0.01 then return end
+		local now = os.clock()
+		local direction = now - controlUpdatedAt <= 0.3 and controlDirection or Vector3.zero
+		if direction.Magnitude < 0.01 then
+			wasControlMoving = false
+			return
+		end
+		if not wasControlMoving then
+			wasControlMoving = true
+			movementStartedAt = now
+		end
 		direction = Vector3.new(direction.X, 0, direction.Z).Unit
-		local nextPosition = root.Position + direction * controlSpeed * deltaTime
+		local nextPosition = root.Position + direction * stepSpeed(now) * deltaTime
 		root.CFrame = CFrame.lookAt(nextPosition, nextPosition + direction)
 	end)
 
@@ -75,6 +98,7 @@ function Harness.Attach(model)
 		if player == controllerPlayer then
 			controllerPlayer = nil
 			controlDirection = Vector3.zero
+			wasControlMoving = false
 		end
 		lastRequest[player] = nil
 	end)
@@ -142,11 +166,13 @@ function Harness.Attach(model)
 			if controllerPlayer == player then
 				controllerPlayer = nil
 				controlDirection = Vector3.zero
+				wasControlMoving = false
 				remote:FireClient(player, "ControlDisabled")
 			else
 				if controllerPlayer then remote:FireClient(controllerPlayer, "ControlDisabled") end
 				controllerPlayer = player
 				controlDirection = Vector3.zero
+				wasControlMoving = false
 				controlUpdatedAt = os.clock()
 				remote:FireClient(player, "ControlEnabled", model)
 			end
@@ -170,6 +196,8 @@ function Harness.Attach(model)
 	model:SetAttribute("FleetRigTestInterface", "HUD")
 	model:SetAttribute("GuardianPossessionTestReady", true)
 	model:SetAttribute("GuardianControlSpeed", controlSpeed)
+	model:SetAttribute("GuardianLocomotionMode", "StepDriven")
+	model:SetAttribute("GuardianStepDuration", stepDuration)
 	return remote
 end
 
