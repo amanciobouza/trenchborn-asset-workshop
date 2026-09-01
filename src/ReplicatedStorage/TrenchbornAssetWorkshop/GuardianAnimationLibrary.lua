@@ -582,4 +582,42 @@ function Library.BuildDefeat()
 	return sequence
 end
 
+
+function Library.BuildShieldBlock()
+	local sequence = Instance.new("KeyframeSequence")
+	sequence.Name = "GuardianShieldBlock"
+	sequence.Loop = true
+	sequence.Priority = Enum.AnimationPriority.Action
+
+	local function blockPose(load)
+		return {
+			LowerTorso = CFrame.new(0, -0.2 - load, 0) * CFrame.Angles(math.rad(3), math.rad(-3), math.rad(-2)),
+			UpperTorso = CFrame.Angles(math.rad(-4), math.rad(-7), math.rad(3)),
+			Head = CFrame.Angles(math.rad(-2), math.rad(5), math.rad(-2)),
+			-- The shield is welded to LeftLowerArm, so both arm joints carry it.
+			LeftUpperArm = CFrame.Angles(math.rad(76 + load * 8), math.rad(-8), math.rad(-18)),
+			LeftLowerArm = CFrame.Angles(math.rad(-28), math.rad(-5), math.rad(8)),
+			-- Cannon arm remains tucked behind the shield line.
+			RightUpperArm = CFrame.Angles(math.rad(25), math.rad(7), math.rad(13)),
+			RightLowerArm = CFrame.Angles(math.rad(38), 0, 0),
+			LeftUpperLeg = CFrame.Angles(math.rad(9 + load * 7), 0, 0),
+			LeftLowerLeg = CFrame.Angles(math.rad(-24 - load * 9), 0, 0),
+			LeftFoot = CFrame.Angles(math.rad(15), 0, 0),
+			RightUpperLeg = CFrame.Angles(math.rad(6 + load * 4), 0, 0),
+			RightLowerLeg = CFrame.Angles(math.rad(-18 - load * 6), 0, 0),
+			RightFoot = CFrame.Angles(math.rad(12), 0, 0),
+		}
+	end
+
+	keyframe(sequence, 0, blockPose(0))
+	keyframe(sequence, 0.8, blockPose(0.08))
+	keyframe(sequence, 1.6, blockPose(0))
+
+	sequence:SetAttribute("GuardianAnimation", "ShieldBlock")
+	sequence:SetAttribute("DurationSeconds", 1.6)
+	sequence:SetAttribute("HeldState", true)
+	sequence:SetAttribute("SpecificationVersion", "1.0")
+	return sequence
+end
+
 return Library
