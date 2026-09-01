@@ -61,20 +61,26 @@ function Harness.Attach(model)
 	local controlDirection = Vector3.zero
 	local controlUpdatedAt = 0
 	local controlSpeed = 12
-	local stepDuration = 1
+	local runSpeed = 20
+	local walkStepDuration = 1
+	local runStepDuration = 0.6
+	local controlRunning = false
 	local movementStartedAt = 0
 	local wasControlMoving = false
 
 	local function stepSpeed(now)
-		local phase = ((now - movementStartedAt) % stepDuration) / stepDuration
-		if phase < 0.12 then
-			return 3 -- Foot contact and chassis compression.
-		elseif phase < 0.52 then
-			return 21 -- Loaded leg drives the Guardian forward.
-		elseif phase < 0.78 then
-			return 9 -- Body passes over the planted foot.
+		local duration = controlRunning and runStepDuration or walkStepDuration
+		local phase = ((now - movementStartedAt) % duration) / duration
+		if controlRunning then
+			if phase < 0.10 then return 6 end
+			if phase < 0.52 then return 34 end
+			if phase < 0.78 then return 15 end
+			return 7
 		end
-		return 4 -- Settle before the opposite foot contacts.
+		if phase < 0.12 then return 3 end
+		if phase < 0.52 then return 21 end
+		if phase < 0.78 then return 9 end
+		return 4
 	end
 
 	RunService.Heartbeat:Connect(function(deltaTime)
@@ -142,18 +148,24 @@ function Harness.Attach(model)
 		IdleLoop = function() end,
 		AlertIdle = function() end,
 		Walk = function() end,
+		Run = function() end,
 		ControlGuardian = function() end,
 		Neutral = function()
 			pose({}, 0.35)
 		end,
 	}
 
-	remote.OnServerEvent:Connect(function(player, actionName, payload)
+	remote.OnServerEvent:Connect(function(player, actionName, payload, option)
 		if type(actionName) ~= "string" then return end
 		if actionName == "ControlMove" then
 			if player == controllerPlayer and typeof(payload) == "Vector3" then
 				local flat = Vector3.new(payload.X, 0, payload.Z)
 				controlDirection = flat.Magnitude > 1 and flat.Unit or flat
+				local nextRunning = option == true
+				if nextRunning ~= controlRunning then
+					controlRunning = nextRunning
+					movementStartedAt = os.clock()
+				end
 				controlUpdatedAt = os.clock()
 			end
 			return
@@ -182,6 +194,8 @@ function Harness.Attach(model)
 			remote:FireClient(player, "PlayAlertIdle", model)
 		elseif actionName == "Walk" then
 			remote:FireClient(player, "PlayWalk", model)
+		elseif actionName == "Run" then
+			remote:FireClient(player, "PlayRun", model)
 		else
 			actions[actionName]()
 		end
@@ -193,11 +207,14 @@ function Harness.Attach(model)
 	model:SetAttribute("GuardianIdlePreviewReady", true)
 	model:SetAttribute("GuardianAlertIdlePreviewReady", true)
 	model:SetAttribute("GuardianWalkPreviewReady", true)
+	model:SetAttribute("GuardianRunPreviewReady", true)
 	model:SetAttribute("FleetRigTestInterface", "HUD")
 	model:SetAttribute("GuardianPossessionTestReady", true)
 	model:SetAttribute("GuardianControlSpeed", controlSpeed)
+	model:SetAttribute("GuardianRunSpeed", runSpeed)
 	model:SetAttribute("GuardianLocomotionMode", "StepDriven")
-	model:SetAttribute("GuardianStepDuration", stepDuration)
+	model:SetAttribute("GuardianStepDuration", walkStepDuration)
+	model:SetAttribute("GuardianRunStepDuration", runStepDuration)
 	return remote
 end
 
