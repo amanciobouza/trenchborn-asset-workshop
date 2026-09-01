@@ -197,14 +197,9 @@ end
 
 RunService.RenderStepped:Connect(function()
 	if not controlEnabled or not controlledModel then return end
-	local x = (keyState[Enum.KeyCode.D] or keyState[Enum.KeyCode.Right] and 1 or 0)
-		- (keyState[Enum.KeyCode.A] or keyState[Enum.KeyCode.Left] and 1 or 0)
-	local z = (keyState[Enum.KeyCode.S] or keyState[Enum.KeyCode.Down] and 1 or 0)
-		- (keyState[Enum.KeyCode.W] or keyState[Enum.KeyCode.Up] and 1 or 0)
-	-- Re-evaluate booleans explicitly because Luau's and/or expression returns booleans.
-	x = ((keyState[Enum.KeyCode.D] or keyState[Enum.KeyCode.Right]) and 1 or 0)
+	local x = ((keyState[Enum.KeyCode.D] or keyState[Enum.KeyCode.Right]) and 1 or 0)
 		- ((keyState[Enum.KeyCode.A] or keyState[Enum.KeyCode.Left]) and 1 or 0)
-	z = ((keyState[Enum.KeyCode.S] or keyState[Enum.KeyCode.Down]) and 1 or 0)
+	local z = ((keyState[Enum.KeyCode.S] or keyState[Enum.KeyCode.Down]) and 1 or 0)
 		- ((keyState[Enum.KeyCode.W] or keyState[Enum.KeyCode.Up]) and 1 or 0)
 
 	local camera = workspace.CurrentCamera
