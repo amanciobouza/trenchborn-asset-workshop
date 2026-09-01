@@ -204,6 +204,75 @@ function Harness.Attach(model)
 	end
 
 
+
+	local function shockBatonPreview()
+		local strikeHead = model:FindFirstChild("StrikeHead", true)
+		local target = workspace:FindFirstChild("TestKaijuTarget", true)
+		if not strikeHead or not strikeHead:IsA("BasePart") or not target or not target:IsA("BasePart") then return end
+
+		local source = Instance.new("Attachment")
+		source.Name = "ShockArcSource"
+		source.Parent = strikeHead
+		local contact = Instance.new("Attachment")
+		contact.Name = "ShockArcContact"
+		contact.Position = target.CFrame:PointToObjectSpace(strikeHead.Position)
+		contact.Parent = target
+		Debris:AddItem(source, 0.35)
+		Debris:AddItem(contact, 0.35)
+
+		local light = Instance.new("PointLight")
+		light.Color = Color3.fromRGB(126, 255, 173)
+		light.Brightness = 10
+		light.Range = 22
+		light.Parent = strikeHead
+		Debris:AddItem(light, 0.22)
+
+		for index = 1, 5 do
+			local beam = Instance.new("Beam")
+			beam.Name = "ShockBatonArc" .. index
+			beam.Attachment0 = source
+			beam.Attachment1 = contact
+			beam.Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, Color3.fromRGB(215, 255, 231)),
+				ColorSequenceKeypoint.new(0.45, Color3.fromRGB(75, 255, 147)),
+				ColorSequenceKeypoint.new(1, Color3.fromRGB(228, 255, 238)),
+			})
+			beam.Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.05),
+				NumberSequenceKeypoint.new(0.72, 0.15),
+				NumberSequenceKeypoint.new(1, 1),
+			})
+			beam.Width0 = 0.2 + index * 0.025
+			beam.Width1 = 0.08
+			beam.CurveSize0 = math.random(-30, 30) / 10
+			beam.CurveSize1 = math.random(-30, 30) / 10
+			beam.Segments = 5
+			beam.LightEmission = 1
+			beam.FaceCamera = true
+			beam.Parent = strikeHead
+			Debris:AddItem(beam, 0.14 + index * 0.018)
+		end
+
+		local burst = Instance.new("Part")
+		burst.Name = "ShockBatonContactFlash"
+		burst.Shape = Enum.PartType.Ball
+		burst.Size = Vector3.new(1.8, 1.8, 1.8)
+		burst.CFrame = CFrame.new(strikeHead.Position)
+		burst.Anchored = true
+		burst.CanCollide = false
+		burst.CanTouch = false
+		burst.CanQuery = false
+		burst.Material = Enum.Material.Neon
+		burst.Color = Color3.fromRGB(176, 255, 205)
+		burst.Parent = effects
+		Debris:AddItem(burst, 0.25)
+		TweenService:Create(burst, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+			Size = Vector3.new(7, 7, 7),
+			Transparency = 1,
+		}):Play()
+	end
+
+
 	local function setEnemyLocked(enabled)
 		local target = workspace:FindFirstChild("TestKaijuTarget", true)
 		if not target or not target:IsA("BasePart") then return end
@@ -628,7 +697,10 @@ function Harness.Attach(model)
 			end
 		elseif actionName == "ShockBaton" then
 			remote:FireClient(player, "PlayShockBaton", model)
-			invokeAbility("ShockBaton")
+			task.delay(0.56, function()
+				shockBatonPreview()
+				invokeAbility("ShockBaton")
+			end)
 		elseif actionName == "ShieldBlock" then
 			if not invokeAbility("RiotShield") then remote:FireClient(player, "PlayShieldBlock", model) end
 		elseif actionName == "PulseCannonFire" then
