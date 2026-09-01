@@ -438,4 +438,71 @@ function Library.BuildDamageReact()
 	return sequence
 end
 
+
+function Library.BuildStagger()
+	local sequence = Instance.new("KeyframeSequence")
+	sequence.Name = "GuardianStagger"
+	sequence.Loop = false
+	sequence.Priority = Enum.AnimationPriority.Action3
+
+	-- A heavy frontal impact drives the upper body back and forces a wide,
+	-- asymmetric recovery step. The feet remain mechanically aligned.
+	keyframe(sequence, 0, {})
+	keyframe(sequence, 0.1, {
+		LowerTorso = CFrame.new(0, -0.18, 0) * CFrame.Angles(math.rad(-7), math.rad(-3), math.rad(5)),
+		UpperTorso = CFrame.Angles(math.rad(-19), math.rad(-8), math.rad(-7)),
+		Head = CFrame.Angles(math.rad(15), math.rad(7), math.rad(5)),
+		LeftUpperArm = CFrame.Angles(math.rad(34), math.rad(-12), math.rad(-25)),
+		LeftLowerArm = CFrame.Angles(math.rad(47), 0, 0),
+		RightUpperArm = CFrame.Angles(math.rad(38), math.rad(9), math.rad(23)),
+		RightLowerArm = CFrame.Angles(math.rad(43), 0, 0),
+		LeftUpperLeg = CFrame.Angles(math.rad(13), 0, 0),
+		LeftLowerLeg = CFrame.Angles(math.rad(-34), 0, 0),
+		LeftFoot = CFrame.Angles(math.rad(10), 0, 0),
+		RightUpperLeg = CFrame.Angles(math.rad(-8), 0, 0),
+		RightLowerLeg = CFrame.Angles(math.rad(-15), 0, 0),
+		RightFoot = CFrame.Angles(math.rad(13), 0, 0),
+	})
+	keyframe(sequence, 0.34, {
+		LowerTorso = CFrame.new(0, -0.48, 0) * CFrame.Angles(math.rad(8), math.rad(4), math.rad(-7)),
+		UpperTorso = CFrame.Angles(math.rad(14), math.rad(9), math.rad(9)),
+		Head = CFrame.Angles(math.rad(-10), math.rad(-6), math.rad(-5)),
+		LeftUpperArm = CFrame.Angles(math.rad(29), math.rad(-9), math.rad(-21)),
+		LeftLowerArm = CFrame.Angles(math.rad(40), 0, 0),
+		RightUpperArm = CFrame.Angles(math.rad(32), math.rad(7), math.rad(19)),
+		RightLowerArm = CFrame.Angles(math.rad(37), 0, 0),
+		LeftUpperLeg = CFrame.Angles(math.rad(-5), 0, 0),
+		LeftLowerLeg = CFrame.Angles(math.rad(-17), 0, 0),
+		LeftFoot = CFrame.Angles(math.rad(8), 0, 0),
+		RightUpperLeg = CFrame.Angles(math.rad(17), 0, 0),
+		RightLowerLeg = CFrame.Angles(math.rad(-37), 0, 0),
+		RightFoot = CFrame.Angles(math.rad(12), 0, 0),
+	})
+	keyframe(sequence, 0.68, {
+		LowerTorso = CFrame.new(0, -0.26, 0) * CFrame.Angles(math.rad(5), 0, math.rad(-2)),
+		UpperTorso = CFrame.Angles(math.rad(8), math.rad(2), math.rad(2)),
+		Head = CFrame.Angles(math.rad(-4), 0, 0),
+		LeftUpperArm = CFrame.Angles(math.rad(21), math.rad(-7), math.rad(-16)),
+		LeftLowerArm = CFrame.Angles(math.rad(31), 0, 0),
+		RightUpperArm = CFrame.Angles(math.rad(23), math.rad(5), math.rad(14)),
+		RightLowerArm = CFrame.Angles(math.rad(29), 0, 0),
+		LeftUpperLeg = CFrame.Angles(math.rad(7), 0, 0),
+		LeftLowerLeg = CFrame.Angles(math.rad(-21), 0, 0),
+		RightUpperLeg = CFrame.Angles(math.rad(9), 0, 0),
+		RightLowerLeg = CFrame.Angles(math.rad(-24), 0, 0),
+	})
+	keyframe(sequence, 1.05, {
+		UpperTorso = CFrame.Angles(math.rad(3), 0, 0),
+		Head = CFrame.Angles(math.rad(-2), 0, 0),
+		LeftUpperArm = CFrame.Angles(math.rad(12), 0, math.rad(-7)),
+		LeftLowerArm = CFrame.Angles(math.rad(18), 0, 0),
+		RightUpperArm = CFrame.Angles(math.rad(11), 0, math.rad(7)),
+		RightLowerArm = CFrame.Angles(math.rad(16), 0, 0),
+	})
+	sequence:SetAttribute("GuardianAnimation", "Stagger")
+	sequence:SetAttribute("DurationSeconds", 1.05)
+	sequence:SetAttribute("SpecificationVersion", "1.0")
+	return sequence
+end
+
 return Library
