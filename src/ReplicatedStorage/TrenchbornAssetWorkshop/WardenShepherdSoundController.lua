@@ -114,22 +114,26 @@ function SoundController.Attach(model)
 				end)
 			end)
 		end
-		if baton then
-			baton.Event:Connect(function()
-				play("BatonWindup")
-				task.delay(0.56, function()
-					play("BatonShock")
-					play("BatonImpact")
+		-- The workshop harness requests ability sounds directly so cooldowns cannot mute previews.
+		-- Production installations remain driven by gameplay events.
+		if not model:GetAttribute("AnimationPrototype") then
+			if baton then
+				baton.Event:Connect(function()
+					play("BatonWindup")
+					task.delay(0.56, function()
+						play("BatonShock")
+						play("BatonImpact")
+					end)
 				end)
-			end)
-		end
-		if pulse then
-			pulse.Event:Connect(function(_, config)
-				play("PulseCharge")
-				task.delay(config.TelegraphDuration or 1.1, function()
-					if model:GetAttribute("GuardianState") ~= "Defeated" then play("WarningPulse") end
+			end
+			if pulse then
+				pulse.Event:Connect(function(_, config)
+					play("PulseCharge")
+					task.delay(config.TelegraphDuration or 1.1, function()
+						if model:GetAttribute("GuardianState") ~= "Defeated" then play("WarningPulse") end
+					end)
 				end)
-			end)
+			end
 		end
 	end
 
