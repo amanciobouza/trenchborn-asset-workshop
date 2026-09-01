@@ -586,8 +586,8 @@ end
 function Library.BuildShieldBlock()
 	local sequence = Instance.new("KeyframeSequence")
 	sequence.Name = "GuardianShieldBlock"
-	sequence.Loop = true
-	sequence.Priority = Enum.AnimationPriority.Action
+	sequence.Loop = false
+	sequence.Priority = Enum.AnimationPriority.Action3
 
 	local function blockPose(load)
 		return {
@@ -609,14 +609,20 @@ function Library.BuildShieldBlock()
 		}
 	end
 
-	keyframe(sequence, 0, blockPose(0))
-	keyframe(sequence, 0.8, blockPose(0.08))
-	keyframe(sequence, 1.6, blockPose(0))
+	keyframe(sequence, 0, {})
+	keyframe(sequence, 0.16, {
+		LowerTorso = CFrame.new(0, -0.08, 0) * CFrame.Angles(math.rad(2), 0, 0),
+		UpperTorso = CFrame.Angles(math.rad(-2), math.rad(-3), math.rad(1)),
+		LeftUpperArm = CFrame.Angles(math.rad(34), math.rad(-4), math.rad(-9)),
+		LeftLowerArm = CFrame.Angles(math.rad(-12), math.rad(-2), math.rad(3)),
+	})
+	keyframe(sequence, 0.48, blockPose(0.08))
+	keyframe(sequence, 0.82, blockPose(0))
 
 	sequence:SetAttribute("GuardianAnimation", "ShieldBlock")
-	sequence:SetAttribute("DurationSeconds", 1.6)
+	sequence:SetAttribute("DurationSeconds", 0.82)
 	sequence:SetAttribute("HeldState", true)
-	sequence:SetAttribute("SpecificationVersion", "1.0")
+	sequence:SetAttribute("SpecificationVersion", "1.1-ExplicitTransition")
 	return sequence
 end
 
