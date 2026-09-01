@@ -20,6 +20,8 @@ local wardenDressing = require(packageFolder:WaitForChild("WardenShepherdDressin
 local wardenGameplayConfig = require(packageFolder:WaitForChild("WardenShepherdGameplayConfig"))
 local wardenGameplay = require(packageFolder:WaitForChild("WardenShepherdGameplay"))
 local wardenSoundController = require(packageFolder:WaitForChild("WardenShepherdSoundController"))
+local aegisSpecification = require(packageFolder:WaitForChild("AegisInterceptorSpecification"))
+local aegisGoldenMaster = require(packageFolder:WaitForChild("AegisInterceptorGoldenMaster"))
 
 workshop:SetAttribute("CurrentAsset", specification.AssetName)
 workshop:SetAttribute("CurrentPhase", specification.PipelinePhase)
@@ -50,3 +52,10 @@ wardenSoundController.Attach(comparisonWarden)
 fleetRigTestHarness.Attach(comparisonWarden)
 
 workshop:SetAttribute("AnimationTestTarget", "Warden-I Shepherd")
+
+local aegisModel = aegisGoldenMaster.Build(workshop)
+aegisModel:PivotTo(aegisModel:GetPivot() + Vector3.new(-55, 0, 85))
+workshop:SetAttribute("CurrentAsset", aegisSpecification.AssetName)
+workshop:SetAttribute("CurrentPhase", 4)
+workshop:SetAttribute("QualityStatus", "Phase4_GoldenMasterReview")
+workshop:SetAttribute("GoldenMasterReviewTarget", aegisModel.Name)
