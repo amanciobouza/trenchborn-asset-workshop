@@ -22,6 +22,7 @@ function Controller.Attach(model, gameplayApi)
 	local remote = Instance.new("RemoteEvent")
 	remote.Name = remoteName
 	remote.Parent = ReplicatedStorage
+	model:SetAttribute("GuardianRuntimeRemoteName", remoteName)
 
 	-- Rojo maps GuardianRuntimeAnimation.client.lua to GuardianRuntimeAnimation.
 	local clientTemplate = packageFolder:WaitForChild("GuardianRuntimeAnimation")
@@ -94,8 +95,13 @@ function Controller.Attach(model, gameplayApi)
 	play("Idle")
 
 	local api = {}
-	function api.PlayAnimation(name) requested:Fire(name) end
+	local destroyed = false
+	function api.PlayAnimation(name)
+		if not destroyed and requested.Parent then requested:Fire(name) end
+	end
 	function api.Destroy()
+		if destroyed then return end
+		destroyed = true
 		playerConnection:Disconnect()
 		for _, connection in ipairs(connections) do connection:Disconnect() end
 		for _, player in ipairs(Players:GetPlayers()) do
@@ -105,6 +111,7 @@ function Controller.Attach(model, gameplayApi)
 		end
 		if remote.Parent then remote:Destroy() end
 		if runtime.Parent then runtime:Destroy() end
+		if model.Parent then model:SetAttribute("GuardianRuntimeRemoteName", nil) end
 	end
 	api.AnimationRequested = requested
 	api.Remote = remote
