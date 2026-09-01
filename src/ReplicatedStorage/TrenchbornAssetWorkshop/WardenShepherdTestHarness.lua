@@ -172,7 +172,7 @@ function TestHarness.Attach(workshop, model)
 		end
 		local distance, facingDot = targetMetrics()
 		local requiredDot = math.cos(math.rad(batonConfig.ArcDegrees * 0.5))
-		task.delay(0.05, function()
+		task.delay(batonConfig.ImpactDelay or 0.56, function()
 			if distance > batonConfig.Range then
 				show(string.format("BATON MISSED\nOUT OF RANGE %.1f / %.1f", distance, batonConfig.Range))
 				return
