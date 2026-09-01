@@ -65,12 +65,14 @@ function Harness.Attach(model)
 	local walkStepDuration = 1
 	local runStepDuration = 0.6
 	local controlRunning = false
+	local controlBackward = false
+	local backwardStepDuration = 1.1
 	local movementStartedAt = 0
 	local wasControlMoving = false
 	local maxTurnRate = math.rad(110)
 
 	local function stepSpeed(now)
-		local duration = controlRunning and runStepDuration or walkStepDuration
+		local duration = controlRunning and runStepDuration or (controlBackward and backwardStepDuration or walkStepDuration)
 		local phase = ((now - movementStartedAt) % duration) / duration
 		if controlRunning then
 			if phase < 0.10 then return 6 end
@@ -97,13 +99,16 @@ function Harness.Attach(model)
 			movementStartedAt = now
 		end
 		direction = Vector3.new(direction.X, 0, direction.Z).Unit
+		local desiredFacing = controlBackward and -direction or direction
 		local facing = Vector3.new(root.CFrame.LookVector.X, 0, root.CFrame.LookVector.Z).Unit
-		local angle = math.acos(math.clamp(facing:Dot(direction), -1, 1))
-		local target = CFrame.lookAt(root.Position, root.Position + direction)
+		local angle = math.acos(math.clamp(facing:Dot(desiredFacing), -1, 1))
+		local target = CFrame.lookAt(root.Position, root.Position + desiredFacing)
 		local alpha = angle > 0.001 and math.min(1, maxTurnRate * deltaTime / angle) or 1
 		local turned = root.CFrame:Lerp(target, alpha)
-		local travelDirection = Vector3.new(turned.LookVector.X, 0, turned.LookVector.Z).Unit
-		local nextPosition = root.Position + travelDirection * stepSpeed(now) * deltaTime
+		local facingDirection = Vector3.new(turned.LookVector.X, 0, turned.LookVector.Z).Unit
+		local travelDirection = controlBackward and -facingDirection or facingDirection
+		local speedScale = controlBackward and 0.67 or 1
+		local nextPosition = root.Position + travelDirection * stepSpeed(now) * speedScale * deltaTime
 		root.CFrame = CFrame.lookAt(nextPosition, nextPosition + travelDirection)
 	end)
 
@@ -160,21 +165,24 @@ function Harness.Attach(model)
 		TurnRight = function() end,
 		Fall = function() end,
 		Land = function() end,
+		WalkBackward = function() end,
 		ControlGuardian = function() end,
 		Neutral = function()
 			pose({}, 0.35)
 		end,
 	}
 
-	remote.OnServerEvent:Connect(function(player, actionName, payload, option)
+	remote.OnServerEvent:Connect(function(player, actionName, payload, option, backwardOption)
 		if type(actionName) ~= "string" then return end
 		if actionName == "ControlMove" then
 			if player == controllerPlayer and typeof(payload) == "Vector3" then
 				local flat = Vector3.new(payload.X, 0, payload.Z)
 				controlDirection = flat.Magnitude > 1 and flat.Unit or flat
 				local nextRunning = option == true
-				if nextRunning ~= controlRunning then
+				local nextBackward = backwardOption == true
+				if nextRunning ~= controlRunning or nextBackward ~= controlBackward then
 					controlRunning = nextRunning
+					controlBackward = nextBackward
 					movementStartedAt = os.clock()
 				end
 				controlUpdatedAt = os.clock()
@@ -215,6 +223,8 @@ function Harness.Attach(model)
 			remote:FireClient(player, "PlayFall", model)
 		elseif actionName == "Land" then
 			remote:FireClient(player, "PlayLand", model)
+		elseif actionName == "WalkBackward" then
+			remote:FireClient(player, "PlayWalkBackward", model)
 		else
 			actions[actionName]()
 		end
@@ -229,6 +239,7 @@ function Harness.Attach(model)
 	model:SetAttribute("GuardianRunPreviewReady", true)
 	model:SetAttribute("GuardianTurnPreviewReady", true)
 	model:SetAttribute("GuardianAirStatePreviewReady", true)
+	model:SetAttribute("GuardianWalkBackwardPreviewReady", true)
 	model:SetAttribute("FleetRigTestInterface", "HUD")
 	model:SetAttribute("GuardianPossessionTestReady", true)
 	model:SetAttribute("GuardianControlSpeed", controlSpeed)
