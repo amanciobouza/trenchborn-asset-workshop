@@ -172,6 +172,7 @@ function Harness.Attach(model)
 		Defeat = function() end,
 		ShieldBlock = function() end,
 		PulseCannonFire = function() end,
+		ContainmentNetLaunch = function() end,
 		ControlGuardian = function() end,
 		Neutral = function()
 			pose({}, 0.35)
@@ -184,6 +185,124 @@ function Harness.Attach(model)
 		effects = Instance.new("Folder")
 		effects.Name = "GuardianFleetRigEffects"
 		effects.Parent = workspace
+	end
+
+
+	local function launchNetPreview()
+		local mouth = model:FindFirstChild("LaunchMouth", true)
+		if not mouth or not mouth:IsA("BasePart") then
+			warn("Guardian Containment Net LaunchMouth not found")
+			return
+		end
+		local target = workspace:FindFirstChild("TestKaijuTarget", true)
+		local destination = target and target.Position or (mouth.Position + root.CFrame.LookVector * 36)
+		local ground = Vector3.new(destination.X, math.max(0.2, destination.Y - 6), destination.Z)
+
+		local warning = Instance.new("Part")
+		warning.Name = "ContainmentTargetWarning"
+		warning.Shape = Enum.PartType.Cylinder
+		warning.Size = Vector3.new(0.22, 12, 12)
+		warning.CFrame = CFrame.new(ground) * CFrame.Angles(0, 0, math.rad(90))
+		warning.Anchored = true
+		warning.CanCollide = false
+		warning.CanTouch = false
+		warning.CanQuery = false
+		warning.Material = Enum.Material.Neon
+		warning.Color = Color3.fromRGB(63, 199, 255)
+		warning.Transparency = 0.35
+		warning.Parent = effects
+		Debris:AddItem(warning, 5.2)
+
+		local visor = model:FindFirstChild("VisorSensor", true)
+		local scanBeam
+		if visor and visor:IsA("BasePart") then
+			local scanTarget = Instance.new("Part")
+			scanTarget.Name = "ContainmentScanTarget"
+			scanTarget.Size = Vector3.new(0.2, 0.2, 0.2)
+			scanTarget.Position = destination
+			scanTarget.Transparency = 1
+			scanTarget.Anchored = true
+			scanTarget.CanCollide = false
+			scanTarget.Parent = effects
+			Debris:AddItem(scanTarget, 1.1)
+			local a0 = Instance.new("Attachment")
+			a0.Parent = visor
+			local a1 = Instance.new("Attachment")
+			a1.Parent = scanTarget
+			scanBeam = Instance.new("Beam")
+			scanBeam.Attachment0 = a0
+			scanBeam.Attachment1 = a1
+			scanBeam.Color = ColorSequence.new(Color3.fromRGB(70, 190, 255))
+			scanBeam.Width0 = 0.18
+			scanBeam.Width1 = 0.08
+			scanBeam.LightEmission = 0.9
+			scanBeam.FaceCamera = true
+			scanBeam.Parent = visor
+			Debris:AddItem(a0, 1.1)
+			Debris:AddItem(scanBeam, 1.1)
+		end
+
+		local nodeCount = 5
+		local deployed = {}
+		for index = 1, nodeCount do
+			local projectile = Instance.new("Part")
+			projectile.Name = "ContainmentNetNodeProjectile"
+			projectile.Shape = Enum.PartType.Ball
+			projectile.Size = Vector3.new(1.3, 1.3, 1.3)
+			projectile.Position = mouth.Position
+			projectile.Anchored = true
+			projectile.CanCollide = false
+			projectile.CanTouch = false
+			projectile.CanQuery = false
+			projectile.Material = Enum.Material.Neon
+			projectile.Color = Color3.fromRGB(63, 226, 255)
+			projectile.Parent = effects
+			Debris:AddItem(projectile, 5.2)
+			table.insert(deployed, projectile)
+		end
+
+		local startTime = os.clock()
+		local flightDuration = 0.92
+		local connection
+		connection = RunService.Heartbeat:Connect(function()
+			local alpha = math.clamp((os.clock() - startTime) / flightDuration, 0, 1)
+			local oneMinus = 1 - alpha
+			for index, projectile in ipairs(deployed) do
+				if projectile.Parent then
+					local angle = (index - 1) / nodeCount * math.pi * 2
+					local landing = ground + Vector3.new(math.cos(angle) * 5, 2.4, math.sin(angle) * 5)
+					local apex = (mouth.Position + landing) * 0.5 + Vector3.new(0, 18 + index * 0.5, 0)
+					projectile.Position = oneMinus * oneMinus * mouth.Position
+						+ 2 * oneMinus * alpha * apex
+						+ alpha * alpha * landing
+				end
+			end
+			if alpha >= 1 then
+				connection:Disconnect()
+				warning.Transparency = 0.72
+				for index, node in ipairs(deployed) do
+					if node.Parent then
+						node.Size = Vector3.new(2.1, 2.1, 2.1)
+						local nextNode = deployed[index % nodeCount + 1]
+						if nextNode and nextNode.Parent then
+							local a0 = Instance.new("Attachment")
+							a0.Parent = node
+							local a1 = Instance.new("Attachment")
+							a1.Parent = nextNode
+							local beam = Instance.new("Beam")
+							beam.Attachment0 = a0
+							beam.Attachment1 = a1
+							beam.Color = ColorSequence.new(Color3.fromRGB(63, 226, 255))
+							beam.Width0 = 0.22
+							beam.Width1 = 0.22
+							beam.LightEmission = 0.85
+							beam.FaceCamera = true
+							beam.Parent = node
+						end
+					end
+				end
+			end
+		end)
 	end
 
 	local function firePulsePreview()
@@ -340,6 +459,9 @@ function Harness.Attach(model)
 		elseif actionName == "PulseCannonFire" then
 			remote:FireClient(player, "PlayPulseCannonFire", model)
 			task.delay(0.9, firePulsePreview)
+		elseif actionName == "ContainmentNetLaunch" then
+			remote:FireClient(player, "PlayContainmentNetLaunch", model)
+			task.delay(0.82, launchNetPreview)
 		else
 			actions[actionName]()
 		end
@@ -360,6 +482,7 @@ function Harness.Attach(model)
 	model:SetAttribute("GuardianDefeatPreviewReady", true)
 	model:SetAttribute("GuardianShieldBlockPreviewReady", true)
 	model:SetAttribute("GuardianPulseCannonFirePreviewReady", true)
+	model:SetAttribute("GuardianContainmentNetLaunchPreviewReady", true)
 	model:SetAttribute("FleetRigTestInterface", "HUD")
 	model:SetAttribute("GuardianPossessionTestReady", true)
 	model:SetAttribute("GuardianControlSpeed", controlSpeed)
