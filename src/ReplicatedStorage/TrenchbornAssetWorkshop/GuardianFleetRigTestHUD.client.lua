@@ -23,6 +23,7 @@ local currentTurn
 local walkStartedAt = 0
 local plantedSide
 local footLocks = {}
+local staggering = false
 
 local function stopIdle()
 	if idleTrack and idleTrack.IsPlaying then
@@ -155,6 +156,7 @@ local definitions = {
 	{"FALL", "Fall", Color3.fromRGB(72, 108, 139)},
 	{"LAND", "Land", Color3.fromRGB(170, 98, 48)},
 	{"DAMAGE", "DamageReact", Color3.fromRGB(184, 61, 61)},
+	{"STAGGER", "Stagger", Color3.fromRGB(153, 48, 48)},
 	{"CONTROL GUARDIAN", "ControlGuardian", Color3.fromRGB(132, 78, 176)},
 	{"NEUTRAL", "Neutral", Color3.fromRGB(96, 102, 110)},
 }
@@ -344,6 +346,7 @@ end
 
 RunService.RenderStepped:Connect(function()
 	if not controlEnabled or not controlledModel then return end
+	if staggering then return end
 	local x = ((keyState[Enum.KeyCode.D] or keyState[Enum.KeyCode.Right]) and 1 or 0)
 		- ((keyState[Enum.KeyCode.A] or keyState[Enum.KeyCode.Left]) and 1 or 0)
 	local z = ((keyState[Enum.KeyCode.S] or keyState[Enum.KeyCode.Down]) and 1 or 0)
@@ -433,6 +436,41 @@ remote.OnClientEvent:Connect(function(message, payload)
 		return
 	elseif message == "ControlDisabled" then
 		setControl(false)
+		return
+	end
+	if message == "PlayStagger" then
+		local success, err = pcall(function()
+			flashDamage(payload)
+			staggering = true
+			remote:FireServer("ControlMove", Vector3.zero)
+			clearFootLocks()
+			playSequence(payload, "BuildStagger", "GuardianStaggerPreview")
+			task.delay(1.08, function()
+				staggering = false
+				if controlEnabled and controlledModel == payload then
+					setupFootLocks(payload)
+					walkStartedAt = os.clock()
+					plantedSide = nil
+					if wasMoving then
+						if wasRunning then
+							playSequence(payload, "BuildRun", "GuardianControlledRun")
+						elseif wasBackward then
+							playSequence(payload, "BuildWalkBackward", "GuardianControlledWalkBackward")
+						else
+							playSequence(payload, "BuildWalk", "GuardianControlledWalk")
+						end
+					else
+						playSequence(payload, "BuildIdle", "GuardianControlledIdle")
+					end
+				else
+					playSequence(payload, "BuildIdle", "GuardianIdlePreview")
+				end
+			end)
+		end)
+		if not success then
+			staggering = false
+			warn("Guardian stagger failed:", err)
+		end
 		return
 	end
 	if message == "PlayDamageReact" then
