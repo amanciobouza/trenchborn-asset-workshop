@@ -352,4 +352,42 @@ function Library.BuildLand()
 	return sequence
 end
 
+
+function Library.BuildWalkBackward()
+	local sequence = Instance.new("KeyframeSequence")
+	sequence.Name = "GuardianWalkBackward"
+	sequence.Loop = true
+	sequence.Priority = Enum.AnimationPriority.Movement
+
+	local function backwardPose(leftHip, leftKnee, leftFoot, rightHip, rightKnee, rightFoot, height, roll)
+		return {
+			LowerTorso = CFrame.new(0, height, 0) * CFrame.Angles(math.rad(5), 0, math.rad(roll)),
+			UpperTorso = CFrame.Angles(math.rad(6), math.rad(-roll * 0.4), math.rad(-roll * 0.5)),
+			Head = CFrame.Angles(math.rad(-3), 0, 0),
+			LeftUpperArm = CFrame.Angles(math.rad(19), math.rad(-8), math.rad(-16)),
+			LeftLowerArm = CFrame.Angles(math.rad(28), 0, 0),
+			RightUpperArm = CFrame.Angles(math.rad(20), math.rad(5), math.rad(11)),
+			RightLowerArm = CFrame.Angles(math.rad(24), 0, 0),
+			LeftUpperLeg = CFrame.Angles(math.rad(leftHip), 0, 0),
+			LeftLowerLeg = CFrame.Angles(math.rad(leftKnee), 0, 0),
+			LeftFoot = CFrame.Angles(math.rad(leftFoot), 0, 0),
+			RightUpperLeg = CFrame.Angles(math.rad(rightHip), 0, 0),
+			RightLowerLeg = CFrame.Angles(math.rad(rightKnee), 0, 0),
+			RightFoot = CFrame.Angles(math.rad(rightFoot), 0, 0),
+		}
+	end
+
+	keyframe(sequence, 0, backwardPose(-11, -12, 10, 12, -8, -12, 0, -1))
+	keyframe(sequence, 0.55, backwardPose(3, -24, -9, 5, -13, 5, -0.25, 1.5))
+	keyframe(sequence, 1.1, backwardPose(12, -8, -12, -11, -12, 10, 0, 1))
+	keyframe(sequence, 1.65, backwardPose(5, -13, 5, 3, -24, -9, -0.25, -1.5))
+	keyframe(sequence, 2.2, backwardPose(-11, -12, 10, 12, -8, -12, 0, -1))
+
+	sequence:SetAttribute("GuardianAnimation", "WalkBackward")
+	sequence:SetAttribute("DurationSeconds", 2.2)
+	sequence:SetAttribute("SpecificationVersion", "1.0")
+	sequence:SetAttribute("RootMotion", false)
+	return sequence
+end
+
 return Library
