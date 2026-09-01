@@ -14,14 +14,16 @@ local function stopIdle()
 	end
 end
 
-local function playIdle(model)
+local function playSequence(model, builderName, previewName)
 	stopIdle()
 	local animator = model and model:FindFirstChildWhichIsA("Animator", true)
 	assert(animator, "Guardian Animator not found")
-	local sequence = animationLibrary.BuildIdle()
+	local builder = animationLibrary[builderName]
+	assert(type(builder) == "function", "Animation builder not found: " .. builderName)
+	local sequence = builder()
 	local temporaryId = KeyframeSequenceProvider:RegisterKeyframeSequence(sequence)
 	local animation = Instance.new("Animation")
-	animation.Name = "GuardianIdlePreview"
+	animation.Name = previewName
 	animation.AnimationId = temporaryId
 	idleTrack = animator:LoadAnimation(animation)
 	idleTrack.Looped = true
@@ -43,7 +45,7 @@ local panel = Instance.new("Frame")
 panel.Name = "Panel"
 panel.AnchorPoint = Vector2.new(1, 0.5)
 panel.Position = UDim2.new(1, -18, 0.5, 0)
-panel.Size = UDim2.fromOffset(310, 350)
+panel.Size = UDim2.fromOffset(310, 410)
 panel.BackgroundColor3 = Color3.fromRGB(20, 27, 31)
 panel.BackgroundTransparency = 0.08
 panel.BorderSizePixel = 0
@@ -51,7 +53,7 @@ panel.Parent = gui
 
 local sizeConstraint = Instance.new("UISizeConstraint")
 sizeConstraint.MinSize = Vector2.new(245, 285)
-sizeConstraint.MaxSize = Vector2.new(340, 380)
+sizeConstraint.MaxSize = Vector2.new(340, 440)
 sizeConstraint.Parent = panel
 
 local corner = Instance.new("UICorner")
@@ -112,6 +114,7 @@ local definitions = {
 	{"RIGHT ARM", "RightArm", Color3.fromRGB(48, 128, 158)},
 	{"KNEE LOAD", "KneeLoad", Color3.fromRGB(48, 145, 104)},
 	{"IDLE LOOP", "IdleLoop", Color3.fromRGB(48, 145, 104)},
+	{"ALERT IDLE", "AlertIdle", Color3.fromRGB(188, 112, 45)},
 	{"NEUTRAL", "Neutral", Color3.fromRGB(96, 102, 110)},
 }
 
@@ -133,7 +136,7 @@ for order, definition in ipairs(definitions) do
 	buttonCorner.CornerRadius = UDim.new(0, 8)
 	buttonCorner.Parent = button
 	button.Activated:Connect(function()
-		if definition[2] ~= "IdleLoop" then stopIdle() end
+		if definition[2] ~= "IdleLoop" and definition[2] ~= "AlertIdle" then stopIdle() end
 		status.Text = "RUNNING: " .. definition[1]
 		status.TextColor3 = Color3.fromRGB(235, 178, 55)
 		remote:FireServer(definition[2])
@@ -142,12 +145,14 @@ for order, definition in ipairs(definitions) do
 end
 
 remote.OnClientEvent:Connect(function(message, payload)
-	if message == "PlayIdle" then
-		local success, err = pcall(playIdle, payload)
+	if message == "PlayIdle" or message == "PlayAlertIdle" then
+		local builderName = message == "PlayIdle" and "BuildIdle" or "BuildAlertIdle"
+		local previewName = message == "PlayIdle" and "GuardianIdlePreview" or "GuardianAlertIdlePreview"
+		local success, err = pcall(playSequence, payload, builderName, previewName)
 		if not success then
-			status.Text = "IDLE ERROR"
+			status.Text = "ANIMATION ERROR"
 			status.TextColor3 = Color3.fromRGB(235, 92, 82)
-			warn("Guardian Idle preview failed:", err)
+			warn("Guardian animation preview failed:", err)
 		end
 		return
 	end
