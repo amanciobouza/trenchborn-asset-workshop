@@ -751,10 +751,8 @@ function Harness.Attach(model)
 			end
 		elseif actionName == "ShockBaton" then
 			remote:FireClient(player, "PlayShockBaton", model)
-			task.delay(0.56, function()
-				shockBatonPreview()
-				invokeAbility("ShockBaton")
-			end)
+			invokeAbility("ShockBaton")
+			task.delay(0.56, shockBatonPreview)
 		elseif actionName == "WarningPulse" then
 			remote:FireClient(player, "PlayWarningPulse", model)
 			warningPulsePreview()
