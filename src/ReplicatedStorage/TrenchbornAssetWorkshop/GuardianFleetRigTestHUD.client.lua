@@ -9,6 +9,7 @@ local remote = ReplicatedStorage:WaitForChild("GuardianFleetRigTestRemote")
 local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
 local animationLibrary = require(packageFolder:WaitForChild("GuardianAnimationLibrary"))
 local idleTrack
+local reactionTrack
 local controlEnabled = false
 local controlledModel
 local previousCameraSubject
@@ -44,6 +45,22 @@ local function playSequence(model, builderName, previewName)
 	idleTrack.Looped = sequence.Loop
 	idleTrack.Priority = sequence.Priority
 	idleTrack:Play(0.35)
+end
+
+
+local function playReaction(model, builderName, previewName)
+	if reactionTrack and reactionTrack.IsPlaying then reactionTrack:Stop(0.05) end
+	local animator = model and model:FindFirstChildWhichIsA("Animator", true)
+	assert(animator, "Guardian Animator not found")
+	local sequence = animationLibrary[builderName]()
+	local temporaryId = KeyframeSequenceProvider:RegisterKeyframeSequence(sequence)
+	local animation = Instance.new("Animation")
+	animation.Name = previewName
+	animation.AnimationId = temporaryId
+	reactionTrack = animator:LoadAnimation(animation)
+	reactionTrack.Looped = false
+	reactionTrack.Priority = sequence.Priority
+	reactionTrack:Play(0.04)
 end
 
 local old = player.PlayerGui:FindFirstChild("GuardianFleetRigTestHUD")
@@ -418,7 +435,15 @@ remote.OnClientEvent:Connect(function(message, payload)
 		setControl(false)
 		return
 	end
-	if message == "PlayIdle" or message == "PlayAlertIdle" or message == "PlayWalk" or message == "PlayRun" or message == "PlayTurnLeft" or message == "PlayTurnRight" or message == "PlayFall" or message == "PlayLand" or message == "PlayWalkBackward" or message == "PlayDamageReact" then
+	if message == "PlayDamageReact" then
+		local success, err = pcall(function()
+			flashDamage(payload)
+			playReaction(payload, "BuildDamageReact", "GuardianDamageReactPreview")
+		end)
+		if not success then warn("Guardian damage reaction failed:", err) end
+		return
+	end
+	if message == "PlayIdle" or message == "PlayAlertIdle" or message == "PlayWalk" or message == "PlayRun" or message == "PlayTurnLeft" or message == "PlayTurnRight" or message == "PlayFall" or message == "PlayLand" or message == "PlayWalkBackward" then
 		local builders = {
 			PlayIdle = {"BuildIdle", "GuardianIdlePreview"},
 			PlayAlertIdle = {"BuildAlertIdle", "GuardianAlertIdlePreview"},
@@ -429,10 +454,8 @@ remote.OnClientEvent:Connect(function(message, payload)
 			PlayFall = {"BuildFall", "GuardianFallPreview"},
 			PlayLand = {"BuildLand", "GuardianLandPreview"},
 			PlayWalkBackward = {"BuildWalkBackward", "GuardianWalkBackwardPreview"},
-			PlayDamageReact = {"BuildDamageReact", "GuardianDamageReactPreview"},
 		}
 		local selection = builders[message]
-		if message == "PlayDamageReact" then flashDamage(payload) end
 		local builderName = selection[1]
 		local previewName = selection[2]
 		local success, err = pcall(playSequence, payload, builderName, previewName)
