@@ -1,12 +1,20 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local KeyframeSequenceProvider = game:GetService("KeyframeSequenceProvider")
+local ContextActionService = game:GetService("ContextActionService")
+local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 local remote = ReplicatedStorage:WaitForChild("GuardianFleetRigTestRemote")
 local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
 local animationLibrary = require(packageFolder:WaitForChild("GuardianAnimationLibrary"))
 local idleTrack
+local controlEnabled = false
+local controlledModel
+local previousCameraSubject
+local keyState = {}
+local lastMoveSent = 0
+local wasMoving = false
 
 local function stopIdle()
 	if idleTrack and idleTrack.IsPlaying then
@@ -45,7 +53,7 @@ local panel = Instance.new("Frame")
 panel.Name = "Panel"
 panel.AnchorPoint = Vector2.new(1, 0.5)
 panel.Position = UDim2.new(1, -18, 0.5, 0)
-panel.Size = UDim2.fromOffset(310, 410)
+panel.Size = UDim2.fromOffset(310, 480)
 panel.BackgroundColor3 = Color3.fromRGB(20, 27, 31)
 panel.BackgroundTransparency = 0.08
 panel.BorderSizePixel = 0
@@ -53,7 +61,7 @@ panel.Parent = gui
 
 local sizeConstraint = Instance.new("UISizeConstraint")
 sizeConstraint.MinSize = Vector2.new(245, 285)
-sizeConstraint.MaxSize = Vector2.new(340, 440)
+sizeConstraint.MaxSize = Vector2.new(340, 510)
 sizeConstraint.Parent = panel
 
 local corner = Instance.new("UICorner")
@@ -116,6 +124,7 @@ local definitions = {
 	{"IDLE LOOP", "IdleLoop", Color3.fromRGB(48, 145, 104)},
 	{"ALERT IDLE", "AlertIdle", Color3.fromRGB(188, 112, 45)},
 	{"WALK", "Walk", Color3.fromRGB(94, 116, 184)},
+	{"CONTROL GUARDIAN", "ControlGuardian", Color3.fromRGB(132, 78, 176)},
 	{"NEUTRAL", "Neutral", Color3.fromRGB(96, 102, 110)},
 }
 
@@ -137,7 +146,7 @@ for order, definition in ipairs(definitions) do
 	buttonCorner.CornerRadius = UDim.new(0, 8)
 	buttonCorner.Parent = button
 	button.Activated:Connect(function()
-		if definition[2] ~= "IdleLoop" and definition[2] ~= "AlertIdle" then stopIdle() end
+		if definition[2] ~= "IdleLoop" and definition[2] ~= "AlertIdle" and definition[2] ~= "ControlGuardian" then stopIdle() end
 		status.Text = "RUNNING: " .. definition[1]
 		status.TextColor3 = Color3.fromRGB(235, 178, 55)
 		remote:FireServer(definition[2])
@@ -145,7 +154,89 @@ for order, definition in ipairs(definitions) do
 	buttons[definition[2]] = button
 end
 
+
+local function controlInput(_, inputState, inputObject)
+	local active = inputState ~= Enum.UserInputState.End and inputState ~= Enum.UserInputState.Cancel
+	keyState[inputObject.KeyCode] = active
+	return Enum.ContextActionResult.Sink
+end
+
+local function setControl(enabled, model)
+	controlEnabled = enabled
+	controlledModel = enabled and model or nil
+	keyState = {}
+	wasMoving = false
+	local camera = workspace.CurrentCamera
+	if enabled then
+		previousCameraSubject = camera.CameraSubject
+		local subject = model:FindFirstChild("HumanoidRootPart") or model:FindFirstChildWhichIsA("Humanoid")
+		camera.CameraSubject = subject
+		ContextActionService:BindActionAtPriority(
+			"GuardianWorkshopControl",
+			controlInput,
+			false,
+			Enum.ContextActionPriority.High.Value + 100,
+			Enum.KeyCode.W, Enum.KeyCode.A, Enum.KeyCode.S, Enum.KeyCode.D,
+			Enum.KeyCode.Up, Enum.KeyCode.Left, Enum.KeyCode.Down, Enum.KeyCode.Right
+		)
+		buttons.ControlGuardian.Text = "RELEASE GUARDIAN"
+		status.Text = "GUARDIAN CONTROL: WASD"
+		status.TextColor3 = Color3.fromRGB(194, 146, 235)
+		playSequence(model, "BuildIdle", "GuardianControlledIdle")
+	else
+		ContextActionService:UnbindAction("GuardianWorkshopControl")
+		remote:FireServer("ControlMove", Vector3.zero)
+		local humanoid = player.Character and player.Character:FindFirstChildWhichIsA("Humanoid")
+		camera.CameraSubject = previousCameraSubject or humanoid
+		buttons.ControlGuardian.Text = "CONTROL GUARDIAN"
+		status.Text = "GUARDIAN RELEASED"
+		status.TextColor3 = Color3.fromRGB(116, 220, 169)
+		stopIdle()
+	end
+end
+
+RunService.RenderStepped:Connect(function()
+	if not controlEnabled or not controlledModel then return end
+	local x = (keyState[Enum.KeyCode.D] or keyState[Enum.KeyCode.Right] and 1 or 0)
+		- (keyState[Enum.KeyCode.A] or keyState[Enum.KeyCode.Left] and 1 or 0)
+	local z = (keyState[Enum.KeyCode.S] or keyState[Enum.KeyCode.Down] and 1 or 0)
+		- (keyState[Enum.KeyCode.W] or keyState[Enum.KeyCode.Up] and 1 or 0)
+	-- Re-evaluate booleans explicitly because Luau's and/or expression returns booleans.
+	x = ((keyState[Enum.KeyCode.D] or keyState[Enum.KeyCode.Right]) and 1 or 0)
+		- ((keyState[Enum.KeyCode.A] or keyState[Enum.KeyCode.Left]) and 1 or 0)
+	z = ((keyState[Enum.KeyCode.S] or keyState[Enum.KeyCode.Down]) and 1 or 0)
+		- ((keyState[Enum.KeyCode.W] or keyState[Enum.KeyCode.Up]) and 1 or 0)
+
+	local camera = workspace.CurrentCamera
+	local forward = Vector3.new(camera.CFrame.LookVector.X, 0, camera.CFrame.LookVector.Z)
+	local right = Vector3.new(camera.CFrame.RightVector.X, 0, camera.CFrame.RightVector.Z)
+	if forward.Magnitude > 0 then forward = forward.Unit end
+	if right.Magnitude > 0 then right = right.Unit end
+	local direction = right * x + forward * -z
+	if direction.Magnitude > 1 then direction = direction.Unit end
+	local moving = direction.Magnitude > 0.05
+	if moving ~= wasMoving then
+		wasMoving = moving
+		if moving then
+			playSequence(controlledModel, "BuildWalk", "GuardianControlledWalk")
+		else
+			playSequence(controlledModel, "BuildIdle", "GuardianControlledIdle")
+		end
+	end
+	if os.clock() - lastMoveSent >= 0.07 or moving ~= wasMoving then
+		lastMoveSent = os.clock()
+		remote:FireServer("ControlMove", direction)
+	end
+end)
+
 remote.OnClientEvent:Connect(function(message, payload)
+	if message == "ControlEnabled" then
+		setControl(true, payload)
+		return
+	elseif message == "ControlDisabled" then
+		setControl(false)
+		return
+	end
 	if message == "PlayIdle" or message == "PlayAlertIdle" or message == "PlayWalk" then
 		local builders = {
 			PlayIdle = {"BuildIdle", "GuardianIdlePreview"},
