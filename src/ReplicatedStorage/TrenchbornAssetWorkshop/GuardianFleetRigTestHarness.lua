@@ -185,6 +185,9 @@ function Harness.Attach(model)
 		DamageReact = function() end,
 		Stagger = function() end,
 		Defeat = function() end,
+		TwinIonCannons = function() end,
+		ShoulderMissiles = function() end,
+		DirectionalAegis = function() end,
 		ShockBaton = function() end,
 		WarningPulse = function() end,
 		ShieldBlock = function() end,
@@ -754,6 +757,12 @@ function Harness.Attach(model)
 			else
 				remote:FireClient(player, "PlayDefeat", model)
 			end
+		elseif actionName == "TwinIonCannons" then
+			invokeAbility("TwinIonCannons")
+		elseif actionName == "ShoulderMissiles" then
+			invokeAbility("ShoulderMissiles")
+		elseif actionName == "DirectionalAegis" then
+			invokeAbility("DirectionalAegis")
 		elseif actionName == "ShockBaton" then
 			remote:FireClient(player, "PlayShockBaton", model)
 			requestSound("BatonWindup")
