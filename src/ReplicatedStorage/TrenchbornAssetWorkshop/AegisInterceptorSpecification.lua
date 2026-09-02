@@ -12,11 +12,11 @@ return {
 	AssetClass = "Guardian Interceptor Platform",
 	Tier = 3,
 	City = "City",
-	PipelinePhase = 3,
-	Status = "GoldenMasterApproved",
+	PipelinePhase = 7,
+	Status = "InGameApproved",
 	QualityGateA = "Approved",
 	QualityGateB = "Approved",
-	QualityGateC = "Pending",
+	QualityGateC = "Approved",
 
 	Role = {
 		Primary = "InterceptAndCounterattack",
