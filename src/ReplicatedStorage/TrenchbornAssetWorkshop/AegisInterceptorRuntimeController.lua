@@ -74,7 +74,7 @@ function Controller.Attach(model, gameplayApi)
 			play("ShoulderMissileSalvo")
 			returnToIdle(math.max(3.62, (ability.LockDuration or 2) + 1.45))
 		elseif name == "DirectionalAegis" then
-			play("DirectionalAegis")
+			-- StateChanged owns the deploy animation so it starts exactly once.
 		end
 	end)
 
