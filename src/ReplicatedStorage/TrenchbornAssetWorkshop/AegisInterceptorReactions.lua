@@ -321,7 +321,7 @@ function Reactions.Attach(model)
 			weld.Part1 = panel
 			weld.Parent = panel
 			table.insert(activeField, panel)
-			TweenService:Create(panel, TweenInfo.new(0.24, Enum.EasingStyle.Quad), {Transparency = 0.3}):Play()
+			TweenService:Create(panel, TweenInfo.new(0.24, Enum.EasingStyle.Quad), {Transparency = 0.12}):Play()
 		end
 		task.delay(config.Duration, function()
 			if token == fieldToken then clearField() end
