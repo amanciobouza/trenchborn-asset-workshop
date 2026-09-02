@@ -97,15 +97,15 @@ local panel = Instance.new("Frame")
 panel.Name = "Panel"
 panel.AnchorPoint = Vector2.new(1, 0.5)
 panel.Position = UDim2.new(1, -18, 0.5, 0)
-panel.Size = UDim2.fromOffset(310, 550)
+panel.Size = UDim2.fromOffset(280, 430)
 panel.BackgroundColor3 = Color3.fromRGB(20, 27, 31)
 panel.BackgroundTransparency = 0.08
 panel.BorderSizePixel = 0
 panel.Parent = gui
 
 local sizeConstraint = Instance.new("UISizeConstraint")
-sizeConstraint.MinSize = Vector2.new(245, 285)
-sizeConstraint.MaxSize = Vector2.new(340, 580)
+sizeConstraint.MinSize = Vector2.new(220, 260)
+sizeConstraint.MaxSize = Vector2.new(300, 460)
 sizeConstraint.Parent = panel
 
 local corner = Instance.new("UICorner")
@@ -137,14 +137,14 @@ title.Parent = panel
 
 local grid = Instance.new("Frame")
 grid.Name = "Buttons"
-grid.Position = UDim2.fromOffset(0, 50)
-grid.Size = UDim2.new(1, 0, 1, -86)
+grid.Position = UDim2.fromOffset(0, 42)
+grid.Size = UDim2.new(1, 0, 1, -72)
 grid.BackgroundTransparency = 1
 grid.Parent = panel
 
 local layout = Instance.new("UIGridLayout")
-layout.CellPadding = UDim2.fromOffset(8, 8)
-layout.CellSize = UDim2.new(0.333333, -6, 0, 58)
+layout.CellPadding = UDim2.fromOffset(5, 5)
+layout.CellSize = UDim2.new(0.25, -4, 0, 44)
 layout.SortOrder = Enum.SortOrder.LayoutOrder
 layout.Parent = grid
 
