@@ -27,8 +27,8 @@ local DEFINITIONS = {
 	Defeat = {asset = "SystemFailure", volume = 0.58, speed = 0.78, min = 14, max = 130, emitter = "UpperTorso"},
 	IonCharge = {asset = "ElectricArc", volume = 0.34, speed = 0.78, looped = true, min = 10, max = 95, emitter = "AegisCore"},
 	IonChargeBass = {asset = "IdleHum", volume = 0.3, speed = 0.55, looped = true, min = 12, max = 115, emitter = "AegisCore"},
-	LeftIonShot = {asset = "IonShot", volume = 0.88, speed = 0.68, min = 20, max = 190, emitter = "LeftIonCannon"},
-	RightIonShot = {asset = "IonShot", volume = 0.88, speed = 0.72, min = 20, max = 190, emitter = "RightIonCannon"},
+	LeftIonShot = {asset = "IonShot", volume = 0.88, speed = 0.68, startOffset = 0.45, min = 20, max = 190, emitter = "LeftIonCannon"},
+	RightIonShot = {asset = "IonShot", volume = 0.88, speed = 0.72, startOffset = 0.45, min = 20, max = 190, emitter = "RightIonCannon"},
 	LeftIonBass = {asset = "MetalImpact", volume = 0.72, speed = 0.56, min = 18, max = 175, emitter = "LeftIonCannon"},
 	RightIonBass = {asset = "MetalImpact", volume = 0.72, speed = 0.58, min = 18, max = 175, emitter = "RightIonCannon"},
 	MissileLock = {asset = "TargetLock", volume = 0.44, speed = 0.9, min = 10, max = 95, emitter = "LeftShoulderMissilePod"},
@@ -57,6 +57,7 @@ local function makeSound(parent, name, definition)
 	item.RollOffMinDistance = definition.min
 	item.RollOffMaxDistance = definition.max
 	item.EmitterSize = math.max(4, definition.min * 0.55)
+	item:SetAttribute("StartOffset", definition.startOffset or 0)
 	item.Parent = parent
 	return item
 end
@@ -87,6 +88,7 @@ function SoundController.Attach(model)
 		item.PlaybackSpeed *= speedScale or 1
 		item.Volume *= volumeScale or 1
 		item.Parent = template.Parent
+		item.TimePosition = item:GetAttribute("StartOffset") or 0
 		item:Play()
 		Debris:AddItem(item, math.max(3, item.TimeLength + 1))
 		return item
@@ -125,20 +127,19 @@ function SoundController.Attach(model)
 			local ionCharge = play("IonCharge")
 			local ionChargeBass = play("IonChargeBass")
 			local visualRelease = math.max(0.1, (config.TelegraphDuration or 0.55) - 0.05)
-			local audioPreRoll = 0.18
-			task.delay(audioPreRoll, function()
-				if model:GetAttribute("GuardianState") ~= "Defeated" then play("LeftIonShot") end
-			end)
-			task.delay(audioPreRoll + 0.2, function()
-				if model:GetAttribute("GuardianState") ~= "Defeated" then play("RightIonShot") end
-			end)
 			task.delay(visualRelease, function()
 				if ionCharge and ionCharge.IsPlaying then ionCharge:Stop() end
 				if ionChargeBass and ionChargeBass.IsPlaying then ionChargeBass:Stop() end
-				if model:GetAttribute("GuardianState") ~= "Defeated" then play("LeftIonBass") end
+				if model:GetAttribute("GuardianState") ~= "Defeated" then
+					play("LeftIonShot")
+					play("LeftIonBass")
+				end
 			end)
 			task.delay(visualRelease + 0.2, function()
-				if model:GetAttribute("GuardianState") ~= "Defeated" then play("RightIonBass") end
+				if model:GetAttribute("GuardianState") ~= "Defeated" then
+					play("RightIonShot")
+					play("RightIonBass")
+				end
 			end)
 		elseif name == "ShoulderMissiles" then
 			play("MissileLock", 1, 0.45)
