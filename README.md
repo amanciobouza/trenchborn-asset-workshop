@@ -43,3 +43,27 @@ local warden, gameplayApi = installer.Install(workspace, {
 	EnableVisualReactions = true,
 })
 ```
+
+
+## Aegis-III Interceptor final installer
+
+`AegisInterceptorInstaller` installs the approved Phase 7 Aegis-III geometry, dressing, fleet rig, gameplay, production animations, combat VFX, spatial sounds, and targeted missile warning audio. Workshop HUDs and test targets are not included.
+
+```lua
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
+local installer = require(packageFolder:WaitForChild("AegisInterceptorInstaller"))
+
+local aegis, api = installer.Install(workspace, {
+	GroundCFrame = CFrame.new(0, 0, 0),
+	AnchorRoot = true,
+})
+
+api.RequestAbility:Invoke("TwinIonCannons", workspace.TargetPart)
+api.RequestAbility:Invoke("ShoulderMissiles", workspace.TargetPart)
+api.RequestAbility:Invoke("DirectionalAegis")
+api.ApplyDamage:Invoke(5000, workspace.DamageSource)
+```
+
+The installed gameplay contract exposes 18,000 health, 150,000 shield points, directional frontal damage reduction, independent ability cooldowns, reset support, and explicit runtime cleanup through `api.Runtime.Destroy()`.
