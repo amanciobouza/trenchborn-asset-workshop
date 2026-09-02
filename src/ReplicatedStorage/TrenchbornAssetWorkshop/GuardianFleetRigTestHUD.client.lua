@@ -650,7 +650,7 @@ remote.OnClientEvent:Connect(function(message, payload)
 		if not success then warn("Guardian damage reaction failed:", err) end
 		return
 	end
-	if message == "PlayIdle" or message == "PlayAlertIdle" or message == "PlayWalk" or message == "PlayRun" or message == "PlayTurnLeft" or message == "PlayTurnRight" or message == "PlayFall" or message == "PlayLand" or message == "PlayWalkBackward" or message == "PlayShockBaton" or message == "PlayWarningPulse" or message == "PlayPulseCannonFire" or message == "PlayContainmentNetLaunch" then
+	if message == "PlayIdle" or message == "PlayAlertIdle" or message == "PlayWalk" or message == "PlayRun" or message == "PlayTurnLeft" or message == "PlayTurnRight" or message == "PlayFall" or message == "PlayLand" or message == "PlayWalkBackward" or message == "PlayShockBaton" or message == "PlayWarningPulse" or message == "PlayShoulderMissileSalvo" or message == "PlayPulseCannonFire" or message == "PlayContainmentNetLaunch" then
 		local builders = {
 			PlayIdle = {"BuildIdle", "GuardianIdlePreview"},
 			PlayAlertIdle = {"BuildAlertIdle", "GuardianAlertIdlePreview"},
@@ -663,6 +663,7 @@ remote.OnClientEvent:Connect(function(message, payload)
 			PlayWalkBackward = {"BuildWalkBackward", "GuardianWalkBackwardPreview"},
 			PlayShockBaton = {"BuildShockBaton", "WardenShockBatonPreview"},
 			PlayWarningPulse = {"BuildWarningPulse", "WardenWarningPulsePreview"},
+			PlayShoulderMissileSalvo = {"BuildShoulderMissileSalvo", "AegisShoulderMissileSalvoPreview"},
 			PlayPulseCannonFire = {"BuildPulseCannonFire", "GuardianPulseCannonFirePreview"},
 			PlayContainmentNetLaunch = {"BuildContainmentNetLaunch", "GuardianContainmentNetLaunchPreview"},
 		}
