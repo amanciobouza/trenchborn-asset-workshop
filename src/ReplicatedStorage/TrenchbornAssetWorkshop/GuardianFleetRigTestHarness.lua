@@ -638,6 +638,11 @@ function Harness.Attach(model)
 				task.delay(3.15, function()
 					if model:GetAttribute("GuardianState") ~= "Defeated" then broadcast("PlayIdle") end
 				end)
+			elseif name == "TwinIonCannons" then
+				broadcast("PlayTwinIonCannons")
+				task.delay(1.52, function()
+					if model:GetAttribute("GuardianState") ~= "Defeated" then broadcast("PlayIdle") end
+				end)
 			end
 		end)
 	end
@@ -823,6 +828,7 @@ function Harness.Attach(model)
 	model:SetAttribute("WardenShockBatonPreviewReady", true)
 	model:SetAttribute("WardenWarningPulsePreviewReady", true)
 	model:SetAttribute("AegisMissileSalvoPreviewReady", true)
+	model:SetAttribute("AegisTwinIonCannonsPreviewReady", true)
 	model:SetAttribute("GuardianShieldBlockPreviewReady", true)
 	model:SetAttribute("GuardianPulseCannonFirePreviewReady", true)
 	model:SetAttribute("GuardianContainmentNetLaunchPreviewReady", true)
