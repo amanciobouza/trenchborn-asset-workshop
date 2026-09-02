@@ -839,4 +839,54 @@ function Library.BuildWarningPulse()
 	return sequence
 end
 
+
+function Library.BuildShoulderMissileSalvo()
+	local sequence = Instance.new("KeyframeSequence")
+	sequence.Name = "AegisShoulderMissileSalvo"
+	sequence.Loop = false
+	sequence.Priority = Enum.AnimationPriority.Action3
+
+	local function brace(recoil)
+		return {
+			LowerTorso = CFrame.new(0, -0.65 - recoil * 0.18, 0.2 + recoil * 0.18)
+				* CFrame.Angles(math.rad(7 + recoil * 4), 0, 0),
+			UpperTorso = CFrame.Angles(math.rad(4 + recoil * 7), 0, 0),
+			Head = CFrame.Angles(math.rad(-5 - recoil * 2), 0, 0),
+			LeftUpperArm = CFrame.Angles(math.rad(18), math.rad(-6), math.rad(-20)),
+			LeftLowerArm = CFrame.Angles(math.rad(30), 0, math.rad(-5)),
+			RightUpperArm = CFrame.Angles(math.rad(18), math.rad(6), math.rad(20)),
+			RightLowerArm = CFrame.Angles(math.rad(30), 0, math.rad(5)),
+			LeftUpperLeg = CFrame.Angles(math.rad(19 + recoil * 3), 0, math.rad(-2)),
+			LeftLowerLeg = CFrame.Angles(math.rad(-43 - recoil * 4), 0, 0),
+			LeftFoot = CFrame.Angles(math.rad(21), 0, 0),
+			RightUpperLeg = CFrame.Angles(math.rad(19 + recoil * 3), 0, math.rad(2)),
+			RightLowerLeg = CFrame.Angles(math.rad(-43 - recoil * 4), 0, 0),
+			RightFoot = CFrame.Angles(math.rad(21), 0, 0),
+		}
+	end
+
+	keyframe(sequence, 0, {})
+	keyframe(sequence, 0.45, brace(0.2))
+	keyframe(sequence, 0.82, brace(0))
+	-- Hold the stabilized firing position throughout the target lock.
+	keyframe(sequence, 1.75, brace(0))
+	keyframe(sequence, 1.98, brace(0.25))
+	-- Alternating chassis impulses make the eight launches readable as a salvo.
+	keyframe(sequence, 2.05, brace(1))
+	keyframe(sequence, 2.14, brace(0.25))
+	keyframe(sequence, 2.23, brace(0.85))
+	keyframe(sequence, 2.32, brace(0.2))
+	keyframe(sequence, 2.41, brace(0.7))
+	keyframe(sequence, 2.55, brace(0.1))
+	keyframe(sequence, 2.78, brace(0))
+	keyframe(sequence, 3.15, {})
+
+	sequence:SetAttribute("GuardianAnimation", "ShoulderMissileSalvo")
+	sequence:SetAttribute("DurationSeconds", 3.15)
+	sequence:SetAttribute("LockDurationSeconds", 2.0)
+	sequence:SetAttribute("FirstLaunchTimeSeconds", 2.0)
+	sequence:SetAttribute("SpecificationVersion", "1.0-BraceLockSalvo")
+	return sequence
+end
+
 return Library
