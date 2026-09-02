@@ -51,7 +51,7 @@ local function lockedWarning(target, enabled)
 	gui.Enabled = enabled
 end
 
-local function impact(position, color, radius)
+local function impact(position, color, radius, soundAsset)
 	local wave = Instance.new("Part")
 	wave.Name = "AegisAbilityImpact"
 	wave.Shape = Enum.PartType.Ball
@@ -65,6 +65,19 @@ local function impact(position, color, radius)
 	wave.Color = color
 	wave.Transparency = 0.25
 	wave.Parent = effectsFolder()
+	if soundAsset then
+		local hit = Instance.new("Sound")
+		hit.Name = "IonImpactSFX"
+		hit.SoundId = "rbxassetid://" .. soundAsset
+		hit.Volume = 0.52
+		hit.PlaybackSpeed = 0.88
+		hit.RollOffMode = Enum.RollOffMode.InverseTapered
+		hit.RollOffMinDistance = 12
+		hit.RollOffMaxDistance = 135
+		hit.EmitterSize = 8
+		hit.Parent = wave
+		hit:Play()
+	end
 	Debris:AddItem(wave, 0.5)
 	TweenService:Create(wave, TweenInfo.new(0.42, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
 		Size = Vector3.new(radius, radius, radius),
@@ -104,7 +117,7 @@ local function fireIon(model, target, config)
 					if pulse.Parent then
 						local position = pulse.Position
 						pulse:Destroy()
-						impact(position, Color3.fromRGB(95, 231, 255), 14)
+						impact(position, Color3.fromRGB(95, 231, 255), 14, 9116279561)
 					end
 				end)
 			end
