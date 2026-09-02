@@ -1,4 +1,7 @@
 local Debris = game:GetService("Debris")
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local SoundController = {}
 
@@ -22,9 +25,11 @@ local DEFINITIONS = {
 	Damage = {asset = "MetalImpact", volume = 0.48, speed = 0.96, min = 10, max = 105, emitter = "UpperTorso"},
 	Stagger = {asset = "Servo", volume = 0.58, speed = 0.7, min = 12, max = 115, emitter = "UpperTorso"},
 	Defeat = {asset = "SystemFailure", volume = 0.58, speed = 0.78, min = 14, max = 130, emitter = "UpperTorso"},
-	IonCharge = {asset = "TargetLock", volume = 0.28, speed = 1.12, min = 10, max = 88, emitter = "AegisCore"},
-	LeftIonShot = {asset = "IonShot", volume = 0.68, speed = 0.96, min = 18, max = 170, emitter = "LeftIonCannon"},
-	RightIonShot = {asset = "IonShot", volume = 0.68, speed = 1.02, min = 18, max = 170, emitter = "RightIonCannon"},
+	IonCharge = {asset = "ElectricArc", volume = 0.38, speed = 0.68, min = 10, max = 95, emitter = "AegisCore"},
+	LeftIonShot = {asset = "IonShot", volume = 0.88, speed = 0.68, min = 20, max = 190, emitter = "LeftIonCannon"},
+	RightIonShot = {asset = "IonShot", volume = 0.88, speed = 0.72, min = 20, max = 190, emitter = "RightIonCannon"},
+	LeftIonBass = {asset = "MetalImpact", volume = 0.72, speed = 0.56, min = 18, max = 175, emitter = "LeftIonCannon"},
+	RightIonBass = {asset = "MetalImpact", volume = 0.72, speed = 0.58, min = 18, max = 175, emitter = "RightIonCannon"},
 	MissileLock = {asset = "TargetLock", volume = 0.44, speed = 0.9, min = 10, max = 95, emitter = "LeftShoulderMissilePod"},
 	MissileLaunchLeft = {asset = "Servo", volume = 0.5, speed = 1.18, min = 14, max = 125, emitter = "LeftShoulderMissilePod"},
 	MissileLaunchRight = {asset = "Servo", volume = 0.5, speed = 1.22, min = 14, max = 125, emitter = "RightShoulderMissilePod"},
@@ -90,18 +95,49 @@ function SoundController.Attach(model)
 	local idle = templates.IdleHum
 	local aegisHum = templates.AegisHum
 	idle:Play()
+
+	local warningRemoteName = "AegisWarningAudio_" .. HttpService:GenerateGUID(false)
+	local warningRemote = Instance.new("RemoteEvent")
+	warningRemote.Name = warningRemoteName
+	warningRemote.Parent = ReplicatedStorage
+	model:SetAttribute("AegisWarningRemoteName", warningRemoteName)
+	local warningTemplate = script.Parent:WaitForChild("AegisWarningAudio")
+	local function installWarningClient(player)
+		local gui = player:WaitForChild("PlayerGui")
+		if gui:FindFirstChild(warningRemoteName) then return end
+		local client = warningTemplate:Clone()
+		client.Name = warningRemoteName
+		client:SetAttribute("RemoteName", warningRemoteName)
+		client.Parent = gui
+	end
+	for _, player in ipairs(Players:GetPlayers()) do task.spawn(installWarningClient, player) end
+	Players.PlayerAdded:Connect(installWarningClient)
+
+	local function targetPlayer(target)
+		if typeof(target) ~= "Instance" then return nil end
+		local character = target:IsA("Model") and target or target:FindFirstAncestorOfClass("Model")
+		return character and Players:GetPlayerFromCharacter(character) or nil
+	end
 	local gameplay = model:WaitForChild("Gameplay")
-	gameplay:WaitForChild("AbilityRequested").Event:Connect(function(name, _, config)
+	gameplay:WaitForChild("AbilityRequested").Event:Connect(function(name, target, config)
 		if name == "TwinIonCannons" then
 			play("IonCharge")
 			task.delay(config.TelegraphDuration or 0.55, function()
-				if model:GetAttribute("GuardianState") ~= "Defeated" then play("LeftIonShot") end
+				if model:GetAttribute("GuardianState") ~= "Defeated" then
+					play("LeftIonShot")
+					play("LeftIonBass")
+				end
 			end)
 			task.delay((config.TelegraphDuration or 0.55) + 0.2, function()
-				if model:GetAttribute("GuardianState") ~= "Defeated" then play("RightIonShot") end
+				if model:GetAttribute("GuardianState") ~= "Defeated" then
+					play("RightIonShot")
+					play("RightIonBass")
+				end
 			end)
 		elseif name == "ShoulderMissiles" then
-			play("MissileLock")
+			play("MissileLock", 1, 0.45)
+			local player = targetPlayer(target)
+			if player then warningRemote:FireClient(player, "MissileLock", config.LockDuration or 2) end
 			task.delay(config.LockDuration or 2, function()
 				if model:GetAttribute("GuardianState") == "Defeated" then return end
 				for index = 1, 4 do
@@ -136,7 +172,7 @@ function SoundController.Attach(model)
 		elseif state == "Idle" and not idle.IsPlaying then idle:Play() end
 	end)
 
-	model:SetAttribute("AegisSoundPassVersion", "1.0")
+	model:SetAttribute("AegisSoundPassVersion", "1.1")
 	model:SetAttribute("AegisSoundSpatialized", true)
 	model:SetAttribute("AegisSoundAssetSource", "RobloxCreatorStore")
 	return request
