@@ -29,6 +29,7 @@ local aegisReactions = require(packageFolder:WaitForChild("AegisInterceptorReact
 local aegisSoundController = require(packageFolder:WaitForChild("AegisInterceptorSoundController"))
 local bastionSpecification = require(packageFolder:WaitForChild("BastionColossusSpecification"))
 local bastionGoldenMaster = require(packageFolder:WaitForChild("BastionColossusGoldenMaster"))
+local bastionDressing = require(packageFolder:WaitForChild("BastionColossusDressing"))
 
 workshop:SetAttribute("CurrentAsset", specification.AssetName)
 workshop:SetAttribute("CurrentPhase", specification.PipelinePhase)
@@ -61,6 +62,7 @@ fleetRigTestHarness.Attach(comparisonWarden)
 workshop:SetAttribute("AnimationTestTarget", "Warden-I Shepherd")
 
 local bastionModel = bastionGoldenMaster.Build(workshop)
+bastionDressing.Apply(bastionModel)
 local minimumVisibleY = math.huge
 for _, item in ipairs(bastionModel:GetDescendants()) do
 	if item:IsA("BasePart") and item.Transparency < 1 and not item:FindFirstAncestor("Hitboxes") then
@@ -70,6 +72,6 @@ end
 local groundCorrection = minimumVisibleY < math.huge and -minimumVisibleY or 0
 bastionModel:PivotTo(bastionModel:GetPivot() + Vector3.new(-55, groundCorrection, 85))
 workshop:SetAttribute("CurrentAsset", bastionSpecification.AssetName)
-workshop:SetAttribute("CurrentPhase", 4)
-workshop:SetAttribute("QualityStatus", "Phase4_GoldenMasterReview")
+workshop:SetAttribute("CurrentPhase", 5)
+workshop:SetAttribute("QualityStatus", "Phase5_DressingReview")
 workshop:SetAttribute("GoldenMasterReviewTarget", bastionModel.Name)
