@@ -217,10 +217,11 @@ local function launchMissiles(model, target, config)
 		local destination = targetPosition(model, target, config.Range or 130)
 		local cells = {}
 		local sideCells = {Left = {}, Right = {}}
+		local launchFaces = {}
 		for _, side in ipairs({"Left", "Right"}) do
 			local pod = model:FindFirstChild(side .. "ShoulderMissilePod", true)
 			local face = pod and pod:FindFirstChild("LauncherFace", true)
-			if face and face:IsA("BasePart") then launchSmoke(face.Position) end
+			if face and face:IsA("BasePart") then launchFaces[side] = face end
 			if pod then
 				for _, item in ipairs(pod:GetDescendants()) do
 					if item:IsA("BasePart") and string.find(item.Name, "MissileCell", 1, true) then
@@ -230,15 +231,25 @@ local function launchMissiles(model, target, config)
 				table.sort(sideCells[side], function(a, b) return a.Name < b.Name end)
 			end
 		end
-		-- Interleave both pods: left 1, right 1, left 2, right 2...
-		local pairsToLaunch = math.ceil((config.MissileCount or 8) * 0.5)
-		for index = 1, pairsToLaunch do
+		local perSide = math.ceil((config.MissileCount or 8) * 0.5)
+		for index = 1, perSide do
 			if sideCells.Left[index] then table.insert(cells, sideCells.Left[index]) end
+		end
+		for index = 1, perSide do
 			if sideCells.Right[index] then table.insert(cells, sideCells.Right[index]) end
+		end
+		if launchFaces.Left then launchSmoke(launchFaces.Left.Position) end
+		if launchFaces.Right then
+			task.delay(0.62, function()
+				if launchFaces.Right.Parent then launchSmoke(launchFaces.Right.Position) end
+			end)
 		end
 		for index = 1, math.min(config.MissileCount or 8, #cells) do
 			local cell = cells[index]
-			task.delay((index - 1) * 0.07, function()
+			local launchDelay = index <= perSide
+				and ((index - 1) * 0.11)
+				or (0.62 + (index - perSide - 1) * 0.11)
+			task.delay(launchDelay, function()
 				if not cell.Parent then return end
 				local missile = Instance.new("Part")
 				missile.Name = "AegisShoulderMissile"
