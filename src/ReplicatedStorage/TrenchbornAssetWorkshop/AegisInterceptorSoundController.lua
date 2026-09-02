@@ -124,20 +124,21 @@ function SoundController.Attach(model)
 		if name == "TwinIonCannons" then
 			local ionCharge = play("IonCharge")
 			local ionChargeBass = play("IonChargeBass")
-			local releaseTime = math.max(0.1, (config.TelegraphDuration or 0.55) - 0.12)
-			task.delay(releaseTime, function()
+			local visualRelease = math.max(0.1, (config.TelegraphDuration or 0.55) - 0.05)
+			local audioPreRoll = 0.18
+			task.delay(audioPreRoll, function()
+				if model:GetAttribute("GuardianState") ~= "Defeated" then play("LeftIonShot") end
+			end)
+			task.delay(audioPreRoll + 0.2, function()
+				if model:GetAttribute("GuardianState") ~= "Defeated" then play("RightIonShot") end
+			end)
+			task.delay(visualRelease, function()
 				if ionCharge and ionCharge.IsPlaying then ionCharge:Stop() end
 				if ionChargeBass and ionChargeBass.IsPlaying then ionChargeBass:Stop() end
-				if model:GetAttribute("GuardianState") ~= "Defeated" then
-					play("LeftIonShot")
-					play("LeftIonBass")
-				end
+				if model:GetAttribute("GuardianState") ~= "Defeated" then play("LeftIonBass") end
 			end)
-			task.delay(releaseTime + 0.2, function()
-				if model:GetAttribute("GuardianState") ~= "Defeated" then
-					play("RightIonShot")
-					play("RightIonBass")
-				end
+			task.delay(visualRelease + 0.2, function()
+				if model:GetAttribute("GuardianState") ~= "Defeated" then play("RightIonBass") end
 			end)
 		elseif name == "ShoulderMissiles" then
 			play("MissileLock", 1, 0.45)
