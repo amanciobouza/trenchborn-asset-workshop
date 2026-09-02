@@ -106,6 +106,10 @@ function Gameplay.Attach(model, config)
 		if aegisActive and frontal and shield > 0 then
 			blocked = math.min(shield, amount * config.DirectionalAegis.DamageReduction)
 			shield -= blocked
+			if shield <= 0 then
+				aegisToken += 1
+				aegisActive = false
+			end
 		end
 		local healthDamage = amount - blocked
 		health = math.max(0, health - healthDamage)
