@@ -635,7 +635,7 @@ function Harness.Attach(model)
 				end)
 			elseif name == "ShoulderMissiles" then
 				broadcast("PlayShoulderMissileSalvo")
-				task.delay(3.15, function()
+				task.delay(3.62, function()
 					if model:GetAttribute("GuardianState") ~= "Defeated" then broadcast("PlayIdle") end
 				end)
 			elseif name == "TwinIonCannons" then
