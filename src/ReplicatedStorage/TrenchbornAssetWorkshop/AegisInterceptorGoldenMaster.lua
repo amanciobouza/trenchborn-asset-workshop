@@ -156,13 +156,13 @@ local function addAegisArray(systems)
 	aegis.Parent = systems
 
 	local panels = {
-		{"CoreCrown", Vector3.new(5.0, 2.4, 0.55), Vector3.new(0, 34.8, -4.95), Vector3.new(0, 0, 0)},
-		{"LeftUpper", Vector3.new(4.6, 4.0, 0.62), Vector3.new(-3.5, 33.5, -4.85), Vector3.new(0, -5, 25)},
-		{"RightUpper", Vector3.new(4.6, 4.0, 0.62), Vector3.new(3.5, 33.5, -4.85), Vector3.new(0, 5, -25)},
-		{"LeftOuter", Vector3.new(3.5, 5.2, 0.7), Vector3.new(-6.0, 31.8, -4.35), Vector3.new(0, -8, 34)},
-		{"RightOuter", Vector3.new(3.5, 5.2, 0.7), Vector3.new(6.0, 31.8, -4.35), Vector3.new(0, 8, -34)},
-		{"LeftLower", Vector3.new(4.0, 3.1, 0.66), Vector3.new(-2.6, 29.8, -5.0), Vector3.new(0, -4, -18)},
-		{"RightLower", Vector3.new(4.0, 3.1, 0.66), Vector3.new(2.6, 29.8, -5.0), Vector3.new(0, 4, 18)},
+		{"CoreCrown", Vector3.new(5.0, 2.4, 0.55), Vector3.new(0, 32.8, -4.95), Vector3.new(0, 0, 0)},
+		{"LeftUpper", Vector3.new(4.6, 4.0, 0.62), Vector3.new(-3.5, 31.5, -4.85), Vector3.new(0, -5, 25)},
+		{"RightUpper", Vector3.new(4.6, 4.0, 0.62), Vector3.new(3.5, 31.5, -4.85), Vector3.new(0, 5, -25)},
+		{"LeftOuter", Vector3.new(3.5, 5.2, 0.7), Vector3.new(-6.0, 29.8, -4.35), Vector3.new(0, -8, 34)},
+		{"RightOuter", Vector3.new(3.5, 5.2, 0.7), Vector3.new(6.0, 29.8, -4.35), Vector3.new(0, 8, -34)},
+		{"LeftLower", Vector3.new(4.0, 3.1, 0.66), Vector3.new(-2.6, 27.8, -5.0), Vector3.new(0, -4, -18)},
+		{"RightLower", Vector3.new(4.0, 3.1, 0.66), Vector3.new(2.6, 27.8, -5.0), Vector3.new(0, 4, 18)},
 	}
 	for _, definition in ipairs(panels) do
 		local panel = block(aegis, definition[1], definition[2], definition[3], COLORS.Accent, definition[4])
@@ -170,7 +170,7 @@ local function addAegisArray(systems)
 		panel.Transparency = 0.16
 		panel.Reflectance = 0.08
 	end
-	local core = cylinder(aegis, "AegisCore", Vector3.new(0.55, 3.0, 3.0), Vector3.new(0, 32.1, -5.45), COLORS.Accent, Vector3.new(0, 90, 0))
+	local core = cylinder(aegis, "AegisCore", Vector3.new(0.55, 3.0, 3.0), Vector3.new(0, 30.1, -5.45), COLORS.Accent, Vector3.new(0, 90, 0))
 	core.Material = Enum.Material.Neon
 	aegis.PrimaryPart = core
 	return aegis
@@ -187,7 +187,7 @@ local function addEquipmentHitboxes(model)
 	local hitboxes = model:FindFirstChild("Hitboxes") or folder(model, "Hitboxes")
 	invisibleHitbox(hitboxes, "LeftMissilePodHitbox", Vector3.new(7.5, 8, 8), Vector3.new(-11.7, 40.2, 0))
 	invisibleHitbox(hitboxes, "RightMissilePodHitbox", Vector3.new(7.5, 8, 8), Vector3.new(11.7, 40.2, 0))
-	invisibleHitbox(hitboxes, "AegisProjectorHitbox", Vector3.new(15, 9, 2), Vector3.new(0, 32.5, -4.6))
+	invisibleHitbox(hitboxes, "AegisProjectorHitbox", Vector3.new(15, 9, 2), Vector3.new(0, 30.5, -4.6))
 end
 
 local function countGeometry(model)
