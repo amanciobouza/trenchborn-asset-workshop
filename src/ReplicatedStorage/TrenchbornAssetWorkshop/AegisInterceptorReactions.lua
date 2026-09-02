@@ -316,7 +316,7 @@ function Reactions.Attach(model)
 			panel.CanTouch = false
 			panel.CanQuery = false
 			panel.Massless = true
-			panel.Material = Enum.Material.ForceField
+			panel.Material = Enum.Material.Neon
 			panel.Color = Color3.fromRGB(62, 218, 255)
 			panel.Transparency = 1
 			panel.Parent = effectsFolder()
@@ -327,14 +327,23 @@ function Reactions.Attach(model)
 			outline.FillColor = Color3.fromRGB(62, 218, 255)
 			outline.FillTransparency = 0.72
 			outline.OutlineColor = Color3.fromRGB(184, 246, 255)
-			outline.OutlineTransparency = 0.05
+			outline.OutlineTransparency = 0
 			outline.Parent = panel
+			if index == 2 then
+				local fieldLight = Instance.new("PointLight")
+				fieldLight.Name = "DirectionalAegisGlow"
+				fieldLight.Color = Color3.fromRGB(62, 218, 255)
+				fieldLight.Brightness = 5
+				fieldLight.Range = 34
+				fieldLight.Shadows = false
+				fieldLight.Parent = panel
+			end
 			local weld = Instance.new("WeldConstraint")
 			weld.Part0 = torso
 			weld.Part1 = panel
 			weld.Parent = panel
 			table.insert(activeField, panel)
-			TweenService:Create(panel, TweenInfo.new(0.24, Enum.EasingStyle.Quad), {Transparency = 0.04}):Play()
+			TweenService:Create(panel, TweenInfo.new(0.24, Enum.EasingStyle.Quad), {Transparency = 0.22}):Play()
 		end
 		task.delay(config.Duration, function()
 			if token == fieldToken then clearField() end
