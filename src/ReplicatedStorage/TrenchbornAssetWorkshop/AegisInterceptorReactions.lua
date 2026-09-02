@@ -1,0 +1,242 @@
+local Debris = game:GetService("Debris")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+
+local Reactions = {}
+
+local function effectsFolder()
+	local folder = workspace:FindFirstChild("AegisRuntimeEffects")
+	if not folder then
+		folder = Instance.new("Folder")
+		folder.Name = "AegisRuntimeEffects"
+		folder.Parent = workspace
+	end
+	return folder
+end
+
+local function targetPosition(model, target, range)
+	if typeof(target) == "Instance" then
+		if target:IsA("BasePart") then return target.Position end
+		if target:IsA("Model") then return target:GetPivot().Position end
+	end
+	local root = model:FindFirstChild("HumanoidRootPart") or model.PrimaryPart
+	return root.Position + root.CFrame.LookVector * range
+end
+
+local function lockedWarning(target, enabled)
+	if not target or not target:IsA("BasePart") then return end
+	local gui = target:FindFirstChild("AegisTargetLocked")
+	if not gui then
+		gui = Instance.new("BillboardGui")
+		gui.Name = "AegisTargetLocked"
+		gui.Size = UDim2.fromOffset(300, 78)
+		gui.StudsOffset = Vector3.new(0, 8.5, 0)
+		gui.AlwaysOnTop = true
+		gui.Parent = target
+		local label = Instance.new("TextLabel")
+		label.Size = UDim2.fromScale(1, 1)
+		label.BackgroundColor3 = Color3.fromRGB(127, 66, 24)
+		label.BackgroundTransparency = 0.08
+		label.BorderSizePixel = 0
+		label.Text = "⚠ MISSILE LOCK ⚠"
+		label.TextColor3 = Color3.fromRGB(255, 230, 183)
+		label.Font = Enum.Font.GothamBlack
+		label.TextScaled = true
+		label.Parent = gui
+		local stroke = Instance.new("UIStroke")
+		stroke.Color = Color3.fromRGB(255, 155, 62)
+		stroke.Thickness = 3
+		stroke.Parent = label
+	end
+	gui.Enabled = enabled
+end
+
+local function impact(position, color, radius)
+	local wave = Instance.new("Part")
+	wave.Name = "AegisAbilityImpact"
+	wave.Shape = Enum.PartType.Ball
+	wave.Size = Vector3.new(3, 3, 3)
+	wave.Position = position
+	wave.Anchored = true
+	wave.CanCollide = false
+	wave.CanTouch = false
+	wave.CanQuery = false
+	wave.Material = Enum.Material.ForceField
+	wave.Color = color
+	wave.Transparency = 0.25
+	wave.Parent = effectsFolder()
+	Debris:AddItem(wave, 0.5)
+	TweenService:Create(wave, TweenInfo.new(0.42, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+		Size = Vector3.new(radius, radius, radius),
+		Transparency = 1,
+	}):Play()
+end
+
+local function fireIon(model, target, config)
+	task.delay(config.TelegraphDuration or 0.55, function()
+		if not model.Parent then return end
+		local destination = targetPosition(model, target, config.Range or 95)
+		for index, side in ipairs({"Left", "Right"}) do
+			local muzzle = model:FindFirstChild(side .. "IonCannon", true)
+			muzzle = muzzle and muzzle:FindFirstChild("IonMuzzleCore", true)
+			if muzzle and muzzle:IsA("BasePart") then
+				local pulse = Instance.new("Part")
+				pulse.Name = side .. "IonProjectile"
+				pulse.Shape = Enum.PartType.Ball
+				pulse.Size = Vector3.new(2.3, 2.3, 2.3)
+				pulse.Position = muzzle.Position
+				pulse.Anchored = true
+				pulse.CanCollide = false
+				pulse.CanTouch = false
+				pulse.CanQuery = false
+				pulse.Material = Enum.Material.Neon
+				pulse.Color = Color3.fromRGB(62, 218, 255)
+				pulse.Parent = effectsFolder()
+				Debris:AddItem(pulse, 1.5)
+				local offset = Vector3.new((index == 1 and -1 or 1) * 1.2, 0, 0)
+				local duration = math.clamp((destination - muzzle.Position).Magnitude / 135, 0.18, 0.65)
+				local tween = TweenService:Create(pulse, TweenInfo.new(duration, Enum.EasingStyle.Linear), {
+					Position = destination + offset,
+					Size = Vector3.new(3.1, 3.1, 3.1),
+				})
+				tween:Play()
+				tween.Completed:Connect(function()
+					if pulse.Parent then
+						local position = pulse.Position
+						pulse:Destroy()
+						impact(position, Color3.fromRGB(95, 231, 255), 14)
+					end
+				end)
+			end
+		end
+	end)
+end
+
+local function launchMissiles(model, target, config)
+	lockedWarning(target, true)
+	task.delay(config.LockDuration or 1.4, function()
+		lockedWarning(target, false)
+		if not model.Parent then return end
+		local destination = targetPosition(model, target, config.Range or 130)
+		local cells = {}
+		for _, side in ipairs({"Left", "Right"}) do
+			local pod = model:FindFirstChild(side .. "ShoulderMissilePod", true)
+			if pod then
+				for _, item in ipairs(pod:GetDescendants()) do
+					if item:IsA("BasePart") and string.find(item.Name, "MissileCell", 1, true) then
+						table.insert(cells, item)
+					end
+				end
+			end
+		end
+		table.sort(cells, function(a, b) return a:GetFullName() < b:GetFullName() end)
+		for index = 1, math.min(config.MissileCount or 8, #cells) do
+			local cell = cells[index]
+			task.delay((index - 1) * 0.07, function()
+				if not cell.Parent then return end
+				local missile = Instance.new("Part")
+				missile.Name = "AegisShoulderMissile"
+				missile.Size = Vector3.new(0.7, 0.7, 2.4)
+				missile.CFrame = cell.CFrame
+				missile.Anchored = true
+				missile.CanCollide = false
+				missile.CanTouch = false
+				missile.CanQuery = false
+				missile.Material = Enum.Material.Metal
+				missile.Color = Color3.fromRGB(185, 190, 195)
+				missile.Parent = effectsFolder()
+				Debris:AddItem(missile, 2)
+				local start = missile.Position
+				local lateral = ((index % 2 == 0) and 1 or -1) * (3 + index * 0.3)
+				local apex = (start + destination) * 0.5 + Vector3.new(lateral, 27 + index, 0)
+				local began = os.clock()
+				local duration = config.FlightDuration or 1.1
+				local connection
+				connection = RunService.Heartbeat:Connect(function()
+					local alpha = math.clamp((os.clock() - began) / duration, 0, 1)
+					local inverse = 1 - alpha
+					local position = inverse * inverse * start + 2 * inverse * alpha * apex + alpha * alpha * destination
+					local nextAlpha = math.min(1, alpha + 0.02)
+					local nextInverse = 1 - nextAlpha
+					local nextPosition = nextInverse * nextInverse * start + 2 * nextInverse * nextAlpha * apex + nextAlpha * nextAlpha * destination
+					missile.CFrame = CFrame.lookAt(position, nextPosition)
+					if alpha >= 1 then
+						connection:Disconnect()
+						missile:Destroy()
+						impact(destination, Color3.fromRGB(255, 156, 63), config.SplashRadius or 12)
+					end
+				end)
+			end)
+		end
+	end)
+end
+
+function Reactions.Attach(model)
+	local gameplay = model:WaitForChild("Gameplay")
+	local abilityRequested = gameplay:WaitForChild("AbilityRequested")
+	local stateChanged = gameplay:WaitForChild("StateChanged")
+	local activeField = {}
+	local fieldToken = 0
+
+	local function clearField()
+		fieldToken += 1
+		for _, panel in ipairs(activeField) do
+			if panel.Parent then
+				TweenService:Create(panel, TweenInfo.new(0.18), {Transparency = 1}):Play()
+				Debris:AddItem(panel, 0.2)
+			end
+		end
+		activeField = {}
+	end
+
+	local function deployField(config)
+		clearField()
+		local token = fieldToken
+		local root = model:FindFirstChild("HumanoidRootPart") or model.PrimaryPart
+		local torso = model:FindFirstChild("UpperTorso") or root
+		if not root or not torso then return end
+		for index, data in ipairs({
+			{Vector3.new(-7.4, 6.5, -8), 18},
+			{Vector3.new(0, 6.2, -9), 0},
+			{Vector3.new(7.4, 6.5, -8), -18},
+		}) do
+			local panel = Instance.new("Part")
+			panel.Name = "DirectionalAegisField" .. index
+			panel.Size = Vector3.new(8.5, 14, 0.35)
+			panel.CFrame = root.CFrame * CFrame.new(data[1]) * CFrame.Angles(0, math.rad(data[2]), 0)
+			panel.Anchored = false
+			panel.CanCollide = false
+			panel.CanTouch = false
+			panel.CanQuery = false
+			panel.Massless = true
+			panel.Material = Enum.Material.ForceField
+			panel.Color = Color3.fromRGB(62, 218, 255)
+			panel.Transparency = 1
+			panel.Parent = effectsFolder()
+			local weld = Instance.new("WeldConstraint")
+			weld.Part0 = torso
+			weld.Part1 = panel
+			weld.Parent = panel
+			table.insert(activeField, panel)
+			TweenService:Create(panel, TweenInfo.new(0.24, Enum.EasingStyle.Quad), {Transparency = 0.3}):Play()
+		end
+		task.delay(config.Duration, function()
+			if token == fieldToken then clearField() end
+		end)
+	end
+
+	abilityRequested.Event:Connect(function(name, target, config)
+		if name == "TwinIonCannons" then fireIon(model, target, config)
+		elseif name == "ShoulderMissiles" then launchMissiles(model, target, config)
+		elseif name == "DirectionalAegis" then deployField(config) end
+	end)
+	stateChanged.Event:Connect(function(state)
+		if state == "Idle" or state == "Defeated" then clearField() end
+	end)
+
+	model:SetAttribute("AegisAbilityVFXReady", true)
+	model:SetAttribute("AegisVFXUsesPermanentParts", false)
+	return model
+end
+
+return Reactions
