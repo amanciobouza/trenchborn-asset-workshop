@@ -86,6 +86,14 @@ local function bodySegment(item)
 	if net then return "NetLauncherControl" end
 	local baton = item:FindFirstAncestor("ShockBaton")
 	if baton then return "LeftHand" end
+	local leftIon = item:FindFirstAncestor("LeftIonCannon")
+	if leftIon then return "LeftLowerArm" end
+	local rightIon = item:FindFirstAncestor("RightIonCannon")
+	if rightIon then return "RightLowerArm" end
+	local missilePod = item:FindFirstAncestor("ShoulderMissilePod")
+	if missilePod then return "UpperTorso" end
+	local directionalAegis = item:FindFirstAncestor("DirectionalAegis")
+	if directionalAegis then return "UpperTorso" end
 	if item:FindFirstAncestor("LeftHand") then return "LeftHand" end
 	if item:FindFirstAncestor("RightHand") then return "RightHand" end
 	if name == "ForearmHardpointLeft" then return "LeftLowerArm" end
