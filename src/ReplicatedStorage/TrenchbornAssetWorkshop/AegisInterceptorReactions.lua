@@ -134,7 +134,7 @@ local function launchSmoke(position)
 	emitter.Rotation = NumberRange.new(0, 360)
 	emitter.RotSpeed = NumberRange.new(-35, 35)
 	emitter.Drag = 4
-	emitter.Color = ColorSequence.new(Color3.fromRGB(174, 184, 192), Color3.fromRGB(72, 83, 94))
+	emitter.Color = ColorSequence.new(Color3.fromRGB(255, 255, 255), Color3.fromRGB(218, 225, 231))
 	emitter.Transparency = NumberSequence.new({
 		NumberSequenceKeypoint.new(0, 0.28),
 		NumberSequenceKeypoint.new(0.7, 0.62),
@@ -194,7 +194,7 @@ local function addMissileExhaust(missile)
 	smoke.Rotation = NumberRange.new(0, 360)
 	smoke.RotSpeed = NumberRange.new(-45, 45)
 	smoke.SpreadAngle = Vector2.new(12, 12)
-	smoke.Color = ColorSequence.new(Color3.fromRGB(142, 155, 166), Color3.fromRGB(58, 68, 79))
+	smoke.Color = ColorSequence.new(Color3.fromRGB(255, 255, 255), Color3.fromRGB(205, 214, 222))
 	smoke.Transparency = NumberSequence.new({
 		NumberSequenceKeypoint.new(0, 0.35),
 		NumberSequenceKeypoint.new(0.62, 0.58),
