@@ -112,6 +112,103 @@ local function fireIon(model, target, config)
 	end)
 end
 
+
+local function launchSmoke(position)
+	local anchor = Instance.new("Part")
+	anchor.Name = "AegisMissileLaunchSmoke"
+	anchor.Size = Vector3.new(0.2, 0.2, 0.2)
+	anchor.Position = position
+	anchor.Anchored = true
+	anchor.CanCollide = false
+	anchor.CanTouch = false
+	anchor.CanQuery = false
+	anchor.Transparency = 1
+	anchor.Parent = effectsFolder()
+	local emitter = Instance.new("ParticleEmitter")
+	emitter.Name = "LaunchSmokeCloud"
+	emitter.Texture = "rbxasset://textures/particles/smoke_main.dds"
+	emitter.Rate = 0
+	emitter.Lifetime = NumberRange.new(0.65, 1.0)
+	emitter.Speed = NumberRange.new(5, 10)
+	emitter.SpreadAngle = Vector2.new(48, 48)
+	emitter.Rotation = NumberRange.new(0, 360)
+	emitter.RotSpeed = NumberRange.new(-35, 35)
+	emitter.Drag = 4
+	emitter.Color = ColorSequence.new(Color3.fromRGB(174, 184, 192), Color3.fromRGB(72, 83, 94))
+	emitter.Transparency = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 0.28),
+		NumberSequenceKeypoint.new(0.7, 0.62),
+		NumberSequenceKeypoint.new(1, 1),
+	})
+	emitter.Size = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 2.2),
+		NumberSequenceKeypoint.new(0.45, 5.5),
+		NumberSequenceKeypoint.new(1, 8.5),
+	})
+	emitter.Parent = anchor
+	emitter:Emit(30)
+	Debris:AddItem(anchor, 1.4)
+end
+
+local function addMissileExhaust(missile)
+	local inner = Instance.new("Attachment")
+	inner.Name = "ExhaustInner"
+	inner.Position = Vector3.new(0, 0, 0.85)
+	inner.Parent = missile
+	local outer = Instance.new("Attachment")
+	outer.Name = "ExhaustOuter"
+	outer.Position = Vector3.new(0, 0, 1.55)
+	outer.Parent = missile
+
+	local trail = Instance.new("Trail")
+	trail.Name = "HotExhaustTrail"
+	trail.Attachment0 = inner
+	trail.Attachment1 = outer
+	trail.Lifetime = 0.24
+	trail.MinLength = 0.05
+	trail.FaceCamera = true
+	trail.LightEmission = 1
+	trail.Color = ColorSequence.new({
+		ColorSequenceKeypoint.new(0, Color3.fromRGB(235, 250, 255)),
+		ColorSequenceKeypoint.new(0.35, Color3.fromRGB(89, 220, 255)),
+		ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 148, 58)),
+	})
+	trail.Transparency = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 0.04),
+		NumberSequenceKeypoint.new(0.75, 0.35),
+		NumberSequenceKeypoint.new(1, 1),
+	})
+	trail.WidthScale = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 0.9),
+		NumberSequenceKeypoint.new(1, 0),
+	})
+	trail.Parent = missile
+
+	local smoke = Instance.new("ParticleEmitter")
+	smoke.Name = "MissileSmokeTrail"
+	smoke.Texture = "rbxasset://textures/particles/smoke_main.dds"
+	smoke.Rate = 20
+	smoke.Lifetime = NumberRange.new(0.55, 0.78)
+	smoke.Speed = NumberRange.new(0.8, 2.2)
+	smoke.Drag = 3
+	smoke.Rotation = NumberRange.new(0, 360)
+	smoke.RotSpeed = NumberRange.new(-45, 45)
+	smoke.SpreadAngle = Vector2.new(12, 12)
+	smoke.Color = ColorSequence.new(Color3.fromRGB(142, 155, 166), Color3.fromRGB(58, 68, 79))
+	smoke.Transparency = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 0.35),
+		NumberSequenceKeypoint.new(0.62, 0.58),
+		NumberSequenceKeypoint.new(1, 1),
+	})
+	smoke.Size = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 0.75),
+		NumberSequenceKeypoint.new(0.45, 1.9),
+		NumberSequenceKeypoint.new(1, 3.2),
+	})
+	smoke.Parent = outer
+end
+
+
 local function launchMissiles(model, target, config)
 	lockedWarning(target, true)
 	task.delay(config.LockDuration or 1.4, function()
@@ -119,6 +216,11 @@ local function launchMissiles(model, target, config)
 		if not model.Parent then return end
 		local destination = targetPosition(model, target, config.Range or 130)
 		local cells = {}
+		for _, side in ipairs({"Left", "Right"}) do
+			local pod = model:FindFirstChild(side .. "ShoulderMissilePod", true)
+			local face = pod and pod:FindFirstChild("LauncherFace", true)
+			if face and face:IsA("BasePart") then launchSmoke(face.Position) end
+		end
 		for _, side in ipairs({"Left", "Right"}) do
 			local pod = model:FindFirstChild(side .. "ShoulderMissilePod", true)
 			if pod then
@@ -145,6 +247,7 @@ local function launchMissiles(model, target, config)
 				missile.Material = Enum.Material.Metal
 				missile.Color = Color3.fromRGB(185, 190, 195)
 				missile.Parent = effectsFolder()
+				addMissileExhaust(missile)
 				Debris:AddItem(missile, 2)
 				local start = missile.Position
 				local lateral = ((index % 2 == 0) and 1 or -1) * (3 + index * 0.3)
