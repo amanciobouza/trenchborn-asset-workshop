@@ -168,10 +168,8 @@ local function addDistrictProjectors(systems, model)
 	block(projectors, "EmblemLeftWing", Vector3.new(1.4, 4.8, 0.4), chest + Vector3.new(-2.0, 0.55, -0.54), COLORS.Accent, Vector3.new(0, 0, -31)).Material = Enum.Material.Neon
 	block(projectors, "EmblemRightWing", Vector3.new(1.4, 4.8, 0.4), chest + Vector3.new(2.0, 0.55, -0.54), COLORS.Accent, Vector3.new(0, 0, 31)).Material = Enum.Material.Neon
 	for _, data in ipairs({
-		{"ChestProjector", Vector3.new(0, 34.5, -7.8)},
 		{"LeftHipProjector", Vector3.new(-7.0, 27.5, -4.5)},
 		{"RightHipProjector", Vector3.new(7.0, 27.5, -4.5)},
-		{"RearProjector", Vector3.new(0, 39.0, 6.2)},
 	}) do
 		local node = cylinder(projectors, data[1], Vector3.new(0.75, 2.4, 2.4), data[2], COLORS.Accent, Vector3.new(0, 90, 0))
 		node.Material = Enum.Material.Neon
