@@ -26,6 +26,7 @@ local DEFINITIONS = {
 	Stagger = {asset = "Servo", volume = 0.58, speed = 0.7, min = 12, max = 115, emitter = "UpperTorso"},
 	Defeat = {asset = "SystemFailure", volume = 0.58, speed = 0.78, min = 14, max = 130, emitter = "UpperTorso"},
 	IonCharge = {asset = "ElectricArc", volume = 0.34, speed = 0.78, looped = true, min = 10, max = 95, emitter = "AegisCore"},
+	IonChargeBass = {asset = "IdleHum", volume = 0.3, speed = 0.55, looped = true, min = 12, max = 115, emitter = "AegisCore"},
 	LeftIonShot = {asset = "IonShot", volume = 0.88, speed = 0.68, min = 20, max = 190, emitter = "LeftIonCannon"},
 	RightIonShot = {asset = "IonShot", volume = 0.88, speed = 0.72, min = 20, max = 190, emitter = "RightIonCannon"},
 	LeftIonBass = {asset = "MetalImpact", volume = 0.72, speed = 0.56, min = 18, max = 175, emitter = "LeftIonCannon"},
@@ -122,14 +123,17 @@ function SoundController.Attach(model)
 	gameplay:WaitForChild("AbilityRequested").Event:Connect(function(name, target, config)
 		if name == "TwinIonCannons" then
 			local ionCharge = play("IonCharge")
-			task.delay(config.TelegraphDuration or 0.55, function()
+			local ionChargeBass = play("IonChargeBass")
+			local releaseTime = math.max(0.1, (config.TelegraphDuration or 0.55) - 0.12)
+			task.delay(releaseTime, function()
 				if ionCharge and ionCharge.IsPlaying then ionCharge:Stop() end
+				if ionChargeBass and ionChargeBass.IsPlaying then ionChargeBass:Stop() end
 				if model:GetAttribute("GuardianState") ~= "Defeated" then
 					play("LeftIonShot")
 					play("LeftIonBass")
 				end
 			end)
-			task.delay((config.TelegraphDuration or 0.55) + 0.2, function()
+			task.delay(releaseTime + 0.2, function()
 				if model:GetAttribute("GuardianState") ~= "Defeated" then
 					play("RightIonShot")
 					play("RightIonBass")
