@@ -167,7 +167,7 @@ local function addAegisArray(systems)
 	for _, definition in ipairs(panels) do
 		local panel = block(aegis, definition[1], definition[2], definition[3], COLORS.Accent, definition[4])
 		panel.Material = Enum.Material.Glass
-		panel.Transparency = 0.16
+		panel.Transparency = 0.28
 		panel.Reflectance = 0.08
 	end
 	local core = cylinder(aegis, "AegisCore", Vector3.new(0.55, 3.0, 3.0), Vector3.new(0, 30.1, -5.45), COLORS.Accent, Vector3.new(0, 90, 0))
