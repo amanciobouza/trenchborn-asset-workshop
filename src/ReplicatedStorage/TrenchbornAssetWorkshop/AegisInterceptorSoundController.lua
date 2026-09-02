@@ -12,6 +12,7 @@ local ASSETS = {
 	MetalImpact = 9116684884,
 	SystemFailure = 9118996235,
 	ElectricArc = 9116279561,
+	IonPulse = 137510557013265,
 	TargetLock = 146785518,
 }
 
@@ -26,12 +27,10 @@ local DEFINITIONS = {
 	Defeat = {asset = "SystemFailure", volume = 0.58, speed = 0.78, min = 14, max = 130, emitter = "UpperTorso"},
 	IonCharge = {asset = "ElectricArc", volume = 0.34, speed = 0.78, looped = true, min = 10, max = 95, emitter = "AegisCore"},
 	IonChargeBass = {asset = "IdleHum", volume = 0.3, speed = 0.55, looped = true, min = 12, max = 115, emitter = "AegisCore"},
-	LeftIonShot = {asset = "ElectricArc", volume = 0.92, speed = 1.58, min = 22, max = 205, emitter = "LeftIonCannon"},
-	RightIonShot = {asset = "ElectricArc", volume = 0.92, speed = 1.64, min = 22, max = 205, emitter = "RightIonCannon"},
-	LeftIonBass = {asset = "MetalImpact", volume = 0.48, speed = 0.58, min = 18, max = 175, emitter = "LeftIonCannon"},
-	RightIonBass = {asset = "MetalImpact", volume = 0.48, speed = 0.6, min = 18, max = 175, emitter = "RightIonCannon"},
-	LeftIonTail = {asset = "ElectricArc", volume = 0.28, speed = 0.92, min = 14, max = 145, emitter = "LeftIonCannon"},
-	RightIonTail = {asset = "ElectricArc", volume = 0.28, speed = 0.96, min = 14, max = 145, emitter = "RightIonCannon"},
+	LeftIonShot = {asset = "IonPulse", volume = 0.95, speed = 1.0, min = 22, max = 210, emitter = "LeftIonCannon"},
+	RightIonShot = {asset = "IonPulse", volume = 0.95, speed = 1.0, min = 22, max = 210, emitter = "RightIonCannon"},
+	LeftIonBass = {asset = "MetalImpact", volume = 0.22, speed = 0.58, min = 18, max = 155, emitter = "LeftIonCannon"},
+	RightIonBass = {asset = "MetalImpact", volume = 0.22, speed = 0.6, min = 18, max = 155, emitter = "RightIonCannon"},
 	MissileLock = {asset = "TargetLock", volume = 0.44, speed = 0.9, min = 10, max = 95, emitter = "LeftShoulderMissilePod"},
 	MissileLaunchLeft = {asset = "Servo", volume = 0.5, speed = 1.18, min = 14, max = 125, emitter = "LeftShoulderMissilePod"},
 	MissileLaunchRight = {asset = "Servo", volume = 0.5, speed = 1.22, min = 14, max = 125, emitter = "RightShoulderMissilePod"},
@@ -134,14 +133,12 @@ function SoundController.Attach(model)
 				if model:GetAttribute("GuardianState") ~= "Defeated" then
 					play("LeftIonShot")
 					play("LeftIonBass")
-					play("LeftIonTail")
 				end
 			end)
 			task.delay(visualRelease + 0.2, function()
 				if model:GetAttribute("GuardianState") ~= "Defeated" then
 					play("RightIonShot")
 					play("RightIonBass")
-					play("RightIonTail")
 				end
 			end)
 		elseif name == "ShoulderMissiles" then
@@ -182,7 +179,7 @@ function SoundController.Attach(model)
 		elseif state == "Idle" and not idle.IsPlaying then idle:Play() end
 	end)
 
-	model:SetAttribute("AegisSoundPassVersion", "1.3")
+	model:SetAttribute("AegisSoundPassVersion", "1.4")
 	model:SetAttribute("AegisSoundSpatialized", true)
 	model:SetAttribute("AegisSoundAssetSource", "RobloxCreatorStore")
 	return request
