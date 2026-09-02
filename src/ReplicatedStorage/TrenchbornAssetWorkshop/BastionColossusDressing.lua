@@ -7,6 +7,8 @@ local ENERGY_PARTS = {
 	EmblemRightWing = true,
 	RailCoreChannel = true,
 	RailMuzzleCore = true,
+	ShieldAngleLeft = true,
+	ShieldAngleRight = true,
 }
 
 local function isEnergyPart(item)
