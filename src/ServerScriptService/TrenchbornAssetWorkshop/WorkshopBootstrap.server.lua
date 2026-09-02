@@ -71,7 +71,9 @@ for _, item in ipairs(bastionModel:GetDescendants()) do
 end
 local groundCorrection = minimumVisibleY < math.huge and -minimumVisibleY or 0
 bastionModel:PivotTo(bastionModel:GetPivot() + Vector3.new(-55, groundCorrection, 85))
+fleetRig.Apply(bastionModel, {AnchorRoot = true})
+fleetRigTestHarness.Attach(bastionModel)
 workshop:SetAttribute("CurrentAsset", bastionSpecification.AssetName)
-workshop:SetAttribute("CurrentPhase", 5)
-workshop:SetAttribute("QualityStatus", "Phase5_DressingReview")
+workshop:SetAttribute("CurrentPhase", 6)
+workshop:SetAttribute("QualityStatus", "Phase6_StandardAnimationReview")
 workshop:SetAttribute("GoldenMasterReviewTarget", bastionModel.Name)
