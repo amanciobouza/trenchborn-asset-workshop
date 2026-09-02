@@ -142,7 +142,7 @@ local function addMissilePod(systems, side, sign)
 			end
 		end
 	end
-	block(pod, "WarningStrip", Vector3.new(3.6, 0.28, 0.2), Vector3.new(x, 33.4, -4.0), COLORS.Warning).Material = Enum.Material.Neon
+	block(pod, "WarningStrip", Vector3.new(3.6, 0.28, 0.2), Vector3.new(x, 40.45, -3.95), COLORS.Warning).Material = Enum.Material.Neon
 	pod.PrimaryPart = pod:FindFirstChild("PodHousing")
 	return pod
 end
