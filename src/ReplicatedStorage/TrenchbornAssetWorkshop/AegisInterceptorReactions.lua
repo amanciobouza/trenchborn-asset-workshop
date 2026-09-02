@@ -316,7 +316,7 @@ function Reactions.Attach(model)
 			panel.CanTouch = false
 			panel.CanQuery = false
 			panel.Massless = true
-			panel.Material = Enum.Material.Neon
+			panel.Material = Enum.Material.ForceField
 			panel.Color = Color3.fromRGB(62, 218, 255)
 			panel.Transparency = 1
 			panel.Parent = effectsFolder()
@@ -329,6 +329,32 @@ function Reactions.Attach(model)
 			outline.OutlineColor = Color3.fromRGB(184, 246, 255)
 			outline.OutlineTransparency = 0
 			outline.Parent = panel
+
+			-- Physical neon edge bars keep the ForceField readable from every angle.
+			for edgeIndex, edge in ipairs({
+				{Vector3.new(0.28, panel.Size.Y, 0.42), CFrame.new(-panel.Size.X * 0.5, 0, 0)},
+				{Vector3.new(0.28, panel.Size.Y, 0.42), CFrame.new(panel.Size.X * 0.5, 0, 0)},
+				{Vector3.new(panel.Size.X, 0.28, 0.42), CFrame.new(0, panel.Size.Y * 0.5, 0)},
+				{Vector3.new(panel.Size.X, 0.28, 0.42), CFrame.new(0, -panel.Size.Y * 0.5, 0)},
+			}) do
+				local border = Instance.new("Part")
+				border.Name = "AegisEdge" .. edgeIndex
+				border.Size = edge[1]
+				border.CFrame = panel.CFrame * edge[2]
+				border.Anchored = false
+				border.CanCollide = false
+				border.CanTouch = false
+				border.CanQuery = false
+				border.Massless = true
+				border.CastShadow = false
+				border.Material = Enum.Material.Neon
+				border.Color = Color3.fromRGB(108, 235, 255)
+				border.Parent = panel
+				local edgeWeld = Instance.new("WeldConstraint")
+				edgeWeld.Part0 = panel
+				edgeWeld.Part1 = border
+				edgeWeld.Parent = border
+			end
 			if index == 2 then
 				local fieldLight = Instance.new("PointLight")
 				fieldLight.Name = "DirectionalAegisGlow"
@@ -343,7 +369,7 @@ function Reactions.Attach(model)
 			weld.Part1 = panel
 			weld.Parent = panel
 			table.insert(activeField, panel)
-			TweenService:Create(panel, TweenInfo.new(0.24, Enum.EasingStyle.Quad), {Transparency = 0.22}):Play()
+			TweenService:Create(panel, TweenInfo.new(0.24, Enum.EasingStyle.Quad), {Transparency = 0.16}):Play()
 		end
 		task.delay(config.Duration, function()
 			if token == fieldToken then clearField() end
