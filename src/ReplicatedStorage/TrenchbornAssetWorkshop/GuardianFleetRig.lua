@@ -94,6 +94,16 @@ local function bodySegment(item)
 	if missilePod then return "UpperTorso" end
 	local directionalAegis = item:FindFirstAncestor("DirectionalAegis")
 	if directionalAegis then return "UpperTorso" end
+	local railCannon = item:FindFirstAncestor("HeavyRailCannon")
+	if railCannon then return "UpperTorso" end
+	local shieldTower = item:FindFirstAncestor("DistrictShieldTower")
+	if shieldTower then return "UpperTorso" end
+	local districtProjector = item:FindFirstAncestor("DistrictShieldProjectors")
+	if districtProjector then return "UpperTorso" end
+	local leftSiegeFist = item:FindFirstAncestor("LeftSiegeFist")
+	if leftSiegeFist then return "LeftHand" end
+	local rightSiegeFist = item:FindFirstAncestor("RightSiegeFist")
+	if rightSiegeFist then return "RightHand" end
 	if item:FindFirstAncestor("LeftHand") then return "LeftHand" end
 	if item:FindFirstAncestor("RightHand") then return "RightHand" end
 	if name == "ForearmHardpointLeft" then return "LeftLowerArm" end
