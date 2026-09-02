@@ -103,7 +103,7 @@ local function addSiegeFist(equipment, model, side)
 	fist.PrimaryPart = fist:FindFirstChild("FistCage")
 end
 
-local function addRailCannon(equipment)
+local function addRailCannon(equipment, model)
 	local cannon = Instance.new("Model")
 	cannon.Name = "HeavyRailCannon"
 	cannon:SetAttribute("EquipmentType", "HeavyRailCannon")
@@ -123,9 +123,13 @@ local function addRailCannon(equipment)
 	cylinder(cannon, "RailMuzzleCore", Vector3.new(1.0, 3.2, 3.2), Vector3.new(6.8, 49.55, -30.3), COLORS.ChargeHot, Vector3.new(0, 90, 0)).Material = Enum.Material.Neon
 	block(cannon, "RearTorsoBrace", Vector3.new(6.0, 8.5, 4.0), Vector3.new(6.8, 46.5, 4.8), COLORS.DarkMetal, Vector3.new(-8, 0, 0))
 	cannon.PrimaryPart = cannon:FindFirstChild("RailBreech")
+	local head = model:FindFirstChild("SensorHead", true)
+	assert(head and head:IsA("BasePart"), "Missing SensorHead for Heavy Rail Cannon mount")
+	-- Resolve the complete cannon from the actual scaled head/shoulder position.
+	cannon:PivotTo(CFrame.new(head.Position.X + 6.2, head.Position.Y + 2.0, head.Position.Z - 3.2))
 end
 
-local function addShieldTower(systems, side, sign)
+local function addShieldTower(systems, model, side, sign)
 	local tower = Instance.new("Model")
 	tower.Name = side .. "DistrictShieldTower"
 	tower:SetAttribute("EquipmentType", "DistrictShieldTower")
@@ -140,6 +144,11 @@ local function addShieldTower(systems, side, sign)
 		node.Material = Enum.Material.Neon
 	end
 	tower.PrimaryPart = tower:FindFirstChild("TowerBody")
+	local head = model:FindFirstChild("SensorHead", true)
+	local torso = model:FindFirstChild("TorsoUpper", true)
+	assert(head and torso, "Missing body anchors for District Shield Tower")
+	-- Towers overlap the shoulder mass instead of hovering above it.
+	tower:PivotTo(CFrame.new(torso.Position.X + sign * 12.0, head.Position.Y + 1.5, torso.Position.Z + 1.3))
 end
 
 local function addDistrictProjectors(systems)
@@ -226,9 +235,9 @@ function Builder.Build(parent)
 	local systems = model:FindFirstChild("Systems") or folder(model, "Systems")
 	addSiegeFist(equipment, model, "Left")
 	addSiegeFist(equipment, model, "Right")
-	addRailCannon(equipment)
-	addShieldTower(systems, "Left", -1)
-	addShieldTower(systems, "Right", 1)
+	addRailCannon(equipment, model)
+	addShieldTower(systems, model, "Left", -1)
+	addShieldTower(systems, model, "Right", 1)
 	addDistrictProjectors(systems)
 	addEquipmentHitboxes(model)
 	countGeometry(model)
