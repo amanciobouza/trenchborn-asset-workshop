@@ -61,7 +61,14 @@ fleetRigTestHarness.Attach(comparisonWarden)
 workshop:SetAttribute("AnimationTestTarget", "Warden-I Shepherd")
 
 local bastionModel = bastionGoldenMaster.Build(workshop)
-bastionModel:PivotTo(bastionModel:GetPivot() + Vector3.new(-55, 0, 85))
+local minimumVisibleY = math.huge
+for _, item in ipairs(bastionModel:GetDescendants()) do
+	if item:IsA("BasePart") and item.Transparency < 1 and not item:FindFirstAncestor("Hitboxes") then
+		minimumVisibleY = math.min(minimumVisibleY, item.Position.Y - item.Size.Y * 0.5)
+	end
+end
+local groundCorrection = minimumVisibleY < math.huge and -minimumVisibleY or 0
+bastionModel:PivotTo(bastionModel:GetPivot() + Vector3.new(-55, groundCorrection, 85))
 workshop:SetAttribute("CurrentAsset", bastionSpecification.AssetName)
 workshop:SetAttribute("CurrentPhase", 4)
 workshop:SetAttribute("QualityStatus", "Phase4_GoldenMasterReview")
