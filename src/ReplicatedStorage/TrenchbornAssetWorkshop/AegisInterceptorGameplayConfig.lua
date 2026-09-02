@@ -20,7 +20,7 @@ return {
 		MissileCount = 8,
 		DamagePerMissile = 180,
 		SplashRadius = 12,
-		LockDuration = 1.4,
+		LockDuration = 2.0,
 		FlightDuration = 1.1,
 		Cooldown = 12,
 	},
