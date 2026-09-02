@@ -109,6 +109,7 @@ function Gameplay.Attach(model, config)
 			if shield <= 0 then
 				aegisToken += 1
 				aegisActive = false
+				state("Idle")
 			end
 		end
 		local healthDamage = amount - blocked
