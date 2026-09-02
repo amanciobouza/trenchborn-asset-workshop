@@ -1,68 +1,18 @@
-local specification = require(script.Parent:WaitForChild("BastionColossusSpecification"))
-
 local Dressing = {}
-local COLORS = specification.Palette
 
-local function contains(name, fragments)
-	for _, fragment in ipairs(fragments) do
-		if string.find(name, fragment, 1, true) then return true end
-	end
-	return false
-end
+local ENERGY_PARTS = {
+	VisorSensor = true,
+	EmblemSpine = true,
+	EmblemLeftWing = true,
+	EmblemRightWing = true,
+	RailCoreChannel = true,
+	RailMuzzleCore = true,
+}
 
-local function dressPart(item)
-	if item.Transparency >= 1 then return end
-	local name = item.Name
-
-	if contains(name, {
-		"VisorSensor", "EmblemSpine", "EmblemLeftWing", "EmblemRightWing",
-		"ShieldNode", "Projector", "RailCoreChannel", "RailMuzzleCore",
-	}) then
-		item.Color = contains(name, {"RailMuzzleCore"}) and COLORS.ChargeHot or COLORS.Accent
-		item.Material = Enum.Material.Neon
-		item.Reflectance = 0
-		return
-	end
-
-	if contains(name, {
-		"HeadBrow", "Armor", "Plate", "Crown", "RailBarrelUpper",
-		"RailBarrelLower", "KnucklePlate", "Toe", "FootMain", "KneeGuard",
-	}) then
-		item.Color = COLORS.Armor
-		item.Material = Enum.Material.Sandstone
-		item.Reflectance = 0
-		return
-	end
-
-	if contains(name, {
-		"Bearing", "Gimbal", "Hydraulic", "Axle", "Joint", "Brace",
-		"MuzzleFrame", "FistCage", "WristRam", "Pylon", "Recoil",
-	}) then
-		item.Color = COLORS.DarkMetal
-		item.Material = Enum.Material.Metal
-		item.Reflectance = 0.02
-		return
-	end
-
-	if contains(name, {
-		"TowerBody", "RailBreech", "Housing", "UpperArm", "Forearm",
-		"Thigh", "Shin", "Pelvis", "Torso",
-	}) then
-		item.Color = COLORS.Body
-		item.Material = Enum.Material.Metal
-		item.Reflectance = 0.025
-		return
-	end
-
-	if contains(name, {"SiegeKnuckle", "EmblemFrame", "Cradle"}) then
-		item.Color = COLORS.Chassis
-		item.Material = Enum.Material.DiamondPlate
-		item.Reflectance = 0.01
-		return
-	end
-
-	item.Material = Enum.Material.Metal
-	item.Reflectance = math.min(item.Reflectance, 0.02)
+local function isEnergyPart(item)
+	if ENERGY_PARTS[item.Name] then return true end
+	return string.find(item.Name, "ShieldNode", 1, true) ~= nil
+		or string.find(item.Name, "Projector", 1, true) ~= nil
 end
 
 local function enforceRuntimeBudget(model)
@@ -86,16 +36,28 @@ end
 
 function Dressing.Apply(model)
 	assert(model and model:IsA("Model"), "BastionColossusDressing.Apply expects a Model")
+
+	-- Preserve the approved Golden Master palette and surfaces. Dressing only
+	-- confirms the deliberate energy emitters; it must not restyle the chassis.
 	for _, item in ipairs(model:GetDescendants()) do
-		if item:IsA("BasePart") then dressPart(item) end
+		if item:IsA("BasePart") and item.Transparency < 1 then
+			if isEnergyPart(item) then
+				item.Material = Enum.Material.Neon
+				item.Reflectance = 0
+			else
+				item.Material = Enum.Material.Metal
+				item.Reflectance = math.min(item.Reflectance, 0.025)
+			end
+		end
 	end
+
 	enforceRuntimeBudget(model)
 	model:SetAttribute("PipelinePhase", 5)
 	model:SetAttribute("DressingApplied", true)
+	model:SetAttribute("DressingStyle", "GoldenMasterPreserved")
 	model:SetAttribute("DressingUsesAdditionalParts", false)
 	model:SetAttribute("PermanentLights", 0)
 	model:SetAttribute("PermanentParticleEmitters", 0)
-	model:SetAttribute("ArmorMaterial", "Sandstone")
 	model:SetAttribute("TextLabelsScaled", true)
 	return model
 end
