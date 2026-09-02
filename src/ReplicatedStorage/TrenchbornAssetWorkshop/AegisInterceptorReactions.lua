@@ -320,12 +320,21 @@ function Reactions.Attach(model)
 			panel.Color = Color3.fromRGB(62, 218, 255)
 			panel.Transparency = 1
 			panel.Parent = effectsFolder()
+			local outline = Instance.new("Highlight")
+			outline.Name = "DirectionalAegisOutline"
+			outline.Adornee = panel
+			outline.DepthMode = Enum.HighlightDepthMode.Occluded
+			outline.FillColor = Color3.fromRGB(62, 218, 255)
+			outline.FillTransparency = 0.72
+			outline.OutlineColor = Color3.fromRGB(184, 246, 255)
+			outline.OutlineTransparency = 0.05
+			outline.Parent = panel
 			local weld = Instance.new("WeldConstraint")
 			weld.Part0 = torso
 			weld.Part1 = panel
 			weld.Parent = panel
 			table.insert(activeField, panel)
-			TweenService:Create(panel, TweenInfo.new(0.24, Enum.EasingStyle.Quad), {Transparency = 0.12}):Play()
+			TweenService:Create(panel, TweenInfo.new(0.24, Enum.EasingStyle.Quad), {Transparency = 0.04}):Play()
 		end
 		task.delay(config.Duration, function()
 			if token == fieldToken then clearField() end
