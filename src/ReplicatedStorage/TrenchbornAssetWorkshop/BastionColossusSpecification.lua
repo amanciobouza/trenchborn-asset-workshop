@@ -13,9 +13,9 @@ return {
 	Tier = 4,
 	City = "Large City",
 	PipelinePhase = 3,
-	Status = "TechnicalBreakdown",
+	Status = "GoldenMasterApproved",
 	QualityGateA = "Approved",
-	QualityGateB = "Pending",
+	QualityGateB = "Approved",
 	QualityGateC = "Pending",
 
 	Role = {
