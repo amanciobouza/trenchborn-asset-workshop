@@ -151,7 +151,7 @@ local function addShieldTower(systems, model, side, sign)
 	tower:PivotTo(CFrame.new(torso.Position.X + sign * 12.0, head.Position.Y + 1.5, torso.Position.Z + 1.3))
 end
 
-local function addDistrictProjectors(systems)
+local function addDistrictProjectors(systems, model)
 	local projectors = Instance.new("Model")
 	projectors.Name = "DistrictShieldProjectors"
 	projectors:SetAttribute("EquipmentType", "DistrictShield")
@@ -159,11 +159,14 @@ local function addDistrictProjectors(systems)
 	projectors:SetAttribute("RuntimeFieldVisible", false)
 	projectors.Parent = systems
 
-	-- Large unobstructed fleet emblem on the chest.
-	block(projectors, "EmblemFrame", Vector3.new(11.5, 11.0, 0.7), Vector3.new(0, 38.0, -7.0), COLORS.DarkMetal)
-	block(projectors, "EmblemSpine", Vector3.new(2.1, 8.0, 0.45), Vector3.new(0, 37.8, -7.62), COLORS.Accent).Material = Enum.Material.Neon
-	block(projectors, "EmblemLeftWing", Vector3.new(1.8, 6.5, 0.45), Vector3.new(-2.6, 39.0, -7.6), COLORS.Accent, Vector3.new(0, 0, -31)).Material = Enum.Material.Neon
-	block(projectors, "EmblemRightWing", Vector3.new(1.8, 6.5, 0.45), Vector3.new(2.6, 39.0, -7.6), COLORS.Accent, Vector3.new(0, 0, 31)).Material = Enum.Material.Neon
+	-- Resolve the emblem from the scaled torso so it remains on the chest.
+	local torso = model:FindFirstChild("TorsoUpper", true)
+	assert(torso and torso:IsA("BasePart"), "Missing TorsoUpper for Bastion chest emblem")
+	local chest = torso.Position + Vector3.new(0, -0.8, -(torso.Size.Z * 0.5 + 0.55))
+	block(projectors, "EmblemFrame", Vector3.new(9.0, 8.2, 0.65), chest, COLORS.DarkMetal)
+	block(projectors, "EmblemSpine", Vector3.new(1.45, 5.7, 0.4), chest + Vector3.new(0, -0.25, -0.55), COLORS.Accent).Material = Enum.Material.Neon
+	block(projectors, "EmblemLeftWing", Vector3.new(1.4, 4.8, 0.4), chest + Vector3.new(-2.0, 0.55, -0.54), COLORS.Accent, Vector3.new(0, 0, -31)).Material = Enum.Material.Neon
+	block(projectors, "EmblemRightWing", Vector3.new(1.4, 4.8, 0.4), chest + Vector3.new(2.0, 0.55, -0.54), COLORS.Accent, Vector3.new(0, 0, 31)).Material = Enum.Material.Neon
 	for _, data in ipairs({
 		{"ChestProjector", Vector3.new(0, 34.5, -7.8)},
 		{"LeftHipProjector", Vector3.new(-7.0, 27.5, -4.5)},
@@ -238,7 +241,7 @@ function Builder.Build(parent)
 	addRailCannon(equipment, model)
 	addShieldTower(systems, model, "Left", -1)
 	addShieldTower(systems, model, "Right", 1)
-	addDistrictProjectors(systems)
+	addDistrictProjectors(systems, model)
 	addEquipmentHitboxes(model)
 	countGeometry(model)
 
