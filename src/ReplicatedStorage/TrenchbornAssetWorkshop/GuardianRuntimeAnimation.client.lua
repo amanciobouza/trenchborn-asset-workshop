@@ -32,7 +32,7 @@ local builders = {
 	ContainmentNetLaunch = "BuildContainmentNetLaunch",
 	TwinIonCannons = "BuildTwinIonCannons",
 	ShoulderMissileSalvo = "BuildShoulderMissileSalvo",
-	DirectionalAegis = "BuildDirectionalAegis",
+	DirectionalAegis = "BuildAlertIdle",
 }
 
 local function restorePower()
