@@ -97,7 +97,12 @@ local function fireIon(model, target, config)
 				pulse.Name = side .. "IonProjectile"
 				pulse.Shape = Enum.PartType.Ball
 				pulse.Size = Vector3.new(2.3, 2.3, 2.3)
-				pulse.Position = muzzle.Position
+				-- The decorative core sits below the optical barrel center on this rig.
+				-- Lift the projectile to the visible bore and move it just beyond the muzzle.
+				local housing = muzzle.Parent:FindFirstChild("ForearmHousing")
+				local barrelDirection = housing and (muzzle.Position - housing.Position).Unit or -muzzle.CFrame.RightVector
+				local launchPosition = muzzle.Position + Vector3.new(0, 2.6, 0) + barrelDirection * 1.2
+				pulse.Position = launchPosition
 				pulse.Anchored = true
 				pulse.CanCollide = false
 				pulse.CanTouch = false
@@ -107,7 +112,7 @@ local function fireIon(model, target, config)
 				pulse.Parent = effectsFolder()
 				Debris:AddItem(pulse, 1.5)
 				local offset = Vector3.new((index == 1 and -1 or 1) * 1.2, 0, 0)
-				local duration = math.clamp((destination - muzzle.Position).Magnitude / 135, 0.18, 0.65)
+				local duration = math.clamp((destination - launchPosition).Magnitude / 135, 0.18, 0.65)
 				local tween = TweenService:Create(pulse, TweenInfo.new(duration, Enum.EasingStyle.Linear), {
 					Position = destination + offset,
 					Size = Vector3.new(3.1, 3.1, 3.1),
