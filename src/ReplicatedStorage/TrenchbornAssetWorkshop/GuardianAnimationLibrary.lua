@@ -889,4 +889,55 @@ function Library.BuildShoulderMissileSalvo()
 	return sequence
 end
 
+
+function Library.BuildTwinIonCannons()
+	local sequence = Instance.new("KeyframeSequence")
+	sequence.Name = "AegisTwinIonCannons"
+	sequence.Loop = false
+	sequence.Priority = Enum.AnimationPriority.Action3
+
+	local function aim(recoil, sideImpulse)
+		return {
+			LowerTorso = CFrame.new(sideImpulse * 0.08, -0.42 - recoil * 0.18, recoil * 0.16)
+				* CFrame.Angles(math.rad(4 + recoil * 4), math.rad(sideImpulse * 2), 0),
+			UpperTorso = CFrame.Angles(math.rad(-5 + recoil * 10), math.rad(sideImpulse * 3), 0),
+			Head = CFrame.Angles(math.rad(-3 + recoil * 3), math.rad(-sideImpulse * 2), 0),
+			LeftUpperArm = CFrame.Angles(math.rad(78 - recoil * 18), math.rad(-3), math.rad(-7)),
+			LeftLowerArm = CFrame.Angles(math.rad(-17 + recoil * 11), 0, math.rad(-2)),
+			RightUpperArm = CFrame.Angles(math.rad(78 - recoil * 18), math.rad(3), math.rad(7)),
+			RightLowerArm = CFrame.Angles(math.rad(-17 + recoil * 11), 0, math.rad(2)),
+			LeftUpperLeg = CFrame.Angles(math.rad(15 + recoil * 3), 0, 0),
+			LeftLowerLeg = CFrame.Angles(math.rad(-35 - recoil * 4), 0, 0),
+			LeftFoot = CFrame.Angles(math.rad(18), 0, 0),
+			RightUpperLeg = CFrame.Angles(math.rad(15 + recoil * 3), 0, 0),
+			RightLowerLeg = CFrame.Angles(math.rad(-35 - recoil * 4), 0, 0),
+			RightFoot = CFrame.Angles(math.rad(18), 0, 0),
+		}
+	end
+
+	keyframe(sequence, 0, {})
+	keyframe(sequence, 0.18, {
+		LowerTorso = CFrame.new(0, -0.16, 0) * CFrame.Angles(math.rad(2), 0, 0),
+		LeftUpperArm = CFrame.Angles(math.rad(34), math.rad(-2), math.rad(-4)),
+		RightUpperArm = CFrame.Angles(math.rad(34), math.rad(2), math.rad(4)),
+	})
+	keyframe(sequence, 0.48, aim(0, 0))
+	keyframe(sequence, 0.55, aim(0, 0))
+	-- Left and right cannon discharge in rapid sequence.
+	keyframe(sequence, 0.62, aim(1, -1))
+	keyframe(sequence, 0.74, aim(0.2, 0))
+	keyframe(sequence, 0.82, aim(1, 1))
+	keyframe(sequence, 0.98, aim(0.25, 0))
+	keyframe(sequence, 1.18, aim(0, 0))
+	keyframe(sequence, 1.52, {})
+
+	sequence:SetAttribute("GuardianAnimation", "TwinIonCannons")
+	sequence:SetAttribute("DurationSeconds", 1.52)
+	sequence:SetAttribute("AimCompleteTimeSeconds", 0.48)
+	sequence:SetAttribute("FirstDischargeTimeSeconds", 0.55)
+	sequence:SetAttribute("SecondDischargeTimeSeconds", 0.75)
+	sequence:SetAttribute("SpecificationVersion", "1.0-DualArmAimRecoil")
+	return sequence
+end
+
 return Library
