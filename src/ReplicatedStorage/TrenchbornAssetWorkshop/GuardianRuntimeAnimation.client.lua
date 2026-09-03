@@ -4,6 +4,7 @@ local TweenService = game:GetService("TweenService")
 
 local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
 local library = require(packageFolder:WaitForChild("GuardianAnimationLibrary"))
+local bastionLibrary = require(packageFolder:WaitForChild("BastionAnimationLibrary"))
 local weaponInertia = require(packageFolder:WaitForChild("GuardianWeaponInertia"))
 local remote = ReplicatedStorage:WaitForChild(script:GetAttribute("RemoteName"))
 
@@ -78,7 +79,8 @@ end
 local function load(model, builderName, priorityOverride)
 	local animator = model:FindFirstChildWhichIsA("Animator", true)
 	if not animator then return nil end
-	local sequence = library[builderName]()
+	local selectedLibrary = model:GetAttribute("AssetName") == "Bastion-IV Colossus" and bastionLibrary or library
+	local sequence = selectedLibrary[builderName]()
 	local temporaryId = KeyframeSequenceProvider:RegisterKeyframeSequence(sequence)
 	local animation = Instance.new("Animation")
 	animation.AnimationId = temporaryId
