@@ -42,10 +42,10 @@ local function emitEnergyBurst(part, color, count, speed)
 	emitter.Name = "SovereignTransientEnergy"
 	emitter.Texture = "rbxasset://textures/particles/sparkles_main.dds"
 	emitter.Rate = 0
-	emitter.Lifetime = NumberRange.new(0.35, 0.75)
+	emitter.Lifetime = NumberRange.new(0.55, 1.05)
 	emitter.Speed = NumberRange.new(speed * 0.65, speed)
 	emitter.Drag = 3
-	emitter.SpreadAngle = Vector2.new(32, 32)
+	emitter.SpreadAngle = Vector2.new(60, 60)
 	emitter.Rotation = NumberRange.new(-180, 180)
 	emitter.RotSpeed = NumberRange.new(-120, 120)
 	emitter.LightEmission = 0.9
@@ -53,8 +53,8 @@ local function emitEnergyBurst(part, color, count, speed)
 	emitter.LockedToPart = false
 	emitter.Color = ColorSequence.new(color, COLORS.ChargeHot)
 	emitter.Size = NumberSequence.new({
-		NumberSequenceKeypoint.new(0, 0.18),
-		NumberSequenceKeypoint.new(0.35, 0.48),
+		NumberSequenceKeypoint.new(0, 0.3),
+		NumberSequenceKeypoint.new(0.35, 1.2),
 		NumberSequenceKeypoint.new(1, 0),
 	})
 	emitter.Transparency = NumberSequence.new({
@@ -63,8 +63,11 @@ local function emitEnergyBurst(part, color, count, speed)
 		NumberSequenceKeypoint.new(1, 1),
 	})
 	emitter.Parent = part
-	emitter:Emit(count)
-	Debris:AddItem(emitter, 1.5)
+	-- Give the emitter time to replicate before firing the one-shot burst.
+	task.delay(0.12, function()
+		if emitter.Parent then emitter:Emit(count) end
+	end)
+	Debris:AddItem(emitter, 1.75)
 end
 
 local function contains(name, fragments)
@@ -113,7 +116,7 @@ local function dressPart(item)
 	}) then
 		item.Color = COLORS.Armor
 		item.Material = Enum.Material.Metal
-		item.Reflectance = 0.045
+		item.Reflectance = 0.032
 		return
 	end
 
@@ -164,8 +167,8 @@ function Dressing.Apply(model)
 
 	model:SetAttribute("PipelinePhase", 5)
 	model:SetAttribute("DressingApplied", true)
-	model:SetAttribute("DressingVersion", 1)
-	model:SetAttribute("DressingStyle", "ApexPredatorViolet")
+	model:SetAttribute("DressingVersion", 2)
+	model:SetAttribute("DressingStyle", "ApexNightPredator")
 	model:SetAttribute("DressingUsesAdditionalParts", false)
 	model:SetAttribute("PermanentLights", 0)
 	model:SetAttribute("PermanentParticleEmitters", 0)

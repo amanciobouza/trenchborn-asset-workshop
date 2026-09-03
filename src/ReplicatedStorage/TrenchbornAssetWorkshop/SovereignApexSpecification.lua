@@ -46,21 +46,21 @@ return {
 	},
 
 	Palette = {
-		Chassis = Color3.fromRGB(22, 22, 29),
-		Body = Color3.fromRGB(50, 48, 62),
-		Armor = Color3.fromRGB(139, 137, 153),
-		Accent = Color3.fromRGB(194, 62, 255),
-		ChargeHot = Color3.fromRGB(239, 177, 255),
-		DarkMetal = Color3.fromRGB(24, 23, 31),
+		Chassis = Color3.fromRGB(15, 15, 22),
+		Body = Color3.fromRGB(38, 35, 48),
+		Armor = Color3.fromRGB(105, 101, 119),
+		Accent = Color3.fromRGB(184, 45, 250),
+		ChargeHot = Color3.fromRGB(234, 157, 255),
+		DarkMetal = Color3.fromRGB(13, 12, 18),
 	},
 
 	Dressing = {
-		Style = "ApexPredatorViolet",
+		Style = "ApexNightPredator",
 		GeometryChangesAllowed = false,
 		PermanentLights = 0,
 		PermanentParticleEmitters = 0,
 		TransientParticlePreview = true,
-		TransientEmitterLifetimeSeconds = 1.5,
+		TransientEmitterLifetimeSeconds = 1.75,
 		EnergyChannel = "SovereignViolet",
 		DroneReferenceIds = {
 			LeftDroneInner = "L1",
