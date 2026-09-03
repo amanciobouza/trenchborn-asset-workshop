@@ -55,23 +55,91 @@ local function pulseProjector(part, delaySeconds)
 	end)
 end
 
+local function districtCenter(model, root)
+	local horizontalCenter = root.Position + root.CFrame.LookVector * 65
+	local raycastParams = RaycastParams.new()
+	raycastParams.FilterType = Enum.RaycastFilterType.Exclude
+	raycastParams.FilterDescendantsInstances = {model, effectsFolder()}
+	local ground = workspace:Raycast(horizontalCenter + Vector3.new(0, 80, 0), Vector3.new(0, -240, 0), raycastParams)
+	local groundY = ground and ground.Position.Y or horizontalCenter.Y - 28
+	return Vector3.new(horizontalCenter.X, groundY, horizontalCenter.Z)
+end
+
+local function energyStreams(projectors, center)
+	local focus = Instance.new("Part")
+	focus.Name = "DistrictShieldEnergyFocus"
+	focus.Shape = Enum.PartType.Ball
+	focus.Size = Vector3.new(2, 2, 2)
+	focus.Position = center + Vector3.new(0, 72, 0)
+	focus.Anchored = true
+	focus.CanCollide = false
+	focus.CanTouch = false
+	focus.CanQuery = false
+	focus.CastShadow = false
+	focus.Material = Enum.Material.Neon
+	focus.Color = HOT
+	focus.Transparency = 0.15
+	focus.Parent = effectsFolder()
+	Debris:AddItem(focus, 4.15)
+	TweenService:Create(focus, TweenInfo.new(0.55, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+		Size = Vector3.new(12, 12, 12),
+	}):Play()
+
+	local targetAttachment = Instance.new("Attachment")
+	targetAttachment.Name = "DistrictShieldFocusAttachment"
+	targetAttachment.Parent = focus
+	for index, projector in ipairs(projectors) do
+		local sourceAttachment = Instance.new("Attachment")
+		sourceAttachment.Name = "DistrictShieldSourceAttachment"
+		sourceAttachment.Parent = projector
+		Debris:AddItem(sourceAttachment, 4.1)
+		local beam = Instance.new("Beam")
+		beam.Name = "DistrictShieldEnergyStream"
+		beam.Attachment0 = sourceAttachment
+		beam.Attachment1 = targetAttachment
+		beam.Color = ColorSequence.new(HOT, ORANGE)
+		beam.Transparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 0.08),
+			NumberSequenceKeypoint.new(1, 0.38),
+		})
+		beam.Width0 = 0.55
+		beam.Width1 = 1.8
+		beam.CurveSize0 = (index % 2 == 0 and 1 or -1) * (5 + index * 0.7)
+		beam.CurveSize1 = -10
+		beam.FaceCamera = true
+		beam.LightEmission = 1
+		beam.Segments = 14
+		beam.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+		beam.TextureLength = 2.5
+		beam.TextureMode = Enum.TextureMode.Wrap
+		beam.TextureSpeed = 1.6
+		beam.Parent = focus
+		Debris:AddItem(beam, 4.05)
+		TweenService:Create(beam, TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+			Width0 = 1.05, Width1 = 2.8,
+		}):Play()
+	end
+	task.delay(3.35, function()
+		if focus.Parent then
+			TweenService:Create(focus, TweenInfo.new(0.55), {Size = Vector3.new(3, 3, 3), Transparency = 1}):Play()
+		end
+	end)
+end
+
 function Preview.Play(model)
 	local root = model:FindFirstChild("HumanoidRootPart") or model.PrimaryPart
 	if not root then return end
 	local projectors = projectorParts(model)
+	local center = districtCenter(model, root)
 	for index, part in ipairs(projectors) do
 		pulseProjector(part, 0.18 + (index - 1) * 0.09)
 	end
+	task.delay(0.78, function()
+		if model.Parent and root.Parent then energyStreams(projectors, center) end
+	end)
 
 	task.delay(1.55, function()
 		if not model.Parent or not root.Parent then return end
-		local horizontalCenter = root.Position + root.CFrame.LookVector * 65
-		local raycastParams = RaycastParams.new()
-		raycastParams.FilterType = Enum.RaycastFilterType.Exclude
-		raycastParams.FilterDescendantsInstances = {model, effectsFolder()}
-		local ground = workspace:Raycast(horizontalCenter + Vector3.new(0, 80, 0), Vector3.new(0, -240, 0), raycastParams)
-		local groundY = ground and ground.Position.Y or horizontalCenter.Y - 28
-		local center = Vector3.new(horizontalCenter.X, groundY, horizontalCenter.Z)
 		local field = Instance.new("Part")
 		field.Name = "DistrictShieldField"
 		field.Shape = Enum.PartType.Ball
