@@ -38,18 +38,33 @@ end
 
 local function lockEnvelope(model, target, up)
 	local aimPoint = targetPosition(model, target)
+	local lowerCenter
+	local height
 	if target and target:IsA("BasePart") then
-		local height = math.max(32, target.Size.Y + 8)
-		local lowerCenter = target.Position - up * (target.Size.Y * 0.5) + up * 4
-		return aimPoint, lowerCenter, height
-	end
-	if target and target:IsA("Model") then
+		height = math.max(32, target.Size.Y + 8)
+		lowerCenter = target.Position - up * (target.Size.Y * 0.5) + up * 9
+	elseif target and target:IsA("Model") then
 		local boxCFrame, boxSize = target:GetBoundingBox()
-		local height = math.max(36, boxSize.Y + 8)
-		local lowerCenter = boxCFrame.Position - up * (boxSize.Y * 0.5) + up * 4
-		return aimPoint, lowerCenter, height
+		height = math.max(36, boxSize.Y + 8)
+		lowerCenter = boxCFrame.Position - up * (boxSize.Y * 0.5) + up * 9
+	else
+		height = 36
+		lowerCenter = aimPoint - up * 4
 	end
-	return aimPoint, aimPoint - up * 4, 36
+
+	local raycastParams = RaycastParams.new()
+	raycastParams.FilterType = Enum.RaycastFilterType.Exclude
+	local excluded = {model}
+	if target then table.insert(excluded, target) end
+	local runtimeEffects = workspace:FindFirstChild("SovereignRuntimeEffects")
+	if runtimeEffects then table.insert(excluded, runtimeEffects) end
+	raycastParams.FilterDescendantsInstances = excluded
+	local groundHit = workspace:Raycast(aimPoint + up * 100, -up * 300, raycastParams)
+	if groundHit then
+		local clearance = (lowerCenter - groundHit.Position):Dot(up)
+		if clearance < 9 then lowerCenter += up * (9 - clearance) end
+	end
+	return aimPoint, lowerCenter, height
 end
 
 local function droneModel(model, side, position)
