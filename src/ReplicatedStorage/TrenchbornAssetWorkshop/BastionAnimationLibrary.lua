@@ -118,8 +118,8 @@ function Library.BuildHeavyRailCannon()
 	sequence.Priority = Enum.AnimationPriority.Action
 
 	local brace = {
-		LowerTorso = CFrame.new(0, -0.42, 0.18) * CFrame.Angles(math.rad(7), 0, 0),
-		UpperTorso = CFrame.Angles(math.rad(5), math.rad(-3), 0),
+		LowerTorso = CFrame.new(0, -0.42, -0.18) * CFrame.Angles(math.rad(-7), 0, 0),
+		UpperTorso = CFrame.Angles(math.rad(-5), math.rad(-3), 0),
 		Head = CFrame.Angles(math.rad(-3), math.rad(8), 0),
 		LeftUpperArm = CFrame.Angles(math.rad(16), math.rad(-7), math.rad(-13)),
 		LeftLowerArm = CFrame.Angles(math.rad(25), 0, 0),
@@ -138,8 +138,8 @@ function Library.BuildHeavyRailCannon()
 	bastionKeyframe(sequence, 0.78, brace)
 	bastionKeyframe(sequence, 1.48, brace)
 	local recoil = table.clone(brace)
-	recoil.LowerTorso = CFrame.new(0, -0.58, 0.55) * CFrame.Angles(math.rad(10), 0, 0)
-	recoil.UpperTorso = CFrame.Angles(math.rad(-4), math.rad(-2), math.rad(-2))
+	recoil.LowerTorso = CFrame.new(0, -0.58, 0.38) * CFrame.Angles(math.rad(5), 0, 0)
+	recoil.UpperTorso = CFrame.Angles(math.rad(4), math.rad(-2), math.rad(-2))
 	recoil.Head = CFrame.Angles(math.rad(5), math.rad(5), 0)
 	recoil.HeavyRailCannonControl = CFrame.new(0, 0, 2.4) * CFrame.Angles(math.rad(-3), math.rad(4), math.rad(-2))
 	bastionKeyframe(sequence, 1.58, recoil)
