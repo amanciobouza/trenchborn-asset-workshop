@@ -15,7 +15,14 @@ end
 
 local function destination(model, target)
 	if target and target:IsA("BasePart") then return target.Position end
-	if target and target:IsA("Model") then return target:GetPivot().Position end
+	if target and target:IsA("Model") then
+		for _, name in ipairs({"UpperTorso", "Torso", "HumanoidRootPart"}) do
+			local part = target:FindFirstChild(name, true)
+			if part and part:IsA("BasePart") then return part.Position end
+		end
+		local boxCFrame, boxSize = target:GetBoundingBox()
+		return boxCFrame.Position + Vector3.new(0, boxSize.Y * 0.05, 0)
+	end
 	local root = model:FindFirstChild("HumanoidRootPart") or model.PrimaryPart
 	return root.Position + root.CFrame.LookVector * 145
 end
