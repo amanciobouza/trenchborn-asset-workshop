@@ -178,8 +178,8 @@ local function fistPose(side, strike)
 		RightUpperLeg = CFrame.Angles(math.rad(6), 0, math.rad(2)),
 	}
 	pose[side .. "UpperArm"] = strike
-		and CFrame.Angles(math.rad(-82), math.rad(5 * sign), math.rad(10 * sign))
-		or CFrame.Angles(math.rad(34), math.rad(20 * sign), math.rad(25 * sign))
+		and CFrame.Angles(math.rad(82), math.rad(5 * sign), math.rad(10 * sign))
+		or CFrame.Angles(math.rad(-34), math.rad(20 * sign), math.rad(25 * sign))
 	pose[side .. "LowerArm"] = strike
 		and CFrame.Angles(math.rad(-8), 0, 0)
 		or CFrame.Angles(math.rad(58), 0, 0)
@@ -211,8 +211,8 @@ function Library.BuildGroundSlam()
 	local raised = {
 		LowerTorso = CFrame.new(0, -0.28, 0.1) * CFrame.Angles(math.rad(5), 0, 0),
 		UpperTorso = CFrame.Angles(math.rad(8), 0, 0),
-		LeftUpperArm = CFrame.Angles(math.rad(142), 0, math.rad(-12)),
-		RightUpperArm = CFrame.Angles(math.rad(142), 0, math.rad(12)),
+		LeftUpperArm = CFrame.Angles(math.rad(-142), 0, math.rad(-12)),
+		RightUpperArm = CFrame.Angles(math.rad(-142), 0, math.rad(12)),
 		LeftLowerArm = CFrame.Angles(math.rad(18), 0, 0),
 		RightLowerArm = CFrame.Angles(math.rad(18), 0, 0),
 	}
@@ -220,8 +220,8 @@ function Library.BuildGroundSlam()
 		LowerTorso = CFrame.new(0, -1.05, -0.72) * CFrame.Angles(math.rad(-24), 0, 0),
 		UpperTorso = CFrame.Angles(math.rad(-30), 0, 0),
 		Head = CFrame.Angles(math.rad(18), 0, 0),
-		LeftUpperArm = CFrame.Angles(math.rad(-88), 0, math.rad(-8)),
-		RightUpperArm = CFrame.Angles(math.rad(-88), 0, math.rad(8)),
+		LeftUpperArm = CFrame.Angles(math.rad(88), 0, math.rad(-8)),
+		RightUpperArm = CFrame.Angles(math.rad(88), 0, math.rad(8)),
 		LeftLowerArm = CFrame.Angles(math.rad(-18), 0, 0),
 		RightLowerArm = CFrame.Angles(math.rad(-18), 0, 0),
 		LeftUpperLeg = CFrame.Angles(math.rad(20), 0, math.rad(-4)),
