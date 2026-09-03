@@ -60,13 +60,14 @@ local function lockEnvelope(model, target, up)
 	if runtimeEffects then table.insert(excluded, runtimeEffects) end
 	raycastParams.FilterDescendantsInstances = excluded
 	local groundHit = workspace:Raycast(aimPoint + up * 100, -up * 300, raycastParams)
-	if groundHit then
-		local clearance = (lowerCenter - groundHit.Position):Dot(up)
-		if clearance < 9 then lowerCenter += up * (9 - clearance) end
-	end
 	-- If the floor is not queryable, the target bounding-box bottom remains a
-	-- deterministic fallback plane for the geometry-envelope calculation.
-	return aimPoint, lowerCenter, height, groundHit and groundHit.Position or (lowerCenter - up * 9)
+	local groundPoint = groundHit and groundHit.Position or (lowerCenter - up * 9)
+	local minimumControlClearance = 20
+	local clearance = (lowerCenter - groundPoint):Dot(up)
+	if clearance < minimumControlClearance then
+		lowerCenter += up * (minimumControlClearance - clearance)
+	end
+	return aimPoint, lowerCenter, height, groundPoint
 end
 
 local function droneModel(model, side, position)
