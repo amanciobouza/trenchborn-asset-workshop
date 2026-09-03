@@ -62,7 +62,7 @@ local function lockEnvelope(model, target, up)
 	local groundHit = workspace:Raycast(aimPoint + up * 100, -up * 300, raycastParams)
 	-- If the floor is not queryable, the target bounding-box bottom remains a
 	local groundPoint = groundHit and groundHit.Position or (lowerCenter - up * 9)
-	local minimumControlClearance = 20
+	local minimumControlClearance = 28
 	local clearance = (lowerCenter - groundPoint):Dot(up)
 	if clearance < minimumControlClearance then
 		lowerCenter += up * (minimumControlClearance - clearance)
