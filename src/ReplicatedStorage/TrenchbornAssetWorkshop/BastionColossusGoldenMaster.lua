@@ -126,7 +126,7 @@ local function addRailCannon(equipment, model)
 	local head = model:FindFirstChild("SensorHead", true)
 	assert(head and head:IsA("BasePart"), "Missing SensorHead for Heavy Rail Cannon mount")
 	-- Resolve the complete cannon from the actual scaled head/shoulder position.
-	cannon:PivotTo(CFrame.new(head.Position.X + 9.6, head.Position.Y + 2.0, head.Position.Z - 3.2))
+	cannon:PivotTo(CFrame.new(head.Position.X + 8.1, head.Position.Y + 2.0, head.Position.Z - 3.2))
 end
 
 local function addShieldTower(systems, model, side, sign)
