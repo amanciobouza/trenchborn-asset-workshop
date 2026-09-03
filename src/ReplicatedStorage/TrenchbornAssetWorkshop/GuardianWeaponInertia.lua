@@ -42,13 +42,13 @@ function Inertia.Ensure(model)
 		-- Counter-motion gives the cannon a restrained, heavy delay. Limits keep
 		-- it mounted firmly instead of making it look loose or rubbery.
 		local targetRotation = Vector3.new(
-			math.clamp(-rx * 4.6, -0.11, 0.11),
-			math.clamp(-ry * 5.2, -0.14, 0.14),
-			math.clamp(-rz * 4.0, -0.09, 0.09)
+			math.clamp(-rx * 7.0, -0.18, 0.18),
+			math.clamp(-ry * 8.0, -0.24, 0.24),
+			math.clamp(-rz * 6.0, -0.15, 0.15)
 		)
-		local targetOffset = clampVector(-localTravel * 0.38, 0.6)
-		local follow = 1 - math.exp(-deltaTime / 0.23)
-		local settle = 1 - math.exp(-deltaTime / 0.32)
+		local targetOffset = clampVector(-localTravel * 0.65, 1.1)
+		local follow = 1 - math.exp(-deltaTime / 0.32)
+		local settle = 1 - math.exp(-deltaTime / 0.48)
 		state.rotation = state.rotation:Lerp(targetRotation, follow)
 		state.offset = state.offset:Lerp(targetOffset, settle)
 		joint.C0 = state.neutralC0 * CFrame.new(state.offset)
