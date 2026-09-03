@@ -56,7 +56,11 @@ local function playSequence(model, builderName, previewName)
 	lastAnimatedModel = model
 	local animator = model and model:FindFirstChildWhichIsA("Animator", true)
 	assert(animator, "Guardian Animator not found")
-	local builder = animationLibrary[builderName]
+	local isBastion = model:GetAttribute("AssetName") == "Bastion-IV Colossus"
+		or model.Name == "Bastion_IV_Colossus_GoldenMaster"
+		or model:FindFirstChild("HeavyRailCannonMount", true) ~= nil
+	local selectedLibrary = isBastion and bastionAnimationLibrary or animationLibrary
+	local builder = selectedLibrary[builderName]
 	assert(type(builder) == "function", "Animation builder not found: " .. builderName)
 	local sequence = builder()
 	local temporaryId = KeyframeSequenceProvider:RegisterKeyframeSequence(sequence)
