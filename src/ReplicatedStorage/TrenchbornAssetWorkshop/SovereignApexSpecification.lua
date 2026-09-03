@@ -219,6 +219,7 @@ return {
 		HunterBackwardStepSeconds = 0.94,
 		HunterTurnRateDegreesPerSecond = 145,
 		LanceArmStabilized = true,
+		ForwardLeanUsesNegativeFleetRigX = true,
 		DroneWingsFoldWithLocomotion = true,
 		DroneWingInertia = {
 			IdleDegrees = 3.2,
