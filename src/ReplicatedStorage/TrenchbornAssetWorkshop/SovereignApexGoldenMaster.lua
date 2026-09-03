@@ -193,12 +193,17 @@ local function addDrone(parent, name, cf)
 	drone:SetAttribute("EquipmentType", "HunterDrone")
 	drone:SetAttribute("DockName", name)
 	drone:SetAttribute("Docked", true)
-	local body = block(drone, "DroneBody", Vector3.new(5.2, 3.6, 4.8), cf, COLORS.Body)
-	block(drone, "DroneTopArmor", Vector3.new(4.5, 0.8, 4.1), cf * CFrame.new(0, 2.0, 0.15), COLORS.Armor)
-	block(drone, "DroneLeftJaw", Vector3.new(1.0, 2.2, 3.8), cf * CFrame.new(-2.6, -0.2, -0.1) * CFrame.Angles(0, 0, math.rad(-8)), COLORS.DarkMetal)
-	block(drone, "DroneRightJaw", Vector3.new(1.0, 2.2, 3.8), cf * CFrame.new(2.6, -0.2, -0.1) * CFrame.Angles(0, 0, math.rad(8)), COLORS.DarkMetal)
-	local eye = cylinder(drone, "DroneEye", Vector3.new(0.55, 2.3, 2.3), cf * CFrame.new(0, 0, -2.7) * CFrame.Angles(0, math.rad(90), 0), COLORS.Accent)
-	eye.Material = Enum.Material.Neon
+	local body = block(drone, "DroneBody", Vector3.new(5.4, 2.8, 5.8), cf, COLORS.Body)
+	block(drone, "DroneCrown", Vector3.new(4.8, 1.0, 4.5), cf * CFrame.new(0, 1.65, 0.35) * CFrame.Angles(math.rad(-7), 0, 0), COLORS.Armor)
+	block(drone, "DroneLeftTemple", Vector3.new(1.2, 2.5, 4.7), cf * CFrame.new(-2.55, -0.15, 0.1) * CFrame.Angles(0, 0, math.rad(-11)), COLORS.DarkMetal)
+	block(drone, "DroneRightTemple", Vector3.new(1.2, 2.5, 4.7), cf * CFrame.new(2.55, -0.15, 0.1) * CFrame.Angles(0, 0, math.rad(11)), COLORS.DarkMetal)
+	block(drone, "SensorRecess", Vector3.new(3.8, 1.45, 0.5), cf * CFrame.new(0, 0.15, -3.12), COLORS.Chassis)
+	local leftSensor = block(drone, "LeftPredatorSensor", Vector3.new(1.7, 0.38, 0.24), cf * CFrame.new(-0.9, 0.12, -3.42) * CFrame.Angles(0, 0, math.rad(-17)), COLORS.Accent)
+	local rightSensor = block(drone, "RightPredatorSensor", Vector3.new(1.7, 0.38, 0.24), cf * CFrame.new(0.9, 0.12, -3.42) * CFrame.Angles(0, 0, math.rad(17)), COLORS.Accent)
+	leftSensor.Material = Enum.Material.Neon
+	rightSensor.Material = Enum.Material.Neon
+	block(drone, "LeftMandible", Vector3.new(0.75, 1.0, 3.4), cf * CFrame.new(-1.65, -1.15, -3.7) * CFrame.Angles(math.rad(-10), math.rad(-13), math.rad(-8)), COLORS.DarkMetal)
+	block(drone, "RightMandible", Vector3.new(0.75, 1.0, 3.4), cf * CFrame.new(1.65, -1.15, -3.7) * CFrame.Angles(math.rad(-10), math.rad(13), math.rad(8)), COLORS.DarkMetal)
 	drone.PrimaryPart = body
 	return drone
 end
@@ -210,17 +215,20 @@ local function addDroneWing(wings, torso, side, sign)
 	wing:SetAttribute("Formation", "RaisedMechanicalBatClaw")
 
 	local root = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 4.8, 1.5, 4.4))
-	local hub = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 8.0, 9.0, 4.8))
-	local innerKnuckle = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 9.2, 14.0, 4.9))
-	local outerKnuckle = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 14.5, 17.0, 5.1))
-	local lowerKnuckle = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 15.0, 10.0, 5.2))
-	local inner = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 10.5, 20.0, 5.0))
-	local outer = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 25.0, 28.0, 5.5))
-	local lower = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 25.0, 15.0, 5.8))
+	local spineShoulder = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 5.2, 10.0, 4.6))
+	local hub = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 7.0, 16.0, 4.9))
+	local innerKnuckle = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 8.0, 21.0, 5.0))
+	local outerKnuckle = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 12.5, 22.0, 5.2))
+	local lowerKnuckle = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 13.5, 16.5, 5.3))
+	local inner = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 10.0, 27.0, 5.1))
+	local outer = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 23.0, 30.0, 5.6))
+	local lower = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 25.0, 21.0, 5.9))
 
 	local rootBlock = block(wing, side .. "WingRoot", Vector3.new(4.2, 6.0, 4.2), CFrame.new(root), COLORS.Chassis)
 	cylinder(wing, side .. "WingRootBearing", Vector3.new(1.3, 3.8, 3.8), CFrame.new(root) * CFrame.Angles(0, math.rad(90), 0), COLORS.DarkMetal)
-	barBetween(wing, side .. "RaisedMainSpar", root, hub, 1.65, COLORS.Chassis)
+	barBetween(wing, side .. "VerticalRootSpar", root, spineShoulder, 1.75, COLORS.Chassis)
+	cylinder(wing, side .. "SpineShoulder", Vector3.new(1.2, 3.6, 3.6), CFrame.new(spineShoulder) * CFrame.Angles(0, math.rad(90), 0), COLORS.DarkMetal)
+	barBetween(wing, side .. "RaisedMainSpar", spineShoulder, hub, 1.45, COLORS.Chassis)
 	cylinder(wing, side .. "ClawHub", Vector3.new(1.35, 4.1, 4.1), CFrame.new(hub) * CFrame.Angles(0, math.rad(90), 0), COLORS.DarkMetal)
 
 	-- Three open, independent two-segment fingers create the predatory claw
@@ -236,9 +244,9 @@ local function addDroneWing(wings, torso, side, sign)
 		barBetween(wing, side .. finger[1] .. "ClawTip", finger[2], finger[3], 0.72, COLORS.Chassis)
 	end
 
-	addDrone(wing, side .. "DroneInner", CFrame.new(inner))
-	addDrone(wing, side .. "DroneOuter", CFrame.new(outer) * CFrame.Angles(0, math.rad(-sign * 7), 0))
-	addDrone(wing, side .. "DroneLower", CFrame.new(lower) * CFrame.Angles(0, math.rad(sign * 6), 0))
+	addDrone(wing, side .. "DroneInner", CFrame.new(inner) * CFrame.Angles(math.rad(-8), math.rad(-sign * 5), 0))
+	addDrone(wing, side .. "DroneOuter", CFrame.new(outer) * CFrame.Angles(math.rad(-11), math.rad(-sign * 12), 0))
+	addDrone(wing, side .. "DroneLower", CFrame.new(lower) * CFrame.Angles(math.rad(-14), math.rad(-sign * 16), 0))
 	wing.PrimaryPart = rootBlock
 	return {
 		Inner = inner,
@@ -275,7 +283,7 @@ local function addEquipmentHitboxes(model, dronePositions, lockCore)
 	invisibleHitbox(hitboxes, "ApexLanceHitbox", Vector3.new(7, 31, 7), lance:GetPivot() * CFrame.new(-1.2, -10.0, 0))
 	for side, positions in pairs(dronePositions) do
 		for key, position in pairs(positions) do
-			invisibleHitbox(hitboxes, side .. "Drone" .. key .. "Hitbox", Vector3.new(6, 5, 6.5), CFrame.new(position))
+			invisibleHitbox(hitboxes, side .. "Drone" .. key .. "Hitbox", Vector3.new(6, 5, 8.5), CFrame.new(position))
 		end
 	end
 	invisibleHitbox(hitboxes, "SovereignLockCoreHitbox", Vector3.new(4, 4, 3), lockCore.CFrame)
