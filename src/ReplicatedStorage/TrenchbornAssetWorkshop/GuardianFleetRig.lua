@@ -158,6 +158,7 @@ function FleetRig.Apply(model, options)
 	controls.RiotShieldControl = equipmentControl(model, "RiotShieldControl", shieldModel, Vector3.new(4, 6, 2))
 	controls.PulseCannonControl = equipmentControl(model, "PulseCannonControl", cannonModel, Vector3.new(4, 6, 4))
 	controls.NetLauncherControl = equipmentControl(model, "NetLauncherControl", netModel, Vector3.new(5, 5, 3))
+	controls.HeavyRailCannonInertiaControl = equipmentControl(model, "HeavyRailCannonInertiaControl", railCannonModel, Vector3.new(6, 6, 8))
 	controls.HeavyRailCannonControl = equipmentControl(model, "HeavyRailCannonControl", railCannonModel, Vector3.new(6, 6, 8))
 
 	for _, definition in ipairs(JOINTS) do
@@ -166,7 +167,10 @@ function FleetRig.Apply(model, options)
 	if controls.RiotShieldControl then motor(controls.LeftLowerArm, "LeftShieldMount", controls.LeftLowerArm, controls.RiotShieldControl) end
 	if controls.PulseCannonControl then motor(controls.RightLowerArm, "RightCannonMount", controls.RightLowerArm, controls.PulseCannonControl) end
 	if controls.NetLauncherControl then motor(controls.UpperTorso, "NetLauncherMount", controls.UpperTorso, controls.NetLauncherControl) end
-	if controls.HeavyRailCannonControl then motor(controls.UpperTorso, "HeavyRailCannonMount", controls.UpperTorso, controls.HeavyRailCannonControl) end
+	if controls.HeavyRailCannonControl then
+		motor(controls.UpperTorso, "HeavyRailCannonInertia", controls.UpperTorso, controls.HeavyRailCannonInertiaControl)
+		motor(controls.HeavyRailCannonInertiaControl, "HeavyRailCannonMount", controls.HeavyRailCannonInertiaControl, controls.HeavyRailCannonControl)
+	end
 
 	local assigned = 0
 	for _, item in ipairs(originals) do
@@ -199,7 +203,7 @@ function FleetRig.Apply(model, options)
 	model.PrimaryPart = controls.HumanoidRootPart
 	model:SetAttribute("GuardianFleetRigVersion", "1.0")
 	model:SetAttribute("GuardianRigControlPartCount", 16)
-	model:SetAttribute("GuardianRigMotorCount", 15 + (controls.RiotShieldControl and 1 or 0) + (controls.PulseCannonControl and 1 or 0) + (controls.NetLauncherControl and 1 or 0) + (controls.HeavyRailCannonControl and 1 or 0))
+	model:SetAttribute("GuardianRigMotorCount", 15 + (controls.RiotShieldControl and 1 or 0) + (controls.PulseCannonControl and 1 or 0) + (controls.NetLauncherControl and 1 or 0) + (controls.HeavyRailCannonControl and 2 or 0))
 	model:SetAttribute("GuardianRigAssignedGeometryCount", assigned)
 	model:SetAttribute("GuardianRigAxisForward", "-Z")
 	model:SetAttribute("GuardianRigValidated", assigned == #originals)
