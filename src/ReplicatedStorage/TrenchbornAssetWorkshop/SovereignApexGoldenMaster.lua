@@ -175,17 +175,19 @@ local function addApexLance(equipment, model)
 	local forearm = model:FindFirstChild("LeftForearm", true)
 	assert(forearm and forearm:IsA("BasePart"), "Missing LeftForearm for Apex Lance")
 	local cf = forearm.CFrame
-	block(lance, "LanceForearmCradle", Vector3.new(5.8, 8.8, 5.4), cf * CFrame.new(-0.25, -0.6, -0.4), COLORS.Body)
-	block(lance, "LanceOuterArmor", Vector3.new(1.25, 8.0, 5.8), cf * CFrame.new(-3.0, -0.4, -0.35), COLORS.Armor)
-	block(lance, "LanceSpine", Vector3.new(2.2, 13.5, 2.5), cf * CFrame.new(-1.35, -5.0, -0.5), COLORS.Chassis)
-	cylinder(lance, "LanceEmitterRing", Vector3.new(1.2, 4.4, 4.4), cf * CFrame.new(-1.35, -11.4, -0.5) * CFrame.Angles(0, 0, math.rad(90)), COLORS.DarkMetal)
-	local emitter = cylinder(lance, "LanceEmitterCore", Vector3.new(0.65, 2.6, 2.6), cf * CFrame.new(-1.35, -12.1, -0.5) * CFrame.Angles(0, 0, math.rad(90)), COLORS.ChargeHot)
+	local housingLength = specification.Scale.ApexLanceHousingLengthStuds
+	local bladeLength = specification.Scale.ApexLanceEnergyBladeLengthStuds
+	block(lance, "LanceForearmCradle", Vector3.new(6.8, 10.8, 6.4), cf * CFrame.new(-0.25, 0.3, -0.4), COLORS.Body)
+	block(lance, "LanceOuterArmor", Vector3.new(1.6, 10.2, 7.0), cf * CFrame.new(-3.55, 0.4, -0.35), COLORS.Armor)
+	block(lance, "LanceSpine", Vector3.new(2.9, housingLength, 3.2), cf * CFrame.new(-1.55, 0.5, -0.5), COLORS.Chassis)
+	cylinder(lance, "LanceEmitterRing", Vector3.new(1.5, 5.6, 5.6), cf * CFrame.new(-1.55, -8.0, -0.5) * CFrame.Angles(0, 0, math.rad(90)), COLORS.DarkMetal)
+	local emitter = cylinder(lance, "LanceEmitterCore", Vector3.new(0.8, 3.4, 3.4), cf * CFrame.new(-1.55, -8.8, -0.5) * CFrame.Angles(0, 0, math.rad(90)), COLORS.ChargeHot)
 	emitter.Material = Enum.Material.Neon
-	local blade = block(lance, "ApexEnergyBlade", Vector3.new(1.5, specification.Scale.ApexLanceEnergyBladeLengthStuds, 1.1), cf * CFrame.new(-1.35, -20.2, -0.5), COLORS.Accent)
+	local blade = block(lance, "ApexEnergyBlade", Vector3.new(2.3, bladeLength, 1.6), cf * CFrame.new(-1.55, -18.2, -0.5), COLORS.Accent)
 	blade.Material = Enum.Material.Neon
 	blade.Transparency = 0.12
-	block(lance, "BladeEdgeLeft", Vector3.new(0.38, 14.5, 1.45), cf * CFrame.new(-2.1, -20.0, -0.5) * CFrame.Angles(0, 0, math.rad(-2)), COLORS.ChargeHot).Material = Enum.Material.Neon
-	block(lance, "BladeEdgeRight", Vector3.new(0.38, 14.5, 1.45), cf * CFrame.new(-0.6, -20.0, -0.5) * CFrame.Angles(0, 0, math.rad(2)), COLORS.ChargeHot).Material = Enum.Material.Neon
+	block(lance, "BladeEdgeLeft", Vector3.new(0.5, bladeLength - 1.2, 1.95), cf * CFrame.new(-2.75, -18.2, -0.5) * CFrame.Angles(0, 0, math.rad(-2)), COLORS.ChargeHot).Material = Enum.Material.Neon
+	block(lance, "BladeEdgeRight", Vector3.new(0.5, bladeLength - 1.2, 1.95), cf * CFrame.new(-0.35, -18.2, -0.5) * CFrame.Angles(0, 0, math.rad(2)), COLORS.ChargeHot).Material = Enum.Material.Neon
 	lance.PrimaryPart = lance:FindFirstChild("LanceForearmCradle")
 	return lance
 end
@@ -296,7 +298,7 @@ local function addEquipmentHitboxes(model, dronePositions, lockCore)
 	local hitboxes = model:FindFirstChild("Hitboxes") or folder(model, "Hitboxes")
 	local lance = model:FindFirstChild("ApexLance", true)
 	assert(lance and lance:IsA("Model"), "Missing ApexLance for hitbox")
-	invisibleHitbox(hitboxes, "ApexLanceHitbox", Vector3.new(7, 31, 7), lance:GetPivot() * CFrame.new(-1.2, -10.0, 0))
+	invisibleHitbox(hitboxes, "ApexLanceHitbox", Vector3.new(8, 38, 8), lance:GetPivot() * CFrame.new(-1.3, -9.6, 0))
 	for side, positions in pairs(dronePositions) do
 		for key, position in pairs(positions) do
 			invisibleHitbox(hitboxes, side .. "Drone" .. key .. "Hitbox", Vector3.new(6, 5, 8.5), CFrame.new(position))
