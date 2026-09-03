@@ -64,7 +64,9 @@ local function lockEnvelope(model, target, up)
 		local clearance = (lowerCenter - groundHit.Position):Dot(up)
 		if clearance < 9 then lowerCenter += up * (9 - clearance) end
 	end
-	return aimPoint, lowerCenter, height
+	-- If the floor is not queryable, the target bounding-box bottom remains a
+	-- deterministic fallback plane for the geometry-envelope calculation.
+	return aimPoint, lowerCenter, height, groundHit and groundHit.Position or (lowerCenter - up * 9)
 end
 
 local function droneModel(model, side, position)
@@ -187,28 +189,22 @@ local function energyLink(part0, part1, lifetime)
 	return beam
 end
 
-local function barrierPanel(point0, point1, height, lifetime)
-	local edge = point1 - point0
-	local horizontal = Vector3.new(edge.X, 0, edge.Z)
-	if horizontal.Magnitude < 1 then return nil end
-	local xAxis = horizontal.Unit
-	local yAxis = Vector3.yAxis
-	local zAxis = xAxis:Cross(yAxis)
-	local midpoint = (point0 + point1) * 0.5 + Vector3.new(0, height * 0.5, 0)
-	local panel = Instance.new("Part")
-	panel.Name = "SovereignLockBarrier"
-	panel.Size = Vector3.new(horizontal.Magnitude, height, 0.35)
-	panel.CFrame = CFrame.fromMatrix(midpoint, xAxis, yAxis, zAxis)
-	panel.Anchored = true
-	panel.CanCollide = false
-	panel.CanTouch = false
-	panel.CanQuery = false
-	panel.Material = Enum.Material.ForceField
-	panel.Color = VIOLET
-	panel.Transparency = 0.88
-	panel.Parent = effectsFolder()
-	Debris:AddItem(panel, lifetime)
-	return panel
+local function requiredGroundLift(drone, control, desiredControlCFrame, groundPoint, up)
+	if not groundPoint then return 0 end
+	local minimumClearance = math.huge
+	for _, part in ipairs(drone:GetDescendants()) do
+		if part:IsA("BasePart") then
+			local relative = control.CFrame:ToObjectSpace(part.CFrame)
+			local projected = desiredControlCFrame * relative
+			local halfExtent = math.abs(up:Dot(projected.RightVector)) * part.Size.X * 0.5
+				+ math.abs(up:Dot(projected.UpVector)) * part.Size.Y * 0.5
+				+ math.abs(up:Dot(projected.LookVector)) * part.Size.Z * 0.5
+			local clearance = (projected.Position - groundPoint):Dot(up) - halfExtent
+			minimumClearance = math.min(minimumClearance, clearance)
+		end
+	end
+	if minimumClearance == math.huge then return 0 end
+	return math.max(0, 1.5 - minimumClearance)
 end
 
 function Preview.Play(model, target)
@@ -342,17 +338,33 @@ function Preview.PlayLock(model, target)
 	local right = root.CFrame.RightVector
 	local forward = root.CFrame.LookVector
 	local up = root.CFrame.UpVector
-	local targetPoint, lowerCenter, prismHeight = lockEnvelope(model, target, up)
+	local targetPoint, lowerCenter, prismHeight, groundPoint = lockEnvelope(model, target, up)
 	local radius = 42
 	local vertices = {}
 
-	-- Every consecutive L/R pair occupies the lower and upper point of one
-	-- corner, producing six drone anchors and nine true triangular-prism edges.
+	-- Every consecutive L/R pair occupies one lower and one upper tier. The
+	-- upper triangle is offset by 60 degrees, placing each upper drone exactly
+	-- between two lower drones and creating a faceted triangular antiprism.
 	for pair = 1, 3 do
-		local angle = math.rad((pair - 1) * 120 + 30)
-		local radial = right * math.cos(angle) * radius - forward * math.sin(angle) * radius
-		vertices[pair * 2 - 1] = lowerCenter + radial
-		vertices[pair * 2] = lowerCenter + radial + up * prismHeight
+		local lowerAngle = math.rad((pair - 1) * 120 + 30)
+		local upperAngle = lowerAngle + math.rad(60)
+		local lowerRadial = right * math.cos(lowerAngle) * radius - forward * math.sin(lowerAngle) * radius
+		local upperRadial = right * math.cos(upperAngle) * radius - forward * math.sin(upperAngle) * radius
+		vertices[pair * 2 - 1] = lowerCenter + lowerRadial
+		vertices[pair * 2] = lowerCenter + upperRadial + up * prismHeight
+	end
+
+	-- Calculate the real rotated geometry envelope rather than estimating from
+	-- the transparent rig control. Apply one shared lift to preserve the plane.
+	local formationLift = 0
+	for _, index in ipairs({1, 3, 5}) do
+		local desired = CFrame.lookAt(vertices[index], targetPoint)
+		formationLift = math.max(formationLift, requiredGroundLift(
+			drones[index].Model, drones[index].Motor.Part1, desired, groundPoint, up
+		))
+	end
+	if formationLift > 0 then
+		for index = 1, #vertices do vertices[index] += up * formationLift end
 	end
 
 	for index, drone in ipairs(drones) do
@@ -370,17 +382,13 @@ function Preview.PlayLock(model, target)
 		for _, edge in ipairs({
 			{1, 3}, {3, 5}, {5, 1},
 			{2, 4}, {4, 6}, {6, 2},
-			{1, 2}, {3, 4}, {5, 6},
+			{1, 2}, {1, 6}, {3, 2}, {3, 4}, {5, 4}, {5, 6},
 		}) do
 			table.insert(fieldObjects, energyLink(
 				drones[edge[1]].Motor.Part1,
 				drones[edge[2]].Motor.Part1,
 				4.65
 			))
-		end
-		for _, edge in ipairs({{1, 3}, {3, 5}, {5, 1}}) do
-			local panel = barrierPanel(vertices[edge[1]], vertices[edge[2]], prismHeight, 4.65)
-			if panel then table.insert(fieldObjects, panel) end
 		end
 		pulse(targetPoint, 4, 28, 0.65)
 		if target then
