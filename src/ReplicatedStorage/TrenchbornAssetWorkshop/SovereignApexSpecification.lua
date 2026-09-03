@@ -215,6 +215,12 @@ return {
 		ReuseFleetLocomotion = true,
 		ApexHunterLocomotionVariant = true,
 		DroneWingsFoldWithLocomotion = true,
+		DroneWingInertia = {
+			IdleDegrees = 2.2,
+			MaximumRunningFoldDegrees = 8,
+			MaximumTurnLagDegrees = 9,
+			ResponseByPair = {Inner = 0.28, Middle = 0.62, Outer = 1.0},
+		},
 		DroneWingDeployLaunchRecover = true,
 		ApexLanceThrustAndCut = true,
 		ApexLanceAimChargeBeam = true,

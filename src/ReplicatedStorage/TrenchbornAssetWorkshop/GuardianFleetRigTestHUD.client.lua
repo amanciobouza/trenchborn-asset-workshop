@@ -11,6 +11,7 @@ local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
 local animationLibrary = require(packageFolder:WaitForChild("GuardianAnimationLibrary"))
 local bastionAnimationLibrary = require(packageFolder:WaitForChild("BastionAnimationLibrary"))
 local weaponInertia = require(packageFolder:WaitForChild("GuardianWeaponInertia"))
+local sovereignWingInertia = require(packageFolder:WaitForChild("SovereignWingInertia"))
 local idleTrack
 local reactionTrack
 local lastAnimatedModel
@@ -103,6 +104,7 @@ end
 
 local function playSequence(model, builderName, previewName)
 	weaponInertia.Ensure(model)
+	sovereignWingInertia.Ensure(model)
 	stopIdle()
 	lastAnimatedModel = model
 	local animator = model and model:FindFirstChildWhichIsA("Animator", true)
