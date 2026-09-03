@@ -39,8 +39,9 @@ return {
 		ApexLanceHousingLengthStuds = 14,
 		ApexLanceEnergyBladeLengthStuds = 16,
 		DroneEnvelopeStuds = {X = 5.2, Y = 4.2, Z = 6.0},
-		DroneWingFoldedWidthStuds = 39,
-		DroneWingDeployedSpanStuds = 68,
+		DroneWingFoldedWidthStuds = 36,
+		DroneWingDeployedSpanStuds = 56,
+		DroneWingRiseStuds = 34,
 		ChestEmblemWidthStuds = 11,
 	},
 
@@ -97,7 +98,7 @@ return {
 			DroneCount = 6,
 			DronesPerSide = 3,
 			Mount = "RearUpperTorso",
-			Formation = "SymmetricalMechanicalBatWings",
+			Formation = "RaisedMechanicalBatClaws",
 			UsesMembrane = false,
 			UsesFeathers = false,
 			Foldable = true,
@@ -200,6 +201,6 @@ return {
 	VisualTarget = {
 		Version = 4,
 		Approved = true,
-		Description = "A monumental Aegis-derived precision hunter with the fleet's low visor head, broad two-toe feet, one compact forearm Apex Lance, and exactly six Hunter Drones arranged three per side as open mechanical bat wings.",
+		Description = "A monumental Aegis-derived precision hunter with the fleet's low visor head, broad two-toe feet, one compact forearm Apex Lance, and exactly six Hunter Drones carried on raised skeletal bat-claw arms, three per side.",
 	},
 }

@@ -147,16 +147,20 @@ local function addChestCore(systems, model)
 	local core = modelFolder(systems, "SovereignCore")
 	core:SetAttribute("System", "SovereignLockEnergySource")
 	local torso = model:FindFirstChild("TorsoUpper", true)
-	assert(torso and torso:IsA("BasePart"), "Missing TorsoUpper for Sovereign core")
-	local front = torso.CFrame * CFrame.new(0, -0.3, -(torso.Size.Z * 0.5 + 0.48))
-	block(core, "ChestVFrame", Vector3.new(11.8, 10.0, 0.75), front, COLORS.DarkMetal)
-	local left = block(core, "ChestVLeft", Vector3.new(1.15, 7.5, 0.45), front * CFrame.new(-2.15, 0.6, -0.62) * CFrame.Angles(0, 0, math.rad(-29)), COLORS.Accent)
-	local right = block(core, "ChestVRight", Vector3.new(1.15, 7.5, 0.45), front * CFrame.new(2.15, 0.6, -0.62) * CFrame.Angles(0, 0, math.rad(29)), COLORS.Accent)
+	local chestPlate = model:FindFirstChild("ChestCore", true)
+	assert(torso and torso:IsA("BasePart") and chestPlate and chestPlate:IsA("BasePart"), "Missing chest anchors for Sovereign core")
+	-- The fleet chest armor sits farther forward than TorsoUpper. Anchor the V to
+	-- that outer armor surface so no inherited Aegis plate can cover it.
+	local front = chestPlate.CFrame * CFrame.new(0, 0, -(chestPlate.Size.Z * 0.5 + 0.3))
+	local leftFrame = block(core, "ChestVFrameLeft", Vector3.new(1.8, 8.2, 0.55), front * CFrame.new(-2.15, 0.6, 0) * CFrame.Angles(0, 0, math.rad(-29)), COLORS.DarkMetal)
+	block(core, "ChestVFrameRight", Vector3.new(1.8, 8.2, 0.55), front * CFrame.new(2.15, 0.6, 0) * CFrame.Angles(0, 0, math.rad(29)), COLORS.DarkMetal)
+	local left = block(core, "ChestVLeft", Vector3.new(1.05, 7.5, 0.45), front * CFrame.new(-2.15, 0.6, -0.52) * CFrame.Angles(0, 0, math.rad(-29)), COLORS.Accent)
+	local right = block(core, "ChestVRight", Vector3.new(1.05, 7.5, 0.45), front * CFrame.new(2.15, 0.6, -0.52) * CFrame.Angles(0, 0, math.rad(29)), COLORS.Accent)
 	left.Material = Enum.Material.Neon
 	right.Material = Enum.Material.Neon
 	local apex = cylinder(core, "SovereignLockCore", Vector3.new(0.65, 2.4, 2.4), front * CFrame.new(0, -3.35, -0.7) * CFrame.Angles(0, math.rad(90), 0), COLORS.ChargeHot)
 	apex.Material = Enum.Material.Neon
-	core.PrimaryPart = core:FindFirstChild("ChestVFrame")
+	core.PrimaryPart = leftFrame
 	return apex
 end
 
@@ -203,20 +207,34 @@ local function addDroneWing(wings, torso, side, sign)
 	local wing = modelFolder(wings, side .. "DroneWing")
 	wing:SetAttribute("EquipmentType", "HunterDroneWing")
 	wing:SetAttribute("DroneCount", 3)
-	wing:SetAttribute("Formation", "MechanicalBatWing")
+	wing:SetAttribute("Formation", "RaisedMechanicalBatClaw")
 
 	local root = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 4.8, 1.5, 4.4))
-	local inner = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 12.5, 5.8, 4.5))
-	local outer = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 30.5, 10.5, 5.1))
-	local lower = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 24.0, -2.0, 5.4))
+	local hub = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 8.0, 9.0, 4.8))
+	local innerKnuckle = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 9.2, 14.0, 4.9))
+	local outerKnuckle = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 14.5, 17.0, 5.1))
+	local lowerKnuckle = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 15.0, 10.0, 5.2))
+	local inner = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 10.5, 20.0, 5.0))
+	local outer = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 25.0, 28.0, 5.5))
+	local lower = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 25.0, 15.0, 5.8))
 
-	local rootBlock = block(wing, side .. "WingRoot", Vector3.new(3.8, 5.0, 3.8), CFrame.new(root), COLORS.Chassis)
-	cylinder(wing, side .. "WingRootBearing", Vector3.new(1.2, 3.5, 3.5), CFrame.new(root) * CFrame.Angles(0, math.rad(90), 0), COLORS.DarkMetal)
-	barBetween(wing, side .. "InnerStrut", root, inner, 1.15, COLORS.DarkMetal)
-	barBetween(wing, side .. "LeadingStrut", inner, outer, 1.05, COLORS.Chassis)
-	barBetween(wing, side .. "LowerStrut", root, lower, 1.15, COLORS.DarkMetal)
-	barBetween(wing, side .. "OuterBrace", lower, outer, 0.85, COLORS.Chassis)
-	barBetween(wing, side .. "BatFinger", inner, lower, 0.7, COLORS.DarkMetal)
+	local rootBlock = block(wing, side .. "WingRoot", Vector3.new(4.2, 6.0, 4.2), CFrame.new(root), COLORS.Chassis)
+	cylinder(wing, side .. "WingRootBearing", Vector3.new(1.3, 3.8, 3.8), CFrame.new(root) * CFrame.Angles(0, math.rad(90), 0), COLORS.DarkMetal)
+	barBetween(wing, side .. "RaisedMainSpar", root, hub, 1.65, COLORS.Chassis)
+	cylinder(wing, side .. "ClawHub", Vector3.new(1.35, 4.1, 4.1), CFrame.new(hub) * CFrame.Angles(0, math.rad(90), 0), COLORS.DarkMetal)
+
+	-- Three open, independent two-segment fingers create the predatory claw
+	-- silhouette. There are deliberately no triangular braces or closed wing
+	-- panels between them.
+	for _, finger in ipairs({
+		{"Inner", innerKnuckle, inner},
+		{"Outer", outerKnuckle, outer},
+		{"Lower", lowerKnuckle, lower},
+	}) do
+		barBetween(wing, side .. finger[1] .. "ClawBase", hub, finger[2], 1.05, COLORS.DarkMetal)
+		cylinder(wing, side .. finger[1] .. "ClawKnuckle", Vector3.new(0.95, 2.8, 2.8), CFrame.new(finger[2]) * CFrame.Angles(0, math.rad(90), 0), COLORS.Body)
+		barBetween(wing, side .. finger[1] .. "ClawTip", finger[2], finger[3], 0.72, COLORS.Chassis)
+	end
 
 	addDrone(wing, side .. "DroneInner", CFrame.new(inner))
 	addDrone(wing, side .. "DroneOuter", CFrame.new(outer) * CFrame.Angles(0, math.rad(-sign * 7), 0))
@@ -234,7 +252,7 @@ local function addDroneWings(systems, model)
 	wings:SetAttribute("EquipmentType", "HunterDroneWings")
 	wings:SetAttribute("DroneCount", 6)
 	wings:SetAttribute("DronesPerSide", 3)
-	wings:SetAttribute("Formation", "SymmetricalMechanicalBatWings")
+	wings:SetAttribute("Formation", "RaisedMechanicalBatClaws")
 	local torso = model:FindFirstChild("TorsoUpper", true)
 	assert(torso and torso:IsA("BasePart"), "Missing TorsoUpper for Hunter Drone wings")
 	local left = addDroneWing(wings, torso, "Left", -1)
@@ -348,7 +366,7 @@ function Builder.Build(parent)
 	metadata:SetAttribute("VisualTargetVersion", specification.VisualTarget.Version)
 	metadata:SetAttribute("DroneCount", 6)
 	metadata:SetAttribute("DronesPerSide", 3)
-	metadata:SetAttribute("DroneWingFormation", "MechanicalBatWings")
+	metadata:SetAttribute("DroneWingFormation", "RaisedMechanicalBatClaws")
 	return model
 end
 
