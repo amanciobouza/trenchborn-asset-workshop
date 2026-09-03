@@ -238,4 +238,32 @@ function Library.BuildGroundSlam()
 	return sequence
 end
 
+function Library.BuildDistrictShield()
+	local brace = {
+		LowerTorso = CFrame.new(0, -1.2, 0.25) * CFrame.Angles(math.rad(5), 0, 0),
+		UpperTorso = CFrame.Angles(math.rad(4), 0, 0),
+		Head = CFrame.Angles(math.rad(-4), 0, 0),
+		LeftUpperArm = CFrame.Angles(math.rad(24), math.rad(-8), math.rad(-28)),
+		RightUpperArm = CFrame.Angles(math.rad(24), math.rad(8), math.rad(28)),
+		LeftLowerArm = CFrame.Angles(math.rad(38), 0, 0),
+		RightLowerArm = CFrame.Angles(math.rad(38), 0, 0),
+		LeftUpperLeg = CFrame.Angles(math.rad(15), 0, math.rad(-7)),
+		RightUpperLeg = CFrame.Angles(math.rad(15), 0, math.rad(7)),
+		LeftLowerLeg = CFrame.Angles(math.rad(-34), 0, 0),
+		RightLowerLeg = CFrame.Angles(math.rad(-34), 0, 0),
+		LeftFoot = CFrame.Angles(math.rad(10), math.rad(-7), 0),
+		RightFoot = CFrame.Angles(math.rad(10), math.rad(7), 0),
+	}
+	local locked = table.clone(brace)
+	locked.LowerTorso = CFrame.new(0, -1.55, 0.4) * CFrame.Angles(math.rad(7), 0, 0)
+	locked.UpperTorso = CFrame.Angles(math.rad(7), 0, 0)
+	local sequence = siegeSequence("BastionDistrictShield", {
+		{0, {}}, {0.48, brace}, {1.05, locked}, {1.65, locked},
+		{4.8, locked}, {5.35, brace}, {5.8, {}},
+	}, 5.8)
+	sequence:SetAttribute("FieldDeployTime", 1.65)
+	sequence:SetAttribute("FieldDuration", 3.15)
+	return sequence
+end
+
 return Library

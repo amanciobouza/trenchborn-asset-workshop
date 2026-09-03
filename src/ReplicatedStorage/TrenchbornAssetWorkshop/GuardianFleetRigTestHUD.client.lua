@@ -241,6 +241,7 @@ local definitions = {
 	{"LEFT FIST", "LeftSiegeFist", Color3.fromRGB(173, 91, 35)},
 	{"FIST COMBO", "SiegeFistCombo", Color3.fromRGB(191, 102, 37)},
 	{"GROUND SLAM", "GroundSlam", Color3.fromRGB(207, 117, 38)},
+	{"DISTRICT SHIELD", "DistrictShield", Color3.fromRGB(191, 126, 38)},
 	{"TWIN ION", "TwinIonCannons", Color3.fromRGB(38, 124, 175)},
 	{"MISSILE SALVO", "ShoulderMissiles", Color3.fromRGB(181, 102, 35)},
 	{"DIRECTIONAL AEGIS", "DirectionalAegis", Color3.fromRGB(38, 164, 190)},
@@ -717,7 +718,7 @@ remote.OnClientEvent:Connect(function(message, payload, target)
 		return
 	end
 	if message == "PlayHeavyRailCannon" then trackRailAim(payload, target) end
-	if message == "PlayIdle" or message == "PlayAlertIdle" or message == "PlayWalk" or message == "PlayRun" or message == "PlayTurnLeft" or message == "PlayTurnRight" or message == "PlayFall" or message == "PlayLand" or message == "PlayWalkBackward" or message == "PlayShockBaton" or message == "PlayWarningPulse" or message == "PlayShoulderMissileSalvo" or message == "PlayTwinIonCannons" or message == "PlayHeavyRailCannon" or message == "PlayRightSiegeFist" or message == "PlayLeftSiegeFist" or message == "PlaySiegeFistCombo" or message == "PlayGroundSlam" or message == "PlayPulseCannonFire" or message == "PlayContainmentNetLaunch" then
+	if message == "PlayIdle" or message == "PlayAlertIdle" or message == "PlayWalk" or message == "PlayRun" or message == "PlayTurnLeft" or message == "PlayTurnRight" or message == "PlayFall" or message == "PlayLand" or message == "PlayWalkBackward" or message == "PlayShockBaton" or message == "PlayWarningPulse" or message == "PlayShoulderMissileSalvo" or message == "PlayTwinIonCannons" or message == "PlayHeavyRailCannon" or message == "PlayRightSiegeFist" or message == "PlayLeftSiegeFist" or message == "PlaySiegeFistCombo" or message == "PlayGroundSlam" or message == "PlayDistrictShield" or message == "PlayPulseCannonFire" or message == "PlayContainmentNetLaunch" then
 		local builders = {
 			PlayIdle = {"BuildIdle", "GuardianIdlePreview"},
 			PlayAlertIdle = {"BuildAlertIdle", "GuardianAlertIdlePreview"},
@@ -737,6 +738,7 @@ remote.OnClientEvent:Connect(function(message, payload, target)
 			PlayLeftSiegeFist = {"BuildLeftSiegeFist", "BastionLeftSiegeFistPreview"},
 			PlaySiegeFistCombo = {"BuildSiegeFistCombo", "BastionSiegeFistComboPreview"},
 			PlayGroundSlam = {"BuildGroundSlam", "BastionGroundSlamPreview"},
+			PlayDistrictShield = {"BuildDistrictShield", "BastionDistrictShieldPreview"},
 			PlayPulseCannonFire = {"BuildPulseCannonFire", "GuardianPulseCannonFirePreview"},
 			PlayContainmentNetLaunch = {"BuildContainmentNetLaunch", "GuardianContainmentNetLaunchPreview"},
 		}
