@@ -152,13 +152,15 @@ local function addChestCore(systems, model)
 	-- The fleet chest armor sits farther forward than TorsoUpper. Anchor the V to
 	-- that outer armor surface so no inherited Aegis plate can cover it.
 	local front = chestPlate.CFrame * CFrame.new(0, 0, -(chestPlate.Size.Z * 0.5 + 0.3))
-	local leftFrame = block(core, "ChestVFrameLeft", Vector3.new(1.8, 8.2, 0.55), front * CFrame.new(-2.15, 0.6, 0) * CFrame.Angles(0, 0, math.rad(-29)), COLORS.DarkMetal)
-	block(core, "ChestVFrameRight", Vector3.new(1.8, 8.2, 0.55), front * CFrame.new(2.15, 0.6, 0) * CFrame.Angles(0, 0, math.rad(29)), COLORS.DarkMetal)
-	local left = block(core, "ChestVLeft", Vector3.new(1.05, 7.5, 0.45), front * CFrame.new(-2.15, 0.6, -0.52) * CFrame.Angles(0, 0, math.rad(-29)), COLORS.Accent)
-	local right = block(core, "ChestVRight", Vector3.new(1.05, 7.5, 0.45), front * CFrame.new(2.15, 0.6, -0.52) * CFrame.Angles(0, 0, math.rad(29)), COLORS.Accent)
+	local leftFrame = block(core, "ChestVFrameLeft", Vector3.new(1.8, 8.2, 0.55), front * CFrame.new(-2.15, 0.6, 0) * CFrame.Angles(0, 0, math.rad(29)), COLORS.DarkMetal)
+	block(core, "ChestVFrameRight", Vector3.new(1.8, 8.2, 0.55), front * CFrame.new(2.15, 0.6, 0) * CFrame.Angles(0, 0, math.rad(-29)), COLORS.DarkMetal)
+	local left = block(core, "ChestVLeft", Vector3.new(1.05, 7.5, 0.45), front * CFrame.new(-2.15, 0.6, -0.52) * CFrame.Angles(0, 0, math.rad(29)), COLORS.Accent)
+	local right = block(core, "ChestVRight", Vector3.new(1.05, 7.5, 0.45), front * CFrame.new(2.15, 0.6, -0.52) * CFrame.Angles(0, 0, math.rad(-29)), COLORS.Accent)
 	left.Material = Enum.Material.Neon
 	right.Material = Enum.Material.Neon
-	local apex = cylinder(core, "SovereignLockCore", Vector3.new(0.65, 2.4, 2.4), front * CFrame.new(0, -3.35, -0.7) * CFrame.Angles(0, math.rad(90), 0), COLORS.ChargeHot)
+	-- The lock source is a sharp energy jewel seated in the V point. Its name is
+	-- stable for later gameplay code, but it must not read as a round button.
+	local apex = block(core, "SovereignLockCore", Vector3.new(1.65, 1.65, 0.45), front * CFrame.new(0, -3.15, -0.7) * CFrame.Angles(0, 0, math.rad(45)), COLORS.ChargeHot)
 	apex.Material = Enum.Material.Neon
 	core.PrimaryPart = leftFrame
 	return apex
