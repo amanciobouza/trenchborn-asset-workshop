@@ -4,8 +4,8 @@ local Inertia = {}
 local active = setmetatable({}, {__mode = "k"})
 
 local DRONE_LEVELS = {
-	Inner = 0.28,
-	Outer = 0.62,
+	Inner = 0.35,
+	Outer = 0.72,
 	Lower = 1.0,
 }
 
@@ -69,10 +69,10 @@ function Inertia.Ensure(model)
 		local planarTravel = Vector2.new(localTravel.X, localTravel.Z).Magnitude
 		local suspended = model:GetAttribute("SovereignWingInertiaSuspended") == true
 
-		local idleLift = suspended and 0 or math.sin(os.clock() * 0.9) * math.rad(2.2)
-		local targetFold = suspended and 0 or math.rad(math.clamp(planarTravel * 12, 0, 8))
-		local targetTurn = suspended and 0 or math.clamp(-yaw * 4.5, math.rad(-9), math.rad(9))
-		local targetLift = suspended and 0 or idleLift + math.clamp(-localTravel.Y * 0.16, math.rad(-4), math.rad(4))
+		local idleLift = suspended and 0 or math.sin(os.clock() * 0.9) * math.rad(3.2)
+		local targetFold = suspended and 0 or math.rad(math.clamp(planarTravel * 16, 0, 11))
+		local targetTurn = suspended and 0 or math.clamp(-yaw * 6.0, math.rad(-12), math.rad(12))
+		local targetLift = suspended and 0 or idleLift + math.clamp(-localTravel.Y * 0.2, math.rad(-5.5), math.rad(5.5))
 		local rootFollow = 1 - math.exp(-deltaTime / 0.3)
 		state.Fold += (targetFold - state.Fold) * rootFollow
 		state.Turn += (targetTurn - state.Turn) * rootFollow
@@ -84,7 +84,7 @@ function Inertia.Ensure(model)
 				* CFrame.Angles(0, -sign * state.Fold + state.Turn * 0.38, sign * state.Lift)
 			for position, motor in pairs(group.Drones) do
 				local response = DRONE_LEVELS[position]
-				local secondaryLift = math.sin(os.clock() * 0.9 - response * 0.55) * math.rad(0.8) * response
+				local secondaryLift = math.sin(os.clock() * 0.9 - response * 0.65) * math.rad(1.25) * response
 				motor.C0 = state.Neutral[motor]
 					* CFrame.Angles(
 						0,
