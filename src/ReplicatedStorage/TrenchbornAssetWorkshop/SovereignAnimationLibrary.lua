@@ -251,9 +251,9 @@ function Library.BuildHunterDroneCommand()
 	release.RightUpperArm = CFrame.Angles(math.rad(78), math.rad(12), math.rad(20))
 	release.RightLowerArm = CFrame.Angles(math.rad(12), 0, 0)
 
-	return lanceSequence("SovereignHunterDroneCommand", 7.9, {
+	return lanceSequence("SovereignHunterDroneCommand", 9.4, {
 		{0, {}}, {0.38, command}, {0.72, release}, {1.2, command},
-		{6.9, command}, {7.35, release}, {7.9, {}},
+		{8.3, command}, {8.8, release}, {9.4, {}},
 	})
 end
 

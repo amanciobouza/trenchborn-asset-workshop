@@ -822,7 +822,7 @@ function Harness.Attach(model)
 			local target = workspace:FindFirstChild("TestKaijuTarget", true)
 			remote:FireClient(player, "PlayHunterDroneCommand", model, target)
 			sovereignDronePreview.Play(model, target)
-			task.delay(7.9, function()
+			task.delay(9.4, function()
 				if model.Parent then remote:FireClient(player, "PlayIdle", model) end
 			end)
 		elseif actionName == "HeavyRailCannon" then

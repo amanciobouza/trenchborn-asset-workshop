@@ -158,30 +158,30 @@ function Preview.Play(model, target)
 	local focus
 
 	for index, drone in ipairs(drones) do
-		task.delay((index - 1) * 0.11, function()
+		task.delay((index - 1) * 0.16, function()
 			if active[model] ~= token then return end
 			drone.Model:SetAttribute("Docked", false)
 			local launch = root.Position + right * drone.Sign * (12 + drone.Tier * 4)
 				+ up * (22 + (4 - drone.Tier) * 3) + forward * 18
-			moveTo(drone.Motor, CFrame.lookAt(launch, targetPoint), 0.56, Enum.EasingStyle.Quart)
-			pulse(dronePosition(drone.Motor), 1.2, 5.5, 0.38)
+			moveTo(drone.Motor, CFrame.lookAt(launch, targetPoint), 0.82, Enum.EasingStyle.Quart)
+			pulse(dronePosition(drone.Motor), 1.2, 5.5, 0.48)
 		end)
 	end
 
-	task.delay(1.2, function()
+	task.delay(1.65, function()
 		if active[model] ~= token then return end
-		focus = marker(targetPoint, 5.4)
+		focus = marker(targetPoint, 6.5)
 		for index, drone in ipairs(drones) do
 			local angle = math.rad(-150 + (index - 1) * 60)
 			local radius = 34 + (index % 2) * 5
 			local orbit = targetPoint + right * math.sin(angle) * radius
 				- forward * math.cos(angle) * radius + up * (10 + (index % 3) * 5)
 			drone.Orbit = CFrame.lookAt(orbit, targetPoint)
-			moveTo(drone.Motor, drone.Orbit, 0.72, Enum.EasingStyle.Quad)
+			moveTo(drone.Motor, drone.Orbit, 1.05, Enum.EasingStyle.Quad)
 		end
 	end)
 
-	task.delay(2.08, function()
+	task.delay(2.78, function()
 		if active[model] ~= token then return end
 		pulse(targetPoint, 3, 18, 0.5)
 		for _, drone in ipairs(drones) do laser(dronePosition(drone.Motor), targetPoint) end
@@ -189,38 +189,38 @@ function Preview.Play(model, target)
 
 	-- Three paired attack waves cross the target from alternating directions.
 	for wave = 1, 3 do
-		task.delay(2.55 + (wave - 1) * 0.92, function()
+		task.delay(3.35 + (wave - 1) * 1.12, function()
 			if active[model] ~= token then return end
 			for _, index in ipairs({wave * 2 - 1, wave * 2}) do
 				local drone = drones[index]
 				local diveOffset = right * drone.Sign * 5 + up * (3 + wave * 1.5) - forward * 6
-				moveTo(drone.Motor, CFrame.lookAt(targetPoint + diveOffset, targetPoint), 0.34, Enum.EasingStyle.Quart)
-				task.delay(0.32, function()
+				moveTo(drone.Motor, CFrame.lookAt(targetPoint + diveOffset, targetPoint), 0.52, Enum.EasingStyle.Quart)
+				task.delay(0.5, function()
 					if active[model] ~= token then return end
 					laser(dronePosition(drone.Motor), targetPoint)
 					pulse(targetPoint, 2.5, 9 + wave * 2, 0.35)
-					moveTo(drone.Motor, drone.Orbit, 0.46, Enum.EasingStyle.Quad)
+					moveTo(drone.Motor, drone.Orbit, 0.62, Enum.EasingStyle.Quad)
 				end)
 			end
 		end)
 	end
 
-	task.delay(5.75, function()
+	task.delay(7.0, function()
 		if active[model] ~= token then return end
 		if focus and focus.Parent then focus:Destroy() end
 		for index = #drones, 1, -1 do
 			local drone = drones[index]
-			task.delay((#drones - index) * 0.1, function()
+			task.delay((#drones - index) * 0.13, function()
 				if active[model] ~= token then return end
 				local tween = TweenService:Create(drone.Motor, TweenInfo.new(
-					0.72, Enum.EasingStyle.Quart, Enum.EasingDirection.InOut
+					0.9, Enum.EasingStyle.Quart, Enum.EasingDirection.InOut
 				), {C0 = drone.Neutral})
 				tween:Play()
 			end)
 		end
 	end)
 
-	task.delay(7.2, function()
+	task.delay(9.0, function()
 		if active[model] ~= token then return end
 		for _, drone in ipairs(drones) do
 			drone.Motor.C0 = drone.Neutral
