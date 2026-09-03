@@ -214,15 +214,18 @@ local function addDroneWing(wings, torso, side, sign)
 	wing:SetAttribute("DroneCount", 3)
 	wing:SetAttribute("Formation", "RaisedMechanicalBatClaw")
 
-	local root = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 4.8, 1.5, 4.4))
-	local spineShoulder = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 5.2, 8.5, 4.6))
-	local hub = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 7.0, 13.0, 4.9))
-	local innerKnuckle = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 6.5, 16.5, 5.0))
+	-- Keep the heavy carrier spars low and wide. Only the slim inner fingers
+	-- return toward the centre axis, so the horn silhouette is formed by the
+	-- two inner drones instead of by the entire support structure.
+	local root = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 7.0, 0.5, 4.4))
+	local spineShoulder = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 9.0, 5.5, 4.6))
+	local hub = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 11.0, 9.5, 4.9))
+	local innerKnuckle = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 7.5, 14.0, 5.0))
 	local outerKnuckle = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 14.0, 14.5, 5.2))
 	local lowerKnuckle = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 15.0, 10.0, 5.3))
 	-- The inner pair closes above the head like two devil horns. The outer four
 	-- spread laterally at lower heights to create the broad bat-claw silhouette.
-	local inner = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 6.0, 21.5, 5.1))
+	local inner = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 6.0, 19.5, 5.1))
 	local outer = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 24.0, 17.5, 5.6))
 	local lower = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 28.0, 10.5, 5.9))
 
