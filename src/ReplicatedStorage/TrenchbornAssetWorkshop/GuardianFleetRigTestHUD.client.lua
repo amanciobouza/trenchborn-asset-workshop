@@ -9,6 +9,7 @@ local player = Players.LocalPlayer
 local remote = ReplicatedStorage:WaitForChild("GuardianFleetRigTestRemote")
 local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
 local animationLibrary = require(packageFolder:WaitForChild("GuardianAnimationLibrary"))
+local bastionAnimationLibrary = require(packageFolder:WaitForChild("BastionAnimationLibrary"))
 local weaponInertia = require(packageFolder:WaitForChild("GuardianWeaponInertia"))
 local idleTrack
 local reactionTrack
@@ -74,7 +75,8 @@ local function playReaction(model, builderName, previewName)
 	if reactionTrack and reactionTrack.IsPlaying then reactionTrack:Stop(0.05) end
 	local animator = model and model:FindFirstChildWhichIsA("Animator", true)
 	assert(animator, "Guardian Animator not found")
-	local sequence = animationLibrary[builderName]()
+	local selectedLibrary = model:GetAttribute("AssetName") == "Bastion-IV Colossus" and bastionAnimationLibrary or animationLibrary
+	local sequence = selectedLibrary[builderName]()
 	local temporaryId = KeyframeSequenceProvider:RegisterKeyframeSequence(sequence)
 	local animation = Instance.new("Animation")
 	animation.Name = previewName
@@ -419,7 +421,9 @@ RunService.RenderStepped:Connect(function()
 		wasBackward = backward
 		if moving then
 			walkStartedAt = os.clock()
-			locomotionStepDuration = running and 0.6 or (backward and 1.1 or 1)
+			local bastionTiming = controlledModel:GetAttribute("AssetName") == "Bastion-IV Colossus"
+			locomotionStepDuration = running and (bastionTiming and 0.69 or 0.6)
+				or (backward and (bastionTiming and 1.38 or 1.1) or (bastionTiming and 1.25 or 1))
 			plantedSide = nil
 			if running then
 				playSequence(controlledModel, "BuildRun", "GuardianControlledRun")
