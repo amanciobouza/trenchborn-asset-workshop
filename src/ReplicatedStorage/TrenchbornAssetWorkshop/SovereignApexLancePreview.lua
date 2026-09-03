@@ -96,6 +96,28 @@ local function impactPulse(model, delaySeconds, size)
 	end)
 end
 
+local function beamLayer(name, start, finish, width, color, transparency, lifetime)
+	local delta = finish - start
+	local beam = Instance.new("Part")
+	beam.Name = name
+	beam.Size = Vector3.new(width, width, delta.Magnitude)
+	beam.CFrame = CFrame.lookAt((start + finish) * 0.5, finish)
+	beam.Anchored = true
+	beam.CanCollide = false
+	beam.CanTouch = false
+	beam.CanQuery = false
+	beam.Material = Enum.Material.Neon
+	beam.Color = color
+	beam.Transparency = transparency
+	beam.Parent = effectsFolder()
+	Debris:AddItem(beam, lifetime)
+	TweenService:Create(beam, TweenInfo.new(lifetime - 0.04, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+		Size = Vector3.new(width * 0.18, width * 0.18, delta.Magnitude),
+		Transparency = 1,
+	}):Play()
+	return beam
+end
+
 function Preview.Thrust(model)
 	addBladeTrail(model, 0.95)
 	impactPulse(model, 0.62, 10)
@@ -137,22 +159,10 @@ function Preview.Beam(model, target)
 		local delta = finish - start
 		if delta.Magnitude < 1 then return end
 		if charge.Parent then charge:Destroy() end
-		local beam = Instance.new("Part")
-		beam.Name = "ApexLanceBeam"
-		beam.Size = Vector3.new(1.25, 1.25, delta.Magnitude)
-		beam.CFrame = CFrame.lookAt((start + finish) * 0.5, finish)
-		beam.Anchored = true
-		beam.CanCollide = false
-		beam.CanTouch = false
-		beam.CanQuery = false
-		beam.Material = Enum.Material.Neon
-		beam.Color = HOT
-		beam.Transparency = 0.02
-		beam.Parent = effectsFolder()
-		Debris:AddItem(beam, 0.48)
-		TweenService:Create(beam, TweenInfo.new(0.42, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-			Size = Vector3.new(0.12, 0.12, delta.Magnitude), Transparency = 1,
-		}):Play()
+		-- A broad translucent sheath gives the shot its destructive scale, while
+		-- the smaller white-hot core preserves a precise hunter-weapon silhouette.
+		beamLayer("ApexLanceBeamSheath", start, finish, 7.2, VIOLET, 0.42, 0.52)
+		beamLayer("ApexLanceBeamCore", start, finish, 3.6, HOT, 0.01, 0.46)
 		impactPulse(model, 0, 12)
 		local hit = sphere("ApexBeamImpact", finish, 4, VIOLET, 0.65)
 		hit.Material = Enum.Material.ForceField

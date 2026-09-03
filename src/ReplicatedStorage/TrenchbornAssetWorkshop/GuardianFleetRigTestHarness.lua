@@ -810,7 +810,6 @@ function Harness.Attach(model)
 			local target = workspace:FindFirstChild("TestKaijuTarget", true)
 			model:SetAttribute("SovereignWingInertiaSuspended", true)
 			remote:FireClient(player, "PlayApexLanceBeam", model, target)
-			sovereignLancePreview.Beam(model, target)
 			task.delay(2.25, function()
 				if model.Parent then
 					model:SetAttribute("SovereignWingInertiaSuspended", false)

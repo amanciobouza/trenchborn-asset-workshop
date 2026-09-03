@@ -11,6 +11,7 @@ local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
 local animationLibrary = require(packageFolder:WaitForChild("GuardianAnimationLibrary"))
 local bastionAnimationLibrary = require(packageFolder:WaitForChild("BastionAnimationLibrary"))
 local sovereignAnimationLibrary = require(packageFolder:WaitForChild("SovereignAnimationLibrary"))
+local sovereignLancePreview = require(packageFolder:WaitForChild("SovereignApexLancePreview"))
 local weaponInertia = require(packageFolder:WaitForChild("GuardianWeaponInertia"))
 local sovereignWingInertia = require(packageFolder:WaitForChild("SovereignWingInertia"))
 local idleTrack
@@ -730,6 +731,7 @@ remote.OnClientEvent:Connect(function(message, payload, target)
 		return
 	end
 	if message == "PlayHeavyRailCannon" then trackRailAim(payload, target) end
+	if message == "PlayApexLanceBeam" then sovereignLancePreview.Beam(payload, target) end
 	if message == "PlayIdle" or message == "PlayAlertIdle" or message == "PlayWalk" or message == "PlayRun" or message == "PlayTurnLeft" or message == "PlayTurnRight" or message == "PlayFall" or message == "PlayLand" or message == "PlayWalkBackward" or message == "PlayShockBaton" or message == "PlayWarningPulse" or message == "PlayShoulderMissileSalvo" or message == "PlayTwinIonCannons" or message == "PlayApexLanceThrust" or message == "PlayApexLanceCut" or message == "PlayApexLanceBeam" or message == "PlayHeavyRailCannon" or message == "PlayRightSiegeFist" or message == "PlayLeftSiegeFist" or message == "PlaySiegeFistCombo" or message == "PlayGroundSlam" or message == "PlayDistrictShield" or message == "PlayPulseCannonFire" or message == "PlayContainmentNetLaunch" then
 		local builders = {
 			PlayIdle = {"BuildIdle", "GuardianIdlePreview"},
