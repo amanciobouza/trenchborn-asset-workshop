@@ -178,7 +178,7 @@ local function fistPose(side, strike)
 		RightUpperLeg = CFrame.Angles(math.rad(6), 0, math.rad(2)),
 	}
 	pose[side .. "UpperArm"] = strike
-		and CFrame.Angles(math.rad(82), math.rad(-18 * sign), math.rad(-8 * sign))
+		and CFrame.Angles(math.rad(82), math.rad(-24 * sign), math.rad(-34 * sign))
 		or CFrame.Angles(math.rad(-34), math.rad(20 * sign), math.rad(25 * sign))
 	pose[side .. "LowerArm"] = strike
 		and CFrame.Angles(math.rad(-8), 0, 0)
