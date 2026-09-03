@@ -19,6 +19,7 @@ function Inertia.Ensure(model)
 
 	local state = {
 		previous = torso.CFrame,
+		neutralC0 = joint.C0,
 		offset = Vector3.zero,
 		rotation = Vector3.zero,
 	}
@@ -28,6 +29,7 @@ function Inertia.Ensure(model)
 	connection = RunService.RenderStepped:Connect(function(deltaTime)
 		if not model.Parent or not joint.Parent or not torso.Parent then
 			connection:Disconnect()
+			if joint.Parent then joint.C0 = state.neutralC0 end
 			active[model] = nil
 			return
 		end
@@ -40,16 +42,16 @@ function Inertia.Ensure(model)
 		-- Counter-motion gives the cannon a restrained, heavy delay. Limits keep
 		-- it mounted firmly instead of making it look loose or rubbery.
 		local targetRotation = Vector3.new(
-			math.clamp(-rx * 2.8, -0.07, 0.07),
-			math.clamp(-ry * 3.2, -0.09, 0.09),
-			math.clamp(-rz * 2.4, -0.055, 0.055)
+			math.clamp(-rx * 4.6, -0.11, 0.11),
+			math.clamp(-ry * 5.2, -0.14, 0.14),
+			math.clamp(-rz * 4.0, -0.09, 0.09)
 		)
-		local targetOffset = clampVector(-localTravel * 0.22, 0.32)
-		local follow = 1 - math.exp(-deltaTime / 0.16)
-		local settle = 1 - math.exp(-deltaTime / 0.24)
+		local targetOffset = clampVector(-localTravel * 0.38, 0.6)
+		local follow = 1 - math.exp(-deltaTime / 0.23)
+		local settle = 1 - math.exp(-deltaTime / 0.32)
 		state.rotation = state.rotation:Lerp(targetRotation, follow)
 		state.offset = state.offset:Lerp(targetOffset, settle)
-		joint.Transform = CFrame.new(state.offset)
+		joint.C0 = state.neutralC0 * CFrame.new(state.offset)
 			* CFrame.Angles(state.rotation.X, state.rotation.Y, state.rotation.Z)
 		state.previous = current
 	end)
