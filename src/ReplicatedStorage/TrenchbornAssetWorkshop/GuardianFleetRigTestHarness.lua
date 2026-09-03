@@ -8,6 +8,7 @@ local Harness = {}
 local bastionRailPreview = require(script.Parent:WaitForChild("BastionRailCannonPreview"))
 local bastionSiegePreview = require(script.Parent:WaitForChild("BastionSiegePreview"))
 local bastionDistrictShieldPreview = require(script.Parent:WaitForChild("BastionDistrictShieldPreview"))
+local sovereignLancePreview = require(script.Parent:WaitForChild("SovereignApexLancePreview"))
 
 local function motor(model, name)
 	local item = model:FindFirstChild(name, true)
@@ -191,6 +192,9 @@ function Harness.Attach(model)
 		DamageReact = function() end,
 		Stagger = function() end,
 		Defeat = function() end,
+		ApexLanceThrust = function() end,
+		ApexLanceCut = function() end,
+		ApexLanceBeam = function() end,
 		HeavyRailCannon = function() end,
 		RightSiegeFist = function() end,
 		LeftSiegeFist = function() end,
@@ -782,6 +786,37 @@ function Harness.Attach(model)
 				requestSound("Defeat")
 				remote:FireClient(player, "PlayDefeat", model)
 			end
+		elseif actionName == "ApexLanceThrust" then
+			model:SetAttribute("SovereignWingInertiaSuspended", true)
+			remote:FireClient(player, "PlayApexLanceThrust", model)
+			sovereignLancePreview.Thrust(model)
+			task.delay(1.28, function()
+				if model.Parent then
+					model:SetAttribute("SovereignWingInertiaSuspended", false)
+					remote:FireClient(player, "PlayIdle", model)
+				end
+			end)
+		elseif actionName == "ApexLanceCut" then
+			model:SetAttribute("SovereignWingInertiaSuspended", true)
+			remote:FireClient(player, "PlayApexLanceCut", model)
+			sovereignLancePreview.Cut(model)
+			task.delay(1.42, function()
+				if model.Parent then
+					model:SetAttribute("SovereignWingInertiaSuspended", false)
+					remote:FireClient(player, "PlayIdle", model)
+				end
+			end)
+		elseif actionName == "ApexLanceBeam" then
+			local target = workspace:FindFirstChild("TestKaijuTarget", true)
+			model:SetAttribute("SovereignWingInertiaSuspended", true)
+			remote:FireClient(player, "PlayApexLanceBeam", model, target)
+			sovereignLancePreview.Beam(model, target)
+			task.delay(2.25, function()
+				if model.Parent then
+					model:SetAttribute("SovereignWingInertiaSuspended", false)
+					remote:FireClient(player, "PlayIdle", model)
+				end
+			end)
 		elseif actionName == "HeavyRailCannon" then
 			local target = workspace:FindFirstChild("TestKaijuTarget", true)
 			remote:FireClient(player, "PlayHeavyRailCannon", model, target)
@@ -898,6 +933,7 @@ function Harness.Attach(model)
 	model:SetAttribute("GuardianDamageReactPreviewReady", true)
 	model:SetAttribute("GuardianStaggerPreviewReady", true)
 	model:SetAttribute("GuardianDefeatPreviewReady", true)
+	model:SetAttribute("SovereignApexLancePreviewReady", true)
 	model:SetAttribute("WardenShockBatonPreviewReady", true)
 	model:SetAttribute("WardenWarningPulsePreviewReady", true)
 	model:SetAttribute("AegisMissileSalvoPreviewReady", true)

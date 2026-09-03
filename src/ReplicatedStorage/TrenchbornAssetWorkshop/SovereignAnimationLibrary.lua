@@ -110,4 +110,129 @@ function Library.BuildLand()
 	})
 end
 
+local SOVEREIGN_HIERARCHY = {
+	HumanoidRootPart = {
+		LowerTorso = {
+			UpperTorso = {
+				Head = {},
+				LeftUpperArm = {LeftLowerArm = {LeftHand = {}, ApexLanceControl = {}}},
+				RightUpperArm = {RightLowerArm = {RightHand = {}}},
+			},
+			LeftUpperLeg = {LeftLowerLeg = {LeftFoot = {}}},
+			RightUpperLeg = {RightLowerLeg = {RightFoot = {}}},
+		},
+	},
+}
+
+local function poseTree(name, children, transforms)
+	local pose = Instance.new("Pose")
+	pose.Name = name
+	pose.Weight = 1
+	pose.EasingStyle = Enum.PoseEasingStyle.CubicV2
+	pose.EasingDirection = Enum.PoseEasingDirection.InOut
+	pose.CFrame = transforms[name] or CFrame.identity
+	for childName, grandchildren in pairs(children) do
+		poseTree(childName, grandchildren, transforms).Parent = pose
+	end
+	return pose
+end
+
+local function sovereignKeyframe(sequence, time, transforms)
+	local frame = Instance.new("Keyframe")
+	frame.Name = string.format("SovereignLance_%03d", math.floor(time * 100))
+	frame.Time = time
+	for rootName, children in pairs(SOVEREIGN_HIERARCHY) do
+		poseTree(rootName, children, transforms).Parent = frame
+	end
+	frame.Parent = sequence
+end
+
+local function lanceSequence(name, duration, frames)
+	local sequence = Instance.new("KeyframeSequence")
+	sequence.Name = name
+	sequence.Loop = false
+	sequence.Priority = Enum.AnimationPriority.Action
+	for _, frame in ipairs(frames) do
+		sovereignKeyframe(sequence, frame[1], frame[2])
+	end
+	sequence:SetAttribute("GuardianAnimation", name)
+	sequence:SetAttribute("DurationSeconds", duration)
+	sequence:SetAttribute("SovereignApexLanceVariant", true)
+	sequence:SetAttribute("SpecificationVersion", "Sovereign-Lance-1.0")
+	return sequence
+end
+
+local function hunterStance(torsoYaw)
+	return {
+		LowerTorso = CFrame.new(0, -0.65, -0.18) * CFrame.Angles(math.rad(-7), math.rad(torsoYaw * 0.35), 0),
+		UpperTorso = CFrame.Angles(math.rad(-8), math.rad(torsoYaw), math.rad(-2)),
+		Head = CFrame.Angles(math.rad(3), math.rad(-torsoYaw * 0.72), 0),
+		RightUpperArm = CFrame.Angles(math.rad(22), math.rad(5), math.rad(18)),
+		RightLowerArm = CFrame.Angles(math.rad(34), 0, 0),
+		LeftUpperLeg = CFrame.Angles(math.rad(13), math.rad(-5), math.rad(-3)),
+		LeftLowerLeg = CFrame.Angles(math.rad(-28), 0, 0),
+		LeftFoot = CFrame.Angles(math.rad(10), math.rad(-7), 0),
+		RightUpperLeg = CFrame.Angles(math.rad(10), math.rad(5), math.rad(3)),
+		RightLowerLeg = CFrame.Angles(math.rad(-23), 0, 0),
+		RightFoot = CFrame.Angles(math.rad(8), math.rad(7), 0),
+	}
+end
+
+function Library.BuildApexLanceThrust()
+	local windup = hunterStance(20)
+	windup.LeftUpperArm = CFrame.Angles(math.rad(-24), math.rad(-22), math.rad(-30))
+	windup.LeftLowerArm = CFrame.Angles(math.rad(56), math.rad(-5), 0)
+	windup.ApexLanceControl = CFrame.Angles(math.rad(7), 0, math.rad(-5))
+
+	local strike = hunterStance(-18)
+	strike.LowerTorso = CFrame.new(0, -0.38, -0.72) * CFrame.Angles(math.rad(-12), math.rad(-7), 0)
+	strike.UpperTorso = CFrame.new(0, 0, -0.42) * CFrame.Angles(math.rad(-12), math.rad(-18), math.rad(2))
+	strike.LeftUpperArm = CFrame.Angles(math.rad(84), math.rad(12), math.rad(-18))
+	strike.LeftLowerArm = CFrame.Angles(math.rad(-9), 0, 0)
+	strike.ApexLanceControl = CFrame.Angles(math.rad(-8), 0, 0)
+
+	return lanceSequence("SovereignApexLanceThrust", 1.28, {
+		{0, {}}, {0.34, windup}, {0.62, strike}, {0.78, strike}, {1.28, {}},
+	})
+end
+
+function Library.BuildApexLanceCut()
+	local windup = hunterStance(30)
+	windup.LeftUpperArm = CFrame.Angles(math.rad(24), math.rad(-38), math.rad(-48))
+	windup.LeftLowerArm = CFrame.Angles(math.rad(46), 0, math.rad(-6))
+	windup.ApexLanceControl = CFrame.Angles(0, math.rad(-22), math.rad(-10))
+
+	local cut = hunterStance(-36)
+	cut.LowerTorso = CFrame.new(0, -0.48, -0.35) * CFrame.Angles(math.rad(-8), math.rad(-14), math.rad(2))
+	cut.UpperTorso = CFrame.Angles(math.rad(-9), math.rad(-36), math.rad(6))
+	cut.Head = CFrame.Angles(math.rad(2), math.rad(24), math.rad(-2))
+	cut.LeftUpperArm = CFrame.Angles(math.rad(72), math.rad(34), math.rad(20))
+	cut.LeftLowerArm = CFrame.Angles(math.rad(7), 0, math.rad(4))
+	cut.ApexLanceControl = CFrame.Angles(math.rad(-4), math.rad(28), math.rad(8))
+
+	return lanceSequence("SovereignApexLanceCut", 1.42, {
+		{0, {}}, {0.42, windup}, {0.68, cut}, {0.88, cut}, {1.42, {}},
+	})
+end
+
+function Library.BuildApexLanceBeam()
+	local aim = hunterStance(-8)
+	aim.LowerTorso = CFrame.new(0, -0.82, 0.05) * CFrame.Angles(math.rad(-5), math.rad(-3), 0)
+	aim.UpperTorso = CFrame.Angles(math.rad(-7), math.rad(-8), math.rad(1))
+	aim.Head = CFrame.Angles(math.rad(2), math.rad(7), 0)
+	aim.LeftUpperArm = CFrame.Angles(math.rad(70), math.rad(7), math.rad(-21))
+	aim.LeftLowerArm = CFrame.Angles(math.rad(-5), 0, 0)
+	aim.ApexLanceControl = CFrame.Angles(math.rad(-13), 0, 0)
+
+	local recoil = table.clone(aim)
+	recoil.LowerTorso = CFrame.new(0, -0.94, 0.35) * CFrame.Angles(math.rad(2), math.rad(-3), 0)
+	recoil.UpperTorso = CFrame.Angles(math.rad(3), math.rad(-7), math.rad(-2))
+	recoil.LeftUpperArm = CFrame.Angles(math.rad(64), math.rad(7), math.rad(-21))
+	recoil.ApexLanceControl = CFrame.new(0, 0.18, 0.35) * CFrame.Angles(math.rad(-10), 0, 0)
+
+	return lanceSequence("SovereignApexLanceBeam", 2.25, {
+		{0, {}}, {0.42, aim}, {1.1, aim}, {1.18, recoil}, {1.48, aim}, {1.82, aim}, {2.25, {}},
+	})
+end
+
 return Library
