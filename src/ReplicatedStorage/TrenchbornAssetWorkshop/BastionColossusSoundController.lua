@@ -103,6 +103,28 @@ function SoundController.Attach(model)
 			elseif state == "Idle" then request:Fire("Reset") end
 		end)
 	end
+	local abilityRequested = gameplay and gameplay:FindFirstChild("AbilityRequested")
+	if abilityRequested and abilityRequested:IsA("BindableEvent") then
+		abilityRequested.Event:Connect(function(name, _, ability)
+			if name == "HeavyRailCannon" then
+				request:Fire("RailCharge")
+				task.delay(ability.TelegraphDuration or 1.55, function() request:Fire("RailFire"); request:Fire("RailBass") end)
+			elseif name == "RightSiegeFist" or name == "LeftSiegeFist" then
+				request:Fire("SiegeWindup")
+				task.delay(0.58, function() request:Fire(name == "RightSiegeFist" and "RightSiegeImpact" or "LeftSiegeImpact") end)
+			elseif name == "SiegeFistCombo" then
+				request:Fire("SiegeWindup")
+				task.delay(0.5, function() request:Fire("RightSiegeImpact") end)
+				task.delay(0.94, function() request:Fire("LeftSiegeImpact") end)
+			elseif name == "GroundSlam" then
+				request:Fire("SlamRise")
+				task.delay(ability.ImpactDelay or 1.02, function() request:Fire("GroundSlam"); request:Fire("GroundSlamBass") end)
+			elseif name == "DistrictShield" then
+				request:Fire("ShieldCharge")
+				task.delay(1.55, function() request:Fire("ShieldDeploy") end)
+			end
+		end)
+	end
 	model:SetAttribute("BastionSoundPassVersion", "1.0")
 	model:SetAttribute("BastionSoundSpatialized", true)
 	model:SetAttribute("BastionSoundAssetSource", "RobloxCreatorStore")

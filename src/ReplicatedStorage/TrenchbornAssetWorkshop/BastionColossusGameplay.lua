@@ -42,6 +42,7 @@ function Gameplay.Attach(model, config)
 	local isPositionProtected = bindFunction(api, "IsPositionProtected")
 	local reset = bindFunction(api, "Reset")
 	local abilityRequested = bindEvent(api, "AbilityRequested")
+	local abilityImpact = bindEvent(api, "AbilityImpact")
 	local damageTaken = bindEvent(api, "DamageTaken")
 	local stateChanged = bindEvent(api, "StateChanged")
 	local districtShieldChanged = bindEvent(api, "DistrictShieldChanged")
@@ -196,6 +197,7 @@ function Gameplay.Attach(model, config)
 	model:SetAttribute("TuningStatus", config.TuningStatus)
 	model:SetAttribute("GameplayUsesHeartbeatLoop", false)
 	model:SetAttribute("GameplayUsesAdditionalBaseParts", false)
+	model:SetAttribute("AbilityImpactContract", abilityImpact.Name)
 	return api
 end
 

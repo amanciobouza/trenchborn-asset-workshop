@@ -1,6 +1,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local KeyframeSequenceProvider = game:GetService("KeyframeSequenceProvider")
 local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
 
 local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
 local library = require(packageFolder:WaitForChild("GuardianAnimationLibrary"))
@@ -35,7 +36,62 @@ local builders = {
 	TwinIonCannons = "BuildTwinIonCannons",
 	ShoulderMissileSalvo = "BuildShoulderMissileSalvo",
 	DirectionalAegis = "BuildAlertIdle",
+	HeavyRailCannon = "BuildHeavyRailCannon",
+	RightSiegeFist = "BuildRightSiegeFist",
+	LeftSiegeFist = "BuildLeftSiegeFist",
+	SiegeFistCombo = "BuildSiegeFistCombo",
+	GroundSlam = "BuildGroundSlam",
+	DistrictShield = "BuildDistrictShield",
 }
+
+local railAimNeutral = setmetatable({}, {__mode = "k"})
+local railAimGeneration = 0
+
+local function targetPosition(target)
+	if typeof(target) ~= "Instance" then return nil end
+	if target:IsA("BasePart") then return target.Position end
+	if target:IsA("Model") then
+		for _, name in ipairs({"UpperTorso", "Torso", "HumanoidRootPart"}) do
+			local part = target:FindFirstChild(name, true)
+			if part and part:IsA("BasePart") then return part.Position end
+		end
+		local boxCFrame, boxSize = target:GetBoundingBox()
+		return boxCFrame.Position + Vector3.new(0, boxSize.Y * 0.05, 0)
+	end
+	return nil
+end
+
+local function trackRailAim(model, target)
+	local joint = model:FindFirstChild("HeavyRailCannonMount", true)
+	local muzzle = model:FindFirstChild("RailMuzzleCore", true)
+	if not joint or not joint:IsA("Motor6D") or not muzzle or not joint.Part0 then return end
+	if not railAimNeutral[joint] then railAimNeutral[joint] = joint.C0 end
+	local neutral = railAimNeutral[joint]
+	railAimGeneration += 1
+	local token = railAimGeneration
+	local started = os.clock()
+	local connection
+	connection = RunService.RenderStepped:Connect(function(deltaTime)
+		if token ~= railAimGeneration or not model.Parent or not joint.Parent or os.clock() - started >= 1.55 then
+			connection:Disconnect()
+			task.delay(1.05, function()
+				if token == railAimGeneration and joint.Parent then
+					TweenService:Create(joint, TweenInfo.new(0.28), {C0 = neutral}):Play()
+				end
+			end)
+			return
+		end
+		local point = targetPosition(target)
+		if not point then return end
+		local direction = point - muzzle.Position
+		if direction.Magnitude < 1 then return end
+		local localDirection = joint.Part0.CFrame:VectorToObjectSpace(direction.Unit)
+		local pitch = math.clamp(math.asin(math.clamp(localDirection.Y, -1, 1)), math.rad(-28), math.rad(32))
+		local yaw = math.clamp(math.atan2(-localDirection.X, -localDirection.Z), math.rad(-48), math.rad(48))
+		local desired = neutral * CFrame.Angles(pitch, yaw, 0)
+		joint.C0 = joint.C0:Lerp(desired, 1 - math.exp(-deltaTime / 0.12))
+	end)
+end
 
 local function restorePower()
 	for instance, state in pairs(visualState) do
@@ -93,7 +149,7 @@ local function load(model, builderName, priorityOverride)
 	return track
 end
 
-local function playMain(model, name)
+local function playMain(model, name, target)
 	weaponInertia.Ensure(model)
 	stopMain()
 	activeModel = model
@@ -103,6 +159,7 @@ local function playMain(model, name)
 	end
 	local builder = builders[name]
 	if not builder then return end
+	if name == "HeavyRailCannon" then trackRailAim(model, target) end
 	mainTrack = load(model, builder)
 	if not mainTrack then return end
 	local track = mainTrack
@@ -127,7 +184,7 @@ local function playReaction(model)
 	if reactionTrack then reactionTrack:Play(0.04) end
 end
 
-remote.OnClientEvent:Connect(function(name, model)
+remote.OnClientEvent:Connect(function(name, model, target)
 	if not model or not model.Parent then return end
-	if name == "DamageReact" then playReaction(model) else playMain(model, name) end
+	if name == "DamageReact" then playReaction(model) else playMain(model, name, target) end
 end)
