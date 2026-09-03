@@ -6,6 +6,7 @@ local Debris = game:GetService("Debris")
 
 local Harness = {}
 local bastionRailPreview = require(script.Parent:WaitForChild("BastionRailCannonPreview"))
+local bastionSiegePreview = require(script.Parent:WaitForChild("BastionSiegePreview"))
 
 local function motor(model, name)
 	local item = model:FindFirstChild(name, true)
@@ -779,6 +780,19 @@ function Harness.Attach(model)
 					remote:FireClient(player, "PlayIdle", model)
 				end
 			end)
+		elseif actionName == "RightSiegeFist" then
+			remote:FireClient(player, "PlayRightSiegeFist", model)
+			task.delay(0.58, function() bastionSiegePreview.FistImpact(model, "Right") end)
+		elseif actionName == "LeftSiegeFist" then
+			remote:FireClient(player, "PlayLeftSiegeFist", model)
+			task.delay(0.58, function() bastionSiegePreview.FistImpact(model, "Left") end)
+		elseif actionName == "SiegeFistCombo" then
+			remote:FireClient(player, "PlaySiegeFistCombo", model)
+			task.delay(0.5, function() bastionSiegePreview.FistImpact(model, "Right") end)
+			task.delay(0.94, function() bastionSiegePreview.FistImpact(model, "Left") end)
+		elseif actionName == "GroundSlam" then
+			remote:FireClient(player, "PlayGroundSlam", model)
+			task.delay(1.02, function() bastionSiegePreview.GroundSlam(model) end)
 		elseif actionName == "TwinIonCannons" then
 			invokeAbility("TwinIonCannons")
 		elseif actionName == "ShoulderMissiles" then
@@ -842,6 +856,8 @@ function Harness.Attach(model)
 	model:SetAttribute("AegisMissileSalvoPreviewReady", true)
 	model:SetAttribute("AegisTwinIonCannonsPreviewReady", true)
 	model:SetAttribute("BastionHeavyRailPreviewReady", true)
+	model:SetAttribute("BastionSiegeFistsPreviewReady", true)
+	model:SetAttribute("BastionGroundSlamPreviewReady", true)
 	model:SetAttribute("GuardianShieldBlockPreviewReady", true)
 	model:SetAttribute("GuardianPulseCannonFirePreviewReady", true)
 	model:SetAttribute("GuardianContainmentNetLaunchPreviewReady", true)

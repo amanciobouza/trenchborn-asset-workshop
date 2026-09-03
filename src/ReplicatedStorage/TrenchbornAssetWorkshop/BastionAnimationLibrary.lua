@@ -154,4 +154,86 @@ function Library.BuildHeavyRailCannon()
 	return sequence
 end
 
+local function siegeSequence(name, frames, duration)
+	local sequence = Instance.new("KeyframeSequence")
+	sequence.Name = name
+	sequence.Loop = false
+	sequence.Priority = Enum.AnimationPriority.Action
+	for _, frame in ipairs(frames) do
+		bastionKeyframe(sequence, frame[1], frame[2])
+	end
+	sequence:SetAttribute("GuardianAnimation", name)
+	sequence:SetAttribute("DurationSeconds", duration)
+	sequence:SetAttribute("SpecificationVersion", "Bastion-Siege-1.0")
+	return sequence
+end
+
+local function fistPose(side, strike)
+	local sign = side == "Right" and 1 or -1
+	local pose = {
+		LowerTorso = CFrame.new(0, -0.24, -0.12) * CFrame.Angles(math.rad(-5), math.rad(-8 * sign), 0),
+		UpperTorso = CFrame.Angles(math.rad(-4), math.rad(-18 * sign), math.rad(-3 * sign)),
+		Head = CFrame.Angles(0, math.rad(10 * sign), 0),
+		LeftUpperLeg = CFrame.Angles(math.rad(6), 0, math.rad(-2)),
+		RightUpperLeg = CFrame.Angles(math.rad(6), 0, math.rad(2)),
+	}
+	pose[side .. "UpperArm"] = strike
+		and CFrame.Angles(math.rad(-82), math.rad(5 * sign), math.rad(10 * sign))
+		or CFrame.Angles(math.rad(34), math.rad(20 * sign), math.rad(25 * sign))
+	pose[side .. "LowerArm"] = strike
+		and CFrame.Angles(math.rad(-8), 0, 0)
+		or CFrame.Angles(math.rad(58), 0, 0)
+	return pose
+end
+
+function Library.BuildRightSiegeFist()
+	return siegeSequence("BastionRightSiegeFist", {
+		{0, {}}, {0.34, fistPose("Right", false)}, {0.58, fistPose("Right", true)},
+		{0.78, fistPose("Right", true)}, {1.18, {}},
+	}, 1.18)
+end
+
+function Library.BuildLeftSiegeFist()
+	return siegeSequence("BastionLeftSiegeFist", {
+		{0, {}}, {0.34, fistPose("Left", false)}, {0.58, fistPose("Left", true)},
+		{0.78, fistPose("Left", true)}, {1.18, {}},
+	}, 1.18)
+end
+
+function Library.BuildSiegeFistCombo()
+	return siegeSequence("BastionSiegeFistCombo", {
+		{0, {}}, {0.28, fistPose("Right", false)}, {0.5, fistPose("Right", true)},
+		{0.7, fistPose("Left", false)}, {0.94, fistPose("Left", true)}, {1.42, {}},
+	}, 1.42)
+end
+
+function Library.BuildGroundSlam()
+	local raised = {
+		LowerTorso = CFrame.new(0, -0.28, 0.1) * CFrame.Angles(math.rad(5), 0, 0),
+		UpperTorso = CFrame.Angles(math.rad(8), 0, 0),
+		LeftUpperArm = CFrame.Angles(math.rad(142), 0, math.rad(-12)),
+		RightUpperArm = CFrame.Angles(math.rad(142), 0, math.rad(12)),
+		LeftLowerArm = CFrame.Angles(math.rad(18), 0, 0),
+		RightLowerArm = CFrame.Angles(math.rad(18), 0, 0),
+	}
+	local impact = {
+		LowerTorso = CFrame.new(0, -1.05, -0.72) * CFrame.Angles(math.rad(-24), 0, 0),
+		UpperTorso = CFrame.Angles(math.rad(-30), 0, 0),
+		Head = CFrame.Angles(math.rad(18), 0, 0),
+		LeftUpperArm = CFrame.Angles(math.rad(-88), 0, math.rad(-8)),
+		RightUpperArm = CFrame.Angles(math.rad(-88), 0, math.rad(8)),
+		LeftLowerArm = CFrame.Angles(math.rad(-18), 0, 0),
+		RightLowerArm = CFrame.Angles(math.rad(-18), 0, 0),
+		LeftUpperLeg = CFrame.Angles(math.rad(20), 0, math.rad(-4)),
+		RightUpperLeg = CFrame.Angles(math.rad(20), 0, math.rad(4)),
+		LeftLowerLeg = CFrame.Angles(math.rad(-38), 0, 0),
+		RightLowerLeg = CFrame.Angles(math.rad(-38), 0, 0),
+	}
+	local sequence = siegeSequence("BastionGroundSlam", {
+		{0, {}}, {0.48, raised}, {0.82, raised}, {1.02, impact}, {1.34, impact}, {2.05, {}},
+	}, 2.05)
+	sequence:SetAttribute("ImpactTime", 1.02)
+	return sequence
+end
+
 return Library
