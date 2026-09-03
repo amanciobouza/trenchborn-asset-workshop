@@ -73,4 +73,85 @@ function Library.BuildLand()
 	return adapt("BuildLand", {TimeScale = 1.4, ArmScale = 0.7, HeadScale = 0.72, TorsoScale = 1.05, BodySink = 0.2})
 end
 
+local BASTION_HIERARCHY = {
+	HumanoidRootPart = {
+		LowerTorso = {
+			UpperTorso = {
+				Head = {},
+				HeavyRailCannonInertiaControl = {HeavyRailCannonControl = {}},
+				LeftUpperArm = {LeftLowerArm = {LeftHand = {}}},
+				RightUpperArm = {RightLowerArm = {RightHand = {}}},
+			},
+			LeftUpperLeg = {LeftLowerLeg = {LeftFoot = {}}},
+			RightUpperLeg = {RightLowerLeg = {RightFoot = {}}},
+		},
+	},
+}
+
+local function poseTree(name, children, transforms)
+	local pose = Instance.new("Pose")
+	pose.Name = name
+	pose.Weight = 1
+	pose.EasingStyle = Enum.PoseEasingStyle.CubicV2
+	pose.EasingDirection = Enum.PoseEasingDirection.InOut
+	pose.CFrame = transforms[name] or CFrame.identity
+	for childName, grandchildren in pairs(children) do
+		poseTree(childName, grandchildren, transforms).Parent = pose
+	end
+	return pose
+end
+
+local function bastionKeyframe(sequence, time, transforms)
+	local frame = Instance.new("Keyframe")
+	frame.Name = string.format("BastionRail_%03d", math.floor(time * 100))
+	frame.Time = time
+	for rootName, children in pairs(BASTION_HIERARCHY) do
+		poseTree(rootName, children, transforms).Parent = frame
+	end
+	frame.Parent = sequence
+end
+
+function Library.BuildHeavyRailCannon()
+	local sequence = Instance.new("KeyframeSequence")
+	sequence.Name = "BastionHeavyRailCannon"
+	sequence.Loop = false
+	sequence.Priority = Enum.AnimationPriority.Action
+
+	local brace = {
+		LowerTorso = CFrame.new(0, -0.42, 0.18) * CFrame.Angles(math.rad(7), 0, 0),
+		UpperTorso = CFrame.Angles(math.rad(5), math.rad(-3), 0),
+		Head = CFrame.Angles(math.rad(-3), math.rad(8), 0),
+		LeftUpperArm = CFrame.Angles(math.rad(16), math.rad(-7), math.rad(-13)),
+		LeftLowerArm = CFrame.Angles(math.rad(25), 0, 0),
+		RightUpperArm = CFrame.Angles(math.rad(18), math.rad(5), math.rad(12)),
+		RightLowerArm = CFrame.Angles(math.rad(26), 0, 0),
+		LeftUpperLeg = CFrame.Angles(math.rad(8), 0, math.rad(-2)),
+		LeftLowerLeg = CFrame.Angles(math.rad(-22), 0, 0),
+		LeftFoot = CFrame.Angles(math.rad(7), math.rad(-4), 0),
+		RightUpperLeg = CFrame.Angles(math.rad(8), 0, math.rad(2)),
+		RightLowerLeg = CFrame.Angles(math.rad(-22), 0, 0),
+		RightFoot = CFrame.Angles(math.rad(7), math.rad(4), 0),
+		HeavyRailCannonControl = CFrame.Angles(math.rad(-5), math.rad(5), 0),
+	}
+	bastionKeyframe(sequence, 0, {})
+	bastionKeyframe(sequence, 0.38, brace)
+	bastionKeyframe(sequence, 0.78, brace)
+	bastionKeyframe(sequence, 1.48, brace)
+	local recoil = table.clone(brace)
+	recoil.LowerTorso = CFrame.new(0, -0.58, 0.55) * CFrame.Angles(math.rad(10), 0, 0)
+	recoil.UpperTorso = CFrame.Angles(math.rad(-4), math.rad(-2), math.rad(-2))
+	recoil.Head = CFrame.Angles(math.rad(5), math.rad(5), 0)
+	recoil.HeavyRailCannonControl = CFrame.new(0, 0, 2.4) * CFrame.Angles(math.rad(-3), math.rad(4), math.rad(-2))
+	bastionKeyframe(sequence, 1.58, recoil)
+	bastionKeyframe(sequence, 1.92, brace)
+	bastionKeyframe(sequence, 2.45, brace)
+	bastionKeyframe(sequence, 2.85, {})
+
+	sequence:SetAttribute("GuardianAnimation", "HeavyRailCannon")
+	sequence:SetAttribute("DurationSeconds", 2.85)
+	sequence:SetAttribute("ChargeReleaseTime", 1.55)
+	sequence:SetAttribute("SpecificationVersion", "Bastion-Rail-1.0")
+	return sequence
+end
+
 return Library
