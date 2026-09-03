@@ -768,14 +768,14 @@ function Harness.Attach(model)
 			end
 		elseif actionName == "Stagger" then
 			if applyDamage and applyDamage:IsA("BindableFunction") then
-				applyDamage:Invoke(model:GetAttribute("StaggerThreshold") or 1800, false)
+				applyDamage:Invoke(model:GetAttribute("StaggerThreshold") or 1800, isBastion and "TestStagger" or false)
 			else
 				requestSound("Stagger")
 				remote:FireClient(player, "PlayStagger", model)
 			end
 		elseif actionName == "Defeat" then
 			if applyDamage and applyDamage:IsA("BindableFunction") then
-				applyDamage:Invoke(model:GetAttribute("Health") or 999999, false)
+				applyDamage:Invoke(model:GetAttribute("Health") or 999999, isBastion and "TestForceDefeat" or false)
 			else
 				requestSound("Defeat")
 				remote:FireClient(player, "PlayDefeat", model)

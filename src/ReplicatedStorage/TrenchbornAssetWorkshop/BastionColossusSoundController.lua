@@ -88,6 +88,21 @@ function SoundController.Attach(model)
 		sound:Play()
 		Debris:AddItem(sound, math.max(3, sound.TimeLength + 1))
 	end)
+	local gameplay = model:FindFirstChild("Gameplay")
+	local damageTaken = gameplay and gameplay:FindFirstChild("DamageTaken")
+	local stateChanged = gameplay and gameplay:FindFirstChild("StateChanged")
+	if damageTaken and damageTaken:IsA("BindableEvent") then
+		damageTaken.Event:Connect(function(healthDamage)
+			if healthDamage and healthDamage > 0 then request:Fire("Damage") end
+		end)
+	end
+	if stateChanged and stateChanged:IsA("BindableEvent") then
+		stateChanged.Event:Connect(function(state)
+			if state == "Staggered" then request:Fire("Stagger")
+			elseif state == "Defeated" then request:Fire("Defeat")
+			elseif state == "Idle" then request:Fire("Reset") end
+		end)
+	end
 	model:SetAttribute("BastionSoundPassVersion", "1.0")
 	model:SetAttribute("BastionSoundSpatialized", true)
 	model:SetAttribute("BastionSoundAssetSource", "RobloxCreatorStore")

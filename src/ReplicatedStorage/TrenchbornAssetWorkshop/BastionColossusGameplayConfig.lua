@@ -1,0 +1,36 @@
+return {
+	SchemaVersion = 1,
+	TuningStatus = "Provisional",
+	Guardian = {
+		MaxHealth = 8000000,
+		ArmorReduction = 0.38,
+		StaggerThreshold = 900000,
+		StaggerDuration = 1.4,
+	},
+	HeavyRailCannon = {
+		Range = 145,
+		Damage = 180000,
+		KnockbackStuds = 38,
+		TelegraphDuration = 1.55,
+		Cooldown = 9,
+	},
+	RightSiegeFist = {Range = 24, Damage = 38000, KnockbackStuds = 18, Cooldown = 2.4},
+	LeftSiegeFist = {Range = 24, Damage = 38000, KnockbackStuds = 18, Cooldown = 2.4},
+	SiegeFistCombo = {Range = 25, DamagePerHit = 32000, HitCount = 2, KnockbackStuds = 22, Cooldown = 4.2},
+	GroundSlam = {
+		Radius = 42,
+		Damage = 95000,
+		KnockbackStuds = 32,
+		ImpactDelay = 1.02,
+		Cooldown = 11,
+	},
+	DistrictShield = {
+		ShieldPoints = 2400000,
+		ProtectionRadius = 150,
+		Duration = 8,
+		Cooldown = 28,
+		DamageReduction = 1,
+		ProtectsGuardian = true,
+		ProtectsNearbyStructures = true,
+	},
+}
