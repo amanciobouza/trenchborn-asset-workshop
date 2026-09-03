@@ -65,7 +65,13 @@ function Preview.Play(model)
 
 	task.delay(1.55, function()
 		if not model.Parent or not root.Parent then return end
-		local center = root.Position + root.CFrame.LookVector * 28 + Vector3.new(0, 18, 0)
+		local horizontalCenter = root.Position + root.CFrame.LookVector * 65
+		local raycastParams = RaycastParams.new()
+		raycastParams.FilterType = Enum.RaycastFilterType.Exclude
+		raycastParams.FilterDescendantsInstances = {model, effectsFolder()}
+		local ground = workspace:Raycast(horizontalCenter + Vector3.new(0, 80, 0), Vector3.new(0, -240, 0), raycastParams)
+		local groundY = ground and ground.Position.Y or horizontalCenter.Y - 28
+		local center = Vector3.new(horizontalCenter.X, groundY, horizontalCenter.Z)
 		local field = Instance.new("Part")
 		field.Name = "DistrictShieldField"
 		field.Shape = Enum.PartType.Ball
@@ -83,12 +89,12 @@ function Preview.Play(model)
 		Debris:AddItem(field, 4.2)
 
 		TweenService:Create(field, TweenInfo.new(0.55, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-			Size = Vector3.new(140, 76, 140), Transparency = 0.68,
+			Size = Vector3.new(300, 180, 300), Transparency = 0.72,
 		}):Play()
 		task.delay(2.75, function()
 			if field.Parent then
 				TweenService:Create(field, TweenInfo.new(0.65, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
-					Size = Vector3.new(146, 80, 146), Transparency = 1,
+					Size = Vector3.new(312, 188, 312), Transparency = 1,
 				}):Play()
 			end
 		end)
