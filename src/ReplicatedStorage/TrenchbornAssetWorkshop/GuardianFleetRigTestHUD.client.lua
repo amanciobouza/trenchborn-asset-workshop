@@ -9,6 +9,7 @@ local player = Players.LocalPlayer
 local remote = ReplicatedStorage:WaitForChild("GuardianFleetRigTestRemote")
 local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
 local animationLibrary = require(packageFolder:WaitForChild("GuardianAnimationLibrary"))
+local weaponInertia = require(packageFolder:WaitForChild("GuardianWeaponInertia"))
 local idleTrack
 local reactionTrack
 local lastAnimatedModel
@@ -49,6 +50,7 @@ local function stopIdle()
 end
 
 local function playSequence(model, builderName, previewName)
+	weaponInertia.Ensure(model)
 	stopIdle()
 	lastAnimatedModel = model
 	local animator = model and model:FindFirstChildWhichIsA("Animator", true)
