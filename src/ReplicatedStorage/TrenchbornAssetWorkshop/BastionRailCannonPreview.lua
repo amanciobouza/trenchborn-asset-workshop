@@ -47,6 +47,14 @@ function Preview.Play(model, target)
 	local orange = Color3.fromRGB(255, 151, 45)
 
 	local charge = sphere("RailCharge", muzzle.Position, 1.2, orange, 1.8)
+	charge.Anchored = false
+	charge.Massless = true
+	charge.CFrame = muzzle.CFrame
+	local chargeWeld = Instance.new("WeldConstraint")
+	chargeWeld.Name = "RailChargeMuzzleWeld"
+	chargeWeld.Part0 = muzzle
+	chargeWeld.Part1 = charge
+	chargeWeld.Parent = charge
 	charge.Transparency = 0.2
 	local light = Instance.new("PointLight")
 	light.Color = orange
