@@ -181,6 +181,7 @@ local definitions = {
 	{"DAMAGE", "DamageReact", Color3.fromRGB(184, 61, 61)},
 	{"STAGGER", "Stagger", Color3.fromRGB(153, 48, 48)},
 	{"DEFEAT", "Defeat", Color3.fromRGB(91, 43, 48)},
+	{"HEAVY RAIL", "HeavyRailCannon", Color3.fromRGB(194, 107, 31)},
 	{"TWIN ION", "TwinIonCannons", Color3.fromRGB(38, 124, 175)},
 	{"MISSILE SALVO", "ShoulderMissiles", Color3.fromRGB(181, 102, 35)},
 	{"DIRECTIONAL AEGIS", "DirectionalAegis", Color3.fromRGB(38, 164, 190)},
@@ -656,7 +657,7 @@ remote.OnClientEvent:Connect(function(message, payload)
 		if not success then warn("Guardian damage reaction failed:", err) end
 		return
 	end
-	if message == "PlayIdle" or message == "PlayAlertIdle" or message == "PlayWalk" or message == "PlayRun" or message == "PlayTurnLeft" or message == "PlayTurnRight" or message == "PlayFall" or message == "PlayLand" or message == "PlayWalkBackward" or message == "PlayShockBaton" or message == "PlayWarningPulse" or message == "PlayShoulderMissileSalvo" or message == "PlayTwinIonCannons" or message == "PlayPulseCannonFire" or message == "PlayContainmentNetLaunch" then
+	if message == "PlayIdle" or message == "PlayAlertIdle" or message == "PlayWalk" or message == "PlayRun" or message == "PlayTurnLeft" or message == "PlayTurnRight" or message == "PlayFall" or message == "PlayLand" or message == "PlayWalkBackward" or message == "PlayShockBaton" or message == "PlayWarningPulse" or message == "PlayShoulderMissileSalvo" or message == "PlayTwinIonCannons" or message == "PlayHeavyRailCannon" or message == "PlayPulseCannonFire" or message == "PlayContainmentNetLaunch" then
 		local builders = {
 			PlayIdle = {"BuildIdle", "GuardianIdlePreview"},
 			PlayAlertIdle = {"BuildAlertIdle", "GuardianAlertIdlePreview"},
@@ -671,6 +672,7 @@ remote.OnClientEvent:Connect(function(message, payload)
 			PlayWarningPulse = {"BuildWarningPulse", "WardenWarningPulsePreview"},
 			PlayShoulderMissileSalvo = {"BuildShoulderMissileSalvo", "AegisShoulderMissileSalvoPreview"},
 			PlayTwinIonCannons = {"BuildTwinIonCannons", "AegisTwinIonCannonsPreview"},
+			PlayHeavyRailCannon = {"BuildHeavyRailCannon", "BastionHeavyRailCannonPreview"},
 			PlayPulseCannonFire = {"BuildPulseCannonFire", "GuardianPulseCannonFirePreview"},
 			PlayContainmentNetLaunch = {"BuildContainmentNetLaunch", "GuardianContainmentNetLaunchPreview"},
 		}
