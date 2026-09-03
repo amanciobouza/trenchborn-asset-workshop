@@ -12,8 +12,8 @@ return {
 	AssetClass = "Guardian Apex Hunter And Battlefield-Control Platform",
 	Tier = 5,
 	City = "Megacity",
-	PipelinePhase = 3,
-	Status = "TechnicalBreakdown",
+	PipelinePhase = 5,
+	Status = "DressingReview",
 	QualityGateA = "Approved",
 	QualityGateB = "Approved",
 	QualityGateC = "Pending",
@@ -52,6 +52,22 @@ return {
 		Accent = Color3.fromRGB(194, 62, 255),
 		ChargeHot = Color3.fromRGB(239, 177, 255),
 		DarkMetal = Color3.fromRGB(24, 23, 31),
+	},
+
+	Dressing = {
+		Style = "ApexPredatorViolet",
+		GeometryChangesAllowed = false,
+		PermanentLights = 0,
+		PermanentParticleEmitters = 0,
+		EnergyChannel = "SovereignViolet",
+		DroneReferenceIds = {
+			LeftDroneInner = "L1",
+			RightDroneInner = "R1",
+			LeftDroneOuter = "L2",
+			RightDroneOuter = "R2",
+			LeftDroneLower = "L3",
+			RightDroneLower = "R3",
+		},
 	},
 
 	RequiredAssemblies = {

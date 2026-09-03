@@ -35,6 +35,7 @@ local bastionGameplay = require(packageFolder:WaitForChild("BastionColossusGamep
 local bastionSoundController = require(packageFolder:WaitForChild("BastionColossusSoundController"))
 local sovereignSpecification = require(packageFolder:WaitForChild("SovereignApexSpecification"))
 local sovereignGoldenMaster = require(packageFolder:WaitForChild("SovereignApexGoldenMaster"))
+local sovereignDressing = require(packageFolder:WaitForChild("SovereignApexDressing"))
 
 workshop:SetAttribute("CurrentAsset", specification.AssetName)
 workshop:SetAttribute("CurrentPhase", specification.PipelinePhase)
@@ -86,6 +87,7 @@ workshop:SetAttribute("QualityStatus", "Phase6_StandardAnimationReview")
 workshop:SetAttribute("GoldenMasterReviewTarget", bastionModel.Name)
 
 local sovereignModel = sovereignGoldenMaster.Build(workshop)
+sovereignDressing.Apply(sovereignModel)
 local sovereignMinimumVisibleY = math.huge
 for _, item in ipairs(sovereignModel:GetDescendants()) do
 	if item:IsA("BasePart") and item.Transparency < 1 and not item:FindFirstAncestor("Hitboxes") then
@@ -95,6 +97,6 @@ end
 local sovereignGroundCorrection = sovereignMinimumVisibleY < math.huge and -sovereignMinimumVisibleY or 0
 sovereignModel:PivotTo(sovereignModel:GetPivot() + Vector3.new(50, sovereignGroundCorrection, 85))
 workshop:SetAttribute("CurrentAsset", sovereignSpecification.AssetName)
-workshop:SetAttribute("CurrentPhase", 4)
-workshop:SetAttribute("QualityStatus", "Phase4_GeometryReview")
+workshop:SetAttribute("CurrentPhase", 5)
+workshop:SetAttribute("QualityStatus", "Phase5_DressingReview")
 workshop:SetAttribute("GoldenMasterReviewTarget", sovereignModel.Name)
