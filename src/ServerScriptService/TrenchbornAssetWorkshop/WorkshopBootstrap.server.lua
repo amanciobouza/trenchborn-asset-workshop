@@ -33,6 +33,8 @@ local bastionDressing = require(packageFolder:WaitForChild("BastionColossusDress
 local bastionGameplayConfig = require(packageFolder:WaitForChild("BastionColossusGameplayConfig"))
 local bastionGameplay = require(packageFolder:WaitForChild("BastionColossusGameplay"))
 local bastionSoundController = require(packageFolder:WaitForChild("BastionColossusSoundController"))
+local sovereignSpecification = require(packageFolder:WaitForChild("SovereignApexSpecification"))
+local sovereignGoldenMaster = require(packageFolder:WaitForChild("SovereignApexGoldenMaster"))
 
 workshop:SetAttribute("CurrentAsset", specification.AssetName)
 workshop:SetAttribute("CurrentPhase", specification.PipelinePhase)
@@ -82,3 +84,17 @@ workshop:SetAttribute("CurrentAsset", bastionSpecification.AssetName)
 workshop:SetAttribute("CurrentPhase", 6)
 workshop:SetAttribute("QualityStatus", "Phase6_StandardAnimationReview")
 workshop:SetAttribute("GoldenMasterReviewTarget", bastionModel.Name)
+
+local sovereignModel = sovereignGoldenMaster.Build(workshop)
+local sovereignMinimumVisibleY = math.huge
+for _, item in ipairs(sovereignModel:GetDescendants()) do
+	if item:IsA("BasePart") and item.Transparency < 1 and not item:FindFirstAncestor("Hitboxes") then
+		sovereignMinimumVisibleY = math.min(sovereignMinimumVisibleY, item.Position.Y - item.Size.Y * 0.5)
+	end
+end
+local sovereignGroundCorrection = sovereignMinimumVisibleY < math.huge and -sovereignMinimumVisibleY or 0
+sovereignModel:PivotTo(sovereignModel:GetPivot() + Vector3.new(50, sovereignGroundCorrection, 85))
+workshop:SetAttribute("CurrentAsset", sovereignSpecification.AssetName)
+workshop:SetAttribute("CurrentPhase", 4)
+workshop:SetAttribute("QualityStatus", "Phase4_GeometryReview")
+workshop:SetAttribute("GoldenMasterReviewTarget", sovereignModel.Name)

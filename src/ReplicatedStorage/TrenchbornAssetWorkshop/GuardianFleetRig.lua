@@ -104,6 +104,15 @@ local function bodySegment(item)
 	if leftSiegeFist then return "LeftHand" end
 	local rightSiegeFist = item:FindFirstAncestor("RightSiegeFist")
 	if rightSiegeFist then return "RightHand" end
+	local apexLance = item:FindFirstAncestor("ApexLance")
+	if apexLance then return "ApexLanceControl" end
+	for _, side in ipairs({"Left", "Right"}) do
+		for _, position in ipairs({"Inner", "Outer", "Lower"}) do
+			local droneName = side .. "Drone" .. position
+			if item:FindFirstAncestor(droneName) then return droneName .. "Control" end
+		end
+		if item:FindFirstAncestor(side .. "DroneWing") then return side .. "DroneWingRootControl" end
+	end
 	if item:FindFirstAncestor("LeftHand") then return "LeftHand" end
 	if item:FindFirstAncestor("RightHand") then return "RightHand" end
 	if name == "ForearmHardpointLeft" then return "LeftLowerArm" end
@@ -155,11 +164,32 @@ function FleetRig.Apply(model, options)
 	local cannonModel = model:FindFirstChild("PulseCannon", true)
 	local netModel = model:FindFirstChild("ContainmentNetLauncher", true)
 	local railCannonModel = model:FindFirstChild("HeavyRailCannon", true)
+	local apexLanceModel = model:FindFirstChild("ApexLance", true)
+	local droneWings = model:FindFirstChild("HunterDroneWings", true)
 	controls.RiotShieldControl = equipmentControl(model, "RiotShieldControl", shieldModel, Vector3.new(4, 6, 2))
 	controls.PulseCannonControl = equipmentControl(model, "PulseCannonControl", cannonModel, Vector3.new(4, 6, 4))
 	controls.NetLauncherControl = equipmentControl(model, "NetLauncherControl", netModel, Vector3.new(5, 5, 3))
 	controls.HeavyRailCannonInertiaControl = equipmentControl(model, "HeavyRailCannonInertiaControl", railCannonModel, Vector3.new(6, 6, 8))
 	controls.HeavyRailCannonControl = equipmentControl(model, "HeavyRailCannonControl", railCannonModel, Vector3.new(6, 6, 8))
+	controls.ApexLanceControl = equipmentControl(model, "ApexLanceControl", apexLanceModel, Vector3.new(5, 9, 5))
+	for _, side in ipairs({"Left", "Right"}) do
+		local wing = droneWings and droneWings:FindFirstChild(side .. "DroneWing")
+		controls[side .. "DroneWingRootControl"] = equipmentControl(
+			model,
+			side .. "DroneWingRootControl",
+			wing,
+			Vector3.new(4, 5, 4)
+		)
+		for _, position in ipairs({"Inner", "Outer", "Lower"}) do
+			local drone = wing and wing:FindFirstChild(side .. "Drone" .. position)
+			controls[side .. "Drone" .. position .. "Control"] = equipmentControl(
+				model,
+				side .. "Drone" .. position .. "Control",
+				drone,
+				Vector3.new(5, 4, 6)
+			)
+		end
+	end
 
 	for _, definition in ipairs(JOINTS) do
 		motor(controls[definition[2]], definition[1], controls[definition[2]], controls[definition[3]])
@@ -170,6 +200,21 @@ function FleetRig.Apply(model, options)
 	if controls.HeavyRailCannonControl then
 		motor(controls.UpperTorso, "HeavyRailCannonInertia", controls.UpperTorso, controls.HeavyRailCannonInertiaControl)
 		motor(controls.HeavyRailCannonInertiaControl, "HeavyRailCannonMount", controls.HeavyRailCannonInertiaControl, controls.HeavyRailCannonControl)
+	end
+	if controls.ApexLanceControl then
+		motor(controls.LeftLowerArm, "ApexLanceMount", controls.LeftLowerArm, controls.ApexLanceControl)
+	end
+	for _, side in ipairs({"Left", "Right"}) do
+		local wingControl = controls[side .. "DroneWingRootControl"]
+		if wingControl then
+			motor(controls.UpperTorso, side .. "DroneWingRootMount", controls.UpperTorso, wingControl)
+			for _, position in ipairs({"Inner", "Outer", "Lower"}) do
+				local droneControl = controls[side .. "Drone" .. position .. "Control"]
+				if droneControl then
+					motor(wingControl, side .. "Drone" .. position .. "Mount", wingControl, droneControl)
+				end
+			end
+		end
 	end
 
 	local assigned = 0
@@ -202,8 +247,19 @@ function FleetRig.Apply(model, options)
 	controls.HumanoidRootPart.Anchored = options.AnchorRoot ~= false
 	model.PrimaryPart = controls.HumanoidRootPart
 	model:SetAttribute("GuardianFleetRigVersion", "1.0")
-	model:SetAttribute("GuardianRigControlPartCount", 16)
-	model:SetAttribute("GuardianRigMotorCount", 15 + (controls.RiotShieldControl and 1 or 0) + (controls.PulseCannonControl and 1 or 0) + (controls.NetLauncherControl and 1 or 0) + (controls.HeavyRailCannonControl and 2 or 0))
+	local controlPartCount = 0
+	for _, control in pairs(controls) do
+		if control then controlPartCount += 1 end
+	end
+	model:SetAttribute("GuardianRigControlPartCount", controlPartCount)
+	local sovereignMotorCount = (controls.ApexLanceControl and 1 or 0)
+	for _, side in ipairs({"Left", "Right"}) do
+		if controls[side .. "DroneWingRootControl"] then sovereignMotorCount += 1 end
+		for _, position in ipairs({"Inner", "Outer", "Lower"}) do
+			if controls[side .. "Drone" .. position .. "Control"] then sovereignMotorCount += 1 end
+		end
+	end
+	model:SetAttribute("GuardianRigMotorCount", 15 + (controls.RiotShieldControl and 1 or 0) + (controls.PulseCannonControl and 1 or 0) + (controls.NetLauncherControl and 1 or 0) + (controls.HeavyRailCannonControl and 2 or 0) + sovereignMotorCount)
 	model:SetAttribute("GuardianRigAssignedGeometryCount", assigned)
 	model:SetAttribute("GuardianRigAxisForward", "-Z")
 	model:SetAttribute("GuardianRigValidated", assigned == #originals)
