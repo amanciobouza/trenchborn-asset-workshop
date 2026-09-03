@@ -197,6 +197,7 @@ function Harness.Attach(model)
 		ApexLanceCut = function() end,
 		ApexLanceBeam = function() end,
 		HunterDrones = function() end,
+		SovereignLock = function() end,
 		HeavyRailCannon = function() end,
 		RightSiegeFist = function() end,
 		LeftSiegeFist = function() end,
@@ -825,6 +826,13 @@ function Harness.Attach(model)
 			task.delay(9.4, function()
 				if model.Parent then remote:FireClient(player, "PlayIdle", model) end
 			end)
+		elseif actionName == "SovereignLock" then
+			local target = workspace:FindFirstChild("TestKaijuTarget", true)
+			remote:FireClient(player, "PlaySovereignLock", model, target)
+			sovereignDronePreview.PlayLock(model, target)
+			task.delay(9.2, function()
+				if model.Parent then remote:FireClient(player, "PlayIdle", model) end
+			end)
 		elseif actionName == "HeavyRailCannon" then
 			local target = workspace:FindFirstChild("TestKaijuTarget", true)
 			remote:FireClient(player, "PlayHeavyRailCannon", model, target)
@@ -943,6 +951,7 @@ function Harness.Attach(model)
 	model:SetAttribute("GuardianDefeatPreviewReady", true)
 	model:SetAttribute("SovereignApexLancePreviewReady", true)
 	model:SetAttribute("SovereignHunterDronePreviewReady", true)
+	model:SetAttribute("SovereignLockPreviewReady", true)
 	model:SetAttribute("WardenShockBatonPreviewReady", true)
 	model:SetAttribute("WardenWarningPulsePreviewReady", true)
 	model:SetAttribute("AegisMissileSalvoPreviewReady", true)

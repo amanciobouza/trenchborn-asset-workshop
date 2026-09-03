@@ -257,4 +257,29 @@ function Library.BuildHunterDroneCommand()
 	})
 end
 
+function Library.BuildSovereignLock()
+	local anchor = hunterStance(0)
+	anchor.LowerTorso = CFrame.new(0, -0.88, 0.08) * CFrame.Angles(math.rad(-4), 0, 0)
+	anchor.UpperTorso = CFrame.Angles(math.rad(-3), 0, 0)
+	anchor.Head = CFrame.Angles(math.rad(-6), 0, 0)
+	anchor.LeftUpperArm = CFrame.Angles(math.rad(42), math.rad(-18), math.rad(-34))
+	anchor.LeftLowerArm = CFrame.Angles(math.rad(26), 0, 0)
+	anchor.RightUpperArm = CFrame.Angles(math.rad(42), math.rad(18), math.rad(34))
+	anchor.RightLowerArm = CFrame.Angles(math.rad(26), 0, 0)
+
+	local lock = table.clone(anchor)
+	lock.LowerTorso = CFrame.new(0, -1.08, 0.18) * CFrame.Angles(math.rad(-2), 0, 0)
+	lock.UpperTorso = CFrame.Angles(math.rad(-6), 0, 0)
+	lock.Head = CFrame.Angles(math.rad(3), 0, 0)
+	lock.LeftUpperArm = CFrame.Angles(math.rad(66), math.rad(-12), math.rad(-42))
+	lock.LeftLowerArm = CFrame.Angles(math.rad(12), 0, 0)
+	lock.RightUpperArm = CFrame.Angles(math.rad(66), math.rad(12), math.rad(42))
+	lock.RightLowerArm = CFrame.Angles(math.rad(12), 0, 0)
+
+	return lanceSequence("SovereignLock", 9.2, {
+		{0, {}}, {0.48, anchor}, {1.05, lock}, {2.1, lock},
+		{6.5, lock}, {7.4, anchor}, {8.65, anchor}, {9.2, {}},
+	})
+end
+
 return Library

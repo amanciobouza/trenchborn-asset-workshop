@@ -36,6 +36,22 @@ local function targetPosition(model, target)
 	return root.Position + root.CFrame.LookVector * 92 + root.CFrame.UpVector * 22
 end
 
+local function lockEnvelope(model, target, up)
+	local aimPoint = targetPosition(model, target)
+	if target and target:IsA("BasePart") then
+		local height = math.max(32, target.Size.Y + 8)
+		local lowerCenter = target.Position - up * (target.Size.Y * 0.5) + up * 4
+		return aimPoint, lowerCenter, height
+	end
+	if target and target:IsA("Model") then
+		local boxCFrame, boxSize = target:GetBoundingBox()
+		local height = math.max(36, boxSize.Y + 8)
+		local lowerCenter = boxCFrame.Position - up * (boxSize.Y * 0.5) + up * 4
+		return aimPoint, lowerCenter, height
+	end
+	return aimPoint, aimPoint - up * 4, 36
+end
+
 local function droneModel(model, side, position)
 	local item = model:FindFirstChild(side .. "Drone" .. position, true)
 	return item and item:IsA("Model") and item or nil
@@ -125,6 +141,59 @@ end
 
 local function dronePosition(motor)
 	return motor.Part1 and motor.Part1.Position or motor.Part0.Position
+end
+
+local function energyLink(part0, part1, lifetime)
+	local attachment0 = Instance.new("Attachment")
+	attachment0.Name = "SovereignLockLinkA"
+	attachment0.Parent = part0
+	local attachment1 = Instance.new("Attachment")
+	attachment1.Name = "SovereignLockLinkB"
+	attachment1.Parent = part1
+	local beam = Instance.new("Beam")
+	beam.Name = "SovereignLockEdge"
+	beam.Attachment0 = attachment0
+	beam.Attachment1 = attachment1
+	beam.Color = ColorSequence.new(HOT, VIOLET)
+	beam.Transparency = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 0.05),
+		NumberSequenceKeypoint.new(0.55, 0.22),
+		NumberSequenceKeypoint.new(1, 0.05),
+	})
+	beam.Width0 = 1.5
+	beam.Width1 = 1.5
+	beam.LightEmission = 1
+	beam.LightInfluence = 0
+	beam.FaceCamera = true
+	beam.Parent = effectsFolder()
+	Debris:AddItem(beam, lifetime)
+	Debris:AddItem(attachment0, lifetime)
+	Debris:AddItem(attachment1, lifetime)
+	return beam
+end
+
+local function barrierPanel(point0, point1, height, lifetime)
+	local edge = point1 - point0
+	local horizontal = Vector3.new(edge.X, 0, edge.Z)
+	if horizontal.Magnitude < 1 then return nil end
+	local xAxis = horizontal.Unit
+	local yAxis = Vector3.yAxis
+	local zAxis = xAxis:Cross(yAxis)
+	local midpoint = (point0 + point1) * 0.5 + Vector3.new(0, height * 0.5, 0)
+	local panel = Instance.new("Part")
+	panel.Name = "SovereignLockBarrier"
+	panel.Size = Vector3.new(horizontal.Magnitude, height, 0.35)
+	panel.CFrame = CFrame.fromMatrix(midpoint, xAxis, yAxis, zAxis)
+	panel.Anchored = true
+	panel.CanCollide = false
+	panel.CanTouch = false
+	panel.CanQuery = false
+	panel.Material = Enum.Material.ForceField
+	panel.Color = VIOLET
+	panel.Transparency = 0.88
+	panel.Parent = effectsFolder()
+	Debris:AddItem(panel, lifetime)
+	return panel
 end
 
 function Preview.Play(model, target)
@@ -226,6 +295,130 @@ function Preview.Play(model, target)
 			drone.Motor.C0 = drone.Neutral
 			drone.Model:SetAttribute("Docked", true)
 		end
+		model:SetAttribute("SovereignDroneDeploymentActive", false)
+		model:SetAttribute("SovereignWingInertiaSuspended", false)
+		active[model] = nil
+	end)
+	return true
+end
+
+function Preview.PlayLock(model, target)
+	if not model or active[model] then return false end
+	local root = model:FindFirstChild("HumanoidRootPart") or model.PrimaryPart
+	if not root or not root:IsA("BasePart") then return false end
+
+	local drones = {}
+	for index, definition in ipairs(ORDER) do
+		local side, position = definition[1], definition[2]
+		local motor = droneMotor(model, side, position)
+		local drone = droneModel(model, side, position)
+		if not motor or not motor.Part0 or not motor.Part1 or not drone then
+			warn("Missing Sovereign Lock drone rig:", side, position)
+			return false
+		end
+		drones[index] = {Motor = motor, Model = drone, Neutral = motor.C0}
+	end
+
+	local token = {}
+	active[model] = token
+	model:SetAttribute("SovereignDroneDeploymentActive", true)
+	model:SetAttribute("SovereignWingInertiaSuspended", true)
+	model:SetAttribute("SovereignLockPreviewActive", true)
+	local right = root.CFrame.RightVector
+	local forward = root.CFrame.LookVector
+	local up = root.CFrame.UpVector
+	local targetPoint, lowerCenter, prismHeight = lockEnvelope(model, target, up)
+	local radius = 42
+	local vertices = {}
+
+	-- Every consecutive L/R pair occupies the lower and upper point of one
+	-- corner, producing six drone anchors and nine true triangular-prism edges.
+	for pair = 1, 3 do
+		local angle = math.rad((pair - 1) * 120 + 30)
+		local radial = right * math.cos(angle) * radius - forward * math.sin(angle) * radius
+		vertices[pair * 2 - 1] = lowerCenter + radial
+		vertices[pair * 2] = lowerCenter + radial + up * prismHeight
+	end
+
+	for index, drone in ipairs(drones) do
+		task.delay((index - 1) * 0.16, function()
+			if active[model] ~= token then return end
+			drone.Model:SetAttribute("Docked", false)
+			moveTo(drone.Motor, CFrame.lookAt(vertices[index], targetPoint), 1.15, Enum.EasingStyle.Quart)
+			pulse(dronePosition(drone.Motor), 1.2, 5.5, 0.48)
+		end)
+	end
+
+	local fieldObjects = {}
+	task.delay(2.1, function()
+		if active[model] ~= token then return end
+		for _, edge in ipairs({
+			{1, 3}, {3, 5}, {5, 1},
+			{2, 4}, {4, 6}, {6, 2},
+			{1, 2}, {3, 4}, {5, 6},
+		}) do
+			table.insert(fieldObjects, energyLink(
+				drones[edge[1]].Motor.Part1,
+				drones[edge[2]].Motor.Part1,
+				4.65
+			))
+		end
+		for _, edge in ipairs({{1, 3}, {3, 5}, {5, 1}}) do
+			local panel = barrierPanel(vertices[edge[1]], vertices[edge[2]], prismHeight, 4.65)
+			if panel then table.insert(fieldObjects, panel) end
+		end
+		pulse(targetPoint, 4, 28, 0.65)
+		if target then
+			local highlight = Instance.new("Highlight")
+			highlight.Name = "SovereignLockTarget"
+			highlight.Adornee = target
+			highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+			highlight.FillColor = VIOLET
+			highlight.OutlineColor = HOT
+			highlight.FillTransparency = 0.82
+			highlight.OutlineTransparency = 0.12
+			highlight.Parent = effectsFolder()
+			Debris:AddItem(highlight, 4.65)
+			table.insert(fieldObjects, highlight)
+		end
+	end)
+
+	task.delay(6.45, function()
+		if active[model] ~= token then return end
+		for _, object in ipairs(fieldObjects) do
+			if object and object.Parent then
+				if object:IsA("Beam") then
+					object.Enabled = false
+				elseif object:IsA("BasePart") then
+					TweenService:Create(object, TweenInfo.new(0.25), {Transparency = 1}):Play()
+				elseif object:IsA("Highlight") then
+					object.Enabled = false
+				end
+			end
+		end
+	end)
+
+	task.delay(6.7, function()
+		if active[model] ~= token then return end
+		for index = #drones, 1, -1 do
+			local drone = drones[index]
+			task.delay((#drones - index) * 0.13, function()
+				if active[model] ~= token then return end
+				local tween = TweenService:Create(drone.Motor, TweenInfo.new(
+					0.9, Enum.EasingStyle.Quart, Enum.EasingDirection.InOut
+				), {C0 = drone.Neutral})
+				tween:Play()
+			end)
+		end
+	end)
+
+	task.delay(8.7, function()
+		if active[model] ~= token then return end
+		for _, drone in ipairs(drones) do
+			drone.Motor.C0 = drone.Neutral
+			drone.Model:SetAttribute("Docked", true)
+		end
+		model:SetAttribute("SovereignLockPreviewActive", false)
 		model:SetAttribute("SovereignDroneDeploymentActive", false)
 		model:SetAttribute("SovereignWingInertiaSuspended", false)
 		active[model] = nil
