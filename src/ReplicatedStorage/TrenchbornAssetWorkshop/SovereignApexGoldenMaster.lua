@@ -95,7 +95,8 @@ local function rebuildFleetHead(model, armor, systems)
 	assert(head and brow and visor, "Missing Aegis fleet head geometry")
 
 	local headCf = head.CFrame
-	head.Size = specification.Scale.HeadEnvelopeStuds
+	local headEnvelope = specification.Scale.HeadEnvelopeStuds
+	head.Size = Vector3.new(headEnvelope.X, headEnvelope.Y, headEnvelope.Z)
 	brow.Size = Vector3.new(8.0, 0.65, 5.9)
 	brow.CFrame = headCf * CFrame.new(0, 2.25, 0.15) * CFrame.Angles(math.rad(-3), 0, 0)
 	visor.Size = Vector3.new(6.2, 0.62, 0.3)
