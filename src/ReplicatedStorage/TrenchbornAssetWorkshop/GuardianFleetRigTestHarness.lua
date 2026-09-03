@@ -763,24 +763,32 @@ function Harness.Attach(model)
 			if applyDamage and applyDamage:IsA("BindableFunction") then
 				applyDamage:Invoke(250, true)
 			else
+				requestSound("Damage")
 				remote:FireClient(player, "PlayDamageReact", model)
 			end
 		elseif actionName == "Stagger" then
 			if applyDamage and applyDamage:IsA("BindableFunction") then
 				applyDamage:Invoke(model:GetAttribute("StaggerThreshold") or 1800, false)
 			else
+				requestSound("Stagger")
 				remote:FireClient(player, "PlayStagger", model)
 			end
 		elseif actionName == "Defeat" then
 			if applyDamage and applyDamage:IsA("BindableFunction") then
 				applyDamage:Invoke(model:GetAttribute("Health") or 999999, false)
 			else
+				requestSound("Defeat")
 				remote:FireClient(player, "PlayDefeat", model)
 			end
 		elseif actionName == "HeavyRailCannon" then
 			local target = workspace:FindFirstChild("TestKaijuTarget", true)
 			remote:FireClient(player, "PlayHeavyRailCannon", model, target)
 			bastionRailPreview.Play(model, target)
+			requestSound("RailCharge")
+			task.delay(1.55, function()
+				requestSound("RailFire")
+				requestSound("RailBass")
+			end)
 			task.delay(2.85, function()
 				if model.Parent and model:GetAttribute("GuardianState") ~= "Defeated" then
 					remote:FireClient(player, "PlayIdle", model)
@@ -788,20 +796,42 @@ function Harness.Attach(model)
 			end)
 		elseif actionName == "RightSiegeFist" then
 			remote:FireClient(player, "PlayRightSiegeFist", model)
-			task.delay(0.58, function() bastionSiegePreview.FistImpact(model, "Right") end)
+			requestSound("SiegeWindup")
+			task.delay(0.58, function()
+				bastionSiegePreview.FistImpact(model, "Right")
+				requestSound("RightSiegeImpact")
+			end)
 		elseif actionName == "LeftSiegeFist" then
 			remote:FireClient(player, "PlayLeftSiegeFist", model)
-			task.delay(0.58, function() bastionSiegePreview.FistImpact(model, "Left") end)
+			requestSound("SiegeWindup")
+			task.delay(0.58, function()
+				bastionSiegePreview.FistImpact(model, "Left")
+				requestSound("LeftSiegeImpact")
+			end)
 		elseif actionName == "SiegeFistCombo" then
 			remote:FireClient(player, "PlaySiegeFistCombo", model)
-			task.delay(0.5, function() bastionSiegePreview.FistImpact(model, "Right") end)
-			task.delay(0.94, function() bastionSiegePreview.FistImpact(model, "Left") end)
+			requestSound("SiegeWindup")
+			task.delay(0.5, function()
+				bastionSiegePreview.FistImpact(model, "Right")
+				requestSound("RightSiegeImpact")
+			end)
+			task.delay(0.94, function()
+				bastionSiegePreview.FistImpact(model, "Left")
+				requestSound("LeftSiegeImpact")
+			end)
 		elseif actionName == "GroundSlam" then
 			remote:FireClient(player, "PlayGroundSlam", model)
-			task.delay(1.02, function() bastionSiegePreview.GroundSlam(model) end)
+			requestSound("SlamRise")
+			task.delay(1.02, function()
+				bastionSiegePreview.GroundSlam(model)
+				requestSound("GroundSlam")
+				requestSound("GroundSlamBass")
+			end)
 		elseif actionName == "DistrictShield" then
 			remote:FireClient(player, "PlayDistrictShield", model)
 			bastionDistrictShieldPreview.Play(model)
+			requestSound("ShieldCharge")
+			task.delay(1.55, function() requestSound("ShieldDeploy") end)
 			task.delay(5.8, function()
 				if model.Parent and model:GetAttribute("GuardianState") ~= "Defeated" then
 					remote:FireClient(player, "PlayIdle", model)
@@ -848,6 +878,7 @@ function Harness.Attach(model)
 			if actionName == "Neutral" and resetGameplay and resetGameplay:IsA("BindableFunction") then
 				resetGameplay:Invoke()
 			end
+			if actionName == "Neutral" then requestSound("Reset") end
 			actions[actionName]()
 		end
 		remote:FireClient(player, "Completed", actionName)

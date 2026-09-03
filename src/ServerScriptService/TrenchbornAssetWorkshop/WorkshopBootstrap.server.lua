@@ -30,6 +30,7 @@ local aegisSoundController = require(packageFolder:WaitForChild("AegisIntercepto
 local bastionSpecification = require(packageFolder:WaitForChild("BastionColossusSpecification"))
 local bastionGoldenMaster = require(packageFolder:WaitForChild("BastionColossusGoldenMaster"))
 local bastionDressing = require(packageFolder:WaitForChild("BastionColossusDressing"))
+local bastionSoundController = require(packageFolder:WaitForChild("BastionColossusSoundController"))
 
 workshop:SetAttribute("CurrentAsset", specification.AssetName)
 workshop:SetAttribute("CurrentPhase", specification.PipelinePhase)
@@ -72,6 +73,7 @@ end
 local groundCorrection = minimumVisibleY < math.huge and -minimumVisibleY or 0
 bastionModel:PivotTo(bastionModel:GetPivot() + Vector3.new(-55, groundCorrection, 85))
 fleetRig.Apply(bastionModel, {AnchorRoot = true})
+bastionSoundController.Attach(bastionModel)
 fleetRigTestHarness.Attach(bastionModel)
 workshop:SetAttribute("CurrentAsset", bastionSpecification.AssetName)
 workshop:SetAttribute("CurrentPhase", 6)
