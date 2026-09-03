@@ -4,6 +4,7 @@ local TweenService = game:GetService("TweenService")
 
 local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
 local library = require(packageFolder:WaitForChild("GuardianAnimationLibrary"))
+local weaponInertia = require(packageFolder:WaitForChild("GuardianWeaponInertia"))
 local remote = ReplicatedStorage:WaitForChild(script:GetAttribute("RemoteName"))
 
 local mainTrack
@@ -88,6 +89,7 @@ local function load(model, builderName, priorityOverride)
 end
 
 local function playMain(model, name)
+	weaponInertia.Ensure(model)
 	stopMain()
 	activeModel = model
 	if name ~= "Defeat" then
