@@ -218,17 +218,19 @@ local function addDroneWing(wings, torso, side, sign)
 	-- return toward the centre axis, so the horn silhouette is formed by the
 	-- two inner drones instead of by the entire support structure.
 	local root = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 7.0, 0.5, 4.4))
-	local spineShoulder = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 9.0, 3.5, 4.6))
-	local hub = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 11.0, 7.0, 4.9))
-	local innerKnuckle = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 9.2, 13.0, 5.0))
-	local innerCrown = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 9.2, 18.0, 5.05))
-	local outerKnuckle = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 14.0, 14.5, 5.2))
-	local lowerKnuckle = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 15.0, 10.0, 5.3))
-	-- Each inner finger first rises almost vertically and only its crown turns
-	-- inward. Together they frame the head like open bull horns, never an A.
-	local inner = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 7.8, 21.0, 5.1))
-	local outer = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 24.0, 17.5, 5.6))
-	local lower = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 28.0, 10.5, 5.9))
+	local spineShoulder = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 9.0, 3.0, 4.6))
+	local hub = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 11.0, 6.0, 4.9))
+	-- The horn first opens outward into a broad fork, rises almost vertically,
+	-- and only then hooks back toward the head.
+	local innerKnuckle = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 15.0, 10.5, 5.0))
+	local innerCrown = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 15.0, 17.0, 5.05))
+	local outerKnuckle = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 16.5, 10.5, 5.2))
+	local lowerKnuckle = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 17.0, 7.0, 5.3))
+	-- Three descending tiers form one bat wing per side: horn, middle claw and
+	-- an almost shoulder-level outer claw.
+	local inner = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 11.5, 19.5, 5.1))
+	local outer = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 23.0, 13.5, 5.6))
+	local lower = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 30.0, 7.0, 5.9))
 
 	local rootBlock = block(wing, side .. "WingRoot", Vector3.new(4.2, 6.0, 4.2), CFrame.new(root), COLORS.Chassis)
 	cylinder(wing, side .. "WingRootBearing", Vector3.new(1.3, 3.8, 3.8), CFrame.new(root) * CFrame.Angles(0, math.rad(90), 0), COLORS.DarkMetal)
@@ -237,16 +239,16 @@ local function addDroneWing(wings, torso, side, sign)
 	barBetween(wing, side .. "RaisedMainSpar", spineShoulder, hub, 1.45, COLORS.Chassis)
 	cylinder(wing, side .. "ClawHub", Vector3.new(1.35, 4.1, 4.1), CFrame.new(hub) * CFrame.Angles(0, math.rad(90), 0), COLORS.DarkMetal)
 
-	-- The inner finger uses an additional crown joint: a vertical lower run and
-	-- a short inward hook form the open bull-horn silhouette above the head.
+	-- The inner finger uses an additional crown joint: a wide opening, vertical
+	-- rise and short inward hook form the open bull-horn silhouette.
 	barBetween(wing, side .. "InnerClawBase", hub, innerKnuckle, 1.05, COLORS.DarkMetal)
 	cylinder(wing, side .. "InnerClawKnuckle", Vector3.new(0.95, 2.8, 2.8), CFrame.new(innerKnuckle) * CFrame.Angles(0, math.rad(90), 0), COLORS.Body)
 	barBetween(wing, side .. "InnerClawRise", innerKnuckle, innerCrown, 0.78, COLORS.Chassis)
 	cylinder(wing, side .. "InnerCrownJoint", Vector3.new(0.78, 2.25, 2.25), CFrame.new(innerCrown) * CFrame.Angles(0, math.rad(90), 0), COLORS.DarkMetal)
 	barBetween(wing, side .. "InnerClawTip", innerCrown, inner, 0.72, COLORS.Chassis)
 
-	-- The outer fingers remain open and unchanged at their endpoints. There are
-	-- deliberately no triangular braces or closed panels between them.
+	-- The remaining fingers descend and widen toward the shoulder line. There
+	-- are deliberately no triangular braces or closed panels between them.
 	for _, finger in ipairs({
 		{"Outer", outerKnuckle, outer},
 		{"Lower", lowerKnuckle, lower},
