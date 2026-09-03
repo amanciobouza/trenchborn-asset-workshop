@@ -171,9 +171,9 @@ end
 local function fistPose(side, strike)
 	local sign = side == "Right" and 1 or -1
 	local pose = {
-		LowerTorso = CFrame.new(0, -0.24, -0.12) * CFrame.Angles(math.rad(-5), math.rad(-8 * sign), 0),
-		UpperTorso = CFrame.Angles(math.rad(-4), math.rad(-18 * sign), math.rad(-3 * sign)),
-		Head = CFrame.Angles(0, math.rad(10 * sign), 0),
+		LowerTorso = CFrame.new(0, -0.24, -0.12) * CFrame.Angles(math.rad(-5), math.rad((strike and 7 or -8) * sign), 0),
+		UpperTorso = CFrame.Angles(math.rad(-4), math.rad((strike and 20 or -18) * sign), math.rad((strike and 2 or -3) * sign)),
+		Head = CFrame.Angles(0, math.rad((strike and -14 or 10) * sign), 0),
 		LeftUpperLeg = CFrame.Angles(math.rad(6), 0, math.rad(-2)),
 		RightUpperLeg = CFrame.Angles(math.rad(6), 0, math.rad(2)),
 	}
