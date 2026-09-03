@@ -223,14 +223,14 @@ local function addDroneWing(wings, torso, side, sign)
 	-- The horn first opens outward into a broad fork, rises almost vertically,
 	-- and only then hooks back toward the head.
 	local innerKnuckle = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 15.0, 10.5, 5.0))
-	local innerCrown = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 15.0, 17.0, 5.05))
-	local outerKnuckle = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 16.5, 10.5, 5.2))
-	local lowerKnuckle = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 17.0, 7.0, 5.3))
+	local innerCrown = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 15.0, 15.5, 5.05))
+	local outerKnuckle = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 17.5, 9.5, 5.2))
+	local lowerKnuckle = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 18.5, 6.0, 5.3))
 	-- Three descending tiers form one bat wing per side: horn, middle claw and
 	-- an almost shoulder-level outer claw.
-	local inner = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 11.5, 19.5, 5.1))
-	local outer = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 23.0, 13.5, 5.6))
-	local lower = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 30.0, 7.0, 5.9))
+	local inner = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 11.5, 17.5, 5.1))
+	local outer = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 26.0, 11.5, 5.6))
+	local lower = torso.CFrame:PointToWorldSpace(Vector3.new(sign * 34.0, 4.5, 5.9))
 
 	local rootBlock = block(wing, side .. "WingRoot", Vector3.new(4.2, 6.0, 4.2), CFrame.new(root), COLORS.Chassis)
 	cylinder(wing, side .. "WingRootBearing", Vector3.new(1.3, 3.8, 3.8), CFrame.new(root) * CFrame.Angles(0, math.rad(90), 0), COLORS.DarkMetal)

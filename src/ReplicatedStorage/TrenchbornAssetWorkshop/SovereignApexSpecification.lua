@@ -40,8 +40,8 @@ return {
 		ApexLanceEnergyBladeLengthStuds = 16,
 		DroneEnvelopeStuds = {X = 6.0, Y = 4.5, Z = 8.5},
 		DroneWingFoldedWidthStuds = 36,
-		DroneWingDeployedSpanStuds = 66,
-		DroneWingRiseStuds = 22,
+		DroneWingDeployedSpanStuds = 74,
+		DroneWingRiseStuds = 20,
 		ChestEmblemWidthStuds = 11,
 	},
 
