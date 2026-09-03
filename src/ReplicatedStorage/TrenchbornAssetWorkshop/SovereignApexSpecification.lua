@@ -15,7 +15,7 @@ return {
 	PipelinePhase = 3,
 	Status = "TechnicalBreakdown",
 	QualityGateA = "Approved",
-	QualityGateB = "Pending",
+	QualityGateB = "Approved",
 	QualityGateC = "Pending",
 
 	Role = {
