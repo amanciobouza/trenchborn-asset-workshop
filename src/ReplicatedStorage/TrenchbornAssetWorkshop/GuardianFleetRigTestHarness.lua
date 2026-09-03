@@ -5,6 +5,7 @@ local RunService = game:GetService("RunService")
 local Debris = game:GetService("Debris")
 
 local Harness = {}
+local bastionRailPreview = require(script.Parent:WaitForChild("BastionRailCannonPreview"))
 
 local function motor(model, name)
 	local item = model:FindFirstChild(name, true)
@@ -186,6 +187,7 @@ function Harness.Attach(model)
 		DamageReact = function() end,
 		Stagger = function() end,
 		Defeat = function() end,
+		HeavyRailCannon = function() end,
 		TwinIonCannons = function() end,
 		ShoulderMissiles = function() end,
 		DirectionalAegis = function() end,
@@ -768,6 +770,15 @@ function Harness.Attach(model)
 			else
 				remote:FireClient(player, "PlayDefeat", model)
 			end
+		elseif actionName == "HeavyRailCannon" then
+			remote:FireClient(player, "PlayHeavyRailCannon", model)
+			local target = workspace:FindFirstChild("TestKaijuTarget", true)
+			bastionRailPreview.Play(model, target)
+			task.delay(2.85, function()
+				if model.Parent and model:GetAttribute("GuardianState") ~= "Defeated" then
+					remote:FireClient(player, "PlayIdle", model)
+				end
+			end)
 		elseif actionName == "TwinIonCannons" then
 			invokeAbility("TwinIonCannons")
 		elseif actionName == "ShoulderMissiles" then
@@ -830,6 +841,7 @@ function Harness.Attach(model)
 	model:SetAttribute("WardenWarningPulsePreviewReady", true)
 	model:SetAttribute("AegisMissileSalvoPreviewReady", true)
 	model:SetAttribute("AegisTwinIonCannonsPreviewReady", true)
+	model:SetAttribute("BastionHeavyRailPreviewReady", true)
 	model:SetAttribute("GuardianShieldBlockPreviewReady", true)
 	model:SetAttribute("GuardianPulseCannonFirePreviewReady", true)
 	model:SetAttribute("GuardianContainmentNetLaunchPreviewReady", true)
