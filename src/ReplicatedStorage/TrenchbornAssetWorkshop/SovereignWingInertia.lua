@@ -63,6 +63,12 @@ function Inertia.Ensure(model)
 
 		deltaTime = math.clamp(deltaTime, 1 / 240, 1 / 20)
 		local current = torso.CFrame
+		-- Deployment owns the six drone motors on the server. Leaving their C0
+		-- untouched here prevents client-side inertia from snapping them to dock.
+		if model:GetAttribute("SovereignDroneDeploymentActive") == true then
+			state.Previous = current
+			return
+		end
 		local relative = state.Previous:ToObjectSpace(current)
 		local _, yaw = relative:ToOrientation()
 		local localTravel = current:VectorToObjectSpace(current.Position - state.Previous.Position)

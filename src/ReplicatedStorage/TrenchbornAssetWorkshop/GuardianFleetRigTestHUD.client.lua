@@ -247,6 +247,7 @@ local definitions = {
 	{"LANCE THRUST", "ApexLanceThrust", Color3.fromRGB(125, 48, 168)},
 	{"LANCE CUT", "ApexLanceCut", Color3.fromRGB(151, 43, 177)},
 	{"APEX BEAM", "ApexLanceBeam", Color3.fromRGB(178, 50, 198)},
+	{"HUNTER DRONES", "HunterDrones", Color3.fromRGB(111, 42, 154)},
 	{"HEAVY RAIL", "HeavyRailCannon", Color3.fromRGB(194, 107, 31)},
 	{"RIGHT FIST", "RightSiegeFist", Color3.fromRGB(173, 91, 35)},
 	{"LEFT FIST", "LeftSiegeFist", Color3.fromRGB(173, 91, 35)},
@@ -732,7 +733,7 @@ remote.OnClientEvent:Connect(function(message, payload, target)
 	end
 	if message == "PlayHeavyRailCannon" then trackRailAim(payload, target) end
 	if message == "PlayApexLanceBeam" then sovereignLancePreview.Beam(payload, target) end
-	if message == "PlayIdle" or message == "PlayAlertIdle" or message == "PlayWalk" or message == "PlayRun" or message == "PlayTurnLeft" or message == "PlayTurnRight" or message == "PlayFall" or message == "PlayLand" or message == "PlayWalkBackward" or message == "PlayShockBaton" or message == "PlayWarningPulse" or message == "PlayShoulderMissileSalvo" or message == "PlayTwinIonCannons" or message == "PlayApexLanceThrust" or message == "PlayApexLanceCut" or message == "PlayApexLanceBeam" or message == "PlayHeavyRailCannon" or message == "PlayRightSiegeFist" or message == "PlayLeftSiegeFist" or message == "PlaySiegeFistCombo" or message == "PlayGroundSlam" or message == "PlayDistrictShield" or message == "PlayPulseCannonFire" or message == "PlayContainmentNetLaunch" then
+	if message == "PlayIdle" or message == "PlayAlertIdle" or message == "PlayWalk" or message == "PlayRun" or message == "PlayTurnLeft" or message == "PlayTurnRight" or message == "PlayFall" or message == "PlayLand" or message == "PlayWalkBackward" or message == "PlayShockBaton" or message == "PlayWarningPulse" or message == "PlayShoulderMissileSalvo" or message == "PlayTwinIonCannons" or message == "PlayApexLanceThrust" or message == "PlayApexLanceCut" or message == "PlayApexLanceBeam" or message == "PlayHunterDroneCommand" or message == "PlayHeavyRailCannon" or message == "PlayRightSiegeFist" or message == "PlayLeftSiegeFist" or message == "PlaySiegeFistCombo" or message == "PlayGroundSlam" or message == "PlayDistrictShield" or message == "PlayPulseCannonFire" or message == "PlayContainmentNetLaunch" then
 		local builders = {
 			PlayIdle = {"BuildIdle", "GuardianIdlePreview"},
 			PlayAlertIdle = {"BuildAlertIdle", "GuardianAlertIdlePreview"},
@@ -750,6 +751,7 @@ remote.OnClientEvent:Connect(function(message, payload, target)
 			PlayApexLanceThrust = {"BuildApexLanceThrust", "SovereignApexLanceThrustPreview"},
 			PlayApexLanceCut = {"BuildApexLanceCut", "SovereignApexLanceCutPreview"},
 			PlayApexLanceBeam = {"BuildApexLanceBeam", "SovereignApexLanceBeamPreview"},
+			PlayHunterDroneCommand = {"BuildHunterDroneCommand", "SovereignHunterDroneCommandPreview"},
 			PlayHeavyRailCannon = {"BuildHeavyRailCannon", "BastionHeavyRailCannonPreview"},
 			PlayRightSiegeFist = {"BuildRightSiegeFist", "BastionRightSiegeFistPreview"},
 			PlayLeftSiegeFist = {"BuildLeftSiegeFist", "BastionLeftSiegeFistPreview"},

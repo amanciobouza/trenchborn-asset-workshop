@@ -235,4 +235,26 @@ function Library.BuildApexLanceBeam()
 	})
 end
 
+function Library.BuildHunterDroneCommand()
+	local command = hunterStance(0)
+	command.LowerTorso = CFrame.new(0, -0.52, -0.12) * CFrame.Angles(math.rad(-6), 0, 0)
+	command.UpperTorso = CFrame.Angles(math.rad(-5), math.rad(4), 0)
+	command.Head = CFrame.Angles(math.rad(-5), math.rad(-6), 0)
+	command.LeftUpperArm = CFrame.Angles(math.rad(18), math.rad(-8), math.rad(-16))
+	command.LeftLowerArm = CFrame.Angles(math.rad(28), 0, 0)
+	command.RightUpperArm = CFrame.Angles(math.rad(62), math.rad(-14), math.rad(34))
+	command.RightLowerArm = CFrame.Angles(math.rad(48), 0, math.rad(-8))
+
+	local release = table.clone(command)
+	release.UpperTorso = CFrame.Angles(math.rad(-7), math.rad(-8), math.rad(-2))
+	release.Head = CFrame.Angles(math.rad(-2), math.rad(10), 0)
+	release.RightUpperArm = CFrame.Angles(math.rad(78), math.rad(12), math.rad(20))
+	release.RightLowerArm = CFrame.Angles(math.rad(12), 0, 0)
+
+	return lanceSequence("SovereignHunterDroneCommand", 7.9, {
+		{0, {}}, {0.38, command}, {0.72, release}, {1.2, command},
+		{6.9, command}, {7.35, release}, {7.9, {}},
+	})
+end
+
 return Library

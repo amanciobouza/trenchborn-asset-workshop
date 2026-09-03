@@ -9,6 +9,7 @@ local bastionRailPreview = require(script.Parent:WaitForChild("BastionRailCannon
 local bastionSiegePreview = require(script.Parent:WaitForChild("BastionSiegePreview"))
 local bastionDistrictShieldPreview = require(script.Parent:WaitForChild("BastionDistrictShieldPreview"))
 local sovereignLancePreview = require(script.Parent:WaitForChild("SovereignApexLancePreview"))
+local sovereignDronePreview = require(script.Parent:WaitForChild("SovereignHunterDronePreview"))
 
 local function motor(model, name)
 	local item = model:FindFirstChild(name, true)
@@ -195,6 +196,7 @@ function Harness.Attach(model)
 		ApexLanceThrust = function() end,
 		ApexLanceCut = function() end,
 		ApexLanceBeam = function() end,
+		HunterDrones = function() end,
 		HeavyRailCannon = function() end,
 		RightSiegeFist = function() end,
 		LeftSiegeFist = function() end,
@@ -816,6 +818,13 @@ function Harness.Attach(model)
 					remote:FireClient(player, "PlayIdle", model)
 				end
 			end)
+		elseif actionName == "HunterDrones" then
+			local target = workspace:FindFirstChild("TestKaijuTarget", true)
+			remote:FireClient(player, "PlayHunterDroneCommand", model, target)
+			sovereignDronePreview.Play(model, target)
+			task.delay(7.9, function()
+				if model.Parent then remote:FireClient(player, "PlayIdle", model) end
+			end)
 		elseif actionName == "HeavyRailCannon" then
 			local target = workspace:FindFirstChild("TestKaijuTarget", true)
 			remote:FireClient(player, "PlayHeavyRailCannon", model, target)
@@ -933,6 +942,7 @@ function Harness.Attach(model)
 	model:SetAttribute("GuardianStaggerPreviewReady", true)
 	model:SetAttribute("GuardianDefeatPreviewReady", true)
 	model:SetAttribute("SovereignApexLancePreviewReady", true)
+	model:SetAttribute("SovereignHunterDronePreviewReady", true)
 	model:SetAttribute("WardenShockBatonPreviewReady", true)
 	model:SetAttribute("WardenWarningPulsePreviewReady", true)
 	model:SetAttribute("AegisMissileSalvoPreviewReady", true)
