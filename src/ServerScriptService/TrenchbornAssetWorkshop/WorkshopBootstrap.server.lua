@@ -96,6 +96,9 @@ for _, item in ipairs(sovereignModel:GetDescendants()) do
 end
 local sovereignGroundCorrection = sovereignMinimumVisibleY < math.huge and -sovereignMinimumVisibleY or 0
 sovereignModel:PivotTo(sovereignModel:GetPivot() + Vector3.new(50, sovereignGroundCorrection, 85))
+task.delay(0.75, function()
+	if sovereignModel.Parent then sovereignDressing.PreviewEnergy(sovereignModel) end
+end)
 workshop:SetAttribute("CurrentAsset", sovereignSpecification.AssetName)
 workshop:SetAttribute("CurrentPhase", 5)
 workshop:SetAttribute("QualityStatus", "Phase5_DressingReview")

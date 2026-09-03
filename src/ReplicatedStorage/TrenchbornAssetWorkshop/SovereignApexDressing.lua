@@ -1,4 +1,6 @@
 local specification = require(script.Parent:WaitForChild("SovereignApexSpecification"))
+local Debris = game:GetService("Debris")
+local Workspace = game:GetService("Workspace")
 
 local Dressing = {}
 local COLORS = specification.Palette
@@ -27,6 +29,43 @@ local DRONE_REFERENCE_IDS = {
 	LeftDroneLower = "L3",
 	RightDroneLower = "R3",
 }
+
+local DRONE_PREVIEW_ORDER = {
+	"LeftDroneInner", "RightDroneInner",
+	"LeftDroneOuter", "RightDroneOuter",
+	"LeftDroneLower", "RightDroneLower",
+}
+
+local function emitEnergyBurst(part, color, count, speed)
+	if not part or not part:IsA("BasePart") or not part.Parent then return end
+	local emitter = Instance.new("ParticleEmitter")
+	emitter.Name = "SovereignTransientEnergy"
+	emitter.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+	emitter.Rate = 0
+	emitter.Lifetime = NumberRange.new(0.35, 0.75)
+	emitter.Speed = NumberRange.new(speed * 0.65, speed)
+	emitter.Drag = 3
+	emitter.SpreadAngle = Vector2.new(32, 32)
+	emitter.Rotation = NumberRange.new(-180, 180)
+	emitter.RotSpeed = NumberRange.new(-120, 120)
+	emitter.LightEmission = 0.9
+	emitter.LightInfluence = 0
+	emitter.LockedToPart = false
+	emitter.Color = ColorSequence.new(color, COLORS.ChargeHot)
+	emitter.Size = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 0.18),
+		NumberSequenceKeypoint.new(0.35, 0.48),
+		NumberSequenceKeypoint.new(1, 0),
+	})
+	emitter.Transparency = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 0.05),
+		NumberSequenceKeypoint.new(0.7, 0.28),
+		NumberSequenceKeypoint.new(1, 1),
+	})
+	emitter.Parent = part
+	emitter:Emit(count)
+	Debris:AddItem(emitter, 1.5)
+end
 
 local function contains(name, fragments)
 	for _, fragment in ipairs(fragments) do
@@ -130,8 +169,31 @@ function Dressing.Apply(model)
 	model:SetAttribute("DressingUsesAdditionalParts", false)
 	model:SetAttribute("PermanentLights", 0)
 	model:SetAttribute("PermanentParticleEmitters", 0)
+	model:SetAttribute("TransientEnergyPreviewAvailable", true)
 	model:SetAttribute("TextLabelsScaled", true)
 	return model
+end
+
+function Dressing.PreviewEnergy(model)
+	assert(model and model:IsA("Model"), "SovereignApexDressing.PreviewEnergy expects a Model")
+	local lockCore = model:FindFirstChild("SovereignLockCore", true)
+	local lanceEmitter = model:FindFirstChild("LanceEmitterCore", true)
+	local blade = model:FindFirstChild("ApexEnergyBlade", true)
+	emitEnergyBurst(lockCore, COLORS.Accent, 18, 5)
+
+	task.delay(0.15, function()
+		emitEnergyBurst(lanceEmitter, COLORS.ChargeHot, 16, 6)
+		emitEnergyBurst(blade, COLORS.Accent, 18, 4)
+	end)
+
+	for delayIndex, droneName in ipairs(DRONE_PREVIEW_ORDER) do
+		local drone = model:FindFirstChild(droneName, true)
+		local sensor = drone and drone:FindFirstChild("SensorRecess", true)
+		task.delay(0.2 + delayIndex * 0.07, function()
+			emitEnergyBurst(sensor, COLORS.Accent, 9, 4.5)
+		end)
+	end
+	model:SetAttribute("LastEnergyPreviewTime", Workspace:GetServerTimeNow())
 end
 
 return Dressing

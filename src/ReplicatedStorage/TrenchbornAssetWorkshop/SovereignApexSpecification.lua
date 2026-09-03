@@ -59,6 +59,8 @@ return {
 		GeometryChangesAllowed = false,
 		PermanentLights = 0,
 		PermanentParticleEmitters = 0,
+		TransientParticlePreview = true,
+		TransientEmitterLifetimeSeconds = 1.5,
 		EnergyChannel = "SovereignViolet",
 		DroneReferenceIds = {
 			LeftDroneInner = "L1",
