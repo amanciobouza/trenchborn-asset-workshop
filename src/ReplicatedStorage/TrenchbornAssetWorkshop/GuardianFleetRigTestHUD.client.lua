@@ -10,6 +10,7 @@ local remote = ReplicatedStorage:WaitForChild("GuardianFleetRigTestRemote")
 local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
 local animationLibrary = require(packageFolder:WaitForChild("GuardianAnimationLibrary"))
 local bastionAnimationLibrary = require(packageFolder:WaitForChild("BastionAnimationLibrary"))
+local sovereignAnimationLibrary = require(packageFolder:WaitForChild("SovereignAnimationLibrary"))
 local weaponInertia = require(packageFolder:WaitForChild("GuardianWeaponInertia"))
 local sovereignWingInertia = require(packageFolder:WaitForChild("SovereignWingInertia"))
 local idleTrack
@@ -112,7 +113,9 @@ local function playSequence(model, builderName, previewName)
 	local isBastion = model:GetAttribute("AssetName") == "Bastion-IV Colossus"
 		or model.Name == "Bastion_IV_Colossus_GoldenMaster"
 		or model:FindFirstChild("HeavyRailCannonMount", true) ~= nil
-	local selectedLibrary = isBastion and bastionAnimationLibrary or animationLibrary
+	local isSovereign = model:GetAttribute("AssetName") == "Sovereign-V Apex"
+	local selectedLibrary = isBastion and bastionAnimationLibrary
+		or (isSovereign and sovereignAnimationLibrary or animationLibrary)
 	local builder = selectedLibrary[builderName]
 	assert(type(builder) == "function", "Animation builder not found: " .. builderName)
 	local sequence = builder()
@@ -132,7 +135,9 @@ local function playReaction(model, builderName, previewName)
 	if reactionTrack and reactionTrack.IsPlaying then reactionTrack:Stop(0.05) end
 	local animator = model and model:FindFirstChildWhichIsA("Animator", true)
 	assert(animator, "Guardian Animator not found")
-	local selectedLibrary = model:GetAttribute("AssetName") == "Bastion-IV Colossus" and bastionAnimationLibrary or animationLibrary
+	local assetName = model:GetAttribute("AssetName")
+	local selectedLibrary = assetName == "Bastion-IV Colossus" and bastionAnimationLibrary
+		or (assetName == "Sovereign-V Apex" and sovereignAnimationLibrary or animationLibrary)
 	local sequence = selectedLibrary[builderName]()
 	local temporaryId = KeyframeSequenceProvider:RegisterKeyframeSequence(sequence)
 	local animation = Instance.new("Animation")
@@ -485,8 +490,10 @@ RunService.RenderStepped:Connect(function()
 		if moving then
 			walkStartedAt = os.clock()
 			local bastionTiming = controlledModel:GetAttribute("AssetName") == "Bastion-IV Colossus"
-			locomotionStepDuration = running and (bastionTiming and 0.69 or 0.6)
-				or (backward and (bastionTiming and 1.38 or 1.1) or (bastionTiming and 1.25 or 1))
+			local sovereignTiming = controlledModel:GetAttribute("AssetName") == "Sovereign-V Apex"
+			locomotionStepDuration = running and (bastionTiming and 0.69 or (sovereignTiming and 0.48 or 0.6))
+				or (backward and (bastionTiming and 1.38 or (sovereignTiming and 0.94 or 1.1))
+					or (bastionTiming and 1.25 or (sovereignTiming and 0.82 or 1)))
 			plantedSide = nil
 			if running then
 				playSequence(controlledModel, "BuildRun", "GuardianControlledRun")

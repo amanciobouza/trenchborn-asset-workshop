@@ -64,17 +64,19 @@ function Harness.Attach(model)
 	local controllerPlayer
 	local controlDirection = Vector3.zero
 	local controlUpdatedAt = 0
-	local controlSpeed = 12
-	local runSpeed = 20
 	local isBastion = model:GetAttribute("AssetName") == "Bastion-IV Colossus"
-	local walkStepDuration = isBastion and 1.25 or 1
-	local runStepDuration = isBastion and 0.69 or 0.6
+	local isSovereign = model:GetAttribute("AssetName") == "Sovereign-V Apex"
+	local controlSpeed = isSovereign and 16 or 12
+	local runSpeed = isSovereign and 26 or 20
+	local walkStepDuration = isBastion and 1.25 or (isSovereign and 0.82 or 1)
+	local runStepDuration = isBastion and 0.69 or (isSovereign and 0.48 or 0.6)
 	local controlRunning = false
 	local controlBackward = false
-	local backwardStepDuration = isBastion and 1.38 or 1.1
+	local backwardStepDuration = isBastion and 1.38 or (isSovereign and 0.94 or 1.1)
 	local movementStartedAt = 0
 	local wasControlMoving = false
-	local maxTurnRate = math.rad(110)
+	local maxTurnRate = math.rad(isSovereign and 145 or 110)
+	local movementSpeedScale = isSovereign and 1.15 or 1
 	local soundscape = model:FindFirstChild("GuardianSoundscape")
 	local soundRequested = soundscape and soundscape:FindFirstChild("SoundRequested")
 	local lastFootstepIndex = -1
@@ -128,7 +130,7 @@ function Harness.Attach(model)
 		local facingDirection = Vector3.new(turned.LookVector.X, 0, turned.LookVector.Z).Unit
 		local travelDirection = controlBackward and -facingDirection or facingDirection
 		local speedScale = controlBackward and 0.67 or 1
-		local nextPosition = root.Position + travelDirection * stepSpeed(now) * speedScale * deltaTime
+		local nextPosition = root.Position + travelDirection * stepSpeed(now) * speedScale * movementSpeedScale * deltaTime
 		root.CFrame = CFrame.lookAt(nextPosition, nextPosition + facingDirection)
 	end)
 
