@@ -217,23 +217,23 @@ function Library.BuildGroundSlam()
 		RightLowerArm = CFrame.Angles(math.rad(18), 0, 0),
 	}
 	local impact = {
-		LowerTorso = CFrame.new(0, -3.0, -0.92) * CFrame.Angles(math.rad(-27), 0, 0),
+		LowerTorso = CFrame.new(0, -6.5, -1.15) * CFrame.Angles(math.rad(-29), 0, 0),
 		UpperTorso = CFrame.Angles(math.rad(-42), 0, 0),
 		Head = CFrame.Angles(math.rad(25), 0, 0),
 		LeftUpperArm = CFrame.Angles(math.rad(110), 0, math.rad(-10)),
 		RightUpperArm = CFrame.Angles(math.rad(110), 0, math.rad(10)),
 		LeftLowerArm = CFrame.Angles(math.rad(-12), 0, 0),
 		RightLowerArm = CFrame.Angles(math.rad(-12), 0, 0),
-		LeftUpperLeg = CFrame.Angles(math.rad(32), 0, math.rad(-5)),
-		RightUpperLeg = CFrame.Angles(math.rad(32), 0, math.rad(5)),
-		LeftLowerLeg = CFrame.Angles(math.rad(-70), 0, 0),
-		RightLowerLeg = CFrame.Angles(math.rad(-70), 0, 0),
-		LeftFoot = CFrame.Angles(math.rad(20), 0, 0),
-		RightFoot = CFrame.Angles(math.rad(20), 0, 0),
+		LeftUpperLeg = CFrame.Angles(math.rad(42), 0, math.rad(-6)),
+		RightUpperLeg = CFrame.Angles(math.rad(42), 0, math.rad(6)),
+		LeftLowerLeg = CFrame.Angles(math.rad(-88), 0, 0),
+		RightLowerLeg = CFrame.Angles(math.rad(-88), 0, 0),
+		LeftFoot = CFrame.Angles(math.rad(28), 0, 0),
+		RightFoot = CFrame.Angles(math.rad(28), 0, 0),
 	}
 	local sequence = siegeSequence("BastionGroundSlam", {
-		{0, {}}, {0.48, raised}, {0.82, raised}, {1.02, impact}, {1.34, impact}, {2.05, {}},
-	}, 2.05)
+		{0, {}}, {0.48, raised}, {0.82, raised}, {1.02, impact}, {1.5, impact}, {2.28, {}},
+	}, 2.28)
 	sequence:SetAttribute("ImpactTime", 1.02)
 	return sequence
 end
