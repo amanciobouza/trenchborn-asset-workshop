@@ -771,8 +771,8 @@ function Harness.Attach(model)
 				remote:FireClient(player, "PlayDefeat", model)
 			end
 		elseif actionName == "HeavyRailCannon" then
-			remote:FireClient(player, "PlayHeavyRailCannon", model)
 			local target = workspace:FindFirstChild("TestKaijuTarget", true)
+			remote:FireClient(player, "PlayHeavyRailCannon", model, target)
 			bastionRailPreview.Play(model, target)
 			task.delay(2.85, function()
 				if model.Parent and model:GetAttribute("GuardianState") ~= "Defeated" then
