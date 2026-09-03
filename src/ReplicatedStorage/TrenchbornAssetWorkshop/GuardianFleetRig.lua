@@ -95,7 +95,7 @@ local function bodySegment(item)
 	local directionalAegis = item:FindFirstAncestor("DirectionalAegis")
 	if directionalAegis then return "UpperTorso" end
 	local railCannon = item:FindFirstAncestor("HeavyRailCannon")
-	if railCannon then return "UpperTorso" end
+	if railCannon then return "HeavyRailCannonControl" end
 	local shieldTower = item:FindFirstAncestor("DistrictShieldTower")
 	if shieldTower then return "UpperTorso" end
 	local districtProjector = item:FindFirstAncestor("DistrictShieldProjectors")
@@ -154,9 +154,11 @@ function FleetRig.Apply(model, options)
 	local shieldModel = model:FindFirstChild("RiotShield", true)
 	local cannonModel = model:FindFirstChild("PulseCannon", true)
 	local netModel = model:FindFirstChild("ContainmentNetLauncher", true)
+	local railCannonModel = model:FindFirstChild("HeavyRailCannon", true)
 	controls.RiotShieldControl = equipmentControl(model, "RiotShieldControl", shieldModel, Vector3.new(4, 6, 2))
 	controls.PulseCannonControl = equipmentControl(model, "PulseCannonControl", cannonModel, Vector3.new(4, 6, 4))
 	controls.NetLauncherControl = equipmentControl(model, "NetLauncherControl", netModel, Vector3.new(5, 5, 3))
+	controls.HeavyRailCannonControl = equipmentControl(model, "HeavyRailCannonControl", railCannonModel, Vector3.new(6, 6, 8))
 
 	for _, definition in ipairs(JOINTS) do
 		motor(controls[definition[2]], definition[1], controls[definition[2]], controls[definition[3]])
@@ -164,6 +166,7 @@ function FleetRig.Apply(model, options)
 	if controls.RiotShieldControl then motor(controls.LeftLowerArm, "LeftShieldMount", controls.LeftLowerArm, controls.RiotShieldControl) end
 	if controls.PulseCannonControl then motor(controls.RightLowerArm, "RightCannonMount", controls.RightLowerArm, controls.PulseCannonControl) end
 	if controls.NetLauncherControl then motor(controls.UpperTorso, "NetLauncherMount", controls.UpperTorso, controls.NetLauncherControl) end
+	if controls.HeavyRailCannonControl then motor(controls.UpperTorso, "HeavyRailCannonMount", controls.UpperTorso, controls.HeavyRailCannonControl) end
 
 	local assigned = 0
 	for _, item in ipairs(originals) do
@@ -196,7 +199,7 @@ function FleetRig.Apply(model, options)
 	model.PrimaryPart = controls.HumanoidRootPart
 	model:SetAttribute("GuardianFleetRigVersion", "1.0")
 	model:SetAttribute("GuardianRigControlPartCount", 16)
-	model:SetAttribute("GuardianRigMotorCount", 15 + (controls.RiotShieldControl and 1 or 0) + (controls.PulseCannonControl and 1 or 0) + (controls.NetLauncherControl and 1 or 0))
+	model:SetAttribute("GuardianRigMotorCount", 15 + (controls.RiotShieldControl and 1 or 0) + (controls.PulseCannonControl and 1 or 0) + (controls.NetLauncherControl and 1 or 0) + (controls.HeavyRailCannonControl and 1 or 0))
 	model:SetAttribute("GuardianRigAssignedGeometryCount", assigned)
 	model:SetAttribute("GuardianRigAxisForward", "-Z")
 	model:SetAttribute("GuardianRigValidated", assigned == #originals)
