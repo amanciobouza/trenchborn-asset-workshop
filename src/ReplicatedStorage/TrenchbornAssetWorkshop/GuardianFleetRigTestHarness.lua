@@ -63,11 +63,12 @@ function Harness.Attach(model)
 	local controlUpdatedAt = 0
 	local controlSpeed = 12
 	local runSpeed = 20
-	local walkStepDuration = 1
-	local runStepDuration = 0.6
+	local isBastion = model:GetAttribute("AssetName") == "Bastion-IV Colossus"
+	local walkStepDuration = isBastion and 1.25 or 1
+	local runStepDuration = isBastion and 0.69 or 0.6
 	local controlRunning = false
 	local controlBackward = false
-	local backwardStepDuration = 1.1
+	local backwardStepDuration = isBastion and 1.38 or 1.1
 	local movementStartedAt = 0
 	local wasControlMoving = false
 	local maxTurnRate = math.rad(110)
