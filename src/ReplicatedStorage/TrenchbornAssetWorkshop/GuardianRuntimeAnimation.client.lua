@@ -79,7 +79,10 @@ end
 local function load(model, builderName, priorityOverride)
 	local animator = model:FindFirstChildWhichIsA("Animator", true)
 	if not animator then return nil end
-	local selectedLibrary = model:GetAttribute("AssetName") == "Bastion-IV Colossus" and bastionLibrary or library
+	local isBastion = model:GetAttribute("AssetName") == "Bastion-IV Colossus"
+		or model.Name == "Bastion_IV_Colossus_GoldenMaster"
+		or model:FindFirstChild("HeavyRailCannonMount", true) ~= nil
+	local selectedLibrary = isBastion and bastionLibrary or library
 	local sequence = selectedLibrary[builderName]()
 	local temporaryId = KeyframeSequenceProvider:RegisterKeyframeSequence(sequence)
 	local animation = Instance.new("Animation")
