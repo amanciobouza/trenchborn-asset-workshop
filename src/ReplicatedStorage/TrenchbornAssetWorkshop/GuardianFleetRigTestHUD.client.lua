@@ -33,6 +33,57 @@ local defeated = false
 local defeatedVisualState = {}
 local defeatPowerCycle = 0
 local restoreGuardianPower
+local railAimNeutral = setmetatable({}, {__mode = "k"})
+local railAimGeneration = 0
+
+local function railTargetPosition(target)
+	if typeof(target) ~= "Instance" then return nil end
+	if target:IsA("BasePart") then return target.Position end
+	if target:IsA("Model") then
+		for _, name in ipairs({"UpperTorso", "Torso", "HumanoidRootPart"}) do
+			local part = target:FindFirstChild(name, true)
+			if part and part:IsA("BasePart") then return part.Position end
+		end
+		local boxCFrame, boxSize = target:GetBoundingBox()
+		return boxCFrame.Position + Vector3.new(0, boxSize.Y * 0.05, 0)
+	end
+	return nil
+end
+
+local function trackRailAim(model, target)
+	local joint = model:FindFirstChild("HeavyRailCannonMount", true)
+	local muzzle = model:FindFirstChild("RailMuzzleCore", true)
+	if not joint or not joint:IsA("Motor6D") or not muzzle or not joint.Part0 then return end
+	if not railAimNeutral[joint] then railAimNeutral[joint] = joint.C0 end
+	local neutral = railAimNeutral[joint]
+	railAimGeneration += 1
+	local token = railAimGeneration
+	local started = os.clock()
+	local connection
+	connection = RunService.RenderStepped:Connect(function(deltaTime)
+		if token ~= railAimGeneration or not model.Parent or not joint.Parent or os.clock() - started >= 1.55 then
+			connection:Disconnect()
+			task.delay(1.05, function()
+				if token == railAimGeneration and joint.Parent then
+					TweenService:Create(joint, TweenInfo.new(0.28, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {C0 = neutral}):Play()
+				end
+			end)
+			return
+		end
+		local aimPoint = railTargetPosition(target)
+		if not aimPoint then return end
+		local direction = aimPoint - muzzle.Position
+		if direction.Magnitude < 1 then return end
+		local localDirection = joint.Part0.CFrame:VectorToObjectSpace(direction.Unit)
+		local pitch = math.asin(math.clamp(localDirection.Y, -1, 1))
+		local yaw = math.atan2(-localDirection.X, -localDirection.Z)
+		pitch = math.clamp(pitch, math.rad(-28), math.rad(32))
+		yaw = math.clamp(yaw, math.rad(-48), math.rad(48))
+		local desired = neutral * CFrame.Angles(pitch, yaw, 0)
+		local alpha = 1 - math.exp(-deltaTime / 0.12)
+		joint.C0 = joint.C0:Lerp(desired, alpha)
+	end)
+end
 
 local function stopIdle()
 	playbackGeneration += 1
@@ -564,7 +615,7 @@ local function flashDamage(model)
 	end)
 end
 
-remote.OnClientEvent:Connect(function(message, payload)
+remote.OnClientEvent:Connect(function(message, payload, target)
 	if message == "ControlEnabled" then
 		setControl(true, payload)
 		return
@@ -661,6 +712,7 @@ remote.OnClientEvent:Connect(function(message, payload)
 		if not success then warn("Guardian damage reaction failed:", err) end
 		return
 	end
+	if message == "PlayHeavyRailCannon" then trackRailAim(payload, target) end
 	if message == "PlayIdle" or message == "PlayAlertIdle" or message == "PlayWalk" or message == "PlayRun" or message == "PlayTurnLeft" or message == "PlayTurnRight" or message == "PlayFall" or message == "PlayLand" or message == "PlayWalkBackward" or message == "PlayShockBaton" or message == "PlayWarningPulse" or message == "PlayShoulderMissileSalvo" or message == "PlayTwinIonCannons" or message == "PlayHeavyRailCannon" or message == "PlayPulseCannonFire" or message == "PlayContainmentNetLaunch" then
 		local builders = {
 			PlayIdle = {"BuildIdle", "GuardianIdlePreview"},
