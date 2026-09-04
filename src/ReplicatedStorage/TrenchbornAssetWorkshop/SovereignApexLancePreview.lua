@@ -85,9 +85,16 @@ end
 local function impactPulse(model, delaySeconds, size)
 	task.delay(delaySeconds, function()
 		if not model.Parent then return end
-		local _, tip = bladeAndTip(model)
-		if not tip then return end
+		local blade, tip = bladeAndTip(model)
+		if not blade or not tip then return end
 		local pulse = sphere("ApexLanceImpact", tip, 2.5, HOT, 0.42)
+		pulse.Anchored = false
+		pulse.Massless = true
+		pulse.CFrame = CFrame.new(tip)
+		local weld = Instance.new("WeldConstraint")
+		weld.Part0 = blade
+		weld.Part1 = pulse
+		weld.Parent = pulse
 		pulse.Material = Enum.Material.ForceField
 		pulse.Transparency = 0.12
 		TweenService:Create(pulse, TweenInfo.new(0.36, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
