@@ -40,6 +40,8 @@ local sovereignGameplayConfig = require(packageFolder:WaitForChild("SovereignApe
 local sovereignGameplay = require(packageFolder:WaitForChild("SovereignApexGameplay"))
 local sovereignSoundController = require(packageFolder:WaitForChild("SovereignApexSoundController"))
 local sovereignRuntimeController = require(packageFolder:WaitForChild("SovereignApexRuntimeController"))
+local kaijuAwakenedSpecification = require(packageFolder:WaitForChild("KaijuAwakenedSpecification"))
+local kaijuAwakenedGoldenMaster = require(packageFolder:WaitForChild("KaijuAwakenedGoldenMaster"))
 
 workshop:SetAttribute("CurrentAsset", specification.AssetName)
 workshop:SetAttribute("CurrentPhase", specification.PipelinePhase)
@@ -113,3 +115,12 @@ workshop:SetAttribute("CurrentPhase", 6)
 workshop:SetAttribute("QualityStatus", "Phase6_StandardAnimationReview")
 workshop:SetAttribute("GoldenMasterReviewTarget", sovereignModel.Name)
 workshop:SetAttribute("AnimationTestTarget", sovereignSpecification.AssetName)
+
+
+local kaijuAwakenedModel = kaijuAwakenedGoldenMaster.Build(workshop, {
+	GroundCFrame = CFrame.new(0, 0, 145),
+})
+workshop:SetAttribute("CurrentAsset", kaijuAwakenedSpecification.AssetName)
+workshop:SetAttribute("CurrentPhase", kaijuAwakenedSpecification.PipelinePhase)
+workshop:SetAttribute("QualityStatus", "Phase4_GeometryReview")
+workshop:SetAttribute("GoldenMasterReviewTarget", kaijuAwakenedModel.Name)
