@@ -807,6 +807,13 @@ function Harness.Attach(model)
 			model:SetAttribute("SovereignWingInertiaSuspended", true)
 			remote:FireClient(player, "PlayApexLanceThrust", model)
 			sovereignLancePreview.Thrust(model)
+			requestSound("LanceWindup")
+			task.delay(0.48, function()
+				if sovereignCanReturnToIdle() then requestSound("LanceThrust") end
+			end)
+			task.delay(0.62, function()
+				if sovereignCanReturnToIdle() then requestSound("LanceImpact") end
+			end)
 			task.delay(1.28, function()
 				if sovereignCanReturnToIdle() then
 					model:SetAttribute("SovereignWingInertiaSuspended", false)
@@ -817,6 +824,13 @@ function Harness.Attach(model)
 			model:SetAttribute("SovereignWingInertiaSuspended", true)
 			remote:FireClient(player, "PlayApexLanceCut", model)
 			sovereignLancePreview.Cut(model)
+			requestSound("LanceWindup", 0.92)
+			task.delay(0.44, function()
+				if sovereignCanReturnToIdle() then requestSound("LanceCut") end
+			end)
+			task.delay(0.68, function()
+				if sovereignCanReturnToIdle() then requestSound("LanceImpact", 0.9) end
+			end)
 			task.delay(1.42, function()
 				if sovereignCanReturnToIdle() then
 					model:SetAttribute("SovereignWingInertiaSuspended", false)
@@ -827,6 +841,13 @@ function Harness.Attach(model)
 			local target = workspace:FindFirstChild("TestKaijuTarget", true)
 			model:SetAttribute("SovereignWingInertiaSuspended", true)
 			remote:FireClient(player, "PlayApexLanceBeam", model, target)
+			requestSound("BeamCharge")
+			task.delay(1.18, function()
+				if sovereignCanReturnToIdle() then
+					requestSound("BeamFire")
+					requestSound("BeamBass")
+				end
+			end)
 			task.delay(2.25, function()
 				if sovereignCanReturnToIdle() then
 					model:SetAttribute("SovereignWingInertiaSuspended", false)
@@ -837,6 +858,20 @@ function Harness.Attach(model)
 			local target = workspace:FindFirstChild("TestKaijuTarget", true)
 			remote:FireClient(player, "PlayHunterDroneCommand", model, target)
 			sovereignDronePreview.Play(model, target)
+			requestSound("DroneCommand")
+			for pair = 0, 2 do
+				task.delay(pair * 0.32, function()
+					if sovereignCanReturnToIdle() then requestSound("DroneLaunch", 0.96 + pair * 0.04) end
+				end)
+			end
+			task.delay(2.78, function()
+				if sovereignCanReturnToIdle() then requestSound("DroneMark") end
+			end)
+			for wave = 0, 2 do
+				task.delay(3.85 + wave * 1.12, function()
+					if sovereignCanReturnToIdle() then requestSound("DroneStrike", 0.98 + wave * 0.035) end
+				end)
+			end
 			task.delay(9.4, function()
 				if sovereignCanReturnToIdle() then remote:FireClient(player, "PlayIdle", model) end
 			end)
@@ -844,6 +879,16 @@ function Harness.Attach(model)
 			local target = workspace:FindFirstChild("TestKaijuTarget", true)
 			remote:FireClient(player, "PlaySovereignLock", model, target)
 			sovereignDronePreview.PlayLock(model, target)
+			requestSound("LockCharge")
+			for pair = 0, 2 do
+				task.delay(pair * 0.32, function()
+					if sovereignCanReturnToIdle() then requestSound("DroneLaunch", 0.82 + pair * 0.035, 0.86) end
+				end)
+			end
+			task.delay(2.1, function()
+				if sovereignCanReturnToIdle() then requestSound("LockEngage") end
+			end)
+			task.delay(6.45, function() requestSound("LockRelease") end)
 			task.delay(9.2, function()
 				if sovereignCanReturnToIdle() then remote:FireClient(player, "PlayIdle", model) end
 			end)
