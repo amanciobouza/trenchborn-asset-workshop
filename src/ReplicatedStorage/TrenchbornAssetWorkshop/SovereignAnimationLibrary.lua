@@ -126,7 +126,7 @@ end
 
 function Library.BuildDefeat()
 	local sequence = adapt("BuildDefeat", {
-		TimeScale = 0.96, LanceArmScale = 0.52, FreeArmScale = 0.78,
+		TimeScale = 1.4, LanceArmScale = 0.52, FreeArmScale = 0.78,
 		LegScale = 1, HeadScale = 0.9, TorsoScale = 1.02,
 	})
 	local finalKeyframe

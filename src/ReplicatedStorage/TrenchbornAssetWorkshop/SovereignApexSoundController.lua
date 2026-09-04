@@ -1,4 +1,5 @@
 local Debris = game:GetService("Debris")
+local TweenService = game:GetService("TweenService")
 
 local SoundController = {}
 
@@ -21,17 +22,17 @@ local DEFINITIONS = {
 	LanceWindup = {asset = "Servo", volume = 0.4, speed = 1.14, min = 12, max = 115, emitter = "LanceEmitterCore"},
 	LanceThrust = {asset = "Servo", volume = 0.66, speed = 1.42, min = 16, max = 145, emitter = "LanceEmitterCore"},
 	LanceCut = {asset = "Servo", volume = 0.72, speed = 1.08, min = 18, max = 155, emitter = "ApexEnergyBlade"},
+	LanceWhoosh = {asset = "IonPulse", volume = 0.34, speed = 1.28, min = 18, max = 165, emitter = "ApexEnergyBlade"},
 	LanceImpact = {asset = "ElectricArc", volume = 0.54, speed = 1.16, min = 14, max = 135, emitter = "ApexEnergyBlade"},
-	BeamCharge = {asset = "ElectricArc", volume = 0.48, speed = 0.92, min = 16, max = 145, emitter = "LanceEmitterCore"},
+	BeamCharge = {asset = "IdleHum", volume = 0.16, speed = 0.72, looped = true, min = 16, max = 155, emitter = "LanceEmitterCore"},
 	BeamFire = {asset = "IonPulse", volume = 1, speed = 0.88, min = 26, max = 230, emitter = "ApexEnergyBlade"},
 	BeamBass = {asset = "MetalImpact", volume = 0.5, speed = 0.64, min = 22, max = 195, emitter = "LeftLowerArm"},
-	DroneCommand = {asset = "TargetLock", volume = 0.38, speed = 0.82, min = 12, max = 120, emitter = "SovereignLockCore"},
 	DroneLaunch = {asset = "Servo", volume = 0.48, speed = 1.26, min = 12, max = 125, emitter = "UpperTorso"},
-	DroneMark = {asset = "TargetLock", volume = 0.58, speed = 1.12, min = 18, max = 165, emitter = "SovereignLockCore"},
+	DroneChirp = {asset = "TargetLock", volume = 0.16, speed = 1.36, min = 10, max = 105, emitter = "SovereignLockCore"},
 	DroneStrike = {asset = "IonPulse", volume = 0.58, speed = 1.18, min = 18, max = 175, emitter = "UpperTorso"},
-	LockCharge = {asset = "ElectricArc", volume = 0.5, speed = 0.74, min = 18, max = 165, emitter = "SovereignLockCore"},
-	LockEngage = {asset = "TargetLock", volume = 0.72, speed = 0.68, min = 24, max = 210, emitter = "SovereignLockCore"},
-	LockHum = {asset = "IdleHum", volume = 0.22, speed = 1.32, looped = true, min = 20, max = 185, emitter = "SovereignLockCore"},
+	LockCharge = {asset = "Servo", volume = 0.44, speed = 0.62, min = 18, max = 165, emitter = "SovereignLockCore"},
+	LockEngage = {asset = "MetalImpact", volume = 0.48, speed = 0.48, min = 24, max = 210, emitter = "SovereignLockCore"},
+	LockHum = {asset = "IdleHum", volume = 0.34, speed = 0.56, looped = true, min = 22, max = 210, emitter = "SovereignLockCore"},
 	Damage = {asset = "MetalImpact", volume = 0.56, speed = 1.02, min = 14, max = 125, emitter = "UpperTorso"},
 	Stagger = {asset = "Servo", volume = 0.7, speed = 0.78, min = 16, max = 145, emitter = "UpperTorso"},
 	Defeat = {asset = "SystemFailure", volume = 0.72, speed = 0.7, min = 18, max = 165, emitter = "UpperTorso"},
@@ -73,6 +74,7 @@ function SoundController.Attach(model)
 	for name, definition in pairs(DEFINITIONS) do templates[name] = template(model, name, definition) end
 	local idle = templates.IdleHum
 	local lockHum = templates.LockHum
+	local beamCharge = templates.BeamCharge
 	idle:Play()
 
 	local function play(name, speedScale, volumeScale)
@@ -96,10 +98,12 @@ function SoundController.Attach(model)
 		if name == "Defeat" then
 			idle:Stop()
 			lockHum:Stop()
+			beamCharge:Stop()
 			play("Defeat", speedScale, volumeScale)
 			return
 		elseif name == "Reset" then
 			lockHum:Stop()
+			beamCharge:Stop()
 			if not idle.IsPlaying then idle:Play() end
 			return
 		elseif name == "LockRelease" then
@@ -109,11 +113,25 @@ function SoundController.Attach(model)
 			play("LockEngage", speedScale, volumeScale)
 			play("LockHum")
 			return
+		elseif name == "BeamCharge" then
+			beamCharge:Stop()
+			beamCharge.Volume = 0.14
+			beamCharge.PlaybackSpeed = 0.7
+			beamCharge:Play()
+			TweenService:Create(beamCharge, TweenInfo.new(1.12, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+				Volume = 0.54,
+				PlaybackSpeed = 1.58,
+			}):Play()
+			return
+		elseif name == "BeamFire" then
+			beamCharge:Stop()
+			play("BeamFire", speedScale, volumeScale)
+			return
 		end
 		play(name, speedScale, volumeScale)
 	end)
 
-	model:SetAttribute("SovereignSoundPassVersion", "1.0")
+	model:SetAttribute("SovereignSoundPassVersion", "1.1")
 	model:SetAttribute("SovereignSoundSpatialized", true)
 	model:SetAttribute("SovereignSoundAssetSource", "RobloxCreatorStore")
 	return request

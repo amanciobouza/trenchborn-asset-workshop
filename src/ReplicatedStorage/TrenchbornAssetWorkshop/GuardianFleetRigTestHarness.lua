@@ -809,7 +809,10 @@ function Harness.Attach(model)
 			sovereignLancePreview.Thrust(model)
 			requestSound("LanceWindup")
 			task.delay(0.48, function()
-				if sovereignCanReturnToIdle() then requestSound("LanceThrust") end
+				if sovereignCanReturnToIdle() then
+					requestSound("LanceThrust")
+					requestSound("LanceWhoosh", 1.18)
+				end
 			end)
 			task.delay(0.62, function()
 				if sovereignCanReturnToIdle() then requestSound("LanceImpact") end
@@ -826,7 +829,10 @@ function Harness.Attach(model)
 			sovereignLancePreview.Cut(model)
 			requestSound("LanceWindup", 0.92)
 			task.delay(0.44, function()
-				if sovereignCanReturnToIdle() then requestSound("LanceCut") end
+				if sovereignCanReturnToIdle() then
+					requestSound("LanceCut")
+					requestSound("LanceWhoosh", 0.78, 1.18)
+				end
 			end)
 			task.delay(0.68, function()
 				if sovereignCanReturnToIdle() then requestSound("LanceImpact", 0.9) end
@@ -858,15 +864,23 @@ function Harness.Attach(model)
 			local target = workspace:FindFirstChild("TestKaijuTarget", true)
 			remote:FireClient(player, "PlayHunterDroneCommand", model, target)
 			sovereignDronePreview.Play(model, target)
-			requestSound("DroneCommand")
 			for pair = 0, 2 do
 				task.delay(pair * 0.32, function()
 					if sovereignCanReturnToIdle() then requestSound("DroneLaunch", 0.96 + pair * 0.04) end
 				end)
 			end
-			task.delay(2.78, function()
-				if sovereignCanReturnToIdle() then requestSound("DroneMark") end
-			end)
+			for chirp = 0, 5 do
+				task.delay(1.6 + chirp * 0.14, function()
+					if sovereignCanReturnToIdle() then
+						requestSound("DroneChirp", 0.88 + (chirp % 3) * 0.12, 0.72)
+					end
+				end)
+			end
+			for confirm = 0, 2 do
+				task.delay(2.55 + confirm * 0.11, function()
+					if sovereignCanReturnToIdle() then requestSound("DroneChirp", 1.08 + confirm * 0.14) end
+				end)
+			end
 			for wave = 0, 2 do
 				task.delay(3.85 + wave * 1.12, function()
 					if sovereignCanReturnToIdle() then requestSound("DroneStrike", 0.98 + wave * 0.035) end

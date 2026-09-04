@@ -675,7 +675,8 @@ remote.OnClientEvent:Connect(function(message, payload, target)
 					startDefeatPowerFlicker()
 				end
 			end)
-			task.delay(1.3, function()
+			local defeatHoldDelay = payload:GetAttribute("AssetName") == "Sovereign-V Apex" and 2.05 or 1.3
+			task.delay(defeatHoldDelay, function()
 				if defeated and generation == playbackGeneration and idleTrack == defeatTrack and defeatTrack.IsPlaying then
 					defeatTrack:AdjustSpeed(0)
 					status.Text = "DEFEATED — NEUTRAL TO RESET"
