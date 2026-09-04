@@ -39,7 +39,7 @@ local DEFINITIONS = {
 	LockCharge = {asset = "Servo", volume = 0.44, speed = 0.62, min = 18, max = 165, emitter = "SovereignLockCore"},
 	LockEngage = {asset = "MetalImpact", volume = 0.48, speed = 0.48, min = 24, max = 210, emitter = "SovereignLockCore"},
 	LockBeam = {asset = "SovereignLockBeam", volume = 0.82, speed = 0.94, min = 24, max = 225, emitter = "SovereignLockCore"},
-	LockHum = {asset = "IdleHum", volume = 0.34, speed = 0.56, looped = true, min = 22, max = 210, emitter = "SovereignLockCore"},
+	LockHum = {asset = "SovereignLockBeam", volume = 0.3, speed = 0.58, looped = true, min = 24, max = 225, emitter = "SovereignLockCore"},
 	Damage = {asset = "MetalImpact", volume = 0.56, speed = 1.02, min = 14, max = 125, emitter = "UpperTorso"},
 	Stagger = {asset = "Servo", volume = 0.7, speed = 0.78, min = 16, max = 145, emitter = "UpperTorso"},
 	Defeat = {asset = "SystemFailure", volume = 0.72, speed = 0.7, min = 18, max = 165, emitter = "UpperTorso"},
@@ -150,7 +150,9 @@ function SoundController.Attach(model)
 			if not idle.IsPlaying then idle:Play() end
 			return
 		elseif name == "LockRelease" then
-			lockHum:Stop()
+			local fade = TweenService:Create(lockHum, TweenInfo.new(0.28), {Volume = 0})
+			fade:Play()
+			fade.Completed:Once(function() lockHum:Stop() end)
 			return
 		elseif name == "LanceHumStart" then
 			lanceHum:Stop()
@@ -176,7 +178,13 @@ function SoundController.Attach(model)
 		elseif name == "LockEngage" then
 			play("LockEngage", speedScale, volumeScale)
 			play("LockBeam")
-			play("LockHum")
+			lockHum:Stop()
+			lockHum.Volume = 0.12
+			lockHum.PlaybackSpeed = 0.58
+			lockHum:Play()
+			TweenService:Create(lockHum, TweenInfo.new(0.38, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+				Volume = 0.3,
+			}):Play()
 			return
 		elseif name == "BeamCharge" then
 			beamCharge:Stop()
@@ -196,7 +204,7 @@ function SoundController.Attach(model)
 		play(name, speedScale, volumeScale)
 	end)
 
-	model:SetAttribute("SovereignSoundPassVersion", "1.8")
+	model:SetAttribute("SovereignSoundPassVersion", "1.9")
 	model:SetAttribute("SovereignSoundSpatialized", true)
 	model:SetAttribute("SovereignSoundAssetSource", "RobloxCreatorStore")
 	return request
