@@ -815,7 +815,10 @@ function Harness.Attach(model)
 				end
 			end)
 			task.delay(0.56, function()
-				if sovereignCanReturnToIdle() then requestSound("LanceImpact") end
+				if sovereignCanReturnToIdle() then
+					requestSound("LanceImpact")
+					requestSound("LanceImpactBass")
+				end
 			end)
 			task.delay(0.8, function()
 				if sovereignCanReturnToIdle() then requestSound("LanceReturnWhoosh") end
@@ -839,7 +842,11 @@ function Harness.Attach(model)
 				end
 			end)
 			task.delay(0.61, function()
-				if sovereignCanReturnToIdle() then requestSound("LanceImpact", 0.9) end
+				if sovereignCanReturnToIdle() then
+					requestSound("LanceImpact", 1.08, 1.06)
+					requestSound("LanceImpactBass", 0.92)
+					requestSound("LanceCutTail")
+				end
 			end)
 			task.delay(0.9, function()
 				if sovereignCanReturnToIdle() then requestSound("LanceReturnWhoosh", 0.9, 1.08) end

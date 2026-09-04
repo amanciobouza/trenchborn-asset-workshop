@@ -26,7 +26,9 @@ local DEFINITIONS = {
 	LanceHum = {asset = "IdleHum", volume = 0.22, speed = 0.78, looped = true, min = 16, max = 155, emitter = "ApexEnergyBlade"},
 	LanceWhoosh = {asset = "LaserLanceWhoosh", volume = 0.76, speed = 1.04, min = 20, max = 190, emitter = "ApexEnergyBlade"},
 	LanceReturnWhoosh = {asset = "LaserLanceWhoosh", volume = 0.5, speed = 0.84, min = 18, max = 170, emitter = "ApexEnergyBlade"},
-	LanceImpact = {asset = "LaserLanceImpact", volume = 0.88, speed = 1, min = 24, max = 210, emitter = "ApexEnergyBlade"},
+	LanceImpact = {asset = "MetalImpact", volume = 0.74, speed = 0.86, min = 20, max = 175, emitter = "ApexEnergyBlade"},
+	LanceImpactBass = {asset = "MetalImpact", volume = 0.58, speed = 0.44, min = 26, max = 220, emitter = "LeftLowerArm"},
+	LanceCutTail = {asset = "LaserLanceImpact", volume = 0.22, speed = 1.12, min = 16, max = 145, emitter = "ApexEnergyBlade"},
 	BeamCharge = {asset = "IdleHum", volume = 0.16, speed = 0.72, looped = true, min = 16, max = 155, emitter = "LanceEmitterCore"},
 	BeamFire = {asset = "IonPulse", volume = 1, speed = 0.88, min = 26, max = 230, emitter = "ApexEnergyBlade"},
 	BeamBass = {asset = "MetalImpact", volume = 0.5, speed = 0.64, min = 22, max = 195, emitter = "LeftLowerArm"},
@@ -121,6 +123,17 @@ function SoundController.Attach(model)
 		end)
 	end
 
+	local function playCutTail(speedScale, volumeScale)
+		local sound = play("LanceCutTail", speedScale, volumeScale)
+		if not sound then return end
+		task.delay(0.42, function()
+			if not sound.Parent then return end
+			local fade = TweenService:Create(sound, TweenInfo.new(0.12), {Volume = 0})
+			fade:Play()
+			fade.Completed:Once(function() sound:Stop() end)
+		end)
+	end
+
 	request.Event:Connect(function(name, speedScale, volumeScale)
 		if name == "Defeat" then
 			idle:Stop()
@@ -156,6 +169,9 @@ function SoundController.Attach(model)
 		elseif name == "LanceWhoosh" or name == "LanceReturnWhoosh" then
 			playLanceSweep(name, speedScale, volumeScale)
 			return
+		elseif name == "LanceCutTail" then
+			playCutTail(speedScale, volumeScale)
+			return
 		elseif name == "LockEngage" then
 			play("LockEngage", speedScale, volumeScale)
 			play("LockBeam")
@@ -179,7 +195,7 @@ function SoundController.Attach(model)
 		play(name, speedScale, volumeScale)
 	end)
 
-	model:SetAttribute("SovereignSoundPassVersion", "1.5")
+	model:SetAttribute("SovereignSoundPassVersion", "1.6")
 	model:SetAttribute("SovereignSoundSpatialized", true)
 	model:SetAttribute("SovereignSoundAssetSource", "RobloxCreatorStore")
 	return request
