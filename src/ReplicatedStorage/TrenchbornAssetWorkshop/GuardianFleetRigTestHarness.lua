@@ -636,6 +636,7 @@ function Harness.Attach(model)
 
 	if abilityRequested and abilityRequested:IsA("BindableEvent") then
 		abilityRequested.Event:Connect(function(name, target, ability)
+			if isSovereign and model:FindFirstChild("SovereignRuntime") then return end
 			if name == "RiotShield" then
 				broadcast("PlayShieldBlock")
 				task.delay(ability.Duration, function()
@@ -673,6 +674,7 @@ function Harness.Attach(model)
 
 	if damageTaken and damageTaken:IsA("BindableEvent") then
 		damageTaken.Event:Connect(function(healthDamage)
+			if isSovereign and model:FindFirstChild("SovereignRuntime") then return end
 			if healthDamage > 0 and model:GetAttribute("GuardianState") ~= "Defeated" then
 				broadcast("PlayDamageReact")
 			end
@@ -681,6 +683,7 @@ function Harness.Attach(model)
 
 	if stateChanged and stateChanged:IsA("BindableEvent") then
 		stateChanged.Event:Connect(function(newState)
+			if isSovereign and model:FindFirstChild("SovereignRuntime") then return end
 			if newState == "Staggered" then
 				broadcast("PlayStagger")
 			elseif newState == "Defeated" then
@@ -743,6 +746,14 @@ function Harness.Attach(model)
 		local now = os.clock()
 		if lastRequest[player] and now - lastRequest[player] < 0.12 then return end
 		lastRequest[player] = now
+		if isSovereign and model:FindFirstChild("SovereignRuntime")
+			and (actionName == "ApexLanceThrust" or actionName == "ApexLanceCut"
+				or actionName == "ApexLanceBeam" or actionName == "HunterDrones"
+				or actionName == "SovereignLock") then
+			invokeAbility(actionName)
+			remote:FireClient(player, "Completed", actionName)
+			return
+		end
 		if actionName == "ControlGuardian" then
 			if controllerPlayer == player then
 				controllerPlayer = nil
