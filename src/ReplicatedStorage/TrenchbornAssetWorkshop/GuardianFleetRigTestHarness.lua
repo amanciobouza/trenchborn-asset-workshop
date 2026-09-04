@@ -811,12 +811,14 @@ function Harness.Attach(model)
 			requestSound("LanceHumStart")
 			task.delay(0.48, function()
 				if sovereignCanReturnToIdle() then
-					requestSound("LanceThrust")
-					requestSound("LanceWhoosh", 1.18)
+					requestSound("LanceWhoosh", 0.94)
 				end
 			end)
-			task.delay(0.62, function()
+			task.delay(0.56, function()
 				if sovereignCanReturnToIdle() then requestSound("LanceImpact") end
+			end)
+			task.delay(0.8, function()
+				if sovereignCanReturnToIdle() then requestSound("LanceReturnWhoosh") end
 			end)
 			task.delay(1.05, function() requestSound("LanceHumStop") end)
 			task.delay(1.28, function()
@@ -833,12 +835,14 @@ function Harness.Attach(model)
 			requestSound("LanceHumStart")
 			task.delay(0.44, function()
 				if sovereignCanReturnToIdle() then
-					requestSound("LanceCut")
 					requestSound("LanceWhoosh", 0.78, 1.18)
 				end
 			end)
-			task.delay(0.68, function()
+			task.delay(0.61, function()
 				if sovereignCanReturnToIdle() then requestSound("LanceImpact", 0.9) end
+			end)
+			task.delay(0.9, function()
+				if sovereignCanReturnToIdle() then requestSound("LanceReturnWhoosh", 0.9, 1.08) end
 			end)
 			task.delay(1.16, function() requestSound("LanceHumStop") end)
 			task.delay(1.42, function()
