@@ -7,6 +7,7 @@ local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
 local library = require(packageFolder:WaitForChild("GuardianAnimationLibrary"))
 local bastionLibrary = require(packageFolder:WaitForChild("BastionAnimationLibrary"))
 local sovereignLibrary = require(packageFolder:WaitForChild("SovereignAnimationLibrary"))
+local sovereignWingInertia = require(packageFolder:WaitForChild("SovereignWingInertia"))
 local weaponInertia = require(packageFolder:WaitForChild("GuardianWeaponInertia"))
 local remote = ReplicatedStorage:WaitForChild(script:GetAttribute("RemoteName"))
 
@@ -160,6 +161,7 @@ end
 
 local function playMain(model, name, target)
 	weaponInertia.Ensure(model)
+	sovereignWingInertia.Ensure(model)
 	stopMain()
 	activeModel = model
 	if name ~= "Defeat" then
