@@ -67,3 +67,21 @@ api.ApplyDamage:Invoke(5000, workspace.DamageSource)
 ```
 
 The installed gameplay contract exposes 18,000 health, 150,000 shield points, directional frontal damage reduction, independent ability cooldowns, reset support, and explicit runtime cleanup through `api.Runtime.Destroy()`.
+
+## Sovereign-V Apex final installer
+
+`SovereignApexInstaller` installs the approved Sovereign-V geometry, dressing, fleet rig, gameplay contract, production animations, wing inertia, Apex Lance, Hunter Drones, Sovereign Lock, VFX, and spatial sound pass. It does not install the workshop HUD or test target.
+
+```lua
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
+local installer = require(packageFolder:WaitForChild("SovereignApexInstaller"))
+
+local sovereign, api = installer.Install(workspace, {
+	GroundCFrame = CFrame.new(0, 0, 0),
+	AnchorRoot = true,
+})
+
+api.RequestAbility:Invoke("ApexLanceBeam", workspace.Kaiju)
+```
