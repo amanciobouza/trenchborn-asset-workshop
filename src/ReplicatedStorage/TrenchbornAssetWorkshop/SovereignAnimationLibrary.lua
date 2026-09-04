@@ -125,10 +125,26 @@ function Library.BuildStagger()
 end
 
 function Library.BuildDefeat()
-	return adapt("BuildDefeat", {
+	local sequence = adapt("BuildDefeat", {
 		TimeScale = 0.96, LanceArmScale = 0.52, FreeArmScale = 0.78,
 		LegScale = 1, HeadScale = 0.9, TorsoScale = 1.02,
 	})
+	local finalKeyframe
+	for _, child in ipairs(sequence:GetChildren()) do
+		if child:IsA("Keyframe") and (not finalKeyframe or child.Time > finalKeyframe.Time) then
+			finalKeyframe = child
+		end
+	end
+	if finalKeyframe then
+		local hold = finalKeyframe:Clone()
+		hold.Name = "SovereignDefeatHold"
+		hold.Time = 3
+		hold.Parent = sequence
+	end
+	sequence:SetAttribute("DurationSeconds", 3)
+	sequence:SetAttribute("HoldFinalPose", true)
+	sequence:SetAttribute("SpecificationVersion", "Sovereign-Defeat-Hold-1.0")
+	return sequence
 end
 
 local SOVEREIGN_HIERARCHY = {
