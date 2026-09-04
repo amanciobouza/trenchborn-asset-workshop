@@ -228,7 +228,7 @@ function Preview.Play(model, target)
 		}
 	end
 
-	local token = {}
+	local token = {Drones = drones}
 	active[model] = token
 	model:SetAttribute("SovereignDroneDeploymentActive", true)
 	model:SetAttribute("SovereignWingInertiaSuspended", true)
@@ -331,7 +331,7 @@ function Preview.PlayLock(model, target)
 		drones[index] = {Motor = motor, Model = drone, Neutral = motor.C0}
 	end
 
-	local token = {}
+	local token = {Drones = drones}
 	active[model] = token
 	model:SetAttribute("SovereignDroneDeploymentActive", true)
 	model:SetAttribute("SovereignWingInertiaSuspended", true)
@@ -448,6 +448,47 @@ function Preview.PlayLock(model, target)
 		active[model] = nil
 	end)
 	return true
+end
+
+function Preview.Reset(model)
+	if not model then return end
+	local state = active[model]
+	active[model] = nil
+	local drones = state and state.Drones or {}
+	for _, drone in ipairs(drones) do
+		if drone.Motor and drone.Motor.Parent then drone.Motor.C0 = drone.Neutral end
+		if drone.Model and drone.Model.Parent then drone.Model:SetAttribute("Docked", true) end
+	end
+	local effects = workspace:FindFirstChild("SovereignRuntimeEffects")
+	if effects then
+		for _, object in ipairs(effects:GetChildren()) do
+			if object.Name == "HunterDronePulse" or object.Name == "HunterTargetMarker"
+				or object.Name == "HunterDroneStrike" or object.Name == "SovereignLockEdge"
+				or object.Name == "SovereignLockBarrier" or object.Name == "SovereignLockTarget" then
+				object:Destroy()
+			end
+		end
+	end
+	for _, object in ipairs(model:GetDescendants()) do
+		if object:IsA("Attachment")
+			and (object.Name == "SovereignLockLinkA" or object.Name == "SovereignLockLinkB") then
+			object:Destroy()
+		end
+	end
+	model:SetAttribute("SovereignLockPreviewActive", false)
+	model:SetAttribute("SovereignDroneDeploymentActive", false)
+	model:SetAttribute("SovereignWingInertiaSuspended", false)
+	-- A running Motor6D tween may complete after the immediate reset. Reassert
+	-- the neutral dock once more after all deployment tweens have expired.
+	if #drones > 0 then
+		task.delay(1.25, function()
+			if active[model] then return end
+			for _, drone in ipairs(drones) do
+				if drone.Motor and drone.Motor.Parent then drone.Motor.C0 = drone.Neutral end
+				if drone.Model and drone.Model.Parent then drone.Model:SetAttribute("Docked", true) end
+			end
+		end)
+	end
 end
 
 return Preview

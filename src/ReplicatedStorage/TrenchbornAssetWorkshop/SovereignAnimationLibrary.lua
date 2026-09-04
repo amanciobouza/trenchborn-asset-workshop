@@ -110,6 +110,27 @@ function Library.BuildLand()
 	})
 end
 
+function Library.BuildDamageReact()
+	return adapt("BuildDamageReact", {
+		TimeScale = 0.78, LanceArmScale = 0.55, FreeArmScale = 0.86,
+		LegScale = 1.04, HeadScale = 0.82, TorsoScale = 1.12,
+	})
+end
+
+function Library.BuildStagger()
+	return adapt("BuildStagger", {
+		TimeScale = 0.92, LanceArmScale = 0.62, FreeArmScale = 0.92,
+		LegScale = 1.08, HeadScale = 0.9, TorsoScale = 1.08, BodySink = 0.1,
+	})
+end
+
+function Library.BuildDefeat()
+	return adapt("BuildDefeat", {
+		TimeScale = 0.96, LanceArmScale = 0.52, FreeArmScale = 0.78,
+		LegScale = 1, HeadScale = 0.9, TorsoScale = 1.02,
+	})
+end
+
 local SOVEREIGN_HIERARCHY = {
 	HumanoidRootPart = {
 		LowerTorso = {

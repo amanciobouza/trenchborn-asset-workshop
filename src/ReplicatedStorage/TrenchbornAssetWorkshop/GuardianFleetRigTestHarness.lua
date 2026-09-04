@@ -679,8 +679,13 @@ function Harness.Attach(model)
 			if newState == "Staggered" then
 				broadcast("PlayStagger")
 			elseif newState == "Defeated" then
+				if isSovereign then
+					sovereignDronePreview.Reset(model)
+					model:SetAttribute("SovereignWingDefeated", true)
+				end
 				broadcast("PlayDefeat")
 			elseif newState == "Idle" then
+				if isSovereign then model:SetAttribute("SovereignWingDefeated", false) end
 				broadcast("PlayIdle")
 			end
 		end)
@@ -777,14 +782,18 @@ function Harness.Attach(model)
 			end
 		elseif actionName == "Stagger" then
 			if applyDamage and applyDamage:IsA("BindableFunction") then
-				applyDamage:Invoke(model:GetAttribute("StaggerThreshold") or 1800, isBastion and "TestStagger" or false)
+				applyDamage:Invoke(model:GetAttribute("StaggerThreshold") or 1800, (isBastion or isSovereign) and "TestStagger" or false)
 			else
 				requestSound("Stagger")
 				remote:FireClient(player, "PlayStagger", model)
 			end
 		elseif actionName == "Defeat" then
+			if isSovereign then
+				sovereignDronePreview.Reset(model)
+				model:SetAttribute("SovereignWingDefeated", true)
+			end
 			if applyDamage and applyDamage:IsA("BindableFunction") then
-				applyDamage:Invoke(model:GetAttribute("Health") or 999999, isBastion and "TestForceDefeat" or false)
+				applyDamage:Invoke(model:GetAttribute("Health") or 999999, (isBastion or isSovereign) and "TestForceDefeat" or false)
 			else
 				requestSound("Defeat")
 				remote:FireClient(player, "PlayDefeat", model)
@@ -928,6 +937,10 @@ function Harness.Attach(model)
 				end)
 			end
 		else
+			if actionName == "Neutral" and isSovereign then
+				sovereignDronePreview.Reset(model)
+				model:SetAttribute("SovereignWingDefeated", false)
+			end
 			if actionName == "Neutral" and resetGameplay and resetGameplay:IsA("BindableFunction") then
 				resetGameplay:Invoke()
 			end
@@ -952,6 +965,7 @@ function Harness.Attach(model)
 	model:SetAttribute("SovereignApexLancePreviewReady", true)
 	model:SetAttribute("SovereignHunterDronePreviewReady", true)
 	model:SetAttribute("SovereignLockPreviewReady", true)
+	if isSovereign then model:SetAttribute("SovereignWingDefeated", false) end
 	model:SetAttribute("WardenShockBatonPreviewReady", true)
 	model:SetAttribute("WardenWarningPulsePreviewReady", true)
 	model:SetAttribute("AegisMissileSalvoPreviewReady", true)
