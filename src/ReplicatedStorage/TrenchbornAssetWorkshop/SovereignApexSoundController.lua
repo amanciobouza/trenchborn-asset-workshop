@@ -13,6 +13,7 @@ local ASSETS = {
 	IonPulse = 137510557013265,
 	TargetLock = 146785518,
 	LaserLanceWhoosh = 82467115405633,
+	SovereignLockBeam = 102065163712158,
 }
 
 local DEFINITIONS = {
@@ -33,6 +34,7 @@ local DEFINITIONS = {
 	DroneStrike = {asset = "IonPulse", volume = 0.58, speed = 1.18, min = 18, max = 175, emitter = "UpperTorso"},
 	LockCharge = {asset = "Servo", volume = 0.44, speed = 0.62, min = 18, max = 165, emitter = "SovereignLockCore"},
 	LockEngage = {asset = "MetalImpact", volume = 0.48, speed = 0.48, min = 24, max = 210, emitter = "SovereignLockCore"},
+	LockBeam = {asset = "SovereignLockBeam", volume = 0.82, speed = 0.94, min = 24, max = 225, emitter = "SovereignLockCore"},
 	LockHum = {asset = "IdleHum", volume = 0.34, speed = 0.56, looped = true, min = 22, max = 210, emitter = "SovereignLockCore"},
 	Damage = {asset = "MetalImpact", volume = 0.56, speed = 1.02, min = 14, max = 125, emitter = "UpperTorso"},
 	Stagger = {asset = "Servo", volume = 0.7, speed = 0.78, min = 16, max = 145, emitter = "UpperTorso"},
@@ -155,6 +157,7 @@ function SoundController.Attach(model)
 			return
 		elseif name == "LockEngage" then
 			play("LockEngage", speedScale, volumeScale)
+			play("LockBeam")
 			play("LockHum")
 			return
 		elseif name == "BeamCharge" then
@@ -175,7 +178,7 @@ function SoundController.Attach(model)
 		play(name, speedScale, volumeScale)
 	end)
 
-	model:SetAttribute("SovereignSoundPassVersion", "1.3")
+	model:SetAttribute("SovereignSoundPassVersion", "1.4")
 	model:SetAttribute("SovereignSoundSpatialized", true)
 	model:SetAttribute("SovereignSoundAssetSource", "RobloxCreatorStore")
 	return request
