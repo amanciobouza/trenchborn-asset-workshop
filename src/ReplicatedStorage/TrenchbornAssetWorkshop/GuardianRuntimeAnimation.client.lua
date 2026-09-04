@@ -6,6 +6,7 @@ local RunService = game:GetService("RunService")
 local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
 local library = require(packageFolder:WaitForChild("GuardianAnimationLibrary"))
 local bastionLibrary = require(packageFolder:WaitForChild("BastionAnimationLibrary"))
+local sovereignLibrary = require(packageFolder:WaitForChild("SovereignAnimationLibrary"))
 local weaponInertia = require(packageFolder:WaitForChild("GuardianWeaponInertia"))
 local remote = ReplicatedStorage:WaitForChild(script:GetAttribute("RemoteName"))
 
@@ -42,6 +43,11 @@ local builders = {
 	SiegeFistCombo = "BuildSiegeFistCombo",
 	GroundSlam = "BuildGroundSlam",
 	DistrictShield = "BuildDistrictShield",
+	ApexLanceThrust = "BuildApexLanceThrust",
+	ApexLanceCut = "BuildApexLanceCut",
+	ApexLanceBeam = "BuildApexLanceBeam",
+	HunterDrones = "BuildHunterDroneCommand",
+	SovereignLock = "BuildSovereignLock",
 }
 
 local railAimNeutral = setmetatable({}, {__mode = "k"})
@@ -138,7 +144,10 @@ local function load(model, builderName, priorityOverride)
 	local isBastion = model:GetAttribute("AssetName") == "Bastion-IV Colossus"
 		or model.Name == "Bastion_IV_Colossus_GoldenMaster"
 		or model:FindFirstChild("HeavyRailCannonMount", true) ~= nil
-	local selectedLibrary = isBastion and bastionLibrary or library
+	local isSovereign = model:GetAttribute("AssetName") == "Sovereign-V Apex"
+		or model.Name == "Sovereign_V_Apex_GoldenMaster"
+		or model:FindFirstChild("SovereignLockCore", true) ~= nil
+	local selectedLibrary = isBastion and bastionLibrary or (isSovereign and sovereignLibrary or library)
 	local sequence = selectedLibrary[builderName]()
 	local temporaryId = KeyframeSequenceProvider:RegisterKeyframeSequence(sequence)
 	local animation = Instance.new("Animation")
@@ -172,7 +181,8 @@ local function playMain(model, name, target)
 	elseif name == "Defeat" then
 		defeated = true
 		task.delay(0.22, function() if defeated then powerDown(model) end end)
-		task.delay(1.3, function()
+		local holdDelay = model:GetAttribute("AssetName") == "Sovereign-V Apex" and 2.05 or 1.3
+		task.delay(holdDelay, function()
 			if token == generation and defeated and mainTrack == track and track.IsPlaying then track:AdjustSpeed(0) end
 		end)
 	end
