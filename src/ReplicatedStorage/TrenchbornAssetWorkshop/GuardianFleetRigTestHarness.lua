@@ -808,6 +808,7 @@ function Harness.Attach(model)
 			remote:FireClient(player, "PlayApexLanceThrust", model)
 			sovereignLancePreview.Thrust(model)
 			requestSound("LanceWindup")
+			requestSound("LanceHumStart")
 			task.delay(0.48, function()
 				if sovereignCanReturnToIdle() then
 					requestSound("LanceThrust")
@@ -817,6 +818,7 @@ function Harness.Attach(model)
 			task.delay(0.62, function()
 				if sovereignCanReturnToIdle() then requestSound("LanceImpact") end
 			end)
+			task.delay(1.05, function() requestSound("LanceHumStop") end)
 			task.delay(1.28, function()
 				if sovereignCanReturnToIdle() then
 					model:SetAttribute("SovereignWingInertiaSuspended", false)
@@ -828,6 +830,7 @@ function Harness.Attach(model)
 			remote:FireClient(player, "PlayApexLanceCut", model)
 			sovereignLancePreview.Cut(model)
 			requestSound("LanceWindup", 0.92)
+			requestSound("LanceHumStart")
 			task.delay(0.44, function()
 				if sovereignCanReturnToIdle() then
 					requestSound("LanceCut")
@@ -837,6 +840,7 @@ function Harness.Attach(model)
 			task.delay(0.68, function()
 				if sovereignCanReturnToIdle() then requestSound("LanceImpact", 0.9) end
 			end)
+			task.delay(1.16, function() requestSound("LanceHumStop") end)
 			task.delay(1.42, function()
 				if sovereignCanReturnToIdle() then
 					model:SetAttribute("SovereignWingInertiaSuspended", false)

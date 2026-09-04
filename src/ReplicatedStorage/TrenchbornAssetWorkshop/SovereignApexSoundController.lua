@@ -20,10 +20,11 @@ local DEFINITIONS = {
 	FootstepRun = {asset = "Footstep", volume = 0.68, speed = 1.06, min = 16, max = 145, emitter = "LeftFoot"},
 	Land = {asset = "Footstep", volume = 0.76, speed = 0.84, min = 18, max = 155, emitter = "LeftFoot"},
 	LanceWindup = {asset = "Servo", volume = 0.4, speed = 1.14, min = 12, max = 115, emitter = "LanceEmitterCore"},
-	LanceThrust = {asset = "Servo", volume = 0.66, speed = 1.42, min = 16, max = 145, emitter = "LanceEmitterCore"},
-	LanceCut = {asset = "Servo", volume = 0.72, speed = 1.08, min = 18, max = 155, emitter = "ApexEnergyBlade"},
-	LanceWhoosh = {asset = "IonPulse", volume = 0.34, speed = 1.28, min = 18, max = 165, emitter = "ApexEnergyBlade"},
-	LanceImpact = {asset = "ElectricArc", volume = 0.54, speed = 1.16, min = 14, max = 135, emitter = "ApexEnergyBlade"},
+	LanceHum = {asset = "IdleHum", volume = 0.22, speed = 0.78, looped = true, min = 16, max = 155, emitter = "ApexEnergyBlade"},
+	LanceThrust = {asset = "IonPulse", volume = 0.7, speed = 1.06, min = 18, max = 175, emitter = "ApexEnergyBlade"},
+	LanceCut = {asset = "IonPulse", volume = 0.78, speed = 0.82, min = 20, max = 185, emitter = "ApexEnergyBlade"},
+	LanceWhoosh = {asset = "IdleHum", volume = 0.62, speed = 1.72, min = 20, max = 190, emitter = "ApexEnergyBlade"},
+	LanceImpact = {asset = "MetalImpact", volume = 0.88, speed = 0.58, min = 24, max = 210, emitter = "ApexEnergyBlade"},
 	BeamCharge = {asset = "IdleHum", volume = 0.16, speed = 0.72, looped = true, min = 16, max = 155, emitter = "LanceEmitterCore"},
 	BeamFire = {asset = "IonPulse", volume = 1, speed = 0.88, min = 26, max = 230, emitter = "ApexEnergyBlade"},
 	BeamBass = {asset = "MetalImpact", volume = 0.5, speed = 0.64, min = 22, max = 195, emitter = "LeftLowerArm"},
@@ -75,6 +76,7 @@ function SoundController.Attach(model)
 	local idle = templates.IdleHum
 	local lockHum = templates.LockHum
 	local beamCharge = templates.BeamCharge
+	local lanceHum = templates.LanceHum
 	idle:Play()
 
 	local function play(name, speedScale, volumeScale)
@@ -99,15 +101,32 @@ function SoundController.Attach(model)
 			idle:Stop()
 			lockHum:Stop()
 			beamCharge:Stop()
+			lanceHum:Stop()
 			play("Defeat", speedScale, volumeScale)
 			return
 		elseif name == "Reset" then
 			lockHum:Stop()
 			beamCharge:Stop()
+			lanceHum:Stop()
 			if not idle.IsPlaying then idle:Play() end
 			return
 		elseif name == "LockRelease" then
 			lockHum:Stop()
+			return
+		elseif name == "LanceHumStart" then
+			lanceHum:Stop()
+			lanceHum.Volume = 0.18
+			lanceHum.PlaybackSpeed = 0.74
+			lanceHum:Play()
+			TweenService:Create(lanceHum, TweenInfo.new(0.32, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+				Volume = 0.3,
+				PlaybackSpeed = 0.88,
+			}):Play()
+			return
+		elseif name == "LanceHumStop" then
+			local fade = TweenService:Create(lanceHum, TweenInfo.new(0.2), {Volume = 0})
+			fade:Play()
+			fade.Completed:Once(function() lanceHum:Stop() end)
 			return
 		elseif name == "LockEngage" then
 			play("LockEngage", speedScale, volumeScale)
@@ -131,7 +150,7 @@ function SoundController.Attach(model)
 		play(name, speedScale, volumeScale)
 	end)
 
-	model:SetAttribute("SovereignSoundPassVersion", "1.1")
+	model:SetAttribute("SovereignSoundPassVersion", "1.2")
 	model:SetAttribute("SovereignSoundSpatialized", true)
 	model:SetAttribute("SovereignSoundAssetSource", "RobloxCreatorStore")
 	return request
