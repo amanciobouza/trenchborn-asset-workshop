@@ -13,6 +13,7 @@ local ASSETS = {
 	IonPulse = 137510557013265,
 	TargetLock = 146785518,
 	LaserLanceWhoosh = 82467115405633,
+	LaserLanceImpact = 76479464051898,
 	SovereignLockBeam = 102065163712158,
 }
 
@@ -25,7 +26,7 @@ local DEFINITIONS = {
 	LanceHum = {asset = "IdleHum", volume = 0.22, speed = 0.78, looped = true, min = 16, max = 155, emitter = "ApexEnergyBlade"},
 	LanceWhoosh = {asset = "LaserLanceWhoosh", volume = 0.76, speed = 1.04, min = 20, max = 190, emitter = "ApexEnergyBlade"},
 	LanceReturnWhoosh = {asset = "LaserLanceWhoosh", volume = 0.5, speed = 0.84, min = 18, max = 170, emitter = "ApexEnergyBlade"},
-	LanceImpact = {asset = "MetalImpact", volume = 0.88, speed = 0.58, min = 24, max = 210, emitter = "ApexEnergyBlade"},
+	LanceImpact = {asset = "LaserLanceImpact", volume = 0.88, speed = 1, min = 24, max = 210, emitter = "ApexEnergyBlade"},
 	BeamCharge = {asset = "IdleHum", volume = 0.16, speed = 0.72, looped = true, min = 16, max = 155, emitter = "LanceEmitterCore"},
 	BeamFire = {asset = "IonPulse", volume = 1, speed = 0.88, min = 26, max = 230, emitter = "ApexEnergyBlade"},
 	BeamBass = {asset = "MetalImpact", volume = 0.5, speed = 0.64, min = 22, max = 195, emitter = "LeftLowerArm"},
@@ -178,7 +179,7 @@ function SoundController.Attach(model)
 		play(name, speedScale, volumeScale)
 	end)
 
-	model:SetAttribute("SovereignSoundPassVersion", "1.4")
+	model:SetAttribute("SovereignSoundPassVersion", "1.5")
 	model:SetAttribute("SovereignSoundSpatialized", true)
 	model:SetAttribute("SovereignSoundAssetSource", "RobloxCreatorStore")
 	return request
