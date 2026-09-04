@@ -42,6 +42,9 @@ local sovereignSoundController = require(packageFolder:WaitForChild("SovereignAp
 local sovereignRuntimeController = require(packageFolder:WaitForChild("SovereignApexRuntimeController"))
 local kaijuAwakenedSpecification = require(packageFolder:WaitForChild("KaijuAwakenedSpecification"))
 local kaijuAwakenedGoldenMaster = require(packageFolder:WaitForChild("KaijuAwakenedGoldenMaster"))
+local kaijuAwakenedReviewProfile = require(packageFolder:WaitForChild("KaijuAwakenedReviewProfile"))
+local assetValidator = require(packageFolder:WaitForChild("AssetValidator"))
+local assetReviewReport = require(packageFolder:WaitForChild("AssetReviewReport"))
 
 workshop:SetAttribute("CurrentAsset", specification.AssetName)
 workshop:SetAttribute("CurrentPhase", specification.PipelinePhase)
@@ -124,3 +127,15 @@ workshop:SetAttribute("CurrentAsset", kaijuAwakenedSpecification.AssetName)
 workshop:SetAttribute("CurrentPhase", kaijuAwakenedSpecification.PipelinePhase)
 workshop:SetAttribute("QualityStatus", "Phase4_GeometryReview")
 workshop:SetAttribute("GoldenMasterReviewTarget", kaijuAwakenedModel.Name)
+
+local kaijuReview = assetValidator.Review(
+	kaijuAwakenedModel,
+	kaijuAwakenedSpecification,
+	kaijuAwakenedReviewProfile,
+	{GroundY = 0, CreateMarkers = true}
+)
+local kaijuReviewJSON = assetReviewReport.ToJSON(kaijuReview)
+kaijuAwakenedModel:SetAttribute("QualityGateBReviewJSON", kaijuReviewJSON)
+workshop:SetAttribute("QualityGateBReviewStatus", kaijuReview.Status)
+print(assetReviewReport.ToText(kaijuReview))
+print("[Quality Gate B JSON] " .. kaijuReviewJSON)
