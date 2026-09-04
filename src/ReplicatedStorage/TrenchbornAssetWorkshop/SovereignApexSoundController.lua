@@ -15,6 +15,7 @@ local ASSETS = {
 	LaserLanceWhoosh = 82467115405633,
 	LaserLanceImpact = 76479464051898,
 	SovereignLockBeam = 102065163712158,
+	ApexBeamCharge = 127373754810578,
 }
 
 local DEFINITIONS = {
@@ -29,7 +30,7 @@ local DEFINITIONS = {
 	LanceImpact = {asset = "MetalImpact", volume = 0.74, speed = 0.86, min = 20, max = 175, emitter = "ApexEnergyBlade"},
 	LanceImpactBass = {asset = "MetalImpact", volume = 0.58, speed = 0.44, min = 26, max = 220, emitter = "LeftLowerArm"},
 	LanceCutTail = {asset = "LaserLanceImpact", volume = 0.22, speed = 1.12, min = 16, max = 145, emitter = "ApexEnergyBlade"},
-	BeamCharge = {asset = "IdleHum", volume = 0.16, speed = 0.72, looped = true, min = 16, max = 155, emitter = "LanceEmitterCore"},
+	BeamCharge = {asset = "ApexBeamCharge", volume = 0.24, speed = 0.86, min = 16, max = 165, emitter = "LanceEmitterCore"},
 	BeamFire = {asset = "IonPulse", volume = 1, speed = 0.88, min = 26, max = 230, emitter = "ApexEnergyBlade"},
 	BeamBass = {asset = "MetalImpact", volume = 0.5, speed = 0.64, min = 22, max = 195, emitter = "LeftLowerArm"},
 	DroneLaunch = {asset = "Servo", volume = 0.48, speed = 1.26, min = 12, max = 125, emitter = "UpperTorso"},
@@ -179,12 +180,12 @@ function SoundController.Attach(model)
 			return
 		elseif name == "BeamCharge" then
 			beamCharge:Stop()
-			beamCharge.Volume = 0.14
-			beamCharge.PlaybackSpeed = 0.7
+			beamCharge.Volume = 0.2
+			beamCharge.PlaybackSpeed = 0.82
 			beamCharge:Play()
 			TweenService:Create(beamCharge, TweenInfo.new(1.12, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
-				Volume = 0.54,
-				PlaybackSpeed = 1.58,
+				Volume = 0.5,
+				PlaybackSpeed = 1.16,
 			}):Play()
 			return
 		elseif name == "BeamFire" then
@@ -195,7 +196,7 @@ function SoundController.Attach(model)
 		play(name, speedScale, volumeScale)
 	end)
 
-	model:SetAttribute("SovereignSoundPassVersion", "1.6")
+	model:SetAttribute("SovereignSoundPassVersion", "1.7")
 	model:SetAttribute("SovereignSoundSpatialized", true)
 	model:SetAttribute("SovereignSoundAssetSource", "RobloxCreatorStore")
 	return request
