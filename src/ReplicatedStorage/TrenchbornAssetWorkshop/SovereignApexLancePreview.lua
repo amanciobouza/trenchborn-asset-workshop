@@ -153,7 +153,10 @@ function Preview.Beam(model, target)
 	}):Play()
 
 	task.delay(1.18, function()
-		if not model.Parent or not blade.Parent then return end
+		if not model.Parent or not blade.Parent or model:GetAttribute("SovereignWingDefeated") == true then
+			if charge.Parent then charge:Destroy() end
+			return
+		end
 		local _, start = bladeAndTip(model)
 		local finish = targetPosition(model, target)
 		local delta = finish - start

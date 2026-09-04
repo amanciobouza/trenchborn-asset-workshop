@@ -698,6 +698,7 @@ remote.OnClientEvent:Connect(function(message, payload, target)
 			playSequence(payload, "BuildStagger", "GuardianStaggerPreview")
 			task.delay(1.08, function()
 				staggering = false
+				if defeated then return end
 				if controlEnabled and controlledModel == payload then
 					setupFootLocks(payload)
 					walkStartedAt = os.clock()

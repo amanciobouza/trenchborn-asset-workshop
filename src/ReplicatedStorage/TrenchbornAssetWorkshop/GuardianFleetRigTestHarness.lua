@@ -68,6 +68,11 @@ function Harness.Attach(model)
 	local controlUpdatedAt = 0
 	local isBastion = model:GetAttribute("AssetName") == "Bastion-IV Colossus"
 	local isSovereign = model:GetAttribute("AssetName") == "Sovereign-V Apex"
+	local function sovereignCanReturnToIdle()
+		return model.Parent ~= nil
+			and model:GetAttribute("GuardianState") ~= "Defeated"
+			and model:GetAttribute("SovereignWingDefeated") ~= true
+	end
 	local controlSpeed = isSovereign and 16 or 12
 	local runSpeed = isSovereign and 26 or 20
 	local walkStepDuration = isBastion and 1.25 or (isSovereign and 0.82 or 1)
@@ -803,7 +808,7 @@ function Harness.Attach(model)
 			remote:FireClient(player, "PlayApexLanceThrust", model)
 			sovereignLancePreview.Thrust(model)
 			task.delay(1.28, function()
-				if model.Parent then
+				if sovereignCanReturnToIdle() then
 					model:SetAttribute("SovereignWingInertiaSuspended", false)
 					remote:FireClient(player, "PlayIdle", model)
 				end
@@ -813,7 +818,7 @@ function Harness.Attach(model)
 			remote:FireClient(player, "PlayApexLanceCut", model)
 			sovereignLancePreview.Cut(model)
 			task.delay(1.42, function()
-				if model.Parent then
+				if sovereignCanReturnToIdle() then
 					model:SetAttribute("SovereignWingInertiaSuspended", false)
 					remote:FireClient(player, "PlayIdle", model)
 				end
@@ -823,7 +828,7 @@ function Harness.Attach(model)
 			model:SetAttribute("SovereignWingInertiaSuspended", true)
 			remote:FireClient(player, "PlayApexLanceBeam", model, target)
 			task.delay(2.25, function()
-				if model.Parent then
+				if sovereignCanReturnToIdle() then
 					model:SetAttribute("SovereignWingInertiaSuspended", false)
 					remote:FireClient(player, "PlayIdle", model)
 				end
@@ -833,14 +838,14 @@ function Harness.Attach(model)
 			remote:FireClient(player, "PlayHunterDroneCommand", model, target)
 			sovereignDronePreview.Play(model, target)
 			task.delay(9.4, function()
-				if model.Parent then remote:FireClient(player, "PlayIdle", model) end
+				if sovereignCanReturnToIdle() then remote:FireClient(player, "PlayIdle", model) end
 			end)
 		elseif actionName == "SovereignLock" then
 			local target = workspace:FindFirstChild("TestKaijuTarget", true)
 			remote:FireClient(player, "PlaySovereignLock", model, target)
 			sovereignDronePreview.PlayLock(model, target)
 			task.delay(9.2, function()
-				if model.Parent then remote:FireClient(player, "PlayIdle", model) end
+				if sovereignCanReturnToIdle() then remote:FireClient(player, "PlayIdle", model) end
 			end)
 		elseif actionName == "HeavyRailCannon" then
 			local target = workspace:FindFirstChild("TestKaijuTarget", true)
