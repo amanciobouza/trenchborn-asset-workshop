@@ -39,6 +39,7 @@ local sovereignDressing = require(packageFolder:WaitForChild("SovereignApexDress
 local sovereignGameplayConfig = require(packageFolder:WaitForChild("SovereignApexGameplayConfig"))
 local sovereignGameplay = require(packageFolder:WaitForChild("SovereignApexGameplay"))
 local sovereignSoundController = require(packageFolder:WaitForChild("SovereignApexSoundController"))
+local sovereignRuntimeController = require(packageFolder:WaitForChild("SovereignApexRuntimeController"))
 
 workshop:SetAttribute("CurrentAsset", specification.AssetName)
 workshop:SetAttribute("CurrentPhase", specification.PipelinePhase)
@@ -102,6 +103,7 @@ sovereignModel:PivotTo(sovereignModel:GetPivot() + Vector3.new(50, sovereignGrou
 fleetRig.Apply(sovereignModel, {AnchorRoot = true})
 sovereignGameplay.Attach(sovereignModel, sovereignGameplayConfig)
 sovereignSoundController.Attach(sovereignModel)
+sovereignRuntimeController.Attach(sovereignModel, sovereignModel:WaitForChild("Gameplay"))
 fleetRigTestHarness.Attach(sovereignModel)
 task.delay(2.0, function()
 	if sovereignModel.Parent then sovereignDressing.PreviewEnergy(sovereignModel) end
