@@ -14,6 +14,29 @@ parts are highlighted red (blocker) or amber (warning) in Studio.
 `KaijuAwakenedReviewProfile` still require the standard-view image review, and
 only the user may change `QualityGateB` to `Approved`.
 
+### Automatic Studio review agent
+
+The optional local bridge removes manual Output copying and screenshot work.
+On Windows, install it once from PowerShell:
+
+```powershell
+$env:OPENAI_API_KEY = "your-local-key"
+.\tools\install-review-agent.ps1
+python .\tools\trenchborn-review-agent.py
+```
+
+Restart Studio, enable **Game Settings > Security > Allow HTTP Requests**, and
+press **Plugins > Trenchborn > Review Agent** while the Golden Master exists.
+The plugin runs the deterministic checks, frames five standard camera views,
+and asks the local bridge to capture and visually review them. Results return
+to the Studio dock widget and are saved under `reviews/` locally. The API key
+is read only from `OPENAI_API_KEY` and must never be committed.
+
+If Studio chrome should be cropped from captures, set
+`TRENCHBORN_CAPTURE_INSET` to `left,top,right,bottom` pixel values before
+starting the agent. `TRENCHBORN_REVIEW_MODEL` optionally overrides the default
+vision model.
+
 ## Marshal-II Roadblock final installer
 
 `MarshalRoadblockInstaller` is the Phase 7 production API. It installs the approved model, dressing, fleet rig, gameplay, animations, combat VFX, and spatial sound pass. It does not install the workshop HUD, test buttons, or test targets.
