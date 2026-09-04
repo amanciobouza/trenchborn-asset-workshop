@@ -12,6 +12,7 @@ local ASSETS = {
 	ElectricArc = 9116279561,
 	IonPulse = 137510557013265,
 	TargetLock = 146785518,
+	LaserLanceWhoosh = 82467115405633,
 }
 
 local DEFINITIONS = {
@@ -21,8 +22,8 @@ local DEFINITIONS = {
 	Land = {asset = "Footstep", volume = 0.76, speed = 0.84, min = 18, max = 155, emitter = "LeftFoot"},
 	LanceWindup = {asset = "Servo", volume = 0.4, speed = 1.14, min = 12, max = 115, emitter = "LanceEmitterCore"},
 	LanceHum = {asset = "IdleHum", volume = 0.22, speed = 0.78, looped = true, min = 16, max = 155, emitter = "ApexEnergyBlade"},
-	LanceWhoosh = {asset = "IdleHum", volume = 0.7, speed = 1.08, min = 20, max = 190, emitter = "ApexEnergyBlade"},
-	LanceReturnWhoosh = {asset = "IdleHum", volume = 0.48, speed = 0.88, min = 18, max = 170, emitter = "ApexEnergyBlade"},
+	LanceWhoosh = {asset = "LaserLanceWhoosh", volume = 0.76, speed = 1.04, min = 20, max = 190, emitter = "ApexEnergyBlade"},
+	LanceReturnWhoosh = {asset = "LaserLanceWhoosh", volume = 0.5, speed = 0.84, min = 18, max = 170, emitter = "ApexEnergyBlade"},
 	LanceImpact = {asset = "MetalImpact", volume = 0.88, speed = 0.58, min = 24, max = 210, emitter = "ApexEnergyBlade"},
 	BeamCharge = {asset = "IdleHum", volume = 0.16, speed = 0.72, looped = true, min = 16, max = 155, emitter = "LanceEmitterCore"},
 	BeamFire = {asset = "IonPulse", volume = 1, speed = 0.88, min = 26, max = 230, emitter = "ApexEnergyBlade"},
@@ -95,6 +96,28 @@ function SoundController.Attach(model)
 		return sound
 	end
 
+	local function playLanceSweep(name, speedScale, volumeScale)
+		local source = templates[name]
+		local sound = play(name, speedScale, volumeScale)
+		if not source or not sound then return end
+		local targetSpeed = source.PlaybackSpeed * (speedScale or 1)
+		local targetVolume = source.Volume * (volumeScale or 1)
+		sound.PlaybackSpeed = targetSpeed * 0.76
+		sound.Volume = targetVolume * 0.32
+		local rise = TweenService:Create(sound, TweenInfo.new(0.13, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+			PlaybackSpeed = targetSpeed * 1.12,
+			Volume = targetVolume,
+		})
+		rise:Play()
+		rise.Completed:Once(function()
+			if not sound.Parent then return end
+			TweenService:Create(sound, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+				PlaybackSpeed = targetSpeed * 0.9,
+				Volume = targetVolume * 0.2,
+			}):Play()
+		end)
+	end
+
 	request.Event:Connect(function(name, speedScale, volumeScale)
 		if name == "Defeat" then
 			idle:Stop()
@@ -127,6 +150,9 @@ function SoundController.Attach(model)
 			fade:Play()
 			fade.Completed:Once(function() lanceHum:Stop() end)
 			return
+		elseif name == "LanceWhoosh" or name == "LanceReturnWhoosh" then
+			playLanceSweep(name, speedScale, volumeScale)
+			return
 		elseif name == "LockEngage" then
 			play("LockEngage", speedScale, volumeScale)
 			play("LockHum")
@@ -149,7 +175,7 @@ function SoundController.Attach(model)
 		play(name, speedScale, volumeScale)
 	end)
 
-	model:SetAttribute("SovereignSoundPassVersion", "1.2")
+	model:SetAttribute("SovereignSoundPassVersion", "1.3")
 	model:SetAttribute("SovereignSoundSpatialized", true)
 	model:SetAttribute("SovereignSoundAssetSource", "RobloxCreatorStore")
 	return request
