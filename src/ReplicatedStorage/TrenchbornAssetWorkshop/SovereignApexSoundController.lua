@@ -11,11 +11,11 @@ local ASSETS = {
 	SystemFailure = 9118996235,
 	ElectricArc = 9116279561,
 	IonPulse = 137510557013265,
-	TargetLock = 146785518,
 	LaserLanceWhoosh = 82467115405633,
 	LaserLanceImpact = 76479464051898,
 	SovereignLockBeam = 102065163712158,
 	ApexBeamCharge = 127373754810578,
+	DroneAlignment = 137012860130376,
 }
 
 local DEFINITIONS = {
@@ -34,7 +34,7 @@ local DEFINITIONS = {
 	BeamFire = {asset = "IonPulse", volume = 1, speed = 0.88, min = 26, max = 230, emitter = "ApexEnergyBlade"},
 	BeamBass = {asset = "MetalImpact", volume = 0.5, speed = 0.64, min = 22, max = 195, emitter = "LeftLowerArm"},
 	DroneLaunch = {asset = "Servo", volume = 0.48, speed = 1.26, min = 12, max = 125, emitter = "UpperTorso"},
-	DroneChirp = {asset = "TargetLock", volume = 0.16, speed = 1.36, min = 10, max = 105, emitter = "SovereignLockCore"},
+	DroneChirp = {asset = "DroneAlignment", volume = 0.2, speed = 1, min = 12, max = 125, emitter = "SovereignLockCore"},
 	DroneStrike = {asset = "IonPulse", volume = 0.58, speed = 1.18, min = 18, max = 175, emitter = "UpperTorso"},
 	LockCharge = {asset = "Servo", volume = 0.44, speed = 0.62, min = 18, max = 165, emitter = "SovereignLockCore"},
 	LockEngage = {asset = "MetalImpact", volume = 0.48, speed = 0.48, min = 24, max = 210, emitter = "SovereignLockCore"},
@@ -196,7 +196,7 @@ function SoundController.Attach(model)
 		play(name, speedScale, volumeScale)
 	end)
 
-	model:SetAttribute("SovereignSoundPassVersion", "1.7")
+	model:SetAttribute("SovereignSoundPassVersion", "1.8")
 	model:SetAttribute("SovereignSoundSpatialized", true)
 	model:SetAttribute("SovereignSoundAssetSource", "RobloxCreatorStore")
 	return request
