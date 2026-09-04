@@ -36,6 +36,8 @@ local bastionSoundController = require(packageFolder:WaitForChild("BastionColoss
 local sovereignSpecification = require(packageFolder:WaitForChild("SovereignApexSpecification"))
 local sovereignGoldenMaster = require(packageFolder:WaitForChild("SovereignApexGoldenMaster"))
 local sovereignDressing = require(packageFolder:WaitForChild("SovereignApexDressing"))
+local sovereignGameplayConfig = require(packageFolder:WaitForChild("SovereignApexGameplayConfig"))
+local sovereignGameplay = require(packageFolder:WaitForChild("SovereignApexGameplay"))
 local sovereignSoundController = require(packageFolder:WaitForChild("SovereignApexSoundController"))
 
 workshop:SetAttribute("CurrentAsset", specification.AssetName)
@@ -98,6 +100,7 @@ end
 local sovereignGroundCorrection = sovereignMinimumVisibleY < math.huge and -sovereignMinimumVisibleY or 0
 sovereignModel:PivotTo(sovereignModel:GetPivot() + Vector3.new(50, sovereignGroundCorrection, 85))
 fleetRig.Apply(sovereignModel, {AnchorRoot = true})
+sovereignGameplay.Attach(sovereignModel, sovereignGameplayConfig)
 sovereignSoundController.Attach(sovereignModel)
 fleetRigTestHarness.Attach(sovereignModel)
 task.delay(2.0, function()
