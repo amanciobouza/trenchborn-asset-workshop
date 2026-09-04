@@ -2,6 +2,18 @@
 
 Synchronized Roblox Studio workspace for specification-driven Trenchborn asset development and automated quality gates.
 
+## Bound Chimera Quality Gate B review
+
+The workshop bootstrap runs a non-destructive deterministic geometry review for
+`Kaiju-I Bound Chimera`. `AssetValidator` checks identity, anatomy, budgets,
+ground contact, arm clearance, and rig connectivity. Findings are printed as
+text and JSON, exposed through `QualityGateBReview*` attributes, and affected
+parts are highlighted red (blocker) or amber (warning) in Studio.
+
+`PASS_DETERMINISTIC` does not approve Quality Gate B. The visual criteria in
+`KaijuAwakenedReviewProfile` still require the standard-view image review, and
+only the user may change `QualityGateB` to `Approved`.
+
 ## Marshal-II Roadblock final installer
 
 `MarshalRoadblockInstaller` is the Phase 7 production API. It installs the approved model, dressing, fleet rig, gameplay, animations, combat VFX, and spatial sound pass. It does not install the workshop HUD, test buttons, or test targets.
