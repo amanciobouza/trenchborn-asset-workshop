@@ -22,7 +22,7 @@ return {
 		RearClawsPerFoot = 1,
 		DorsalShieldCount = 7,
 		ArmRule = "ShortFreeHangingNeverGroundSupport",
-		Counterbalance = "ShortOrganicStormRudder",
+		Counterbalance = "VisibleSevenSegmentCylinderTail",
 	},
 	VisualLanguage = {
 		Body = "Charcoal organic hide with limited mineral pressure armor",
