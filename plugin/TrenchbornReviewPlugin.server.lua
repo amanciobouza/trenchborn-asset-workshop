@@ -82,17 +82,28 @@ local function runTechnicalReview(model)
 	return report.ToSerializable(result)
 end
 
-local function cameraViews(model)
+local function cameraViews(model, camera)
 	local boxCF, size = model:GetBoundingBox()
 	local center = boxCF.Position
-	local radius = math.max(size.X, size.Y, size.Z) * 1.25
-	local target = center + Vector3.new(0, size.Y * 0.04, 0)
+	local target = center
+
+	-- Fit the complete bounding sphere inside both the vertical and horizontal
+	-- field of view. Studio panels can make the 3D viewport much narrower than
+	-- the full application window, so a fixed multiple of the largest dimension
+	-- is not reliable.
+	local viewport = camera.ViewportSize
+	local aspect = math.max(viewport.X, 1) / math.max(viewport.Y, 1)
+	local verticalHalfAngle = math.rad(camera.FieldOfView * 0.5)
+	local horizontalHalfAngle = math.atan(math.tan(verticalHalfAngle) * aspect)
+	local limitingHalfAngle = math.min(verticalHalfAngle, horizontalHalfAngle)
+	local boundingRadius = size.Magnitude * 0.5
+	local distance = (boundingRadius / math.sin(limitingHalfAngle)) * 1.2
 	return {
-		{name = "front", position = center + Vector3.new(0, size.Y * 0.02, -radius)},
-		{name = "left", position = center + Vector3.new(-radius, size.Y * 0.02, 0)},
-		{name = "right", position = center + Vector3.new(radius, size.Y * 0.02, 0)},
-		{name = "rear", position = center + Vector3.new(0, size.Y * 0.02, radius)},
-		{name = "three-quarter", position = center + Vector3.new(-radius * 0.72, size.Y * 0.12, -radius * 0.72)},
+		{name = "front", position = target + Vector3.new(0, 0, -distance)},
+		{name = "left", position = target + Vector3.new(-distance, 0, 0)},
+		{name = "right", position = target + Vector3.new(distance, 0, 0)},
+		{name = "rear", position = target + Vector3.new(0, 0, distance)},
+		{name = "three-quarter", position = target + Vector3.new(-1, 0.16, -1).Unit * distance},
 	}, target
 end
 
@@ -116,7 +127,7 @@ local function runReview()
 	local oldType, oldCF, oldFov = camera.CameraType, camera.CFrame, camera.FieldOfView
 	camera.CameraType = Enum.CameraType.Scriptable
 	camera.FieldOfView = 34
-	local views, target = cameraViews(model)
+	local views, target = cameraViews(model, camera)
 	for index, view in ipairs(views) do
 		setStatus(string.format("Capturing %s (%d/%d)...", view.name, index, #views))
 		camera.CFrame = CFrame.lookAt(view.position, target)
