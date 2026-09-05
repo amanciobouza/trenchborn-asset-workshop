@@ -54,7 +54,15 @@ end
 local function segment(parent: Instance, name: string, a: Vector3, b: Vector3, width: number, depth: number, ground: CFrame, color: Color3): Part
 	local wa, wb = ground:PointToWorldSpace(a), ground:PointToWorldSpace(b)
 	local delta, middle = wb - wa, (wa + wb) * 0.5
-	return angular(parent, name, Vector3.new(width, depth, delta.Magnitude), CFrame.lookAt(middle, middle + delta), color)
+	return ellipsoid(parent, name, Vector3.new(width, depth, delta.Magnitude), CFrame.lookAt(middle, middle + delta), color)
+end
+
+local function cylinderBetween(parent: Instance, name: string, a: Vector3, b: Vector3, diameter: number, ground: CFrame, color: Color3): Part
+	local wa, wb = ground:PointToWorldSpace(a), ground:PointToWorldSpace(b)
+	local delta, middle = wb - wa, (wa + wb) * 0.5
+	local p = part(parent, name, Vector3.new(delta.Magnitude, diameter, diameter), CFrame.lookAt(middle, middle + delta) * CFrame.Angles(0, math.rad(90), 0), color, Enum.PartType.Cylinder)
+	p.Material = Enum.Material.Slate
+	return p
 end
 
 local function detailFolder(model: Model): Folder
@@ -68,10 +76,10 @@ local function buildFoot(model: Model, geometry: Folder, side: string, sign: num
 	motor(lowerLeg, side .. "Ankle", lowerLeg, foot, ground * CFrame.new(hock))
 	local folder = Instance.new("Folder"); folder.Name = side .. "FootGeometry"; folder.Parent = geometry
 	for i, lateral in ipairs({-1.05, 0, 1.05}) do
-		local toe = angular(folder, "ForwardToe_" .. i, Vector3.new(0.9, 0.78, 2.9), ground * CFrame.new(x + lateral, 0.7, -2.05) * CFrame.Angles(math.rad(-5), 0, 0), DARK); weld(foot, toe)
+		local toe = ellipsoid(folder, "ForwardToe_" .. i, Vector3.new(0.95, 0.82, 2.9), ground * CFrame.new(x + lateral, 0.7, -2.05) * CFrame.Angles(math.rad(-5), 0, 0), DARK); weld(foot, toe)
 		local c = wedge(folder, "ForwardClaw_" .. i, Vector3.new(0.7, 0.62, 1.18), ground * CFrame.new(x + lateral, 0.58, -3.55) * CFrame.Angles(math.rad(-8), math.rad(180), 0), CLAW); weld(toe, c)
 	end
-	local rearToe = angular(folder, "RearToe", Vector3.new(0.75, 0.7, 1.35), ground * CFrame.new(x, 1.35, 0.9) * CFrame.Angles(math.rad(20), 0, 0), DARK); weld(foot, rearToe)
+	local rearToe = ellipsoid(folder, "RearToe", Vector3.new(0.75, 0.7, 1.35), ground * CFrame.new(x, 1.35, 0.9) * CFrame.Angles(math.rad(20), 0, 0), DARK); weld(foot, rearToe)
 	local rearClaw = wedge(folder, "RearClaw", Vector3.new(0.56, 0.55, 0.95), ground * CFrame.new(x, 1.25, 1.7) * CFrame.Angles(math.rad(18), 0, 0), CLAW); weld(rearToe, rearClaw)
 	return foot
 end
@@ -82,16 +90,19 @@ local function buildArm(model: Model, geometry: Folder, side: string, sign: numb
 	local wrist = Vector3.new(sign * 4.85, 14.55, -0.9)
 	local upper = segment(model, side .. "UpperArm", shoulder, elbow, 2.45, 2.25, ground, BODY); motor(torso, side .. "Shoulder", torso, upper, ground * CFrame.new(shoulder))
 	local lower = segment(model, side .. "LowerArm", elbow, wrist, 2.1, 1.9, ground, BODY); motor(upper, side .. "Elbow", upper, lower, ground * CFrame.new(elbow))
-	local hand = angular(model, side .. "Hand", Vector3.new(2.15, 1.45, 2.0), ground * CFrame.new(wrist + Vector3.new(0, -0.55, -0.35)) * CFrame.Angles(math.rad(-12), 0, 0), DARK); motor(lower, side .. "Wrist", lower, hand, ground * CFrame.new(wrist))
+	local deltoid = ellipsoid(geometry, side .. "DeltoidMass", Vector3.new(3.0, 3.15, 2.8), ground * CFrame.new(shoulder + Vector3.new(0, -0.65, 0)), BODY); weld(upper, deltoid)
+	local forearmMass = ellipsoid(geometry, side .. "ForearmMass", Vector3.new(2.45, 2.65, 2.25), ground * CFrame.new((elbow + wrist) * 0.5), BODY); weld(lower, forearmMass)
+	local elbowEdge = wedge(geometry, side .. "ElbowEdge", Vector3.new(1.45, 1.2, 1.6), ground * CFrame.new(elbow) * CFrame.Angles(0, sign * math.rad(90), 0), ARMOR); weld(lower, elbowEdge)
+	local hand = ellipsoid(model, side .. "Hand", Vector3.new(2.25, 1.55, 2.05), ground * CFrame.new(wrist + Vector3.new(0, -0.55, -0.35)) * CFrame.Angles(math.rad(-12), 0, 0), DARK); motor(lower, side .. "Wrist", lower, hand, ground * CFrame.new(wrist))
 	local f = Instance.new("Folder"); f.Name = side .. "HandGeometry"; f.Parent = geometry
 	for i = 1, 3 do
 		local x = wrist.X + (i - 2) * 0.6
-		local finger = angular(f, "Finger_" .. i, Vector3.new(0.48, 0.5, 1.15), ground * CFrame.new(x, wrist.Y - 1.05, wrist.Z - 1) * CFrame.Angles(math.rad(-18), 0, 0), DARK); weld(hand, finger)
+		local finger = ellipsoid(f, "Finger_" .. i, Vector3.new(0.5, 0.52, 1.15), ground * CFrame.new(x, wrist.Y - 1.05, wrist.Z - 1) * CFrame.Angles(math.rad(-18), 0, 0), DARK); weld(hand, finger)
 	end
 end
 
 local function buildHead(model: Model, geometry: Folder, torso: BasePart, ground: CFrame): BasePart
-	local head = angular(model, "Head", Vector3.new(5.4, 3.4, 4.1), ground * CFrame.new(0, 25.35, -1.0) * CFrame.Angles(math.rad(-5), 0, 0), BODY)
+	local head = ellipsoid(model, "Head", Vector3.new(5.6, 3.7, 4.3), ground * CFrame.new(0, 25.35, -1.0) * CFrame.Angles(math.rad(-5), 0, 0), BODY)
 	motor(torso, "Neck", torso, head, ground * CFrame.new(0, 23.0, -0.25))
 	local f = Instance.new("Folder"); f.Name = "HeadGeometry"; f.Parent = geometry
 	-- Wedge slope runs from low front (-Z) to high rear (+Z).
@@ -107,17 +118,47 @@ local function buildHead(model: Model, geometry: Folder, torso: BasePart, ground
 end
 
 local function buildCounterbalance(model: Model, geometry: Folder, pelvis: BasePart, ground: CFrame): {BasePart}
-	local points = {Vector3.new(0, 15.2, 2.2), Vector3.new(0, 13.6, 6.0), Vector3.new(0, 11.3, 9.4), Vector3.new(0, 8.5, 12.2), Vector3.new(0, 6.1, 14.2), Vector3.new(0, 4.5, 15.5)}
-	local widths = {5.0, 4.5, 3.85, 3.15, 2.35}; local segments = {}; local host = pelvis
+	local points = {Vector3.new(0, 15.5, 2.3), Vector3.new(0, 14.3, 5.3), Vector3.new(0, 12.7, 8.1), Vector3.new(0, 10.8, 10.7), Vector3.new(0, 8.8, 13.0), Vector3.new(0, 7.0, 15.0), Vector3.new(0, 5.6, 16.7), Vector3.new(0, 4.7, 18.0)}
+	local widths = {5.0, 4.55, 4.05, 3.5, 2.95, 2.4, 1.85}; local segments = {}; local host = pelvis
 	for i = 1, #points - 1 do
-		local s = segment(model, "RudderSegment_" .. i, points[i], points[i + 1], widths[i], widths[i] * 0.72, ground, BODY)
-		motor(host, "RudderJoint_" .. i, host, s, ground * CFrame.new(points[i])); table.insert(segments, s); host = s
+		local s = cylinderBetween(model, string.format("TailCylinder_%02d", i), points[i], points[i + 1], widths[i], ground, BODY)
+		motor(host, string.format("TailJoint_%02d", i), host, s, ground * CFrame.new(points[i])); table.insert(segments, s); host = s
 	end
 	local armor = Instance.new("Folder"); armor.Name = "CounterbalanceArmor"; armor.Parent = geometry
 	for i, hostPart in ipairs(segments) do
-		local p = wedge(armor, "RudderKeel_" .. i, Vector3.new(1.2, 1.2 + (#segments - i) * 0.3, 2.2), ground * CFrame.new(0, 14.5 - i * 2.15, 3.6 + i * 2.6) * CFrame.Angles(math.rad(-24), 0, 0), ARMOR); weld(hostPart, p)
+		if i <= 4 then
+			local p = wedge(armor, "TailShield_" .. i, Vector3.new(1.0, 1.5 + (#segments - i) * 0.18, 1.8), hostPart.CFrame * CFrame.new(0, 1.0, 0), ARMOR); weld(hostPart, p)
+		end
 	end
 	return segments
+end
+
+local function addLayeredBody(geometry: Folder, torso: BasePart, pelvis: BasePart, ground: CFrame)
+	local folder = Instance.new("Folder"); folder.Name = "LayeredBodyVolumes"; folder.Parent = geometry
+	for _, spec in ipairs({
+		{"LeftChestMass", Vector3.new(-2.55, 21.5, -1.25), Vector3.new(4.4, 5.7, 4.5), torso},
+		{"RightChestMass", Vector3.new(2.55, 21.5, -1.25), Vector3.new(4.4, 5.7, 4.5), torso},
+		{"UpperChestMass", Vector3.new(0, 23.0, -0.75), Vector3.new(6.4, 3.5, 4.7), torso},
+		{"AbdomenMass", Vector3.new(0, 18.0, -0.8), Vector3.new(6.2, 4.4, 4.6), pelvis},
+		{"LeftHipMass", Vector3.new(-2.65, 15.8, -0.2), Vector3.new(4.4, 4.7, 4.8), pelvis},
+		{"RightHipMass", Vector3.new(2.65, 15.8, -0.2), Vector3.new(4.4, 4.7, 4.8), pelvis},
+	}) do
+		local p = ellipsoid(folder, spec[1] :: string, spec[3] :: Vector3, ground * CFrame.new(spec[2] :: Vector3), BODY); weld(spec[4] :: BasePart, p)
+	end
+	for index = 1, 5 do
+		local y = 22.4 - index * 1.05
+		local plate = ellipsoid(folder, "BellyBand_" .. index, Vector3.new(5.6 - index * 0.18, 0.72, 1.05), ground * CFrame.new(0, y, -3.0), BELLY)
+		weld(index <= 3 and torso or pelvis, plate)
+	end
+end
+
+local function addJointDefinition(geometry: Folder, ground: CFrame, torso: BasePart, pelvis: BasePart)
+	local folder = Instance.new("Folder"); folder.Name = "AngularDefinition"; folder.Parent = geometry
+	for _, sign in ipairs({-1, 1}) do
+		local shoulder = wedge(folder, sign < 0 and "LeftShoulderEdge" or "RightShoulderEdge", Vector3.new(2.6, 2.0, 2.4), ground * CFrame.new(sign * 4.45, 22.0, -0.2) * CFrame.Angles(0, sign * math.rad(90), 0), ARMOR); weld(torso, shoulder)
+		local chestEdge = wedge(folder, sign < 0 and "LeftChestEdge" or "RightChestEdge", Vector3.new(1.2, 3.8, 1.2), ground * CFrame.new(sign * 3.35, 20.8, -3.15) * CFrame.Angles(0, sign * math.rad(90), 0), ARMOR); weld(torso, chestEdge)
+		local hip = wedge(folder, sign < 0 and "LeftHipEdge" or "RightHipEdge", Vector3.new(2.4, 1.8, 2.2), ground * CFrame.new(sign * 4.0, 16.0, 0) * CFrame.Angles(0, sign * math.rad(90), 0), ARMOR); weld(pelvis, hip)
+	end
 end
 
 local function shatteredShield(folder: Folder, host: BasePart, index: number, pos: Vector3, scale: number, yaw: number, ground: CFrame)
@@ -143,15 +184,11 @@ local function build(target: Instance, ground: CFrame): Model
 	model:SetAttribute("ForwardClawsPerFoot", 3); model:SetAttribute("RearClawsPerFoot", 1); model:SetAttribute("DressingDeferredToPhase", 5)
 	local geometry = detailFolder(model)
 	local root = part(model, "HumanoidRootPart", Vector3.new(3, 3, 2), ground * CFrame.new(0, 14.8, 0), Color3.new(1,1,1)); root.Transparency = 1; root.Anchored = true; root.Massless = false; model.PrimaryPart = root
-	local pelvis = angular(model, "LowerTorso", Vector3.new(8.2, 5.8, 5.5), ground * CFrame.new(0, 16.1, 0.35) * CFrame.Angles(math.rad(2), 0, 0), BODY); motor(root, "Root", root, pelvis, ground * CFrame.new(0, 14.9, 0))
-	local torso = angular(model, "UpperTorso", Vector3.new(9.0, 7.2, 5.7), ground * CFrame.new(0, 21.0, -0.05) * CFrame.Angles(math.rad(-3), 0, 0), BODY); motor(pelvis, "Waist", pelvis, torso, ground * CFrame.new(0, 18.6, 0.1))
+	local pelvis = ellipsoid(model, "LowerTorso", Vector3.new(7.6, 5.5, 5.3), ground * CFrame.new(0, 16.1, 0.35) * CFrame.Angles(math.rad(2), 0, 0), BODY); motor(root, "Root", root, pelvis, ground * CFrame.new(0, 14.9, 0))
+	local torso = ellipsoid(model, "UpperTorso", Vector3.new(8.2, 6.7, 5.5), ground * CFrame.new(0, 21.0, -0.05) * CFrame.Angles(math.rad(-3), 0, 0), BODY); motor(pelvis, "Waist", pelvis, torso, ground * CFrame.new(0, 18.6, 0.1))
+	addLayeredBody(geometry, torso, pelvis, ground)
+	addJointDefinition(geometry, ground, torso, pelvis)
 	local chest = wedge(geometry, "BarrelChestArmor", Vector3.new(7.2, 5.8, 1.15), ground * CFrame.new(0, 21.1, -3.0) * CFrame.Angles(0, math.rad(180), 0), BELLY); weld(torso, chest)
-	for _, sign in ipairs({-1, 1}) do
-		local shoulderArmor = wedge(geometry, sign < 0 and "LeftShoulderArmor" or "RightShoulderArmor", Vector3.new(3.0, 3.5, 2.2), ground * CFrame.new(sign * 4.45, 21.65, 0) * CFrame.Angles(0, sign * math.rad(90), 0), ARMOR)
-		weld(torso, shoulderArmor)
-		local hipArmor = wedge(geometry, sign < 0 and "LeftHipArmor" or "RightHipArmor", Vector3.new(2.8, 3.4, 2.35), ground * CFrame.new(sign * 4.25, 16.2, 0.25) * CFrame.Angles(0, sign * math.rad(90), 0), ARMOR)
-		weld(pelvis, hipArmor)
-	end
 	local head = buildHead(model, geometry, torso, ground)
 	buildArm(model, geometry, "Left", -1, torso, ground); buildArm(model, geometry, "Right", 1, torso, ground)
 	for _, data in ipairs({{"Left", -1}, {"Right", 1}}) do
@@ -159,6 +196,9 @@ local function build(target: Instance, ground: CFrame): Model
 		local hip, knee, hock = Vector3.new(x, 15.8, 0.35), Vector3.new(x, 10.5, -1.45), Vector3.new(x, 5.6, 1.35)
 		local upper = segment(model, side .. "UpperLeg", hip, knee, 4.8, 4.35, ground, BODY); motor(pelvis, side .. "Hip", pelvis, upper, ground * CFrame.new(hip))
 		local lower = segment(model, side .. "LowerLeg", knee, hock, 4.0, 3.65, ground, BODY); motor(upper, side .. "Knee", upper, lower, ground * CFrame.new(knee))
+		local thighMass = ellipsoid(geometry, side .. "ThighMass", Vector3.new(5.25, 5.45, 4.75), ground * CFrame.new((hip + knee) * 0.5 + Vector3.new(0, 0.35, 0.1)), BODY); weld(upper, thighMass)
+		local calfMass = ellipsoid(geometry, side .. "CalfMass", Vector3.new(4.35, 4.5, 3.95), ground * CFrame.new((knee + hock) * 0.5 + Vector3.new(0, -0.1, 0.25)), BODY); weld(lower, calfMass)
+		local kneeEdge = wedge(geometry, side .. "KneeEdge", Vector3.new(2.7, 1.45, 2.0), ground * CFrame.new(knee + Vector3.new(0, 0, -1.25)) * CFrame.Angles(0, math.rad(180), 0), ARMOR); weld(lower, kneeEdge)
 		buildFoot(model, geometry, side, sign, lower, ground)
 	end
 	local rudder = buildCounterbalance(model, geometry, pelvis, ground)
