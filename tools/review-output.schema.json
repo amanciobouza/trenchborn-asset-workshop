@@ -1,0 +1,37 @@
+{
+  "type": "object",
+  "properties": {
+    "status": { "type": "string", "enum": ["PASS", "PASS_WITH_WARNINGS", "FAIL"] },
+    "summary": { "type": "string" },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "severity": { "type": "string", "enum": ["BLOCKER", "WARNING", "INFO"] },
+          "message": { "type": "string" },
+          "evidenceViews": { "type": "array", "items": { "type": "string" } },
+          "recommendation": { "type": "string" }
+        },
+        "required": ["id", "severity", "message", "evidenceViews", "recommendation"],
+        "additionalProperties": false
+      }
+    },
+    "criteria": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "result": { "type": "string", "enum": ["PASS", "PARTIAL", "FAIL", "NOT_ASSESSABLE"] },
+          "reason": { "type": "string" }
+        },
+        "required": ["id", "result", "reason"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["status", "summary", "findings", "criteria"],
+  "additionalProperties": false
+}
