@@ -17,7 +17,7 @@ only the user may change `QualityGateB` to `Approved`.
 ### Automatic Studio review agent
 
 The optional local bridge removes manual Output copying and screenshot work.
-It uses Windows PowerShell and does not require Python. Install it once:
+It uses Python 3 with Pillow for window capture. Install it once:
 
 ```powershell
 .\tools\install-review-agent.ps1
@@ -32,8 +32,10 @@ and asks the local bridge to capture and visually review them. Results return
 to the Studio dock widget and are saved under `reviews/` locally. No API key is
 required: the agent invokes `codex exec` using the cached ChatGPT login.
 
-`TRENCHBORN_REVIEW_MODEL` optionally selects a Codex model; when unset, Codex
-uses the account's configured default.
+If Studio chrome should be cropped from captures, set
+`TRENCHBORN_CAPTURE_INSET` to `left,top,right,bottom` pixel values before
+starting the agent. `TRENCHBORN_REVIEW_MODEL` optionally selects a Codex model;
+when unset, Codex uses the account's configured default.
 
 ## Marshal-II Roadblock final installer
 

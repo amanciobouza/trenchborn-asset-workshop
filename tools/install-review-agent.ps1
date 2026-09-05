@@ -8,6 +8,18 @@ $pluginFolder = Join-Path $env:LOCALAPPDATA "Roblox\Plugins"
 if (-not (Get-Command rojo -ErrorAction SilentlyContinue)) {
     throw "Rojo is not available on PATH. Install Rojo before running this installer."
 }
+$pythonExe = $null
+$pythonPrefix = @()
+if (Get-Command py -ErrorAction SilentlyContinue) {
+    $pythonExe = "py"
+    $pythonPrefix = @("-3")
+} elseif (Get-Command python -ErrorAction SilentlyContinue) {
+    $pythonExe = "python"
+} elseif (Get-Command python3 -ErrorAction SilentlyContinue) {
+    $pythonExe = "python3"
+} else {
+    throw "Python 3 is missing. Download it from https://www.python.org/downloads/windows/ and enable 'Add python.exe to PATH'."
+}
 if (-not (Get-Command codex -ErrorAction SilentlyContinue)) {
     if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
         throw "Codex CLI is missing. Install Node.js, then run: npm install -g @openai/codex"
@@ -15,6 +27,7 @@ if (-not (Get-Command codex -ErrorAction SilentlyContinue)) {
     npm install -g @openai/codex
 }
 
+& $pythonExe @pythonPrefix -m pip install --user Pillow
 rojo build (Join-Path $repoRoot "plugin.project.json") -o $pluginBuild
 New-Item -ItemType Directory -Force -Path $pluginFolder | Out-Null
 Copy-Item -Force $pluginBuild (Join-Path $pluginFolder "TrenchbornReviewPlugin.rbxm")
