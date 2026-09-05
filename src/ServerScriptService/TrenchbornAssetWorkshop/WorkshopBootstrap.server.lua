@@ -120,9 +120,18 @@ workshop:SetAttribute("GoldenMasterReviewTarget", sovereignModel.Name)
 workshop:SetAttribute("AnimationTestTarget", sovereignSpecification.AssetName)
 
 
+for _, obsoleteName in ipairs({
+	"Kaiju_I_Awakened_GoldenMaster",
+	"Kaiju_I_Bound_Chimera_GoldenMaster",
+}) do
+	local obsoleteModel = workshop:FindFirstChild(obsoleteName)
+	if obsoleteModel then obsoleteModel:Destroy() end
+end
+workshop:SetAttribute("KaijuBuildRevision", "BoundChimera-Layered-v3")
 local kaijuAwakenedModel = kaijuAwakenedGoldenMaster.Build(workshop, {
 	GroundCFrame = CFrame.new(0, 0, 145),
 })
+kaijuAwakenedModel:SetAttribute("BuildRevision", "BoundChimera-Layered-v3")
 workshop:SetAttribute("CurrentAsset", kaijuAwakenedSpecification.AssetName)
 workshop:SetAttribute("CurrentPhase", kaijuAwakenedSpecification.PipelinePhase)
 workshop:SetAttribute("QualityStatus", "Phase4_GeometryReview")
