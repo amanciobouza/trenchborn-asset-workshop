@@ -82,8 +82,16 @@ def call_codex(session):
         command.extend(["--model", model])
     for _, file_path in session["captures"]:
         command.extend(["--image", file_path])
-    command.append(json.dumps(prompt, ensure_ascii=False))
-    completed = subprocess.run(command, capture_output=True, text=True, timeout=300)
+    # Use the explicit stdin sentinel so image-option parsing cannot consume or
+    # hide the dynamically generated prompt on different Codex CLI versions.
+    command.append("-")
+    completed = subprocess.run(
+        command,
+        input=json.dumps(prompt, ensure_ascii=False),
+        capture_output=True,
+        text=True,
+        timeout=300,
+    )
     pathlib.Path(session["folder"], "codex-stderr.log").write_text(completed.stderr, encoding="utf-8")
     if completed.returncode != 0:
         raise RuntimeError("codex exec failed: " + completed.stderr[-2000:])
