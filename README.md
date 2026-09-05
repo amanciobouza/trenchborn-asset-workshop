@@ -22,7 +22,7 @@ On Windows, install it once from PowerShell:
 ```powershell
 .\tools\install-review-agent.ps1
 codex login
-python .\tools\trenchborn-review-agent.py
+.\tools\start-review-agent.ps1
 ```
 
 Restart Studio, enable **Game Settings > Security > Allow HTTP Requests**, and
