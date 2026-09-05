@@ -11,6 +11,12 @@ if (-not (Get-Command rojo -ErrorAction SilentlyContinue)) {
 if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
     throw "Python is not available on PATH."
 }
+if (-not (Get-Command codex -ErrorAction SilentlyContinue)) {
+    if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
+        throw "Codex CLI is missing. Install Node.js, then run: npm install -g @openai/codex"
+    }
+    npm install -g @openai/codex
+}
 
 python -m pip install --user Pillow
 rojo build (Join-Path $repoRoot "plugin.project.json") -o $pluginBuild
@@ -19,7 +25,7 @@ Copy-Item -Force $pluginBuild (Join-Path $pluginFolder "TrenchbornReviewPlugin.r
 
 Write-Host "Installed TrenchbornReviewPlugin. Restart Roblox Studio."
 Write-Host "Enable Game Settings > Security > Allow HTTP Requests."
-Write-Host "Set OPENAI_API_KEY locally before starting the agent."
+Write-Host "Run 'codex login' once and sign in with your ChatGPT account."
 
 if ($Start) {
     python (Join-Path $PSScriptRoot "trenchborn-review-agent.py")
