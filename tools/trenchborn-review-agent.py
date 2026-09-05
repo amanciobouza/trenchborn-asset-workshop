@@ -130,6 +130,30 @@ def call_codex_fix(session, review, iteration):
             capture_output=True,
             text=True,
         )
+        subprocess.run(
+            ["git", "add", "."],
+            cwd=worktree,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        subprocess.run(
+            [
+                "git",
+                "-c",
+                "user.name=Trenchborn Review Agent",
+                "-c",
+                "user.email=review-agent@localhost",
+                "commit",
+                "--quiet",
+                "-m",
+                "autofix baseline",
+            ],
+            cwd=worktree,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
         isolated_target = worktree / FIX_TARGET
         original_source = isolated_target.read_text(encoding="utf-8")
         prompt = {
@@ -150,40 +174,62 @@ def call_codex_fix(session, review, iteration):
             "visualReview": review,
             "cameraViews": [view for view, _ in copied_captures],
         }
-        summary_path = worktree / "fix-summary.txt"
-        command = [
-            codex,
-            "exec",
-            "--ephemeral",
-            "--sandbox",
-            "workspace-write",
-            "--cd",
-            str(worktree),
-            "--output-last-message",
-            str(summary_path),
-        ]
         model = os.environ.get("TRENCHBORN_REVIEW_MODEL")
-        if model:
-            command.extend(["--model", model])
-        for _, copied_path in copied_captures:
-            command.extend(["--image", str(copied_path)])
-        command.append("-")
-        completed = subprocess.run(
-            command,
-            input=json.dumps(prompt, ensure_ascii=False),
-            capture_output=True,
-            text=True,
-            timeout=600,
-        )
-        (session_folder / f"fix-{iteration}-codex-stderr.log").write_text(
-            completed.stderr, encoding="utf-8"
-        )
-        if completed.returncode != 0:
-            raise RuntimeError("codex autofix failed: " + completed.stderr[-2000:])
+        attempt_summaries = []
+        revised_source = original_source
+        for attempt in range(1, 3):
+            summary_path = worktree / f"fix-summary-{attempt}.txt"
+            command = [
+                codex,
+                "exec",
+                "--ephemeral",
+                "--sandbox",
+                "workspace-write",
+                "--cd",
+                str(worktree),
+                "--output-last-message",
+                str(summary_path),
+            ]
+            if model:
+                command.extend(["--model", model])
+            for _, copied_path in copied_captures:
+                command.extend(["--image", str(copied_path)])
+            command.append("-")
+            attempt_prompt = dict(prompt)
+            if attempt == 2:
+                attempt_prompt["retryDirective"] = (
+                    "Your previous run made no file change. This is an implementation task, "
+                    "not a review-only task. Open the editableFile now and use your editing "
+                    "tool to implement concrete geometry corrections before responding."
+                )
+            completed = subprocess.run(
+                command,
+                input=json.dumps(attempt_prompt, ensure_ascii=False),
+                capture_output=True,
+                text=True,
+                timeout=600,
+            )
+            (session_folder / f"fix-{iteration}-attempt-{attempt}-codex-stderr.log").write_text(
+                completed.stderr, encoding="utf-8"
+            )
+            summary = (
+                summary_path.read_text(encoding="utf-8")
+                if summary_path.is_file()
+                else completed.stdout
+            )
+            attempt_summaries.append(summary.strip())
+            if completed.returncode != 0:
+                raise RuntimeError("codex autofix failed: " + completed.stderr[-2000:])
+            revised_source = isolated_target.read_text(encoding="utf-8")
+            if revised_source != original_source:
+                break
 
-        revised_source = isolated_target.read_text(encoding="utf-8")
         if revised_source == original_source:
-            raise RuntimeError("Codex completed without changing the Golden Master builder")
+            diagnostic = " | ".join(value for value in attempt_summaries if value)
+            raise RuntimeError(
+                "Codex made no builder change after two attempts. Codex response: "
+                + (diagnostic[-1800:] or "No final response was recorded.")
+            )
 
         # Only this single reviewed file leaves the isolated workspace. Any
         # attempted edits to validators or specifications are discarded.
@@ -195,11 +241,7 @@ def call_codex_fix(session, review, iteration):
         (session_folder / f"fix-{iteration}-builder.lua").write_text(
             revised_source, encoding="utf-8"
         )
-        summary = (
-            summary_path.read_text(encoding="utf-8")
-            if summary_path.is_file()
-            else "Golden Master builder updated."
-        )
+        summary = attempt_summaries[-1] or "Golden Master builder updated."
         return {"status": "COMPLETE", "source": revised_source, "summary": summary}
 
 

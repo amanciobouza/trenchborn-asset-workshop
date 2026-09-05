@@ -210,7 +210,7 @@ local function requestAutofix(session, review, iteration)
 		iteration = iteration,
 		review = review,
 	})
-	for _ = 1, 300 do
+	for _ = 1, 650 do
 		task.wait(2)
 		local job = post("/session/fix-status", {sessionId = session.sessionId})
 		if job.status == "COMPLETE" then return job end
@@ -221,7 +221,7 @@ local function requestAutofix(session, review, iteration)
 			MAX_AUTOFIX_ITERATIONS
 		))
 	end
-	error("Autofix timed out after 10 minutes")
+	error("Autofix timed out after about 22 minutes")
 end
 
 local function rebuildFromSource(model, source)
