@@ -92,6 +92,8 @@ def call_codex(session):
         input=json.dumps(prompt, ensure_ascii=False),
         capture_output=True,
         text=True,
+        encoding="utf-8",
+        errors="replace",
         timeout=300,
     )
     pathlib.Path(session["folder"], "codex-stderr.log").write_text(completed.stderr, encoding="utf-8")
@@ -129,6 +131,8 @@ def call_codex_fix(session, review, iteration):
             check=True,
             capture_output=True,
             text=True,
+            encoding="utf-8",
+            errors="replace",
         )
         subprocess.run(
             ["git", "add", "."],
@@ -136,6 +140,8 @@ def call_codex_fix(session, review, iteration):
             check=True,
             capture_output=True,
             text=True,
+            encoding="utf-8",
+            errors="replace",
         )
         subprocess.run(
             [
@@ -153,6 +159,8 @@ def call_codex_fix(session, review, iteration):
             check=True,
             capture_output=True,
             text=True,
+            encoding="utf-8",
+            errors="replace",
         )
         isolated_target = worktree / FIX_TARGET
         original_source = isolated_target.read_text(encoding="utf-8")
@@ -207,6 +215,8 @@ def call_codex_fix(session, review, iteration):
                 input=json.dumps(attempt_prompt, ensure_ascii=False),
                 capture_output=True,
                 text=True,
+                encoding="utf-8",
+                errors="replace",
                 timeout=600,
             )
             (session_folder / f"fix-{iteration}-attempt-{attempt}-codex-stderr.log").write_text(
