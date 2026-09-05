@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 """Local-only bridge: captures Roblox Studio and sends a review bundle to OpenAI."""
 
-import base64
 import ctypes
 import json
 import os
 import pathlib
+import shutil
+import subprocess
 import threading
 import time
-import urllib.error
-import urllib.request
 import uuid
 from ctypes import wintypes
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -19,6 +18,8 @@ from PIL import ImageGrab
 HOST = "127.0.0.1"
 PORT = 43127
 ROOT = pathlib.Path(__file__).resolve().parents[1] / "reviews"
+REPO_ROOT = pathlib.Path(__file__).resolve().parents[1]
+OUTPUT_SCHEMA = pathlib.Path(__file__).resolve().parent / "review-output.schema.json"
 SESSIONS = {}
 LOCK = threading.Lock()
 
@@ -54,19 +55,10 @@ def capture(path):
     image.save(path, "PNG")
 
 
-def response_text(payload):
-    for item in payload.get("output", []):
-        if item.get("type") == "message":
-            for content in item.get("content", []):
-                if content.get("type") == "output_text":
-                    return content.get("text", "")
-    return ""
-
-
-def call_openai(session):
-    key = os.environ.get("OPENAI_API_KEY")
-    if not key:
-        raise RuntimeError("OPENAI_API_KEY is not set")
+def call_codex(session):
+    codex = shutil.which("codex") or shutil.which("codex.cmd")
+    if not codex:
+        raise RuntimeError("Codex CLI is not installed or is not available on PATH")
     prompt = {
         "task": "Perform Trenchborn Quality Gate B visual review.",
         "instructions": [
@@ -77,31 +69,25 @@ def call_openai(session):
             "Do not claim Quality Gate B is approved; the user owns approval.",
         ],
         "technicalReport": session["technicalReport"],
+        "cameraViews": [view for view, _ in session["captures"]],
     }
-    content = [{"type": "input_text", "text": json.dumps(prompt, ensure_ascii=False)}]
-    for view, file_path in session["captures"]:
-        encoded = base64.b64encode(pathlib.Path(file_path).read_bytes()).decode("ascii")
-        content.append({"type": "input_text", "text": "Camera view: " + view})
-        content.append({"type": "input_image", "image_url": "data:image/png;base64," + encoded, "detail": "high"})
-    body = json.dumps({
-        "model": os.environ.get("TRENCHBORN_REVIEW_MODEL", "gpt-5.6-sol"),
-        "input": [{"role": "user", "content": content}],
-    }).encode("utf-8")
-    request = urllib.request.Request(
-        "https://api.openai.com/v1/responses",
-        data=body,
-        method="POST",
-        headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"},
-    )
-    try:
-        with urllib.request.urlopen(request, timeout=180) as response:
-            payload = json.loads(response.read().decode("utf-8"))
-    except urllib.error.HTTPError as error:
-        raise RuntimeError(error.read().decode("utf-8")) from error
-    text = response_text(payload).strip()
-    if text.startswith("```"):
-        text = text.split("\n", 1)[1].rsplit("```", 1)[0]
-    return json.loads(text)
+    output_path = pathlib.Path(session["folder"]) / "review.json"
+    command = [
+        codex, "exec", "--ephemeral", "--sandbox", "read-only",
+        "--cd", str(REPO_ROOT), "--output-schema", str(OUTPUT_SCHEMA),
+        "--output-last-message", str(output_path),
+    ]
+    model = os.environ.get("TRENCHBORN_REVIEW_MODEL")
+    if model:
+        command.extend(["--model", model])
+    for _, file_path in session["captures"]:
+        command.extend(["--image", file_path])
+    command.append(json.dumps(prompt, ensure_ascii=False))
+    completed = subprocess.run(command, capture_output=True, text=True, timeout=300)
+    pathlib.Path(session["folder"], "codex-stderr.log").write_text(completed.stderr, encoding="utf-8")
+    if completed.returncode != 0:
+        raise RuntimeError("codex exec failed: " + completed.stderr[-2000:])
+    return json.loads(output_path.read_text(encoding="utf-8"))
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -137,7 +123,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_json(200, {"captured": view})
             elif self.path == "/session/finish":
                 with LOCK: session = SESSIONS[payload["sessionId"]]
-                review = call_openai(session)
+                review = call_codex(session)
                 pathlib.Path(session["folder"], "review.json").write_text(json.dumps(review, indent=2), encoding="utf-8")
                 self.send_json(200, review)
             else:
@@ -148,5 +134,5 @@ class Handler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     ROOT.mkdir(parents=True, exist_ok=True)
-    print(f"Trenchborn Review Agent listening on http://{HOST}:{PORT}")
+    print(f"Trenchborn Review Agent listening on http://{HOST}:{PORT} (Codex CLI mode)")
     ThreadingHTTPServer((HOST, PORT), Handler).serve_forever()
