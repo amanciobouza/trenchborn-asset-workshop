@@ -20,8 +20,8 @@ The optional local bridge removes manual Output copying and screenshot work.
 On Windows, install it once from PowerShell:
 
 ```powershell
-$env:OPENAI_API_KEY = "your-local-key"
 .\tools\install-review-agent.ps1
+codex login
 python .\tools\trenchborn-review-agent.py
 ```
 
@@ -29,13 +29,13 @@ Restart Studio, enable **Game Settings > Security > Allow HTTP Requests**, and
 press **Plugins > Trenchborn > Review Agent** while the Golden Master exists.
 The plugin runs the deterministic checks, frames five standard camera views,
 and asks the local bridge to capture and visually review them. Results return
-to the Studio dock widget and are saved under `reviews/` locally. The API key
-is read only from `OPENAI_API_KEY` and must never be committed.
+to the Studio dock widget and are saved under `reviews/` locally. No API key is
+required: the agent invokes `codex exec` using the cached ChatGPT login.
 
 If Studio chrome should be cropped from captures, set
 `TRENCHBORN_CAPTURE_INSET` to `left,top,right,bottom` pixel values before
-starting the agent. `TRENCHBORN_REVIEW_MODEL` optionally overrides the default
-vision model.
+starting the agent. `TRENCHBORN_REVIEW_MODEL` optionally selects a Codex model;
+when unset, Codex uses the account's configured default.
 
 ## Marshal-II Roadblock final installer
 
