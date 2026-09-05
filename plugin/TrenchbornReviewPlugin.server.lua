@@ -5,9 +5,10 @@ local Workspace = game:GetService("Workspace")
 
 local BRIDGE = "http://127.0.0.1:43127"
 local MODEL_NAME = "Kaiju_I_Bound_Chimera_GoldenMaster"
+local MAX_AUTOFIX_ITERATIONS = 5
 
 local toolbar = plugin:CreateToolbar("Trenchborn")
-local reviewButton = toolbar:CreateButton("Review Agent", "Run the complete Quality Gate review", "")
+local reviewButton = toolbar:CreateButton("Review Agent", "Build, review, and correct until ready for user approval", "")
 local widgetInfo = DockWidgetPluginGuiInfo.new(
 	Enum.InitialDockState.Right,
 	false,
@@ -154,14 +155,13 @@ local function cameraViews(model, camera)
 	}, target
 end
 
-local function runReview()
-	local model = findReviewModel()
-	if not model then
-		setStatus("FAIL\nSelect the Bound Chimera model or start Play so the Golden Master exists.")
-		return
-	end
+local function captureAndReview(model, iteration)
 	Selection:Set({model})
-	setStatus("Running deterministic checks...")
+	setStatus(string.format(
+		"ITERATION %d/%d\n\nRunning deterministic checks...",
+		iteration,
+		MAX_AUTOFIX_ITERATIONS
+	))
 	local technical = runTechnicalReview(model)
 	local session = post("/session/start", {
 		assetId = technical.assetId,
@@ -172,22 +172,121 @@ local function runReview()
 	local camera = Workspace.CurrentCamera
 	if not camera then error("Workspace.CurrentCamera is missing") end
 	local oldType, oldCF, oldFov = camera.CameraType, camera.CFrame, camera.FieldOfView
-	camera.CameraType = Enum.CameraType.Scriptable
-	camera.FieldOfView = 34
-	local views, target = cameraViews(model, camera)
-	for index, view in ipairs(views) do
-		setStatus(string.format("Capturing %s (%d/%d)...", view.name, index, #views))
-		camera.CFrame = CFrame.lookAt(view.position, target)
-		task.wait(0.75)
-		post("/session/capture", {sessionId = session.sessionId, view = view.name})
-	end
+	local captured, captureError = pcall(function()
+		camera.CameraType = Enum.CameraType.Scriptable
+		camera.FieldOfView = 34
+		local views, target = cameraViews(model, camera)
+		for index, view in ipairs(views) do
+			setStatus(string.format(
+				"ITERATION %d/%d\n\nCapturing %s (%d/%d)...",
+				iteration,
+				MAX_AUTOFIX_ITERATIONS,
+				view.name,
+				index,
+				#views
+			))
+			camera.CFrame = CFrame.lookAt(view.position, target)
+			task.wait(0.75)
+			post("/session/capture", {sessionId = session.sessionId, view = view.name})
+		end
+	end)
 	camera.CameraType, camera.CFrame, camera.FieldOfView = oldType, oldCF, oldFov
+	if not captured then error(captureError) end
 
-	setStatus("AI is reviewing the model...")
+	setStatus(string.format(
+		"ITERATION %d/%d\n\nAI is reviewing the model...",
+		iteration,
+		MAX_AUTOFIX_ITERATIONS
+	))
 	local finished = post("/session/finish", {sessionId = session.sessionId})
 	model:SetAttribute("QualityGateBVisualReviewStatus", finished.status or "UNKNOWN")
 	model:SetAttribute("QualityGateBVisualReviewJSON", HttpService:JSONEncode(finished))
-	setStatus(formatReview(finished))
+	return finished, session, technical
+end
+
+local function requestAutofix(session, review, iteration)
+	post("/session/fix", {
+		sessionId = session.sessionId,
+		iteration = iteration,
+		review = review,
+	})
+	for _ = 1, 300 do
+		task.wait(2)
+		local job = post("/session/fix-status", {sessionId = session.sessionId})
+		if job.status == "COMPLETE" then return job end
+		if job.status == "FAILED" then error("Autofix failed: " .. (job.error or "unknown error")) end
+		setStatus(string.format(
+			"ITERATION %d/%d\n\nCodex is correcting the Golden Master...",
+			iteration,
+			MAX_AUTOFIX_ITERATIONS
+		))
+	end
+	error("Autofix timed out after 10 minutes")
+end
+
+local function rebuildFromSource(model, source)
+	local packageFolder = ReplicatedStorage:FindFirstChild("TrenchbornAssetWorkshop")
+	if not packageFolder then error("ReplicatedStorage.TrenchbornAssetWorkshop is missing") end
+	local liveModule = packageFolder:FindFirstChild("KaijuAwakenedGoldenMaster")
+	if not liveModule or not liveModule:IsA("ModuleScript") then
+		error("KaijuAwakenedGoldenMaster ModuleScript is missing")
+	end
+
+	local freshModule = liveModule:Clone()
+	freshModule.Name = "KaijuAwakenedGoldenMaster_Autofix"
+	freshModule.Source = source
+	freshModule.Parent = packageFolder
+	local loaded, builder = pcall(require, freshModule)
+	freshModule:Destroy()
+	if not loaded then error("Corrected Golden Master could not be loaded: " .. tostring(builder)) end
+
+	local root = model.PrimaryPart
+	if not root then error("Golden Master has no PrimaryPart") end
+	local ground = CFrame.new(root.Position.X, 0, root.Position.Z)
+	return builder.Build(model.Parent, {GroundCFrame = ground})
+end
+
+local function runReview()
+	local model = findReviewModel()
+	if not model then
+		setStatus("FAIL\nSelect the Bound Chimera model or start Play so the Golden Master exists.")
+		return
+	end
+
+	for iteration = 1, MAX_AUTOFIX_ITERATIONS do
+		local finished, session, technical = captureAndReview(model, iteration)
+		local deterministicPass = technical.blockers == 0 and technical.warnings == 0
+		if finished.status == "PASS" and deterministicPass then
+			setStatus("READY FOR USER QUALITY GATE B\n\n" .. formatReview(finished))
+			return
+		end
+		if iteration == MAX_AUTOFIX_ITERATIONS then
+			setStatus(string.format(
+				"AUTOFIX STOPPED AFTER %d ITERATIONS\n\n%s",
+				MAX_AUTOFIX_ITERATIONS,
+				formatReview(finished)
+			))
+			return
+		end
+
+		local fix = requestAutofix(session, finished, iteration)
+		local rebuilt, rebuiltModel = pcall(rebuildFromSource, model, fix.source)
+		if not rebuilt then
+			local rolledBack, rollbackError = pcall(post, "/session/rollback", {
+				sessionId = session.sessionId,
+			})
+			if not rolledBack then
+				error(string.format(
+					"Corrected builder failed (%s); rollback also failed (%s)",
+					tostring(rebuiltModel),
+					tostring(rollbackError)
+				))
+			end
+			error("Corrected builder failed and was rolled back: " .. tostring(rebuiltModel))
+		end
+		model = rebuiltModel
+		task.wait(1)
+	end
 end
 
 reviewButton.Click:Connect(function()

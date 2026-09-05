@@ -7,6 +7,7 @@ import os
 import pathlib
 import shutil
 import subprocess
+import tempfile
 import threading
 import time
 import uuid
@@ -20,6 +21,7 @@ PORT = 43127
 ROOT = pathlib.Path(__file__).resolve().parents[1] / "reviews"
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[1]
 OUTPUT_SCHEMA = pathlib.Path(__file__).resolve().parent / "review-output.schema.json"
+FIX_TARGET = pathlib.Path("src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuAwakenedGoldenMaster.lua")
 SESSIONS = {}
 LOCK = threading.Lock()
 
@@ -98,6 +100,130 @@ def call_codex(session):
     return json.loads(output_path.read_text(encoding="utf-8"))
 
 
+def call_codex_fix(session, review, iteration):
+    """Let Codex revise an isolated copy, then publish only the approved builder file."""
+    codex = shutil.which("codex") or shutil.which("codex.cmd")
+    if not codex:
+        raise RuntimeError("Codex CLI is not installed or is not available on PATH")
+
+    source_root = REPO_ROOT / "src"
+    live_target = REPO_ROOT / FIX_TARGET
+    if not live_target.is_file():
+        raise RuntimeError(f"Golden Master builder is missing: {live_target}")
+
+    session_folder = pathlib.Path(session["folder"])
+    with tempfile.TemporaryDirectory(prefix="trenchborn-autofix-") as temp_name:
+        worktree = pathlib.Path(temp_name)
+        shutil.copytree(source_root, worktree / "src")
+        capture_folder = worktree / "captures"
+        capture_folder.mkdir()
+        copied_captures = []
+        for view, original_path in session["captures"]:
+            copied_path = capture_folder / f"{view}.png"
+            shutil.copy2(original_path, copied_path)
+            copied_captures.append((view, copied_path))
+
+        subprocess.run(
+            ["git", "init", "--quiet"],
+            cwd=worktree,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        isolated_target = worktree / FIX_TARGET
+        original_source = isolated_target.read_text(encoding="utf-8")
+        prompt = {
+            "task": "Correct the Trenchborn Phase 4 Bound Chimera Golden Master from the review evidence.",
+            "iteration": iteration,
+            "editableFile": FIX_TARGET.as_posix(),
+            "hardConstraints": [
+                "Actually edit the editableFile; do not merely describe changes.",
+                "Do not edit specifications, review profiles, validators, schemas, plugins, or any other file.",
+                "Never weaken, remove, or bypass a review criterion or deterministic check.",
+                "Keep this a geometry-only Phase 4 Golden Master: no particles, lights, sounds, textures, or dressing.",
+                "Preserve the public Builder.Build and Builder.Validate APIs, asset identity, rig connectivity, and performance budgets.",
+                "Address every blocker and failed or partial visual criterion using the supplied views.",
+                "The lowest visible geometry must contact expected ground Y=0 without sinking below it.",
+                "Quality Gate B remains Pending; only the user can approve it.",
+            ],
+            "technicalReport": session["technicalReport"],
+            "visualReview": review,
+            "cameraViews": [view for view, _ in copied_captures],
+        }
+        summary_path = worktree / "fix-summary.txt"
+        command = [
+            codex,
+            "exec",
+            "--ephemeral",
+            "--sandbox",
+            "workspace-write",
+            "--cd",
+            str(worktree),
+            "--output-last-message",
+            str(summary_path),
+        ]
+        model = os.environ.get("TRENCHBORN_REVIEW_MODEL")
+        if model:
+            command.extend(["--model", model])
+        for _, copied_path in copied_captures:
+            command.extend(["--image", str(copied_path)])
+        command.append("-")
+        completed = subprocess.run(
+            command,
+            input=json.dumps(prompt, ensure_ascii=False),
+            capture_output=True,
+            text=True,
+            timeout=600,
+        )
+        (session_folder / f"fix-{iteration}-codex-stderr.log").write_text(
+            completed.stderr, encoding="utf-8"
+        )
+        if completed.returncode != 0:
+            raise RuntimeError("codex autofix failed: " + completed.stderr[-2000:])
+
+        revised_source = isolated_target.read_text(encoding="utf-8")
+        if revised_source == original_source:
+            raise RuntimeError("Codex completed without changing the Golden Master builder")
+
+        # Only this single reviewed file leaves the isolated workspace. Any
+        # attempted edits to validators or specifications are discarded.
+        previous_live_source = live_target.read_text(encoding="utf-8")
+        live_target.write_text(revised_source, encoding="utf-8")
+        with LOCK:
+            session["previousSource"] = previous_live_source
+            session["appliedSource"] = revised_source
+        (session_folder / f"fix-{iteration}-builder.lua").write_text(
+            revised_source, encoding="utf-8"
+        )
+        summary = (
+            summary_path.read_text(encoding="utf-8")
+            if summary_path.is_file()
+            else "Golden Master builder updated."
+        )
+        return {"status": "COMPLETE", "source": revised_source, "summary": summary}
+
+
+def start_fix(session, review, iteration):
+    with LOCK:
+        current = session.get("fixJob")
+        if current and current.get("status") == "RUNNING":
+            raise RuntimeError("An autofix job is already running for this session")
+        job = {"status": "RUNNING", "iteration": iteration}
+        session["fixJob"] = job
+
+    def worker():
+        try:
+            result = call_codex_fix(session, review, iteration)
+            with LOCK:
+                job.update(result)
+        except Exception as error:
+            with LOCK:
+                job.update({"status": "FAILED", "error": str(error)})
+
+    threading.Thread(target=worker, name=f"trenchborn-fix-{iteration}", daemon=True).start()
+    return job
+
+
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, pattern, *args):
         print("[bridge] " + pattern % args)
@@ -141,6 +267,28 @@ class Handler(BaseHTTPRequestHandler):
                     json.dumps(review, indent=2), encoding="utf-8"
                 )
                 self.send_json(200, review)
+            elif self.path == "/session/fix":
+                with LOCK:
+                    session = SESSIONS[payload["sessionId"]]
+                job = start_fix(session, payload["review"], int(payload["iteration"]))
+                self.send_json(202, {"status": job["status"], "iteration": job["iteration"]})
+            elif self.path == "/session/fix-status":
+                with LOCK:
+                    session = SESSIONS[payload["sessionId"]]
+                    job = dict(session.get("fixJob") or {"status": "NOT_STARTED"})
+                self.send_json(200, job)
+            elif self.path == "/session/rollback":
+                with LOCK:
+                    session = SESSIONS[payload["sessionId"]]
+                    previous_source = session.get("previousSource")
+                    applied_source = session.get("appliedSource")
+                live_target = REPO_ROOT / FIX_TARGET
+                if previous_source is None or applied_source is None:
+                    raise RuntimeError("No applied autofix is available to roll back")
+                if live_target.read_text(encoding="utf-8") != applied_source:
+                    raise RuntimeError("Builder changed after autofix; refusing unsafe rollback")
+                live_target.write_text(previous_source, encoding="utf-8")
+                self.send_json(200, {"status": "ROLLED_BACK"})
             else:
                 self.send_json(404, {"error": "Unknown endpoint"})
         except Exception as error:

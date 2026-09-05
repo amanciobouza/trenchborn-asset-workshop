@@ -32,6 +32,15 @@ and asks the local bridge to capture and visually review them. Results return
 to the Studio dock widget and are saved under `reviews/` locally. No API key is
 required: the agent invokes `codex exec` using the cached ChatGPT login.
 
+With the Rojo Studio plugin connected, **Review Agent** runs the complete Phase
+4 correction loop. A failed review starts Codex in an isolated temporary copy,
+where only `KaijuAwakenedGoldenMaster.lua` is accepted as output. The corrected
+builder is written to the repository, synchronized by Rojo, loaded fresh in
+Studio, rebuilt, and reviewed again. The loop stops after five attempts or when
+both deterministic checks and all visual criteria pass. It never changes the
+specification, validator, review profile, or `QualityGateB`; final approval
+always remains with the user.
+
 If Studio chrome should be cropped from captures, set
 `TRENCHBORN_CAPTURE_INSET` to `left,top,right,bottom` pixel values before
 starting the agent. `TRENCHBORN_REVIEW_MODEL` optionally selects a Codex model;
