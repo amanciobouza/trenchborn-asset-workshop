@@ -20,10 +20,19 @@ local widgetInfo = DockWidgetPluginGuiInfo.new(
 local widget = plugin:CreateDockWidgetPluginGui("TrenchbornReviewAgent", widgetInfo)
 widget.Title = "Trenchborn Review Agent"
 
+local scroll = Instance.new("ScrollingFrame")
+scroll.Name = "ReviewScroll"
+scroll.Size = UDim2.fromScale(1, 1)
+scroll.BackgroundColor3 = Color3.fromRGB(22, 27, 31)
+scroll.BorderSizePixel = 0
+scroll.CanvasSize = UDim2.new(0, 0, 0, 1600)
+scroll.ScrollBarThickness = 8
+scroll.Parent = widget
+
 local status = Instance.new("TextLabel")
 status.Name = "Status"
-status.Size = UDim2.fromScale(1, 1)
-status.BackgroundColor3 = Color3.fromRGB(22, 27, 31)
+status.Size = UDim2.new(1, -8, 0, 1600)
+status.BackgroundTransparency = 1
 status.TextColor3 = Color3.fromRGB(225, 235, 230)
 status.TextXAlignment = Enum.TextXAlignment.Left
 status.TextYAlignment = Enum.TextYAlignment.Top
@@ -31,7 +40,7 @@ status.TextWrapped = true
 status.TextScaled = true
 status.Font = Enum.Font.Code
 status.Text = "Start the local review agent, then press Review Agent."
-status.Parent = widget
+status.Parent = scroll
 
 local padding = Instance.new("UIPadding")
 padding.PaddingTop = UDim.new(0, 12)
@@ -47,7 +56,45 @@ sizeConstraint.Parent = status
 
 local function setStatus(text)
 	status.Text = text
+	scroll.CanvasPosition = Vector2.zero
 	widget.Enabled = true
+end
+
+local function formatReview(review)
+	local lines = {
+		review.status or "REVIEW COMPLETE",
+		"",
+		review.summary or "Review saved.",
+	}
+
+	if review.criteria and #review.criteria > 0 then
+		table.insert(lines, "")
+		table.insert(lines, "VISUAL CRITERIA")
+		for _, criterion in ipairs(review.criteria) do
+			table.insert(lines, string.format(
+				"[%s] %s\n%s",
+				criterion.result or "UNKNOWN",
+				criterion.id or "unnamed criterion",
+				criterion.reason or "No reason supplied."
+			))
+		end
+	end
+
+	if review.findings and #review.findings > 0 then
+		table.insert(lines, "")
+		table.insert(lines, "REQUIRED ACTIONS")
+		for _, finding in ipairs(review.findings) do
+			table.insert(lines, string.format(
+				"[%s] %s\n%s\nAction: %s",
+				finding.severity or "INFO",
+				finding.id or "unnamed finding",
+				finding.message or "No message supplied.",
+				finding.recommendation or "No recommendation supplied."
+			))
+		end
+	end
+
+	return table.concat(lines, "\n")
 end
 
 local function post(path, payload)
@@ -140,7 +187,7 @@ local function runReview()
 	local finished = post("/session/finish", {sessionId = session.sessionId})
 	model:SetAttribute("QualityGateBVisualReviewStatus", finished.status or "UNKNOWN")
 	model:SetAttribute("QualityGateBVisualReviewJSON", HttpService:JSONEncode(finished))
-	setStatus((finished.status or "REVIEW COMPLETE") .. "\n\n" .. (finished.summary or finished.review or "Review saved."))
+	setStatus(formatReview(finished))
 end
 
 reviewButton.Click:Connect(function()
