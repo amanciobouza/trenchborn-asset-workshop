@@ -22,24 +22,24 @@ It uses Python 3 with Pillow for window capture. Install it once:
 ```powershell
 .\tools\install-review-agent.ps1
 codex login
+$env:TRENCHBORN_TARGET_IMAGE = "C:\path\to\approved-bound-chimera-target.png"
 .\tools\start-review-agent.ps1
 ```
 
 Restart Studio, enable **Game Settings > Security > Allow HTTP Requests**, and
 press **Plugins > Trenchborn > Review Agent** while the Golden Master exists.
-The plugin runs the deterministic checks, frames five standard camera views,
+The approved Quality Gate A target image is mandatory. The plugin runs the
+deterministic checks, frames five standard views plus close-ups of the face,
+both arms, and both feet,
 and asks the local bridge to capture and visually review them. Results return
 to the Studio dock widget and are saved under `reviews/` locally. No API key is
 required: the agent invokes `codex exec` using the cached ChatGPT login.
 
-With the Rojo Studio plugin connected, **Review Agent** runs the complete Phase
-4 correction loop. A failed review starts Codex in an isolated temporary copy,
-where only `KaijuAwakenedGoldenMaster.lua` is accepted as output. The corrected
-builder is written to the repository, synchronized by Rojo, loaded fresh in
-Studio, rebuilt, and reviewed again. The loop stops after five attempts or when
-both deterministic checks and all visual criteria pass. It never changes the
-specification, validator, review profile, or `QualityGateB`; final approval
-always remains with the user.
+With the Rojo Studio plugin connected, **Review Agent** performs one strict
+Quality Gate B assessment. It never edits the builder: failed criteria are
+reported for correction and the review must then be run again. Automatic
+correction remains disabled until before/after evidence proves that a proposed
+change improves the result. Final approval always remains with the user.
 
 If Studio chrome should be cropped from captures, set
 `TRENCHBORN_CAPTURE_INSET` to `left,top,right,bottom` pixel values before
