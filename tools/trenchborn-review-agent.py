@@ -24,6 +24,7 @@ OUTPUT_SCHEMA = pathlib.Path(__file__).resolve().parent / "review-output.schema.
 FIX_TARGET = pathlib.Path("src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuAwakenedGoldenMaster.lua")
 SESSIONS = {}
 LOCK = threading.Lock()
+AUTOFIX_ENABLED = False
 
 
 def studio_bounds():
@@ -61,10 +62,21 @@ def call_codex(session):
     codex = shutil.which("codex") or shutil.which("codex.cmd")
     if not codex:
         raise RuntimeError("Codex CLI is not installed or is not available on PATH")
+    target_image = os.environ.get("TRENCHBORN_TARGET_IMAGE")
+    if not target_image:
+        raise RuntimeError(
+            "TRENCHBORN_TARGET_IMAGE is not set; Quality Gate B requires the approved target image"
+        )
+    target_path = pathlib.Path(target_image).expanduser().resolve()
+    if not target_path.is_file():
+        raise RuntimeError(f"Approved target image was not found: {target_path}")
     prompt = {
         "task": "Perform Trenchborn Quality Gate B visual review.",
         "instructions": [
             "Judge every visualReviewCriterion using all camera views.",
+            "Use the first attached image as the approved visual target and compare the model views against it.",
+            "Explicitly inspect face-part orientation, arm/torso intersections, and every foot claw.",
+            "A criterion that cannot be verified from the evidence must FAIL, never pass by assumption.",
             "Distinguish deterministic findings from visual findings.",
             "Return JSON only with status, summary, findings, and criteria.",
             "Status must be PASS, PASS_WITH_WARNINGS, or FAIL.",
@@ -72,6 +84,7 @@ def call_codex(session):
         ],
         "technicalReport": session["technicalReport"],
         "cameraViews": [view for view, _ in session["captures"]],
+        "approvedTargetImage": target_path.name,
     }
     output_path = pathlib.Path(session["folder"]) / "review.json"
     command = [
@@ -82,6 +95,7 @@ def call_codex(session):
     model = os.environ.get("TRENCHBORN_REVIEW_MODEL")
     if model:
         command.extend(["--model", model])
+    command.extend(["--image", str(target_path)])
     for _, file_path in session["captures"]:
         command.extend(["--image", file_path])
     # Use the explicit stdin sentinel so image-option parsing cannot consume or
@@ -191,10 +205,8 @@ def call_codex_fix(session, review, iteration):
                 codex,
                 "exec",
                 "--ephemeral",
-                # This Codex process is confined to the disposable worktree
-                # created above. Bypass host approval policy here so unattended
-                # inspection and editing cannot be rejected mid-loop.
-                "--dangerously-bypass-approvals-and-sandbox",
+                "--sandbox",
+                "workspace-write",
                 "--cd",
                 str(worktree),
                 "--output-last-message",
@@ -322,6 +334,10 @@ class Handler(BaseHTTPRequestHandler):
                 )
                 self.send_json(200, review)
             elif self.path == "/session/fix":
+                if not AUTOFIX_ENABLED:
+                    raise RuntimeError(
+                        "Automatic correction is disabled until Validator 2.0 proves improvement"
+                    )
                 with LOCK:
                     session = SESSIONS[payload["sessionId"]]
                 job = start_fix(session, payload["review"], int(payload["iteration"]))
