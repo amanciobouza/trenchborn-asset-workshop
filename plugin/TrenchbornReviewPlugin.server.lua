@@ -5,10 +5,10 @@ local Workspace = game:GetService("Workspace")
 
 local BRIDGE = "http://127.0.0.1:43127"
 local MODEL_NAME = "Kaiju_I_Bound_Chimera_GoldenMaster"
-local MAX_AUTOFIX_ITERATIONS = 5
+local MAX_AUTOFIX_ITERATIONS = 1
 
 local toolbar = plugin:CreateToolbar("Trenchborn")
-local reviewButton = toolbar:CreateButton("Review Agent", "Build, review, and correct until ready for user approval", "")
+local reviewButton = toolbar:CreateButton("Review Agent", "Validate geometry against technical rules and the approved target", "")
 local widgetInfo = DockWidgetPluginGuiInfo.new(
 	Enum.InitialDockState.Right,
 	false,
@@ -146,13 +146,30 @@ local function cameraViews(model, camera)
 	local limitingHalfAngle = math.min(verticalHalfAngle, horizontalHalfAngle)
 	local boundingRadius = size.Magnitude * 0.5
 	local distance = (boundingRadius / math.sin(limitingHalfAngle)) * 1.2
-	return {
+	local views = {
 		{name = "front", position = target + Vector3.new(0, 0, -distance)},
 		{name = "left", position = target + Vector3.new(-distance, 0, 0)},
 		{name = "right", position = target + Vector3.new(distance, 0, 0)},
 		{name = "rear", position = target + Vector3.new(0, 0, distance)},
 		{name = "three-quarter", position = target + Vector3.new(-1, 0.16, -1).Unit * distance},
-	}, target
+	}
+	local function addDetail(name, subjectName, offset, detailDistance)
+		local subject = model:FindFirstChild(subjectName, true)
+		if subject and subject:IsA("BasePart") then
+			table.insert(views, {
+				name = name,
+				target = subject.Position,
+				position = subject.Position + offset.Unit * detailDistance,
+			})
+		end
+	end
+	addDetail("face-front-close", "Head", Vector3.new(0, 0.05, -1), 12)
+	addDetail("face-three-quarter-close", "Head", Vector3.new(-1, 0.15, -1), 13)
+	addDetail("left-arm-close", "LeftUpperArm", Vector3.new(-1, 0.1, -0.65), 11)
+	addDetail("right-arm-close", "RightUpperArm", Vector3.new(1, 0.1, -0.65), 11)
+	addDetail("left-foot-close", "LeftFoot", Vector3.new(-0.45, 0.35, -1), 9)
+	addDetail("right-foot-close", "RightFoot", Vector3.new(0.45, 0.35, -1), 9)
+	return views, target
 end
 
 local function captureAndReview(model, iteration)
@@ -185,7 +202,7 @@ local function captureAndReview(model, iteration)
 				index,
 				#views
 			))
-			camera.CFrame = CFrame.lookAt(view.position, target)
+			camera.CFrame = CFrame.lookAt(view.position, view.target or target)
 			task.wait(0.75)
 			post("/session/capture", {sessionId = session.sessionId, view = view.name})
 		end
@@ -204,48 +221,6 @@ local function captureAndReview(model, iteration)
 	return finished, session, technical
 end
 
-local function requestAutofix(session, review, iteration)
-	post("/session/fix", {
-		sessionId = session.sessionId,
-		iteration = iteration,
-		review = review,
-	})
-	for _ = 1, 650 do
-		task.wait(2)
-		local job = post("/session/fix-status", {sessionId = session.sessionId})
-		if job.status == "COMPLETE" then return job end
-		if job.status == "FAILED" then error("Autofix failed: " .. (job.error or "unknown error")) end
-		setStatus(string.format(
-			"ITERATION %d/%d\n\nCodex is correcting the Golden Master...",
-			iteration,
-			MAX_AUTOFIX_ITERATIONS
-		))
-	end
-	error("Autofix timed out after about 22 minutes")
-end
-
-local function rebuildFromSource(model, source)
-	local packageFolder = ReplicatedStorage:FindFirstChild("TrenchbornAssetWorkshop")
-	if not packageFolder then error("ReplicatedStorage.TrenchbornAssetWorkshop is missing") end
-	local liveModule = packageFolder:FindFirstChild("KaijuAwakenedGoldenMaster")
-	if not liveModule or not liveModule:IsA("ModuleScript") then
-		error("KaijuAwakenedGoldenMaster ModuleScript is missing")
-	end
-
-	local freshModule = liveModule:Clone()
-	freshModule.Name = "KaijuAwakenedGoldenMaster_Autofix"
-	freshModule.Source = source
-	freshModule.Parent = packageFolder
-	local loaded, builder = pcall(require, freshModule)
-	freshModule:Destroy()
-	if not loaded then error("Corrected Golden Master could not be loaded: " .. tostring(builder)) end
-
-	local root = model.PrimaryPart
-	if not root then error("Golden Master has no PrimaryPart") end
-	local ground = CFrame.new(root.Position.X, 0, root.Position.Z)
-	return builder.Build(model.Parent, {GroundCFrame = ground})
-end
-
 local function runReview()
 	local model = findReviewModel()
 	if not model then
@@ -254,7 +229,7 @@ local function runReview()
 	end
 
 	for iteration = 1, MAX_AUTOFIX_ITERATIONS do
-		local finished, session, technical = captureAndReview(model, iteration)
+		local finished, _, technical = captureAndReview(model, iteration)
 		local deterministicPass = technical.blockers == 0 and technical.warnings == 0
 		if finished.status == "PASS" and deterministicPass then
 			setStatus("READY FOR USER QUALITY GATE B\n\n" .. formatReview(finished))
@@ -262,30 +237,11 @@ local function runReview()
 		end
 		if iteration == MAX_AUTOFIX_ITERATIONS then
 			setStatus(string.format(
-				"AUTOFIX STOPPED AFTER %d ITERATIONS\n\n%s",
-				MAX_AUTOFIX_ITERATIONS,
+				"VALIDATION FAILED — AUTOMATIC CORRECTION DISABLED\n\n%s\n\nNo model file was changed. Correct the reported defects and run the review again.",
 				formatReview(finished)
 			))
 			return
 		end
-
-		local fix = requestAutofix(session, finished, iteration)
-		local rebuilt, rebuiltModel = pcall(rebuildFromSource, model, fix.source)
-		if not rebuilt then
-			local rolledBack, rollbackError = pcall(post, "/session/rollback", {
-				sessionId = session.sessionId,
-			})
-			if not rolledBack then
-				error(string.format(
-					"Corrected builder failed (%s); rollback also failed (%s)",
-					tostring(rebuiltModel),
-					tostring(rollbackError)
-				))
-			end
-			error("Corrected builder failed and was rolled back: " .. tostring(rebuiltModel))
-		end
-		model = rebuiltModel
-		task.wait(1)
 	end
 end
 
