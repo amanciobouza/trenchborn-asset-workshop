@@ -23,6 +23,13 @@ local function minimumY(part)
 	return value
 end
 
+local function projectedRadius(part, axis)
+	local half = part.Size * 0.5
+	return math.abs(part.CFrame.RightVector:Dot(axis)) * half.X
+		+ math.abs(part.CFrame.UpVector:Dot(axis)) * half.Y
+		+ math.abs(part.CFrame.LookVector:Dot(axis)) * half.Z
+end
+
 local function visibleParts(model)
 	local parts = {}
 	for _, item in ipairs(model:GetDescendants()) do
@@ -114,6 +121,7 @@ function Validator.Review(model, specification, profile, options)
 	end
 
 	local geometry = model:FindFirstChild("BodyGeometry")
+	local modelForward = model:GetPivot().LookVector
 	requireCondition(geometry ~= nil, "geometry.folder", "BodyGeometry is missing.", nil)
 	local dorsalFolder = geometry and geometry:FindFirstChild("DorsalPlates")
 	local expectedDorsals = specification.Anatomy.DorsalShieldCount
@@ -125,9 +133,39 @@ function Validator.Review(model, specification, profile, options)
 		requireCondition(foot ~= nil, "anatomy.foot-geometry", side .. "FootGeometry is missing.", nil)
 		if foot then
 			for index = 1, specification.Anatomy.ForwardClawsPerFoot do
-				requireCondition(foot:FindFirstChild("ForwardClaw_" .. index) ~= nil, "anatomy.forward-claw", side .. " forward claw " .. index .. " is missing.", nil)
+				local claw = foot:FindFirstChild("ForwardClaw_" .. index)
+				requireCondition(claw ~= nil, "anatomy.forward-claw", side .. " forward claw " .. index .. " is missing.", nil)
+				if claw and claw:IsA("BasePart") then
+					local forwardDot = claw.CFrame.LookVector:Dot(modelForward)
+					local minimumDot = profile.MinimumClawDirectionDot
+					if minimumDot then
+						requireCondition(forwardDot >= minimumDot, "anatomy.forward-claw-direction", string.format("%s forward claw %d points in the wrong direction (dot %.2f).", side, index, forwardDot), claw)
+					end
+				end
 			end
-			requireCondition(foot:FindFirstChild("RearClaw") ~= nil, "anatomy.rear-claw", side .. " rear claw is missing.", nil)
+			local rearClaw = foot:FindFirstChild("RearClaw")
+			requireCondition(rearClaw ~= nil, "anatomy.rear-claw", side .. " rear claw is missing.", nil)
+			if rearClaw and rearClaw:IsA("BasePart") then
+				local rearDot = rearClaw.CFrame.LookVector:Dot(-modelForward)
+				local minimumDot = profile.MinimumClawDirectionDot
+				if minimumDot then
+					requireCondition(rearDot >= minimumDot, "anatomy.rear-claw-direction", string.format("%s rear claw points in the wrong direction (dot %.2f).", side, rearDot), rearClaw)
+				end
+			end
+		end
+	end
+
+	local torso = model:FindFirstChild("UpperTorso")
+	if torso and torso:IsA("BasePart") and profile.MaximumArmTorsoPenetrationStuds then
+		for _, side in ipairs({"Left", "Right"}) do
+			local upperArm = model:FindFirstChild(side .. "UpperArm")
+			if upperArm and upperArm:IsA("BasePart") then
+				local localCenter = torso.CFrame:PointToObjectSpace(upperArm.Position)
+				local armRadius = projectedRadius(upperArm, torso.CFrame.RightVector)
+				local innerEdge = math.abs(localCenter.X) - armRadius
+				local penetration = torso.Size.X * 0.5 - innerEdge
+				requireCondition(penetration <= profile.MaximumArmTorsoPenetrationStuds, "anatomy.arm-torso-penetration", string.format("%s arm penetrates the torso by %.2f studs (maximum %.2f).", side, penetration, profile.MaximumArmTorsoPenetrationStuds), upperArm)
+			end
 		end
 	end
 
