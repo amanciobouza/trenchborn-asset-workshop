@@ -9,6 +9,8 @@ return {
 	GroundToleranceStuds = 0.12,
 	MinimumHandGroundClearanceStuds = 8,
 	MinimumHeightToDepthRatio = 1.35,
+	MinimumClawDirectionDot = 0.7,
+	MaximumArmTorsoPenetrationStuds = 0.65,
 	RequiredRootParts = {
 		"HumanoidRootPart", "LowerTorso", "UpperTorso", "Head",
 		"LeftUpperArm", "LeftLowerArm", "LeftHand",
@@ -17,6 +19,22 @@ return {
 		"RightUpperLeg", "RightLowerLeg", "RightFoot",
 	},
 	VisualReviewCriteria = {
+		{
+			Id = "visual.target-image-match",
+			Prompt = "Compare against the supplied approved target image. The anatomy, posture, facial construction, proportions, and defining silhouette must clearly match; stylistic resemblance alone is insufficient.",
+		},
+		{
+			Id = "visual.face-part-orientation",
+			Prompt = "Using the face close-ups, verify that crown, muzzle, jaw, vents, and eyes are correctly oriented, symmetric where intended, and form a coherent non-deformed face.",
+		},
+		{
+			Id = "visual.arms-clear-of-torso",
+			Prompt = "Using both arm close-ups, verify that the arms attach at the shoulders but do not disappear into or pass through the torso volume.",
+		},
+		{
+			Id = "visual.claw-orientation",
+			Prompt = "Using both foot close-ups, verify that all three front claws point forward and the rear claw points backward; reject sideways, reversed, buried, or blunt cap-like claws.",
+		},
 		{
 			Id = "visual.upright-not-hunched",
 			Prompt = "The creature reads as upright and dominant, not hunched or supported by its arms.",
