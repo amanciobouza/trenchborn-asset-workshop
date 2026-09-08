@@ -14,7 +14,7 @@ parts are highlighted red (blocker) or amber (warning) in Studio.
 `KaijuAwakenedReviewProfile` still require the standard-view image review, and
 only the user may change `QualityGateB` to `Approved`.
 
-### Studio review-only agent
+### Automatic Studio review agent
 
 The optional local bridge removes manual Output copying and screenshot work.
 It uses Python 3 with Pillow for window capture. Install it once:
@@ -23,6 +23,8 @@ It uses Python 3 with Pillow for window capture. Install it once:
 .\tools\install-review-agent.ps1
 codex login
 $env:TRENCHBORN_TARGET_IMAGE = "C:\path\to\approved-bound-chimera-target.png"
+$env:CHATGPT_WORKSPACE_AGENT_ID = "agtch_your_published_agent_id"
+$env:CHATGPT_WORKSPACE_AGENT_TOKEN = "your_workspace_agent_access_token"
 .\tools\start-review-agent.ps1
 ```
 
@@ -35,15 +37,17 @@ and asks the local bridge to capture and visually review them. Results return
 to the Studio dock widget. The complete handoff package is committed and pushed
 under `reviews/latest/`, so ChatGPT Work can read the target, screenshots,
 technical report, and visual findings without copied Output or manual uploads.
-Git credentials must therefore be available locally. No API key is required:
-the agent invokes `codex exec` using the cached ChatGPT login.
+The bridge then triggers the published ChatGPT Workspace Agent, using the same
+conversation key on every iteration. Git credentials and a Workspace Agent
+access token must be available locally. No OpenAI API key is required: visual
+review invokes `codex exec` using the cached ChatGPT login.
 
-With the Rojo Studio plugin connected, **Review Agent** performs exactly one
-strict Quality Gate B assessment and then stops. It never edits the builder,
-corrects the model, retries, or runs an iteration loop. Failed criteria are
-published as review evidence under `reviews/latest/`. ChatGPT Work reads that
-evidence and implements subsequent model changes; the user decides when to start
-another review. Final approval always remains with the user.
+With the Rojo Studio plugin connected, **Review Agent** performs one strict
+Quality Gate B assessment. It never edits the builder: failed criteria are
+reported for correction and the review must then be run again. Automatic
+correction remains disabled until before/after evidence proves that a proposed
+change improves the result. The triggered ChatGPT agent reads `reviews/latest/`
+and corrects the model in Git. Final approval always remains with the user.
 
 If Studio chrome should be cropped from captures, set
 `TRENCHBORN_CAPTURE_INSET` to `left,top,right,bottom` pixel values before
