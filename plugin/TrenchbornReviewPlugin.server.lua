@@ -5,9 +5,10 @@ local Workspace = game:GetService("Workspace")
 
 local BRIDGE = "http://127.0.0.1:43127"
 local MODEL_NAME = "Kaiju_I_Bound_Chimera_GoldenMaster"
+local MAX_AUTOFIX_ITERATIONS = 1
 
 local toolbar = plugin:CreateToolbar("Trenchborn")
-local reviewButton = toolbar:CreateButton("Review Agent", "Run one review-only assessment against the approved target", "")
+local reviewButton = toolbar:CreateButton("Review Agent", "Validate geometry against technical rules and the approved target", "")
 local widgetInfo = DockWidgetPluginGuiInfo.new(
 	Enum.InitialDockState.Right,
 	false,
@@ -18,7 +19,7 @@ local widgetInfo = DockWidgetPluginGuiInfo.new(
 	220
 )
 local widget = plugin:CreateDockWidgetPluginGui("TrenchbornReviewAgent", widgetInfo)
-widget.Title = "Trenchborn Review Only"
+widget.Title = "Trenchborn Review Agent"
 
 local scroll = Instance.new("ScrollingFrame")
 scroll.Name = "ReviewScroll"
@@ -39,7 +40,7 @@ status.TextYAlignment = Enum.TextYAlignment.Top
 status.TextWrapped = true
 status.TextScaled = true
 status.Font = Enum.Font.Code
-status.Text = "Start the local review-only agent, then press Review Agent."
+status.Text = "Start the local review agent, then press Review Agent."
 status.Parent = scroll
 
 local padding = Instance.new("UIPadding")
@@ -95,10 +96,12 @@ local function formatReview(review)
 	end
 
 	if review.delivery then
+		local chatgptStatus = review.delivery.chatgpt and review.delivery.chatgpt.status or "NOT TRIGGERED"
 		table.insert(lines, "")
 		table.insert(lines, string.format(
-			"HANDOFF TO CHATGPT WORK\n%s\nCommit: %s",
+			"HANDOFF TO CHATGPT WORK\n%s / %s\nCommit: %s",
 			review.delivery.status or "UNKNOWN",
+			chatgptStatus,
 			review.delivery.commit or "not available"
 		))
 	end
@@ -161,30 +164,32 @@ local function cameraViews(model, camera)
 		{name = "rear", position = target + Vector3.new(0, 0, distance)},
 		{name = "three-quarter", position = target + Vector3.new(-1, 0.16, -1).Unit * distance},
 	}
-	local function addDetail(name, subjectName, offset, detailDistance, targetOffset)
+	local function addDetail(name, subjectName, offset, detailDistance)
 		local subject = model:FindFirstChild(subjectName, true)
 		if subject and subject:IsA("BasePart") then
-			local detailTarget = subject.Position + (targetOffset or Vector3.zero)
 			table.insert(views, {
 				name = name,
-				target = detailTarget,
-				position = detailTarget + offset.Unit * detailDistance,
+				target = subject.Position,
+				position = subject.Position + offset.Unit * detailDistance,
 			})
 		end
 	end
-	addDetail("face-front-close", "Head", Vector3.new(0, 0.05, -1), 13)
-	addDetail("face-three-quarter-close", "Head", Vector3.new(-1, 0.15, -1), 14)
+	addDetail("face-front-close", "Head", Vector3.new(0, 0.05, -1), 12)
+	addDetail("face-three-quarter-close", "Head", Vector3.new(-1, 0.15, -1), 13)
 	addDetail("left-arm-close", "LeftUpperArm", Vector3.new(-1, 0.1, -0.65), 11)
 	addDetail("right-arm-close", "RightUpperArm", Vector3.new(1, 0.1, -0.65), 11)
-	-- Aim beyond the ankle toward the toe fan so all three front claws and the rear claw stay in frame.
-	addDetail("left-foot-close", "LeftFoot", Vector3.new(-0.35, 0.45, -1), 13, Vector3.new(0, -1.25, -2.0))
-	addDetail("right-foot-close", "RightFoot", Vector3.new(0.35, 0.45, -1), 13, Vector3.new(0, -1.25, -2.0))
+	addDetail("left-foot-close", "LeftFoot", Vector3.new(-0.45, 0.35, -1), 9)
+	addDetail("right-foot-close", "RightFoot", Vector3.new(0.45, 0.35, -1), 9)
 	return views, target
 end
 
-local function captureAndReview(model)
+local function captureAndReview(model, iteration)
 	Selection:Set({model})
-	setStatus("REVIEW ONLY\n\nRunning deterministic checks...")
+	setStatus(string.format(
+		"ITERATION %d/%d\n\nRunning deterministic checks...",
+		iteration,
+		MAX_AUTOFIX_ITERATIONS
+	))
 	local technical = runTechnicalReview(model)
 	local session = post("/session/start", {
 		assetId = technical.assetId,
@@ -201,7 +206,9 @@ local function captureAndReview(model)
 		local views, target = cameraViews(model, camera)
 		for index, view in ipairs(views) do
 			setStatus(string.format(
-				"REVIEW ONLY\n\nCapturing %s (%d/%d)...",
+				"ITERATION %d/%d\n\nCapturing %s (%d/%d)...",
+				iteration,
+				MAX_AUTOFIX_ITERATIONS,
 				view.name,
 				index,
 				#views
@@ -214,7 +221,11 @@ local function captureAndReview(model)
 	camera.CameraType, camera.CFrame, camera.FieldOfView = oldType, oldCF, oldFov
 	if not captured then error(captureError) end
 
-	setStatus("REVIEW ONLY\n\nAI is comparing the model with the approved target...")
+	setStatus(string.format(
+		"ITERATION %d/%d\n\nAI is reviewing the model...",
+		iteration,
+		MAX_AUTOFIX_ITERATIONS
+	))
 	local finished = post("/session/finish", {sessionId = session.sessionId})
 	model:SetAttribute("QualityGateBVisualReviewStatus", finished.status or "UNKNOWN")
 	model:SetAttribute("QualityGateBVisualReviewJSON", HttpService:JSONEncode(finished))
@@ -228,17 +239,21 @@ local function runReview()
 		return
 	end
 
-	local finished, _, technical = captureAndReview(model)
-	local deterministicPass = technical.blockers == 0 and technical.warnings == 0
-	if finished.status == "PASS" and deterministicPass then
-		setStatus("READY FOR USER QUALITY GATE B\n\n" .. formatReview(finished))
-		return
+	for iteration = 1, MAX_AUTOFIX_ITERATIONS do
+		local finished, _, technical = captureAndReview(model, iteration)
+		local deterministicPass = technical.blockers == 0 and technical.warnings == 0
+		if finished.status == "PASS" and deterministicPass then
+			setStatus("READY FOR USER QUALITY GATE B\n\n" .. formatReview(finished))
+			return
+		end
+		if iteration == MAX_AUTOFIX_ITERATIONS then
+			setStatus(string.format(
+				"VALIDATION FAILED — AUTOMATIC CORRECTION DISABLED\n\n%s\n\nNo model file was changed. Correct the reported defects and run the review again.",
+				formatReview(finished)
+			))
+			return
+		end
 	end
-
-	setStatus(string.format(
-		"REVIEW COMPLETE — CORRECTION REQUIRED IN CHATGPT WORK\n\n%s\n\nThe Review Agent stopped after one assessment. It did not edit or retry the model. ChatGPT Work must read reviews/latest/ and implement any correction; then the user may start a new review.",
-		formatReview(finished)
-	))
 end
 
 reviewButton.Click:Connect(function()
