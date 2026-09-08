@@ -7,7 +7,6 @@ import os
 import pathlib
 import shutil
 import subprocess
-import tempfile
 import threading
 import time
 import uuid
@@ -21,10 +20,8 @@ PORT = 43127
 ROOT = pathlib.Path(__file__).resolve().parents[1] / "reviews"
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[1]
 OUTPUT_SCHEMA = pathlib.Path(__file__).resolve().parent / "review-output.schema.json"
-FIX_TARGET = pathlib.Path("src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuAwakenedGoldenMaster.lua")
 SESSIONS = {}
 LOCK = threading.Lock()
-AUTOFIX_ENABLED = False
 
 
 def studio_bounds():
@@ -70,6 +67,7 @@ def call_codex(session):
     target_path = pathlib.Path(target_image).expanduser().resolve()
     if not target_path.is_file():
         raise RuntimeError(f"Approved target image was not found: {target_path}")
+    session["targetPath"] = str(target_path)
     prompt = {
         "task": "Perform Trenchborn Quality Gate B visual review.",
         "instructions": [
@@ -116,178 +114,77 @@ def call_codex(session):
     return json.loads(output_path.read_text(encoding="utf-8"))
 
 
-def call_codex_fix(session, review, iteration):
-    """Let Codex revise an isolated copy, then publish only the approved builder file."""
-    codex = shutil.which("codex") or shutil.which("codex.cmd")
-    if not codex:
-        raise RuntimeError("Codex CLI is not installed or is not available on PATH")
+def run_git(arguments, *, check=True):
+    return subprocess.run(
+        ["git", *arguments],
+        cwd=REPO_ROOT,
+        check=check,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
 
-    source_root = REPO_ROOT / "src"
-    live_target = REPO_ROOT / FIX_TARGET
-    if not live_target.is_file():
-        raise RuntimeError(f"Golden Master builder is missing: {live_target}")
 
-    session_folder = pathlib.Path(session["folder"])
-    with tempfile.TemporaryDirectory(prefix="trenchborn-autofix-") as temp_name:
-        worktree = pathlib.Path(temp_name)
-        shutil.copytree(source_root, worktree / "src")
-        capture_folder = worktree / "captures"
-        capture_folder.mkdir()
-        copied_captures = []
-        for view, original_path in session["captures"]:
-            copied_path = capture_folder / f"{view}.png"
-            shutil.copy2(original_path, copied_path)
-            copied_captures.append((view, copied_path))
+def publish_review(session, review):
+    """Publish only review evidence; never stage or modify model source files."""
+    latest = ROOT / "latest"
+    if latest.resolve().parent != ROOT.resolve():
+        raise RuntimeError("Refusing to replace an unsafe review destination")
+    if latest.exists():
+        shutil.rmtree(latest)
+    captures_folder = latest / "captures"
+    captures_folder.mkdir(parents=True)
 
-        subprocess.run(
-            ["git", "init", "--quiet"],
-            cwd=worktree,
-            check=True,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
+    target_path = pathlib.Path(session["targetPath"])
+    target_name = "approved-target" + target_path.suffix.lower()
+    shutil.copy2(target_path, latest / target_name)
+    for view, source_path in session["captures"]:
+        shutil.copy2(source_path, captures_folder / f"{view}.png")
+
+    (latest / "review.json").write_text(
+        json.dumps(review, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
+    (latest / "technical-report.json").write_text(
+        json.dumps(session["technicalReport"], indent=2, ensure_ascii=False), encoding="utf-8"
+    )
+    model_commit = run_git(["rev-parse", "HEAD"]).stdout.strip()
+    manifest = {
+        "schemaVersion": 1,
+        "reviewOnly": True,
+        "assetId": session.get("assetId"),
+        "modelName": session.get("modelName"),
+        "modelCommit": model_commit,
+        "createdUtc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "approvedTarget": target_name,
+        "captures": [f"captures/{view}.png" for view, _ in session["captures"]],
+        "instruction": "ChatGPT Work must read this evidence and correct the model builder in Git. The Review Agent made no model changes.",
+    }
+    (latest / "manifest.json").write_text(
+        json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
+
+    # The pathspec ensures pre-staged or unrelated user work is never included.
+    run_git(["add", "-A", "--", "reviews/latest"])
+    changed = run_git(["diff", "--cached", "--quiet", "--", "reviews/latest"], check=False)
+    if changed.returncode not in (0, 1):
+        raise RuntimeError("Could not inspect staged review package: " + changed.stderr[-1000:])
+    if changed.returncode == 1:
+        commit = run_git([
+            "-c", "user.name=Trenchborn Review Agent",
+            "-c", "user.email=review-agent@localhost",
+            "commit", "-m", f"Publish Quality Gate B review for {session.get('modelName', 'asset')}",
+            "--", "reviews/latest",
+        ])
+        if commit.returncode != 0:
+            raise RuntimeError("Could not commit review package: " + commit.stderr[-1000:])
+    pushed = run_git(["push", "origin", "HEAD"], check=False)
+    if pushed.returncode != 0:
+        raise RuntimeError(
+            "Review was created locally but Git push failed. Ensure the branch is current and Git credentials are available: "
+            + pushed.stderr[-1200:]
         )
-        subprocess.run(
-            ["git", "add", "."],
-            cwd=worktree,
-            check=True,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-        )
-        subprocess.run(
-            [
-                "git",
-                "-c",
-                "user.name=Trenchborn Review Agent",
-                "-c",
-                "user.email=review-agent@localhost",
-                "commit",
-                "--quiet",
-                "-m",
-                "autofix baseline",
-            ],
-            cwd=worktree,
-            check=True,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-        )
-        isolated_target = worktree / FIX_TARGET
-        original_source = isolated_target.read_text(encoding="utf-8")
-        prompt = {
-            "task": "Correct the Trenchborn Phase 4 Bound Chimera Golden Master from the review evidence.",
-            "iteration": iteration,
-            "editableFile": FIX_TARGET.as_posix(),
-            "hardConstraints": [
-                "Actually edit the editableFile; do not merely describe changes.",
-                "Do not edit specifications, review profiles, validators, schemas, plugins, or any other file.",
-                "Never weaken, remove, or bypass a review criterion or deterministic check.",
-                "Keep this a geometry-only Phase 4 Golden Master: no particles, lights, sounds, textures, or dressing.",
-                "Preserve the public Builder.Build and Builder.Validate APIs, asset identity, rig connectivity, and performance budgets.",
-                "Address every blocker and failed or partial visual criterion using the supplied views.",
-                "The lowest visible geometry must contact expected ground Y=0 without sinking below it.",
-                "Quality Gate B remains Pending; only the user can approve it.",
-            ],
-            "technicalReport": session["technicalReport"],
-            "visualReview": review,
-            "cameraViews": [view for view, _ in copied_captures],
-        }
-        model = os.environ.get("TRENCHBORN_REVIEW_MODEL")
-        attempt_summaries = []
-        revised_source = original_source
-        for attempt in range(1, 3):
-            summary_path = worktree / f"fix-summary-{attempt}.txt"
-            command = [
-                codex,
-                "exec",
-                "--ephemeral",
-                "--sandbox",
-                "workspace-write",
-                "--cd",
-                str(worktree),
-                "--output-last-message",
-                str(summary_path),
-            ]
-            if model:
-                command.extend(["--model", model])
-            for _, copied_path in copied_captures:
-                command.extend(["--image", str(copied_path)])
-            command.append("-")
-            attempt_prompt = dict(prompt)
-            if attempt == 2:
-                attempt_prompt["retryDirective"] = (
-                    "Your previous run made no file change. This is an implementation task, "
-                    "not a review-only task. Open the editableFile now and use your editing "
-                    "tool to implement concrete geometry corrections before responding."
-                )
-            completed = subprocess.run(
-                command,
-                input=json.dumps(attempt_prompt, ensure_ascii=False),
-                capture_output=True,
-                text=True,
-                encoding="utf-8",
-                errors="replace",
-                timeout=600,
-            )
-            (session_folder / f"fix-{iteration}-attempt-{attempt}-codex-stderr.log").write_text(
-                completed.stderr, encoding="utf-8"
-            )
-            summary = (
-                summary_path.read_text(encoding="utf-8")
-                if summary_path.is_file()
-                else completed.stdout
-            )
-            attempt_summaries.append(summary.strip())
-            if completed.returncode != 0:
-                raise RuntimeError("codex autofix failed: " + completed.stderr[-2000:])
-            revised_source = isolated_target.read_text(encoding="utf-8")
-            if revised_source != original_source:
-                break
-
-        if revised_source == original_source:
-            diagnostic = " | ".join(value for value in attempt_summaries if value)
-            raise RuntimeError(
-                "Codex made no builder change after two attempts. Codex response: "
-                + (diagnostic[-1800:] or "No final response was recorded.")
-            )
-
-        # Only this single reviewed file leaves the isolated workspace. Any
-        # attempted edits to validators or specifications are discarded.
-        previous_live_source = live_target.read_text(encoding="utf-8")
-        live_target.write_text(revised_source, encoding="utf-8")
-        with LOCK:
-            session["previousSource"] = previous_live_source
-            session["appliedSource"] = revised_source
-        (session_folder / f"fix-{iteration}-builder.lua").write_text(
-            revised_source, encoding="utf-8"
-        )
-        summary = attempt_summaries[-1] or "Golden Master builder updated."
-        return {"status": "COMPLETE", "source": revised_source, "summary": summary}
-
-
-def start_fix(session, review, iteration):
-    with LOCK:
-        current = session.get("fixJob")
-        if current and current.get("status") == "RUNNING":
-            raise RuntimeError("An autofix job is already running for this session")
-        job = {"status": "RUNNING", "iteration": iteration}
-        session["fixJob"] = job
-
-    def worker():
-        try:
-            result = call_codex_fix(session, review, iteration)
-            with LOCK:
-                job.update(result)
-        except Exception as error:
-            with LOCK:
-                job.update({"status": "FAILED", "error": str(error)})
-
-    threading.Thread(target=worker, name=f"trenchborn-fix-{iteration}", daemon=True).start()
-    return job
+    return {"status": "PUBLISHED", "commit": run_git(["rev-parse", "HEAD"]).stdout.strip()}
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -332,33 +229,8 @@ class Handler(BaseHTTPRequestHandler):
                 pathlib.Path(session["folder"], "review.json").write_text(
                     json.dumps(review, indent=2), encoding="utf-8"
                 )
+                review["delivery"] = publish_review(session, review)
                 self.send_json(200, review)
-            elif self.path == "/session/fix":
-                if not AUTOFIX_ENABLED:
-                    raise RuntimeError(
-                        "Automatic correction is disabled until Validator 2.0 proves improvement"
-                    )
-                with LOCK:
-                    session = SESSIONS[payload["sessionId"]]
-                job = start_fix(session, payload["review"], int(payload["iteration"]))
-                self.send_json(202, {"status": job["status"], "iteration": job["iteration"]})
-            elif self.path == "/session/fix-status":
-                with LOCK:
-                    session = SESSIONS[payload["sessionId"]]
-                    job = dict(session.get("fixJob") or {"status": "NOT_STARTED"})
-                self.send_json(200, job)
-            elif self.path == "/session/rollback":
-                with LOCK:
-                    session = SESSIONS[payload["sessionId"]]
-                    previous_source = session.get("previousSource")
-                    applied_source = session.get("appliedSource")
-                live_target = REPO_ROOT / FIX_TARGET
-                if previous_source is None or applied_source is None:
-                    raise RuntimeError("No applied autofix is available to roll back")
-                if live_target.read_text(encoding="utf-8") != applied_source:
-                    raise RuntimeError("Builder changed after autofix; refusing unsafe rollback")
-                live_target.write_text(previous_source, encoding="utf-8")
-                self.send_json(200, {"status": "ROLLED_BACK"})
             else:
                 self.send_json(404, {"error": "Unknown endpoint"})
         except Exception as error:
