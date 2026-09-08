@@ -161,22 +161,24 @@ local function cameraViews(model, camera)
 		{name = "rear", position = target + Vector3.new(0, 0, distance)},
 		{name = "three-quarter", position = target + Vector3.new(-1, 0.16, -1).Unit * distance},
 	}
-	local function addDetail(name, subjectName, offset, detailDistance)
+	local function addDetail(name, subjectName, offset, detailDistance, targetOffset)
 		local subject = model:FindFirstChild(subjectName, true)
 		if subject and subject:IsA("BasePart") then
+			local detailTarget = subject.Position + (targetOffset or Vector3.zero)
 			table.insert(views, {
 				name = name,
-				target = subject.Position,
-				position = subject.Position + offset.Unit * detailDistance,
+				target = detailTarget,
+				position = detailTarget + offset.Unit * detailDistance,
 			})
 		end
 	end
-	addDetail("face-front-close", "Head", Vector3.new(0, 0.05, -1), 12)
-	addDetail("face-three-quarter-close", "Head", Vector3.new(-1, 0.15, -1), 13)
+	addDetail("face-front-close", "Head", Vector3.new(0, 0.05, -1), 13)
+	addDetail("face-three-quarter-close", "Head", Vector3.new(-1, 0.15, -1), 14)
 	addDetail("left-arm-close", "LeftUpperArm", Vector3.new(-1, 0.1, -0.65), 11)
 	addDetail("right-arm-close", "RightUpperArm", Vector3.new(1, 0.1, -0.65), 11)
-	addDetail("left-foot-close", "LeftFoot", Vector3.new(-0.45, 0.35, -1), 9)
-	addDetail("right-foot-close", "RightFoot", Vector3.new(0.45, 0.35, -1), 9)
+	-- Aim beyond the ankle toward the toe fan so all three front claws and the rear claw stay in frame.
+	addDetail("left-foot-close", "LeftFoot", Vector3.new(-0.35, 0.45, -1), 13, Vector3.new(0, -1.25, -2.0))
+	addDetail("right-foot-close", "RightFoot", Vector3.new(0.35, 0.45, -1), 13, Vector3.new(0, -1.25, -2.0))
 	return views, target
 end
 
