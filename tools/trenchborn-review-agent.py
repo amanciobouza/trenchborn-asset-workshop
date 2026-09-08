@@ -10,6 +10,8 @@ import subprocess
 import threading
 import time
 import uuid
+import urllib.error
+import urllib.request
 from ctypes import wintypes
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
@@ -79,8 +81,6 @@ def call_codex(session):
             "Return JSON only with status, summary, findings, and criteria.",
             "Status must be PASS, PASS_WITH_WARNINGS, or FAIL.",
             "Do not claim Quality Gate B is approved; the user owns approval.",
-            "This is exactly one review pass. Do not retry or run an iteration loop.",
-            "Never modify or claim to modify model or repository source files.",
         ],
         "technicalReport": session["technicalReport"],
         "cameraViews": [view for view, _ in session["captures"]],
@@ -117,21 +117,15 @@ def call_codex(session):
 
 
 def run_git(arguments, *, check=True):
-    completed = subprocess.run(
+    return subprocess.run(
         ["git", *arguments],
         cwd=REPO_ROOT,
-        check=False,
+        check=check,
         capture_output=True,
         text=True,
         encoding="utf-8",
         errors="replace",
     )
-    if check and completed.returncode != 0:
-        details = (completed.stderr or completed.stdout or "No Git diagnostics returned.").strip()
-        raise RuntimeError(
-            f"git {' '.join(arguments)} failed ({completed.returncode}): {details[-2000:]}"
-        )
-    return completed
 
 
 def publish_review(session, review):
@@ -195,6 +189,55 @@ def publish_review(session, review):
     return {"status": "PUBLISHED", "commit": run_git(["rev-parse", "HEAD"]).stdout.strip()}
 
 
+def trigger_chatgpt(session, delivery):
+    agent_id = os.environ.get("CHATGPT_WORKSPACE_AGENT_ID")
+    access_token = os.environ.get("CHATGPT_WORKSPACE_AGENT_TOKEN")
+    if not agent_id or not access_token:
+        raise RuntimeError(
+            "Review was published, but ChatGPT was not triggered: set "
+            "CHATGPT_WORKSPACE_AGENT_ID and CHATGPT_WORKSPACE_AGENT_TOKEN"
+        )
+    conversation_key = os.environ.get(
+        "CHATGPT_WORKSPACE_CONVERSATION_KEY",
+        "trenchborn-bound-chimera-quality-gate-b",
+    )
+    branch = run_git(["branch", "--show-current"]).stdout.strip()
+    prompt = (
+        "A new Roblox Quality Gate B review is ready. "
+        f"Repository: amanciobouza/trenchborn-asset-workshop. Branch: {branch}. "
+        f"Review commit: {delivery['commit']}. Read every file under reviews/latest/, "
+        "including the approved target and all captures. Correct only the model builder "
+        "in Git according to the review and specification. Do not weaken validators or "
+        "approve Quality Gate B. Commit and push the correction to the same branch."
+    )
+    request_body = json.dumps({
+        "conversation_key": conversation_key,
+        "input": prompt,
+    }).encode("utf-8")
+    request = urllib.request.Request(
+        f"https://api.chatgpt.com/v1/workspace_agents/{agent_id}/trigger",
+        data=request_body,
+        method="POST",
+        headers={
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+            "Idempotency-Key": delivery["commit"],
+        },
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            result = json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as error:
+        detail = error.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"ChatGPT trigger failed with HTTP {error.code}: {detail[-1200:]}") from error
+    except urllib.error.URLError as error:
+        raise RuntimeError(f"ChatGPT trigger could not connect: {error.reason}") from error
+    return {
+        "status": "TRIGGERED",
+        "conversationUrl": result.get("conversation_url"),
+    }
+
+
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, pattern, *args):
         print("[bridge] " + pattern % args)
@@ -237,7 +280,9 @@ class Handler(BaseHTTPRequestHandler):
                 pathlib.Path(session["folder"], "review.json").write_text(
                     json.dumps(review, indent=2), encoding="utf-8"
                 )
-                review["delivery"] = publish_review(session, review)
+                delivery = publish_review(session, review)
+                delivery["chatgpt"] = trigger_chatgpt(session, delivery)
+                review["delivery"] = delivery
                 self.send_json(200, review)
             else:
                 self.send_json(404, {"error": "Unknown endpoint"})
