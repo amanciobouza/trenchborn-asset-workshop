@@ -95,6 +95,15 @@ local function formatReview(review)
 		end
 	end
 
+	if review.delivery then
+		table.insert(lines, "")
+		table.insert(lines, string.format(
+			"HANDOFF TO CHATGPT WORK\n%s\nCommit: %s",
+			review.delivery.status or "UNKNOWN",
+			review.delivery.commit or "not available"
+		))
+	end
+
 	return table.concat(lines, "\n")
 end
 
