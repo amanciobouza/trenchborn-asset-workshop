@@ -3,5 +3,7 @@
 *.rbxm
 .DS_Store
 Thumbs.db
-reviews/
+reviews/*
+!reviews/latest/
+!reviews/latest/**
 TrenchbornReviewPlugin.rbxm
