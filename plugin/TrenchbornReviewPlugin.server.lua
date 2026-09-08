@@ -198,7 +198,12 @@ local function captureAndReview(model)
 		camera.FieldOfView = 34
 		local views, target = cameraViews(model, camera)
 		for index, view in ipairs(views) do
-			setStatus(string.format(\n\t\t\t\t"REVIEW ONLY\\n\\nCapturing %s (%d/%d)...",\n\t\t\t\tview.name,\n\t\t\t\tindex,\n\t\t\t\t#views\n\t\t\t))
+			setStatus(string.format(
+				"REVIEW ONLY\n\nCapturing %s (%d/%d)...",
+				view.name,
+				index,
+				#views
+			))
 			camera.CFrame = CFrame.lookAt(view.position, view.target or target)
 			task.wait(0.75)
 			post("/session/capture", {sessionId = session.sessionId, view = view.name})
