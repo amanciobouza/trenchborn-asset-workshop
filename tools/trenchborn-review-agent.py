@@ -79,6 +79,8 @@ def call_codex(session):
             "Return JSON only with status, summary, findings, and criteria.",
             "Status must be PASS, PASS_WITH_WARNINGS, or FAIL.",
             "Do not claim Quality Gate B is approved; the user owns approval.",
+            "This is exactly one review pass. Do not retry or run an iteration loop.",
+            "Never modify or claim to modify model or repository source files.",
         ],
         "technicalReport": session["technicalReport"],
         "cameraViews": [view for view, _ in session["captures"]],
