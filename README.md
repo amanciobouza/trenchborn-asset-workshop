@@ -32,14 +32,18 @@ The approved Quality Gate A target image is mandatory. The plugin runs the
 deterministic checks, frames five standard views plus close-ups of the face,
 both arms, and both feet,
 and asks the local bridge to capture and visually review them. Results return
-to the Studio dock widget and are saved under `reviews/` locally. No API key is
-required: the agent invokes `codex exec` using the cached ChatGPT login.
+to the Studio dock widget. The complete handoff package is committed and pushed
+under `reviews/latest/`, so ChatGPT Work can read the target, screenshots,
+technical report, and visual findings without copied Output or manual uploads.
+Git credentials must therefore be available locally. No API key is required:
+the agent invokes `codex exec` using the cached ChatGPT login.
 
 With the Rojo Studio plugin connected, **Review Agent** performs one strict
 Quality Gate B assessment. It never edits the builder: failed criteria are
 reported for correction and the review must then be run again. Automatic
 correction remains disabled until before/after evidence proves that a proposed
 change improves the result. Final approval always remains with the user.
+After a review, ask ChatGPT Work to read `reviews/latest/` and correct the model.
 
 If Studio chrome should be cropped from captures, set
 `TRENCHBORN_CAPTURE_INSET` to `left,top,right,bottom` pixel values before
