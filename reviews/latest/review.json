@@ -1,75 +1,99 @@
 {
   "status": "FAIL",
-  "summary": "One review pass completed across all 11 model views against the approved target. Major anatomy, face, dorsal-shield, and claw mismatches remain. The supplied deterministic report records 10 blockers and 1 warning. No files were modified; approval remains with the user.",
+  "summary": "One review pass completed using the approved target and all 11 camera views. The model substantially misses the target anatomy and silhouette. The supplied deterministic report identifies 10 blockers and one warning; visual inspection also fails face construction, arm clearance, claws, shields, and leg anatomy. Quality Gate B approval remains with the user.",
   "findings": [
     {
       "id": "deterministic.arm-torso-penetration",
       "severity": "BLOCKER",
-      "message": "Supplied technical report: both upper arms penetrate the torso by 1.45 studs, exceeding the 0.65 maximum. Arm close-ups show crowded, overlapping attachment volumes.",
-      "evidenceViews": [
-        "technicalReport",
-        "left-arm-close",
-        "right-arm-close",
-        "front"
-      ],
-      "recommendation": "Move and reshape both upper arms to preserve shoulder attachment while clearing the torso."
+      "message": "Supplied technical report: both upper arms penetrate the torso by 1.45 studs, exceeding the 0.65 maximum. These measurements were not independently rerun.",
+      "evidenceViews": [],
+      "recommendation": "Move the upper arms outward and reshape the shoulder connections to meet the penetration limit."
     },
     {
       "id": "deterministic.claw-directions",
       "severity": "BLOCKER",
-      "message": "Supplied technical report: left front claws 1, 2, and 3 and right front claws 1, 2, and 3 each have direction dot -0.98. Both rear claws have dot -0.95. All eight claws fail their required direction checks.",
+      "message": "Supplied technical report: all six forward claws have direction dot products of -0.98; both rear claws have -0.95. All eight claws fail their required directions.",
+      "evidenceViews": [],
+      "recommendation": "Correct each claw's orientation individually: three forward and one backward on each foot."
+    },
+    {
+      "id": "deterministic.upright-ratio",
+      "severity": "WARNING",
+      "message": "Supplied technical report: height/depth ratio is 1.1533, below the 1.35 review threshold. Side views nevertheless show an upright torso without arm support.",
       "evidenceViews": [
-        "technicalReport",
-        "left-foot-close",
-        "right-foot-close",
         "left",
         "right"
       ],
-      "recommendation": "Correct each claw's orientation individually: six front claws forward and two rear claws backward."
+      "recommendation": "Review body and tail proportions against the target alongside the ratio warning."
     },
     {
-      "id": "visual.claw-shape-and-attachment",
+      "id": "visual.target-anatomy-mismatch",
       "severity": "BLOCKER",
-      "message": "Front claw tips read as blunt wedge caps rather than tapered talons. Rear-claw regions appear as small projecting or partly buried wedges near the ankle volumes. Cropping and the review panel prevent complete visual verification of every tip.",
-      "evidenceViews": [
-        "left-foot-close",
-        "right-foot-close",
-        "three-quarter",
-        "left",
-        "right"
-      ],
-      "recommendation": "Create exposed, pointed talons with coherent toe attachments and provide unobstructed views of all eight claws."
-    },
-    {
-      "id": "visual.target-anatomy-and-face",
-      "severity": "BLOCKER",
-      "message": "The model's smooth, segmented limbs, rectangular chest, domed crown, broad oval muzzle, and stacked oval jaw do not match the target's integrated muscular anatomy and angular armored reptilian face. The eye bar appears approximately symmetric, but coherent crown, vent, muzzle, and jaw orientation cannot be fully verified.",
+      "message": "The model has stacked rounded limb segments, a blocklike chest, a compressed neck, and a broad rounded muzzle. The target has continuous armored anatomy, an elongated reptilian head and neck, substantial clawed hands, and a sweeping tapered tail.",
       "evidenceViews": [
         "front",
-        "three-quarter",
+        "left",
+        "right",
+        "rear",
+        "three-quarter"
+      ],
+      "recommendation": "Rebuild the primary anatomical proportions and silhouette against the approved target before adding surface detail."
+    },
+    {
+      "id": "visual.face-construction",
+      "severity": "BLOCKER",
+      "message": "The crown reads as a smooth dome; muzzle and jaw read as two inflated horizontal pads. Circular eyes sit on a flat brow strip. This does not form the target's angular reptilian face. Vent orientation and complete bilateral alignment cannot be verified because details are absent or obscured by the review panel.",
+      "evidenceViews": [
         "face-front-close",
         "face-three-quarter-close",
         "left",
         "right"
       ],
-      "recommendation": "Rebuild the primary anatomical forms and facial planes around the approved target's proportions and armored construction."
+      "recommendation": "Reshape the crown, muzzle, and jaw into a coherent tapered skull; integrate eyes and vents, then provide unobstructed close-ups."
+    },
+    {
+      "id": "visual.arm-clearance",
+      "severity": "BLOCKER",
+      "message": "Both arms sit tightly against the chest, with portions merging into the torso silhouette. The close-ups do not establish continuous free-hanging arms clear of the torso; highlighted surfaces also obscure the junctions.",
+      "evidenceViews": [
+        "left-arm-close",
+        "right-arm-close",
+        "front",
+        "three-quarter"
+      ],
+      "recommendation": "Create visible clearance below each shoulder and expose the full upper arm, elbow, forearm, and hand."
+    },
+    {
+      "id": "visual.claw-construction",
+      "severity": "BLOCKER",
+      "message": "Both feet's three front claws read as blunt highlighted wedges attached to oval toes rather than forward-tapering talons. Rear claws are not clearly readable as backward-pointing talons, and the close-ups show apparent separation between lower legs and toe assemblies. Panel occlusion prevents complete visual verification of every claw.",
+      "evidenceViews": [
+        "left-foot-close",
+        "right-foot-close",
+        "front",
+        "left",
+        "right",
+        "rear",
+        "three-quarter"
+      ],
+      "recommendation": "Connect the foot anatomy, form pointed talons, and capture unobstructed views showing all eight claw tips and roots."
     },
     {
       "id": "visual.dorsal-shields",
       "severity": "BLOCKER",
-      "message": "The dorsal forms read as simple triangular fins or spikes instead of broad, irregular shattered storm shields. Seven distinct qualifying shields cannot be verified, and the target's fractured surfaces and yellow fissures are not established.",
+      "message": "The dorsal forms read as narrow triangular fins or simple spikes. They lack the target's broad, irregular shattered shield faces and visible yellow fissures. Seven distinct shield forms cannot be confidently verified.",
       "evidenceViews": [
         "left",
         "right",
         "rear",
         "three-quarter"
       ],
-      "recommendation": "Form seven distinct, broad angular shields with broken contours, fractured faces, and restrained yellow fissures."
+      "recommendation": "Build seven individually readable angular shields with broken contours, broad faces, and storm fissures."
     },
     {
-      "id": "visual.leg-construction",
+      "id": "visual.leg-anatomy",
       "severity": "BLOCKER",
-      "message": "Legs are bulkier than the arms, but stacked rounded segments and visible ankle-to-toe gaps undermine continuous, load-bearing digitigrade anatomy.",
+      "message": "The legs are bulkier than the arms, but stacked spherical segments and weak ankle-to-foot continuity undermine a massive, load-bearing digitigrade structure.",
       "evidenceViews": [
         "front",
         "left",
@@ -78,62 +102,49 @@
         "left-foot-close",
         "right-foot-close"
       ],
-      "recommendation": "Integrate thighs, knees, raised hocks, and feet into a continuous weight-bearing structure."
-    },
-    {
-      "id": "deterministic.upright-ratio",
-      "severity": "WARNING",
-      "message": "Supplied technical report: height/depth ratio is 1.153, below the 1.35 threshold. Visually, the torso is upright and the arms do not support the body.",
-      "evidenceViews": [
-        "technicalReport",
-        "front",
-        "left",
-        "right",
-        "three-quarter"
-      ],
-      "recommendation": "Reconcile the ratio warning with the long tail's contribution to overall depth."
+      "recommendation": "Create continuous thigh, knee, raised heel, ankle, and foot transitions with a convincing weight-bearing stance."
     }
   ],
   "criteria": [
     {
       "id": "visual.target-image-match",
       "result": "FAIL",
-      "reason": "Anatomy, facial construction, proportions, surface treatment, and dorsal silhouette differ substantially from the approved target."
+      "reason": "Anatomy, facial construction, proportions, armor, and defining silhouette substantially diverge from the approved target."
     },
     {
       "id": "visual.face-part-orientation",
       "result": "FAIL",
-      "reason": "Approximate eye symmetry is visible, but the crown, muzzle, and jaw form stacked primitives; vents and complete facial orientation cannot be verified from the obstructed close-ups."
+      "reason": "Visible facial parts form a rounded, padlike face; correct vent orientation and complete intended symmetry cannot be verified."
     },
     {
       "id": "visual.arms-clear-of-torso",
       "result": "FAIL",
-      "reason": "Both arm close-ups show crowded intersections, and the supplied deterministic report confirms excessive penetration on both sides."
+      "reason": "Visual clearance is not established, and the supplied deterministic report confirms excessive penetration on both sides."
     },
     {
       "id": "visual.claw-orientation",
       "result": "FAIL",
-      "reason": "All six front claws and both rear claws fail supplied direction checks; visible tips also read as blunt caps or partly buried wedges."
+      "reason": "All six forward claws and both rear claws fail supplied direction checks. Visible claws are blunt or insufficiently exposed for complete verification."
     },
     {
       "id": "visual.upright-not-hunched",
       "result": "PASS",
-      "reason": "Front and side views show an upright torso carried by the legs, with arms hanging clear of the ground. The separate ratio warning remains."
+      "reason": "Front and side views show an upright torso supported by the legs, with arms off the ground. The separate height/depth warning remains."
     },
     {
       "id": "visual.original-chimera-silhouette",
       "result": "FAIL",
-      "reason": "A biped, dorsal ridge, and tail are present, but the rounded segmented body and simple fins do not preserve the target's defining armored chimera silhouette."
+      "reason": "A biped, dorsal ridge, and tail remain, but the target's distinctive armored head, continuous muscular anatomy, shield silhouette, and curved tail are not preserved."
     },
     {
       "id": "visual.shattered-storm-shields",
       "result": "FAIL",
-      "reason": "Dorsal forms read as simple spikes or fins; seven distinct shattered shield forms cannot be verified."
+      "reason": "Dorsal forms resemble simple triangular fins; shattered shield construction and seven distinct forms are not verified."
     },
     {
       "id": "visual.massive-digitigrade-legs",
       "result": "FAIL",
-      "reason": "Leg mass exceeds arm mass, but disconnected-looking feet and rounded limb segments do not convincingly establish load-bearing digitigrade anatomy."
+      "reason": "Leg mass exceeds arm mass, but segmented rounded anatomy and disconnected-looking feet do not convincingly establish load-bearing digitigrade legs."
     }
   ]
 }
