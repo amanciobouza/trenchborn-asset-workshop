@@ -117,15 +117,21 @@ def call_codex(session):
 
 
 def run_git(arguments, *, check=True):
-    return subprocess.run(
+    completed = subprocess.run(
         ["git", *arguments],
         cwd=REPO_ROOT,
-        check=check,
+        check=False,
         capture_output=True,
         text=True,
         encoding="utf-8",
         errors="replace",
     )
+    if check and completed.returncode != 0:
+        details = (completed.stderr or completed.stdout or "No Git diagnostics returned.").strip()
+        raise RuntimeError(
+            f"git {' '.join(arguments)} failed ({completed.returncode}): {details[-2000:]}"
+        )
+    return completed
 
 
 def publish_review(session, review):
