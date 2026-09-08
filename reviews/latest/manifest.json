@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "reviewOnly": true,
+  "assetId": "KAIJU-01-BOUND-CHIMERA",
+  "modelName": "Kaiju_I_Bound_Chimera_GoldenMaster",
+  "modelCommit": "ae6c296715102704f8147d4351b8d3015a585868",
+  "createdUtc": "2026-09-08T03:31:36Z",
+  "approvedTarget": "approved-target.png",
+  "captures": [
+    "captures/front.png",
+    "captures/left.png",
+    "captures/right.png",
+    "captures/rear.png",
+    "captures/three-quarter.png",
+    "captures/face-front-close.png",
+    "captures/face-three-quarter-close.png",
+    "captures/left-arm-close.png",
+    "captures/right-arm-close.png",
+    "captures/left-foot-close.png",
+    "captures/right-foot-close.png"
+  ],
+  "instruction": "ChatGPT Work must read this evidence and correct the model builder in Git. The Review Agent made no model changes."
+}
