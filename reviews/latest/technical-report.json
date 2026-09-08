@@ -38,80 +38,20 @@
   ],
   "assetId": "KAIJU-01-BOUND-CHIMERA",
   "warnings": 1,
-  "status": "FAIL",
-  "blockers": 10,
+  "status": "PASS_WITH_WARNINGS",
+  "blockers": 0,
   "findings": [
     {
-      "id": "anatomy.arm-torso-penetration",
-      "message": "Right arm penetrates the torso by 1.45 studs (maximum 0.65).",
-      "subject": "Workspace.TrenchbornAssetWorkshop.Kaiju_I_Bound_Chimera_GoldenMaster.RightUpperArm",
-      "severity": "BLOCKER"
-    },
-    {
-      "id": "anatomy.arm-torso-penetration",
-      "message": "Left arm penetrates the torso by 1.45 studs (maximum 0.65).",
-      "subject": "Workspace.TrenchbornAssetWorkshop.Kaiju_I_Bound_Chimera_GoldenMaster.LeftUpperArm",
-      "severity": "BLOCKER"
-    },
-    {
-      "id": "anatomy.forward-claw-direction",
-      "message": "Left forward claw 1 points in the wrong direction (dot -0.98).",
-      "subject": "Workspace.TrenchbornAssetWorkshop.Kaiju_I_Bound_Chimera_GoldenMaster.BodyGeometry.LeftFootGeometry.ForwardClaw_1",
-      "severity": "BLOCKER"
-    },
-    {
-      "id": "anatomy.forward-claw-direction",
-      "message": "Right forward claw 3 points in the wrong direction (dot -0.98).",
-      "subject": "Workspace.TrenchbornAssetWorkshop.Kaiju_I_Bound_Chimera_GoldenMaster.BodyGeometry.RightFootGeometry.ForwardClaw_3",
-      "severity": "BLOCKER"
-    },
-    {
-      "id": "anatomy.forward-claw-direction",
-      "message": "Right forward claw 1 points in the wrong direction (dot -0.98).",
-      "subject": "Workspace.TrenchbornAssetWorkshop.Kaiju_I_Bound_Chimera_GoldenMaster.BodyGeometry.RightFootGeometry.ForwardClaw_1",
-      "severity": "BLOCKER"
-    },
-    {
-      "id": "anatomy.forward-claw-direction",
-      "message": "Right forward claw 2 points in the wrong direction (dot -0.98).",
-      "subject": "Workspace.TrenchbornAssetWorkshop.Kaiju_I_Bound_Chimera_GoldenMaster.BodyGeometry.RightFootGeometry.ForwardClaw_2",
-      "severity": "BLOCKER"
-    },
-    {
-      "id": "anatomy.forward-claw-direction",
-      "message": "Left forward claw 3 points in the wrong direction (dot -0.98).",
-      "subject": "Workspace.TrenchbornAssetWorkshop.Kaiju_I_Bound_Chimera_GoldenMaster.BodyGeometry.LeftFootGeometry.ForwardClaw_3",
-      "severity": "BLOCKER"
-    },
-    {
-      "id": "anatomy.forward-claw-direction",
-      "message": "Left forward claw 2 points in the wrong direction (dot -0.98).",
-      "subject": "Workspace.TrenchbornAssetWorkshop.Kaiju_I_Bound_Chimera_GoldenMaster.BodyGeometry.LeftFootGeometry.ForwardClaw_2",
-      "severity": "BLOCKER"
-    },
-    {
-      "id": "anatomy.rear-claw-direction",
-      "message": "Left rear claw points in the wrong direction (dot -0.95).",
-      "subject": "Workspace.TrenchbornAssetWorkshop.Kaiju_I_Bound_Chimera_GoldenMaster.BodyGeometry.LeftFootGeometry.RearClaw",
-      "severity": "BLOCKER"
-    },
-    {
-      "id": "anatomy.rear-claw-direction",
-      "message": "Right rear claw points in the wrong direction (dot -0.95).",
-      "subject": "Workspace.TrenchbornAssetWorkshop.Kaiju_I_Bound_Chimera_GoldenMaster.BodyGeometry.RightFootGeometry.RearClaw",
-      "severity": "BLOCKER"
-    },
-    {
       "id": "silhouette.upright-ratio",
-      "message": "Height/depth ratio 1.15 is below the 1.35 upright-review threshold.",
+      "message": "Height/depth ratio 1.27 is below the 1.35 upright-review threshold.",
       "subject": "Workspace.TrenchbornAssetWorkshop.Kaiju_I_Bound_Chimera_GoldenMaster.HumanoidRootPart",
       "severity": "WARNING"
     }
   ],
   "metrics": {
     "hitboxes": 2,
-    "visibleParts": 126,
-    "minimumVisibleY": 0.03650110960006714,
-    "heightToDepthRatio": 1.1532698520602425
+    "visibleParts": 136,
+    "minimumVisibleY": 0.00925135612487793,
+    "heightToDepthRatio": 1.2747928990859996
   }
 }
