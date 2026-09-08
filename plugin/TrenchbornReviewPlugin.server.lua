@@ -5,10 +5,9 @@ local Workspace = game:GetService("Workspace")
 
 local BRIDGE = "http://127.0.0.1:43127"
 local MODEL_NAME = "Kaiju_I_Bound_Chimera_GoldenMaster"
-local MAX_AUTOFIX_ITERATIONS = 1
 
 local toolbar = plugin:CreateToolbar("Trenchborn")
-local reviewButton = toolbar:CreateButton("Review Agent", "Validate geometry against technical rules and the approved target", "")
+local reviewButton = toolbar:CreateButton("Review Agent", "Run one review-only assessment against the approved target", "")
 local widgetInfo = DockWidgetPluginGuiInfo.new(
 	Enum.InitialDockState.Right,
 	false,
@@ -19,7 +18,7 @@ local widgetInfo = DockWidgetPluginGuiInfo.new(
 	220
 )
 local widget = plugin:CreateDockWidgetPluginGui("TrenchbornReviewAgent", widgetInfo)
-widget.Title = "Trenchborn Review Agent"
+widget.Title = "Trenchborn Review Only"
 
 local scroll = Instance.new("ScrollingFrame")
 scroll.Name = "ReviewScroll"
@@ -40,7 +39,7 @@ status.TextYAlignment = Enum.TextYAlignment.Top
 status.TextWrapped = true
 status.TextScaled = true
 status.Font = Enum.Font.Code
-status.Text = "Start the local review agent, then press Review Agent."
+status.Text = "Start the local review-only agent, then press Review Agent."
 status.Parent = scroll
 
 local padding = Instance.new("UIPadding")
@@ -181,13 +180,9 @@ local function cameraViews(model, camera)
 	return views, target
 end
 
-local function captureAndReview(model, iteration)
+local function captureAndReview(model)
 	Selection:Set({model})
-	setStatus(string.format(
-		"ITERATION %d/%d\n\nRunning deterministic checks...",
-		iteration,
-		MAX_AUTOFIX_ITERATIONS
-	))
+	setStatus("REVIEW ONLY\n\nRunning deterministic checks...")
 	local technical = runTechnicalReview(model)
 	local session = post("/session/start", {
 		assetId = technical.assetId,
@@ -203,14 +198,7 @@ local function captureAndReview(model, iteration)
 		camera.FieldOfView = 34
 		local views, target = cameraViews(model, camera)
 		for index, view in ipairs(views) do
-			setStatus(string.format(
-				"ITERATION %d/%d\n\nCapturing %s (%d/%d)...",
-				iteration,
-				MAX_AUTOFIX_ITERATIONS,
-				view.name,
-				index,
-				#views
-			))
+			setStatus(string.format(\n\t\t\t\t"REVIEW ONLY\\n\\nCapturing %s (%d/%d)...",\n\t\t\t\tview.name,\n\t\t\t\tindex,\n\t\t\t\t#views\n\t\t\t))
 			camera.CFrame = CFrame.lookAt(view.position, view.target or target)
 			task.wait(0.75)
 			post("/session/capture", {sessionId = session.sessionId, view = view.name})
@@ -219,11 +207,7 @@ local function captureAndReview(model, iteration)
 	camera.CameraType, camera.CFrame, camera.FieldOfView = oldType, oldCF, oldFov
 	if not captured then error(captureError) end
 
-	setStatus(string.format(
-		"ITERATION %d/%d\n\nAI is reviewing the model...",
-		iteration,
-		MAX_AUTOFIX_ITERATIONS
-	))
+	setStatus("REVIEW ONLY\n\nAI is comparing the model with the approved target...")
 	local finished = post("/session/finish", {sessionId = session.sessionId})
 	model:SetAttribute("QualityGateBVisualReviewStatus", finished.status or "UNKNOWN")
 	model:SetAttribute("QualityGateBVisualReviewJSON", HttpService:JSONEncode(finished))
@@ -237,21 +221,17 @@ local function runReview()
 		return
 	end
 
-	for iteration = 1, MAX_AUTOFIX_ITERATIONS do
-		local finished, _, technical = captureAndReview(model, iteration)
-		local deterministicPass = technical.blockers == 0 and technical.warnings == 0
-		if finished.status == "PASS" and deterministicPass then
-			setStatus("READY FOR USER QUALITY GATE B\n\n" .. formatReview(finished))
-			return
-		end
-		if iteration == MAX_AUTOFIX_ITERATIONS then
-			setStatus(string.format(
-				"VALIDATION FAILED — AUTOMATIC CORRECTION DISABLED\n\n%s\n\nNo model file was changed. Correct the reported defects and run the review again.",
-				formatReview(finished)
-			))
-			return
-		end
+	local finished, _, technical = captureAndReview(model)
+	local deterministicPass = technical.blockers == 0 and technical.warnings == 0
+	if finished.status == "PASS" and deterministicPass then
+		setStatus("READY FOR USER QUALITY GATE B\n\n" .. formatReview(finished))
+		return
 	end
+
+	setStatus(string.format(
+		"REVIEW COMPLETE — CORRECTION REQUIRED IN CHATGPT WORK\n\n%s\n\nThe Review Agent stopped after one assessment. It did not edit or retry the model. ChatGPT Work must read reviews/latest/ and implement any correction; then the user may start a new review.",
+		formatReview(finished)
+	))
 end
 
 reviewButton.Click:Connect(function()
