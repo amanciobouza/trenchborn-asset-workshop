@@ -143,7 +143,10 @@ local function buildCounterbalance(model: Model, geometry: Folder, pelvis: BaseP
 	local armor = Instance.new("Folder"); armor.Name = "CounterbalanceArmor"; armor.Parent = geometry
 	for i, hostPart in ipairs(segments) do
 		if i <= 4 then
-			local p = wedge(armor, "TailShield_" .. i, Vector3.new(1.0, 1.5 + (#segments - i) * 0.18, 1.8), hostPart.CFrame * CFrame.new(0, 1.0, 0), ARMOR); weld(hostPart, p)
+			local midpoint = (points[i] + points[i + 1]) * 0.5
+			local lift = widths[i] * 0.62
+			local shieldCF = ground * CFrame.new(midpoint + Vector3.new(0, lift, 0.35)) * CFrame.Angles(math.rad(22), 0, math.rad(i % 2 == 0 and 7 or -7))
+			local p = wedge(armor, "TailShield_" .. i, Vector3.new(1.0, 1.5 + (#segments - i) * 0.18, 1.8), shieldCF, ARMOR); weld(hostPart, p)
 		end
 	end
 	return segments
@@ -181,7 +184,8 @@ local function shatteredShield(folder: Folder, host: BasePart, index: number, po
 	local assembly = Instance.new("Model"); assembly.Name = string.format("StormShield_%02d", index); assembly.Parent = folder
 	-- Fan each plate around the vertical axis so front, side, rear, and three-quarter views see a face rather than only its thin edge.
 	local faceYaw = yaw + (index % 2 == 0 and 32 or -32)
-	local baseCF = ground * CFrame.new(pos) * CFrame.Angles(math.rad(28), math.rad(faceYaw), math.rad(index % 2 == 0 and 7 or -7))
+	local outwardPosition = pos + Vector3.new(0, 0, 1.45 + 0.35 * scale)
+	local baseCF = ground * CFrame.new(outwardPosition) * CFrame.Angles(math.rad(28), math.rad(faceYaw), math.rad(index % 2 == 0 and 7 or -7))
 	local center = wedge(assembly, "ShieldCore", Vector3.new(3.2 * scale, 3.65 * scale, 1.25 * scale), baseCF * CFrame.Angles(0, math.rad(180), 0), ARMOR); weld(host, center)
 	local left = wedge(assembly, "BrokenLeft", Vector3.new(2.25 * scale, 2.65 * scale, 1.15 * scale), baseCF * CFrame.new(-1.65 * scale, -0.4 * scale, 0.12) * CFrame.Angles(0, math.rad(158), math.rad(-18)), ARMOR); weld(host, left)
 	local right = wedge(assembly, "BrokenRight", Vector3.new(2.0 * scale, 3.0 * scale, 1.1 * scale), baseCF * CFrame.new(1.55 * scale, -0.25 * scale, 0.18) * CFrame.Angles(0, math.rad(202), math.rad(16)), ARMOR); weld(host, right)
@@ -197,7 +201,7 @@ local function build(target: Instance, ground: CFrame): Model
 	model:SetAttribute("AssetName", Specification.AssetName); model:SetAttribute("AssetId", Specification.AssetId)
 	model:SetAttribute("PipelinePhase", 4); model:SetAttribute("PipelineStatus", "AWAITING_GEOMETRY_APPROVAL")
 	model:SetAttribute("QualityGateA", "Approved"); model:SetAttribute("QualityGateB", "Pending"); model:SetAttribute("GeometryOnly", true)
-	model:SetAttribute("EvolutionStage", 1); model:SetAttribute("EvolutionName", "Bound Chimera"); model:SetAttribute("DesignVersion", "2.5.1")
+	model:SetAttribute("EvolutionStage", 1); model:SetAttribute("EvolutionName", "Bound Chimera"); model:SetAttribute("DesignVersion", "2.5.2")
 	model:SetAttribute("UprightDominant", true); model:SetAttribute("DigitigradeLegs", true); model:SetAttribute("DorsalShieldCount", 7)
 	model:SetAttribute("ForwardClawsPerFoot", 3); model:SetAttribute("RearClawsPerFoot", 1); model:SetAttribute("DressingDeferredToPhase", 5)
 	local geometry = detailFolder(model)
