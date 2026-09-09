@@ -96,7 +96,8 @@ local function buildArm(model: Model, geometry: Folder, side: string, sign: numb
 	local lower = segment(model, side .. "LowerArm", elbow, wrist, 2.05, 1.85, ground, BODY); motor(upper, side .. "Elbow", upper, lower, ground * CFrame.new(elbow))
 	local deltoid = ellipsoid(geometry, side .. "DeltoidMass", Vector3.new(3.0, 3.1, 2.75), ground * CFrame.new(shoulder + Vector3.new(0, -0.55, 0)), BODY); weld(upper, deltoid)
 	local forearmMass = ellipsoid(geometry, side .. "ForearmMass", Vector3.new(2.4, 2.75, 2.2), ground * CFrame.new((elbow + wrist) * 0.5), BODY); weld(lower, forearmMass)
-	local elbowEdge = wedge(geometry, side .. "ElbowEdge", Vector3.new(1.35, 1.15, 1.5), ground * CFrame.new(elbow) * CFrame.Angles(0, sign * math.rad(90), 0), ARMOR); weld(lower, elbowEdge)
+	-- Keep the elbow definition embedded in the joint mass instead of floating on its tip.
+	local elbowEdge = wedge(geometry, side .. "ElbowEdge", Vector3.new(0.9, 0.78, 1.0), ground * CFrame.new(elbow + Vector3.new(-sign * 0.12, 0.08, -0.38)) * CFrame.Angles(0, sign * math.rad(90), sign * math.rad(8)), ARMOR); weld(lower, elbowEdge)
 	local hand = ellipsoid(model, side .. "Hand", Vector3.new(2.65, 1.8, 2.4), ground * CFrame.new(wrist + Vector3.new(0, -0.55, -0.4)) * CFrame.Angles(math.rad(-12), 0, 0), DARK); motor(lower, side .. "Wrist", lower, hand, ground * CFrame.new(wrist))
 	local f = Instance.new("Folder"); f.Name = side .. "HandGeometry"; f.Parent = geometry
 	for i = 1, 3 do
@@ -176,10 +177,11 @@ end
 
 local function shatteredShield(folder: Folder, host: BasePart, index: number, pos: Vector3, scale: number, yaw: number, ground: CFrame)
 	local assembly = Instance.new("Model"); assembly.Name = string.format("StormShield_%02d", index); assembly.Parent = folder
-	local baseCF = ground * CFrame.new(pos) * CFrame.Angles(math.rad(-5), math.rad(yaw), math.rad(index % 2 == 0 and 5 or -5))
+	-- Fan each plate around the vertical axis so front, side, rear, and three-quarter views see a face rather than only its thin edge.
+	local baseCF = ground * CFrame.new(pos) * CFrame.Angles(math.rad(-10), math.rad(yaw), math.rad(index % 2 == 0 and 7 or -7))
 	local center = wedge(assembly, "ShieldCore", Vector3.new(3.2 * scale, 3.65 * scale, 1.25 * scale), baseCF * CFrame.Angles(0, math.rad(180), 0), ARMOR); weld(host, center)
-	local left = wedge(assembly, "BrokenLeft", Vector3.new(2.25 * scale, 2.65 * scale, 1.15 * scale), baseCF * CFrame.new(-1.65 * scale, -0.4 * scale, 0.12) * CFrame.Angles(0, math.rad(180), math.rad(-18)), ARMOR); weld(host, left)
-	local right = wedge(assembly, "BrokenRight", Vector3.new(2.0 * scale, 3.0 * scale, 1.1 * scale), baseCF * CFrame.new(1.55 * scale, -0.25 * scale, 0.18) * CFrame.Angles(0, math.rad(180), math.rad(16)), ARMOR); weld(host, right)
+	local left = wedge(assembly, "BrokenLeft", Vector3.new(2.25 * scale, 2.65 * scale, 1.15 * scale), baseCF * CFrame.new(-1.65 * scale, -0.4 * scale, 0.12) * CFrame.Angles(0, math.rad(158), math.rad(-18)), ARMOR); weld(host, left)
+	local right = wedge(assembly, "BrokenRight", Vector3.new(2.0 * scale, 3.0 * scale, 1.1 * scale), baseCF * CFrame.new(1.55 * scale, -0.25 * scale, 0.18) * CFrame.Angles(0, math.rad(202), math.rad(16)), ARMOR); weld(host, right)
 	local crown = wedge(assembly, "BrokenCrown", Vector3.new(1.35 * scale, 1.45 * scale, 1.2 * scale), baseCF * CFrame.new((index % 2 == 0 and -0.7 or 0.75) * scale, 1.65 * scale, 0.08) * CFrame.Angles(0, math.rad(180), math.rad(index % 2 == 0 and -21 or 21)), DARK); weld(host, crown)
 	for seamIndex, seamX in ipairs({-0.55, 0.5}) do
 		local seam = wedge(assembly, "EnergyFissure_" .. seamIndex, Vector3.new(0.22 * scale, 2.5 * scale, 0.22 * scale), baseCF * CFrame.new(seamX * scale, -0.15 * scale, -0.72 * scale) * CFrame.Angles(0, 0, math.rad(seamIndex == 1 and -16 or 14)), ENERGY_REVIEW)
@@ -192,7 +194,7 @@ local function build(target: Instance, ground: CFrame): Model
 	model:SetAttribute("AssetName", Specification.AssetName); model:SetAttribute("AssetId", Specification.AssetId)
 	model:SetAttribute("PipelinePhase", 4); model:SetAttribute("PipelineStatus", "AWAITING_GEOMETRY_APPROVAL")
 	model:SetAttribute("QualityGateA", "Approved"); model:SetAttribute("QualityGateB", "Pending"); model:SetAttribute("GeometryOnly", true)
-	model:SetAttribute("EvolutionStage", 1); model:SetAttribute("EvolutionName", "Bound Chimera"); model:SetAttribute("DesignVersion", "2.4.0")
+	model:SetAttribute("EvolutionStage", 1); model:SetAttribute("EvolutionName", "Bound Chimera"); model:SetAttribute("DesignVersion", "2.4.1")
 	model:SetAttribute("UprightDominant", true); model:SetAttribute("DigitigradeLegs", true); model:SetAttribute("DorsalShieldCount", 7)
 	model:SetAttribute("ForwardClawsPerFoot", 3); model:SetAttribute("RearClawsPerFoot", 1); model:SetAttribute("DressingDeferredToPhase", 5)
 	local geometry = detailFolder(model)
@@ -212,16 +214,17 @@ local function build(target: Instance, ground: CFrame): Model
 		local thighMass = ellipsoid(geometry, side .. "ThighMass", Vector3.new(5.75, 5.85, 5.2), ground * CFrame.new((hip + knee) * 0.5 + Vector3.new(0, 0.35, 0.1)), BODY); weld(upper, thighMass)
 		local calfMass = ellipsoid(geometry, side .. "CalfMass", Vector3.new(5.1, 5.15, 4.55), ground * CFrame.new((knee + hock) * 0.5 + Vector3.new(0, -0.05, 0.2)), BODY); weld(lower, calfMass)
 		local hockMass = ellipsoid(geometry, side .. "HockMass", Vector3.new(4.7, 3.6, 4.4), ground * CFrame.new(hock + Vector3.new(0, 0.15, 0.1)), BODY); weld(lower, hockMass)
-		local kneeEdge = wedge(geometry, side .. "KneeEdge", Vector3.new(2.7, 1.45, 2.0), ground * CFrame.new(knee + Vector3.new(0, 0, -1.25)) * CFrame.Angles(0, math.rad(180), 0), ARMOR); weld(lower, kneeEdge)
+		-- The kneecap is a compact inset plane following the forward bend, not a detached spike.
+		local kneeEdge = wedge(geometry, side .. "KneeEdge", Vector3.new(1.85, 0.95, 1.25), ground * CFrame.new(knee + Vector3.new(0, 0.12, -0.82)) * CFrame.Angles(math.rad(-8), math.rad(180), 0), ARMOR); weld(lower, kneeEdge)
 		buildFoot(model, geometry, side, sign, lower, ground)
 	end
 	local rudder = buildCounterbalance(model, geometry, pelvis, ground)
 	local dorsals = Instance.new("Folder"); dorsals.Name = "DorsalPlates"; dorsals.Parent = geometry
 	local specs = {
-		{head, Vector3.new(0, 27.1, 1.0), 0.7, -8}, {torso, Vector3.new(0, 24.55, 2.55), 0.88, 7},
-		{torso, Vector3.new(0, 21.8, 3.05), 1.08, -8}, {torso, Vector3.new(0, 18.9, 3.1), 1.2, 9},
-		{pelvis, Vector3.new(0, 16.05, 3.15), 1.02, -7}, {pelvis, Vector3.new(0, 13.35, 3.55), 0.82, 8},
-		{rudder[1], Vector3.new(0, 10.95, 6.65), 0.64, -6},
+		{head, Vector3.new(0, 27.1, 1.0), 0.7, -34}, {torso, Vector3.new(0, 24.55, 2.55), 0.88, 30},
+		{torso, Vector3.new(0, 21.8, 3.05), 1.08, -27}, {torso, Vector3.new(0, 18.9, 3.1), 1.2, 24},
+		{pelvis, Vector3.new(0, 16.05, 3.15), 1.02, -22}, {pelvis, Vector3.new(0, 13.35, 3.55), 0.82, 20},
+		{rudder[1], Vector3.new(0, 10.95, 6.65), 0.64, -18},
 	}
 	for i, d in ipairs(specs) do shatteredShield(dorsals, d[1] :: BasePart, i, d[2] :: Vector3, d[3] :: number, d[4] :: number, ground) end
 	local hitboxes = Instance.new("Folder"); hitboxes.Name = "Hitboxes_GeometryReviewOnly"; hitboxes.Parent = model
