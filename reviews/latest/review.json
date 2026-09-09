@@ -1,11 +1,11 @@
 {
   "status": "FAIL",
-  "summary": "The model substantially diverges from the approved target. Facial construction, anatomy, dorsal shields, and surface treatment do not match. Arm clearance and every foot claw cannot be verified from the supplied captures and therefore fail. The supplied deterministic report has no blockers and one warning; visual review identifies blockers.",
+  "summary": "Capture framing includes the required anatomy, but the model substantially diverges from the approved target. Rear claw orientation remains unverifiable because of occlusion, not cropping.",
   "findings": [
     {
       "id": "visual.target-mismatch",
       "severity": "BLOCKER",
-      "message": "Visual finding: the rectangular head, stacked rounded limb segments, narrow chest, tiny hands, and short segmented tail differ substantially from the target's integrated reptilian anatomy, elongated head, muscular torso, and sweeping tail. The target's layered armor and yellow fissures are not clearly reproduced.",
+      "message": "Visual finding: the box-shaped head, smooth segmented body, small hands, straight segmented tail, and narrow dorsal assembly do not match the target's reptilian anatomy and broad fractured armor silhouette.",
       "evidenceViews": [
         "front",
         "left",
@@ -13,112 +13,95 @@
         "rear",
         "three-quarter"
       ],
-      "recommendation": "Rebuild the primary anatomy and silhouette against the approved target before refining surface detail."
+      "recommendation": "Rebuild the primary anatomical forms and dorsal silhouette against the approved target before refining details."
     },
     {
       "id": "visual.face-construction",
       "severity": "BLOCKER",
-      "message": "Visual finding: the face reads as a rectangular slab with broad rectangular brow pieces and projecting horizontal mouth plates. A coherent reptilian crown, muzzle, jaw, vents, and visible paired eyes cannot be verified. Approximate brow symmetry does not establish correct orientation of all facial parts.",
+      "message": "Visual finding: the face reads as a rectangular block with projecting horizontal mouth plates. The crown, muzzle, and jaw do not form the target's coherent reptilian face; distinct eyes and vents cannot be verified.",
       "evidenceViews": [
         "face-front-close",
-        "face-three-quarter-close",
-        "left",
-        "right"
+        "face-three-quarter-close"
       ],
-      "recommendation": "Reconstruct the tapered skull and integrated muzzle and jaw; expose both eyes and vents in unobstructed close-ups."
+      "recommendation": "Shape a tapered skull, integrated muzzle and lower jaw, and clearly visible paired eyes and vents."
     },
     {
-      "id": "visual.arm-clearance-unverified",
+      "id": "visual.claws",
       "severity": "BLOCKER",
-      "message": "Visual finding: shoulder attachments are visible, but close-ups crop the lower arms and hands, and the review panel obscures part of the right-side inspection. Crowded overlaps around the shoulder, torso plates, and arm segments prevent verification of continuous clearance below the shoulders.",
-      "evidenceViews": [
-        "left-arm-close",
-        "right-arm-close",
-        "front",
-        "three-quarter"
-      ],
-      "recommendation": "Capture each complete arm from shoulder through fingertips with the torso boundary visible; correct any penetration revealed."
-    },
-    {
-      "id": "visual.claws-unverified",
-      "severity": "BLOCKER",
-      "message": "Visual finding: both foot close-ups frame the lower legs and crop out the claws. Wide views suggest three front projections on each foot and rear projections in profile, but cannot establish that every claw points correctly and is neither buried, sideways, nor blunt.",
+      "message": "Visual finding: all three front claws on each foot project forward, but appear as flat wedges with squared tips. Rear claws are partly occluded, preventing verification of their complete shape and backward orientation.",
       "evidenceViews": [
         "left-foot-close",
         "right-foot-close",
-        "front",
         "left",
         "right",
-        "three-quarter",
         "rear"
       ],
-      "recommendation": "Recapture each entire foot from above and from the side, showing all three front claws and the rear claw from root to tip."
+      "recommendation": "Give each claw a pointed, volumetric profile and provide unobstructed rear-oblique foot views."
     },
     {
       "id": "visual.dorsal-shields",
       "severity": "BLOCKER",
-      "message": "Visual finding: the dorsal assembly reads as overlapping elongated flat plates with small pointed edges. Seven distinct angular shattered storm shields cannot be counted or verified, and the target's broad fractured shield silhouettes are absent.",
+      "message": "Visual finding: the dorsal assembly reads as stacked narrow plates with simple pointed edges. Seven distinct shattered storm shields cannot be verified, and the target's broad fractured shield forms are absent.",
       "evidenceViews": [
         "left",
         "right",
         "rear",
         "three-quarter"
       ],
-      "recommendation": "Create seven individually readable, broad angular shields with broken contours and visible fracture structure; capture an unobstructed rear three-quarter view."
+      "recommendation": "Separate seven broad angular shields with irregular broken contours and visible fracture structure."
     },
     {
-      "id": "deterministic.upright-ratio",
+      "id": "silhouette.upright-ratio",
       "severity": "WARNING",
-      "message": "Supplied deterministic finding: height/depth ratio is 1.2747928990859996, below the 1.35 review threshold. The screenshots nevertheless show an upright stance without arm support.",
+      "message": "Deterministic report finding: height/depth ratio is 1.2748, below the supplied 1.35 threshold. Visually, the creature nevertheless stands upright without arm support.",
       "evidenceViews": [
-        "front",
         "left",
         "right",
-        "three-quarter"
+        "front"
       ],
-      "recommendation": "Review body depth and tail contribution to the measured ratio while preserving the upright stance."
+      "recommendation": "Review the measured depth contribution from the tail before changing the upright posture."
     }
   ],
   "criteria": [
     {
       "id": "visual.target-image-match",
       "result": "FAIL",
-      "reason": "Anatomy, facial construction, proportions, tail shape, armor, and defining dorsal silhouette substantially differ from the approved target."
+      "reason": "Facial construction, body proportions, surface anatomy, tail curvature, and dorsal silhouette substantially differ from the approved target."
     },
     {
       "id": "visual.face-part-orientation",
       "result": "FAIL",
-      "reason": "The slab-like facial assembly does not form the target's coherent reptilian face; correct orientation of crown, muzzle, jaw, vents, and eyes cannot all be verified."
+      "reason": "Approximate bilateral symmetry is visible, but the block crown and projecting mouth plates lack coherent reptilian construction; eyes and vents cannot be verified."
     },
     {
       "id": "visual.arms-clear-of-torso",
-      "result": "FAIL",
-      "reason": "Shoulder attachments are visible, but cropping, occlusion, and overlapping forms prevent verification of full arm-to-torso clearance."
+      "result": "PASS",
+      "reason": "Both close-ups include shoulder attachment through complete hand. Arms remain externally readable down the torso sides, with no visible passage through the torso."
     },
     {
       "id": "visual.claw-orientation",
       "result": "FAIL",
-      "reason": "Both dedicated close-ups exclude the claws. Remaining views cannot verify every front and rear claw on both feet."
+      "reason": "Three front claws per foot point forward but have blunt, flat tips. Occlusion prevents full verification of both rear claws."
     },
     {
       "id": "visual.upright-not-hunched",
       "result": "PASS",
-      "reason": "Front and side views show a vertically held torso, elevated head, and hanging arms that do not support the body."
+      "reason": "Front and side views show an upright torso and unsupported hanging arms."
     },
     {
       "id": "visual.original-chimera-silhouette",
       "result": "FAIL",
-      "reason": "A bipedal creature with dorsal plates and a tail is recognizable, but the target's specific cranial, anatomical, shield, and tail anchors are not preserved clearly."
+      "reason": "Generic biped, dorsal plates, and tail remain, but the target's distinctive reptilian head, integrated muscular anatomy, and broad shield silhouette are not preserved."
     },
     {
       "id": "visual.shattered-storm-shields",
       "result": "FAIL",
-      "reason": "The dorsal forms read as overlapping flat plates; seven distinct shattered shield forms cannot be verified."
+      "reason": "The dorsal forms read as simple stacked plates; seven distinct angular shattered shields are not verifiable."
     },
     {
       "id": "visual.massive-digitigrade-legs",
       "result": "PASS",
-      "reason": "Both side views show bent leg profiles with raised heel regions and planted forefeet. The legs visibly carry substantially more mass than the short hanging arms."
+      "reason": "Both side views show bent digitigrade leg profiles, with substantial thighs and lower legs visibly stronger than the short hanging arms."
     }
   ]
 }
