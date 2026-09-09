@@ -1,111 +1,111 @@
 {
   "status": "FAIL",
-  "summary": "Capture coverage is sufficient. The model substantially misses the approved target, and foot-claw orientation fails both the supplied deterministic checks and visual review.",
+  "summary": "Required arm and foot anatomy is within the close-up frames; capture coverage is valid. The model substantially misses the approved target, and the supplied deterministic report identifies eight reversed claws.",
   "findings": [
-    {
-      "id": "capture.coverage",
-      "severity": "INFO",
-      "message": "Both arm close-ups include shoulder attachments, upper arms, lower arms, and complete hands. Both foot close-ups include the front claws and rear-claw regions. Rear claws are partly buried or occluded by anatomy, not cropped.",
-      "evidenceViews": [
-        "left-arm-close",
-        "right-arm-close",
-        "left-foot-close",
-        "right-foot-close"
-      ],
-      "recommendation": "Retain this coverage; hide selection overlays for cleaner inspection."
-    },
     {
       "id": "deterministic.claw-directions",
       "severity": "BLOCKER",
-      "message": "The supplied technical report flags all six forward claws at dot -0.98 and both rear claws at dot -0.94. These are reported deterministic failures, not independently recomputed measurements.",
+      "message": "Supplied technical report: all six front claws have direction dot -0.98; both rear claws have direction dot -0.94. These are reported deterministic failures, not measurements independently derived from screenshots.",
       "evidenceViews": [],
       "recommendation": "Correct all eight claw directions and rerun the deterministic checks."
     },
     {
       "id": "visual.target-mismatch",
       "severity": "BLOCKER",
-      "message": "Smooth bulbous body segments, a compressed neck, blunt stacked muzzle, small hands, and flat armor panels do not match the target's elongated reptilian head, integrated muscular anatomy, rocky armor, and broad fractured dorsal shields.",
+      "message": "Smooth rounded limb segments, a rectangular chest panel, compressed neck, blunt face, and straight segmented tail differ substantially from the target's integrated armored anatomy, elongated head, exposed neck, and curved tail.",
       "evidenceViews": [
         "front",
         "left",
         "right",
-        "three-quarter",
-        "face-three-quarter-close",
-        "rear"
+        "three-quarter"
       ],
-      "recommendation": "Rebuild the primary proportions and defining head, armor, and dorsal shapes against the approved target."
+      "recommendation": "Rebuild the major anatomical masses and silhouette against the approved target before refining details."
     },
     {
-      "id": "visual.face-readability",
+      "id": "visual.face-construction",
       "severity": "BLOCKER",
-      "message": "Crown and brow panels obscure the eye region; identifiable eyes and vents cannot be verified. The muzzle and jaw read as stacked rounded pads rather than a coherent target-matching reptilian face.",
+      "message": "Broad overlapping brow and muzzle plates obscure the eye region. The rounded jaw and block-like muzzle do not form the target's tapered reptilian face; eye and vent orientation cannot be verified because these features are not distinguishable.",
       "evidenceViews": [
         "face-front-close",
         "face-three-quarter-close"
       ],
-      "recommendation": "Expose the eyes and vents and reshape the crown, muzzle, and jaw into a coherent facial structure."
+      "recommendation": "Separate readable eyes and vents, taper the muzzle, and integrate the crown and jaw into a coherent head."
     },
     {
       "id": "visual.claw-shape",
       "severity": "BLOCKER",
-      "message": "Front claw ends read as blunt angular caps. Rear-claw geometry appears partly buried around the ankles; clean backward-projecting tips are not established.",
+      "message": "Each foot shows three front claw positions, but the highlighted ends read as broad angular caps rather than pointed talons. Rear claw geometry is partly concealed by the ankle/heel volume; this is occlusion, not frame cropping.",
       "evidenceViews": [
         "left-foot-close",
-        "right-foot-close"
+        "right-foot-close",
+        "rear"
       ],
-      "recommendation": "Create exposed tapered tips pointing forward on all six front claws and backward on both rear claws."
+      "recommendation": "Expose and taper every claw, with three projecting forward and one clearly projecting backward on each foot."
+    },
+    {
+      "id": "visual.dorsal-shields",
+      "severity": "BLOCKER",
+      "message": "The dorsal forms read as overlapping flat slabs with simple wedge profiles. Seven distinct shattered storm shields are not clearly readable, and the target's broad fractured outlines are absent.",
+      "evidenceViews": [
+        "left",
+        "right",
+        "rear",
+        "three-quarter"
+      ],
+      "recommendation": "Create seven individually readable shields with irregular fractured silhouettes and visible branching fissures."
     },
     {
       "id": "deterministic.upright-ratio",
       "severity": "WARNING",
-      "message": "The supplied height/depth ratio is 1.2664, below its 1.35 threshold, although the visible pose reads upright.",
+      "message": "The supplied height/depth ratio is 1.2664, below its 1.35 threshold. Visually, the creature nevertheless stands upright without arm support.",
       "evidenceViews": [
         "left",
-        "right"
+        "right",
+        "front"
       ],
-      "recommendation": "Recheck the ratio after correcting target proportions."
+      "recommendation": "Review body and tail proportions against the target and rerun the ratio check."
     }
   ],
   "criteria": [
     {
       "id": "visual.target-image-match",
       "result": "FAIL",
-      "reason": "Anatomy, facial construction, proportions, armor, and defining silhouette substantially differ from the approved target."
+      "reason": "Anatomy, facial construction, armor treatment, proportions, and tail silhouette substantially diverge from the approved target."
     },
     {
       "id": "visual.face-part-orientation",
       "result": "FAIL",
-      "reason": "Broad bilateral symmetry is visible, but eyes and vents cannot be verified and overlapping facial panels prevent a coherent facial read."
+      "reason": "Overlapping plates obscure the eyes and vents; their orientation cannot be verified. The muzzle and jaw read as disconnected blunt forms."
     },
     {
       "id": "visual.arms-clear-of-torso",
       "result": "PASS",
-      "reason": "Both arms remain externally traceable from shoulder attachment through complete hands; no visible passage through the torso is established."
+      "reason": "Both close-ups include shoulder attachment, upper arm, lower arm, and complete hand. Below the shoulder attachment, the arms remain externally readable without visibly passing through the torso."
     },
     {
       "id": "visual.claw-orientation",
       "result": "FAIL",
-      "reason": "Front tips appear cap-like and rear claws partly buried; the supplied deterministic report additionally rejects every claw direction."
+      "reason": "All six front claw positions and both rear claw regions were inspected. Front ends appear cap-like, rear claws are partly buried or occluded, and the supplied deterministic report flags all eight directions."
     },
     {
       "id": "visual.upright-not-hunched",
       "result": "PASS",
-      "reason": "The torso is upright and the arms hang freely without supporting the body."
+      "reason": "Front and side views show an upright torso carried by the legs, with hands hanging freely."
     },
     {
       "id": "visual.original-chimera-silhouette",
       "result": "FAIL",
-      "reason": "A biped, tail, and dorsal row remain recognizable, but the target's distinctive head, muscular contours, and shield silhouette are not preserved."
+      "reason": "A bipedal creature with dorsal armor and a tail is recognizable, but the target's distinctive head, neck, shield spread, and integrated muscular silhouette are not preserved."
     },
     {
       "id": "visual.shattered-storm-shields",
       "result": "FAIL",
-      "reason": "Dorsal forms read as overlapping flat panels with simple angular edges; seven distinct shattered storm shields are not visually established."
+      "reason": "Seven distinct fractured shields cannot be verified; the visible forms read as simple overlapping slabs and wedges."
     },
     {
       "id": "visual.massive-digitigrade-legs",
       "result": "PASS",
-      "reason": "Side views show bent leg profiles with substantial thigh and calf mass, visibly stronger than the short hanging arms."
+      "reason": "Side views show bent leg chains with raised heel transitions; the legs are substantially more massive than the short free-hanging arms and visibly bear the body."
     }
   ]
 }
