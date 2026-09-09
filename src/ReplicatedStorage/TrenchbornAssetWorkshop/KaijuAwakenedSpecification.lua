@@ -20,7 +20,7 @@ return {
 		Stance = "UprightDominantDigitigradeBiped",
 		ForwardClawsPerFoot = 3,
 		RearClawsPerFoot = 1,
-		DorsalShieldCount = 7,
+		DorsalShieldCount = 5,
 		ArmRule = "ShortFreeHangingNeverGroundSupport",
 		Counterbalance = "VisibleSevenSegmentCylinderTail",
 	},
