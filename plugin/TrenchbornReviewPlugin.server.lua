@@ -6,6 +6,7 @@ local Workspace = game:GetService("Workspace")
 local BRIDGE = "http://127.0.0.1:43127"
 local MODEL_NAME = "Kaiju_I_Bound_Chimera_GoldenMaster"
 local MAX_AUTOFIX_ITERATIONS = 1
+local MAX_CAPTURE_ATTEMPTS = 2
 
 local toolbar = plugin:CreateToolbar("Trenchborn")
 local reviewButton = toolbar:CreateButton("Review Agent", "Validate geometry against technical rules and the approved target", "")
@@ -55,10 +56,10 @@ sizeConstraint.MinTextSize = 11
 sizeConstraint.MaxTextSize = 17
 sizeConstraint.Parent = status
 
-local function setStatus(text)
+local function setStatus(text, showWidget)
 	status.Text = text
 	scroll.CanvasPosition = Vector2.zero
-	widget.Enabled = true
+	widget.Enabled = showWidget ~= false
 end
 
 local function formatReview(review)
@@ -141,7 +142,7 @@ local function runTechnicalReview(model)
 	return report.ToSerializable(result)
 end
 
-local function cameraViews(model, camera)
+local function cameraViews(model, camera, captureAttempt)
 	local boxCF, size = model:GetBoundingBox()
 	local center = boxCF.Position
 	local target = center
@@ -164,26 +165,47 @@ local function cameraViews(model, camera)
 		{name = "rear", position = target + Vector3.new(0, 0, distance)},
 		{name = "three-quarter", position = target + Vector3.new(-1, 0.16, -1).Unit * distance},
 	}
-	local function addDetail(name, subjectName, offset, detailDistance)
-		local subject = model:FindFirstChild(subjectName, true)
-		if subject and subject:IsA("BasePart") then
-			table.insert(views, {
-				name = name,
-				target = subject.Position,
-				position = subject.Position + offset.Unit * detailDistance,
-			})
+	local detailPadding = captureAttempt == 1 and 1.25 or 1.6
+	local function addDetail(name, subjectNames, offset)
+		local subjects = {}
+		for _, subjectName in ipairs(subjectNames) do
+			local subject = model:FindFirstChild(subjectName, true)
+			if subject then
+				if subject:IsA("BasePart") then table.insert(subjects, subject) end
+				for _, descendant in ipairs(subject:GetDescendants()) do
+					if descendant:IsA("BasePart") then table.insert(subjects, descendant) end
+				end
+			end
 		end
+		if #subjects == 0 then return end
+
+		local minimum = Vector3.new(math.huge, math.huge, math.huge)
+		local maximum = Vector3.new(-math.huge, -math.huge, -math.huge)
+		for _, subject in ipairs(subjects) do
+			local radius = subject.Size.Magnitude * 0.5
+			local extent = Vector3.new(radius, radius, radius)
+			minimum = minimum:Min(subject.Position - extent)
+			maximum = maximum:Max(subject.Position + extent)
+		end
+		local detailTarget = (minimum + maximum) * 0.5
+		local detailRadius = (maximum - minimum).Magnitude * 0.5
+		local detailDistance = (detailRadius / math.sin(limitingHalfAngle)) * detailPadding
+		table.insert(views, {
+			name = name,
+			target = detailTarget,
+			position = detailTarget + offset.Unit * detailDistance,
+		})
 	end
-	addDetail("face-front-close", "Head", Vector3.new(0, 0.05, -1), 12)
-	addDetail("face-three-quarter-close", "Head", Vector3.new(-1, 0.15, -1), 13)
-	addDetail("left-arm-close", "LeftUpperArm", Vector3.new(-1, 0.1, -0.65), 11)
-	addDetail("right-arm-close", "RightUpperArm", Vector3.new(1, 0.1, -0.65), 11)
-	addDetail("left-foot-close", "LeftFoot", Vector3.new(-0.45, 0.35, -1), 9)
-	addDetail("right-foot-close", "RightFoot", Vector3.new(0.45, 0.35, -1), 9)
+	addDetail("face-front-close", {"Head", "Jaw", "HeadGeometry"}, Vector3.new(0, 0.05, -1))
+	addDetail("face-three-quarter-close", {"Head", "Jaw", "HeadGeometry"}, Vector3.new(-1, 0.15, -1))
+	addDetail("left-arm-close", {"LeftUpperArm", "LeftLowerArm", "LeftHand", "LeftHandGeometry"}, Vector3.new(-1, 0.1, -0.65))
+	addDetail("right-arm-close", {"RightUpperArm", "RightLowerArm", "RightHand", "RightHandGeometry"}, Vector3.new(1, 0.1, -0.65))
+	addDetail("left-foot-close", {"LeftFoot", "LeftFootGeometry"}, Vector3.new(-0.45, 0.35, -1))
+	addDetail("right-foot-close", {"RightFoot", "RightFootGeometry"}, Vector3.new(0.45, 0.35, -1))
 	return views, target
 end
 
-local function captureAndReview(model, iteration)
+local function captureAndReview(model, iteration, captureAttempt)
 	Selection:Set({model})
 	setStatus(string.format(
 		"ITERATION %d/%d\n\nRunning deterministic checks...",
@@ -203,7 +225,7 @@ local function captureAndReview(model, iteration)
 	local captured, captureError = pcall(function()
 		camera.CameraType = Enum.CameraType.Scriptable
 		camera.FieldOfView = 34
-		local views, target = cameraViews(model, camera)
+		local views, target = cameraViews(model, camera, captureAttempt)
 		for index, view in ipairs(views) do
 			setStatus(string.format(
 				"ITERATION %d/%d\n\nCapturing %s (%d/%d)...",
@@ -212,7 +234,7 @@ local function captureAndReview(model, iteration)
 				view.name,
 				index,
 				#views
-			))
+			), false)
 			camera.CFrame = CFrame.lookAt(view.position, view.target or target)
 			task.wait(0.75)
 			post("/session/capture", {sessionId = session.sessionId, view = view.name})
@@ -240,7 +262,20 @@ local function runReview()
 	end
 
 	for iteration = 1, MAX_AUTOFIX_ITERATIONS do
-		local finished, _, technical = captureAndReview(model, iteration)
+		local finished, technical, captureSession
+		for captureAttempt = 1, MAX_CAPTURE_ATTEMPTS do
+			finished, captureSession, technical = captureAndReview(model, iteration, captureAttempt)
+			if finished.status ~= "CAPTURE_INVALID" then break end
+			setStatus(string.format(
+				"CAPTURE INVALID\n\nDetail views were cropped. Retaking with wider framing (%d/%d)...",
+				captureAttempt + 1,
+				MAX_CAPTURE_ATTEMPTS
+			))
+		end
+		if finished.status == "CAPTURE_INVALID" then
+			setStatus("CAPTURE INVALID\n\nThe evidence is still incomplete after the automatic retake. No model defect was recorded.")
+			return
+		end
 		local deterministicPass = technical.blockers == 0 and technical.warnings == 0
 		if finished.status == "PASS" and deterministicPass then
 			setStatus("READY FOR USER QUALITY GATE B\n\n" .. formatReview(finished))
