@@ -21,7 +21,7 @@ return {
 	VisualReviewCriteria = {
 		{
 			Id = "visual.target-image-match",
-			Prompt = "Compare against the supplied approved target image. The anatomy, posture, facial construction, proportions, and defining silhouette must clearly match; stylistic resemblance alone is insufficient.",
+			Prompt = "Compare against the supplied approved target image. The anatomy, posture, facial construction, proportions, and defining silhouette must clearly match; stylistic resemblance alone is insufficient. Confirm five large, individually readable primary dorsal shields with visible gaps; the four tail shields must project clearly beyond the cylinder silhouette. Confirm the rectangular lower jaw sits anatomically below the upper muzzle and projects farther forward and downward.",
 		},
 		{
 			Id = "visual.face-part-orientation",
