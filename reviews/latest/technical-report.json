@@ -43,7 +43,7 @@
   "findings": [
     {
       "id": "silhouette.upright-ratio",
-      "message": "Height/depth ratio 1.26 is below the 1.35 upright-review threshold.",
+      "message": "Height/depth ratio 1.27 is below the 1.35 upright-review threshold.",
       "subject": "Workspace.TrenchbornAssetWorkshop.Kaiju_I_Bound_Chimera_GoldenMaster.HumanoidRootPart",
       "severity": "WARNING"
     }
@@ -52,6 +52,6 @@
     "hitboxes": 2,
     "visibleParts": 148,
     "minimumVisibleY": -0.02211347222328186,
-    "heightToDepthRatio": 1.2648187354129892
+    "heightToDepthRatio": 1.2663455821838137
   }
 }
