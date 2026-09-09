@@ -5,11 +5,10 @@ local Workspace = game:GetService("Workspace")
 
 local BRIDGE = "http://127.0.0.1:43127"
 local MODEL_NAME = "Kaiju_I_Bound_Chimera_GoldenMaster"
-local MAX_AUTOFIX_ITERATIONS = 1
 local MAX_CAPTURE_ATTEMPTS = 2
 
 local toolbar = plugin:CreateToolbar("Trenchborn")
-local reviewButton = toolbar:CreateButton("Review Agent", "Validate geometry against technical rules and the approved target", "")
+local reviewButton = toolbar:CreateButton("Review Agent", "Run one review-only assessment against the approved target", "")
 local widgetInfo = DockWidgetPluginGuiInfo.new(
 	Enum.InitialDockState.Right,
 	false,
@@ -20,7 +19,7 @@ local widgetInfo = DockWidgetPluginGuiInfo.new(
 	220
 )
 local widget = plugin:CreateDockWidgetPluginGui("TrenchbornReviewAgent", widgetInfo)
-widget.Title = "Trenchborn Review Agent"
+widget.Title = "Trenchborn Review Only"
 
 local scroll = Instance.new("ScrollingFrame")
 scroll.Name = "ReviewScroll"
@@ -41,7 +40,7 @@ status.TextYAlignment = Enum.TextYAlignment.Top
 status.TextWrapped = true
 status.TextScaled = true
 status.Font = Enum.Font.Code
-status.Text = "Start the local review agent, then press Review Agent."
+status.Text = "Start the local review-only agent, then press Review Agent."
 status.Parent = scroll
 
 local padding = Instance.new("UIPadding")
@@ -205,13 +204,9 @@ local function cameraViews(model, camera, captureAttempt)
 	return views, target
 end
 
-local function captureAndReview(model, iteration, captureAttempt)
-	Selection:Set({model})
-	setStatus(string.format(
-		"ITERATION %d/%d\n\nRunning deterministic checks...",
-		iteration,
-		MAX_AUTOFIX_ITERATIONS
-	))
+local function captureAndReview(model, captureAttempt)
+	local previousSelection = Selection:Get()
+	setStatus("REVIEW ONLY\n\nRunning deterministic checks...")
 	local technical = runTechnicalReview(model)
 	local session = post("/session/start", {
 		assetId = technical.assetId,
@@ -222,32 +217,28 @@ local function captureAndReview(model, iteration, captureAttempt)
 	local camera = Workspace.CurrentCamera
 	if not camera then error("Workspace.CurrentCamera is missing") end
 	local oldType, oldCF, oldFov = camera.CameraType, camera.CFrame, camera.FieldOfView
+	-- Screenshots must contain model evidence only: no selection outlines and no dock widget occlusion.
+	Selection:Set({})
+	widget.Enabled = false
 	local captured, captureError = pcall(function()
 		camera.CameraType = Enum.CameraType.Scriptable
 		camera.FieldOfView = 34
 		local views, target = cameraViews(model, camera, captureAttempt)
 		for index, view in ipairs(views) do
-			setStatus(string.format(
-				"ITERATION %d/%d\n\nCapturing %s (%d/%d)...",
-				iteration,
-				MAX_AUTOFIX_ITERATIONS,
-				view.name,
-				index,
-				#views
-			), false)
+			status.Text = string.format("REVIEW ONLY\n\nCapturing %s (%d/%d)...", view.name, index, #views)
 			camera.CFrame = CFrame.lookAt(view.position, view.target or target)
 			task.wait(0.75)
 			post("/session/capture", {sessionId = session.sessionId, view = view.name})
 		end
 	end)
 	camera.CameraType, camera.CFrame, camera.FieldOfView = oldType, oldCF, oldFov
-	if not captured then error(captureError) end
+	Selection:Set(previousSelection)
+	if not captured then
+		widget.Enabled = true
+		error(captureError)
+	end
 
-	setStatus(string.format(
-		"ITERATION %d/%d\n\nAI is reviewing the model...",
-		iteration,
-		MAX_AUTOFIX_ITERATIONS
-	))
+	setStatus("REVIEW ONLY\n\nAI is comparing the model with the approved target...")
 	local finished = post("/session/finish", {sessionId = session.sessionId})
 	model:SetAttribute("QualityGateBVisualReviewStatus", finished.status or "UNKNOWN")
 	model:SetAttribute("QualityGateBVisualReviewJSON", HttpService:JSONEncode(finished))
@@ -261,36 +252,31 @@ local function runReview()
 		return
 	end
 
-	for iteration = 1, MAX_AUTOFIX_ITERATIONS do
-		local finished, technical, captureSession
-		for captureAttempt = 1, MAX_CAPTURE_ATTEMPTS do
-			finished, captureSession, technical = captureAndReview(model, iteration, captureAttempt)
-			if finished.status ~= "CAPTURE_INVALID" then break end
-			setStatus(string.format(
-				"CAPTURE INVALID\n\nDetail views were cropped. Retaking with wider framing (%d/%d)...",
-				captureAttempt + 1,
-				MAX_CAPTURE_ATTEMPTS
-			))
-		end
-		if finished.status == "CAPTURE_INVALID" then
-			setStatus("CAPTURE INVALID\n\nThe evidence is still incomplete after the automatic retake. No model defect was recorded.")
-			return
-		end
-		local deterministicPass = technical.blockers == 0 and technical.warnings == 0
-		if finished.status == "PASS" and deterministicPass then
-			setStatus("READY FOR USER QUALITY GATE B\n\n" .. formatReview(finished))
-			return
-		end
-		if iteration == MAX_AUTOFIX_ITERATIONS then
-			setStatus(string.format(
-				"VALIDATION FAILED — AUTOMATIC CORRECTION DISABLED\n\n%s\n\nNo model file was changed. Correct the reported defects and run the review again.",
-				formatReview(finished)
-			))
-			return
-		end
+	local finished, technical
+	for captureAttempt = 1, MAX_CAPTURE_ATTEMPTS do
+		finished, _, technical = captureAndReview(model, captureAttempt)
+		if finished.status ~= "CAPTURE_INVALID" then break end
+		setStatus(string.format(
+			"CAPTURE INVALID\n\nRetaking the screenshots with wider framing (%d/%d). The model remains unchanged.",
+			captureAttempt + 1,
+			MAX_CAPTURE_ATTEMPTS
+		))
 	end
-end
+	if finished.status == "CAPTURE_INVALID" then
+		setStatus("CAPTURE INVALID\n\nEvidence remains incomplete after the camera-only retake. The agent stopped without changing the model.")
+		return
+	end
 
+	local deterministicPass = technical.blockers == 0 and technical.warnings == 0
+	if finished.status == "PASS" and deterministicPass then
+		setStatus("READY FOR USER QUALITY GATE B\n\n" .. formatReview(finished))
+		return
+	end
+	setStatus(string.format(
+		"REVIEW COMPLETE — CORRECTION REQUIRED IN CHATGPT WORK\n\n%s\n\nThe Review Agent stopped after one assessment. It did not edit or retry the model.",
+		formatReview(finished)
+	))
+end
 reviewButton.Click:Connect(function()
 	widget.Enabled = true
 	task.spawn(function()
