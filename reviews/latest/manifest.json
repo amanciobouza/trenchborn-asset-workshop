@@ -3,8 +3,8 @@
   "reviewOnly": true,
   "assetId": "KAIJU-01-BOUND-CHIMERA",
   "modelName": "Kaiju_I_Bound_Chimera_GoldenMaster",
-  "modelCommit": "961d3aff2f26e73349164b8a00430960f1b569e5",
-  "createdUtc": "2026-09-09T04:09:23Z",
+  "modelCommit": "7612e3c99cc6ca9db2fe6bfe8bb0acc23de1c32a",
+  "createdUtc": "2026-09-09T04:13:52Z",
   "approvedTarget": "approved-target.png",
   "captures": [
     "captures/front.png",
