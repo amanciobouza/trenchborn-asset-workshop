@@ -89,9 +89,9 @@ local function buildFoot(model: Model, geometry: Folder, side: string, sign: num
 	return foot
 end
 local function buildArm(model: Model, geometry: Folder, side: string, sign: number, torso: BasePart, ground: CFrame)
-	local shoulder = Vector3.new(sign * 5.35, 21.0, -0.05)
-	local elbow = Vector3.new(sign * 6.8, 17.8, -0.55)
-	local wrist = Vector3.new(sign * 7.05, 14.85, -1.0)
+	local shoulder = Vector3.new(sign * 6.25, 21.25, -0.05)
+	local elbow = Vector3.new(sign * 7.55, 17.9, -0.55)
+	local wrist = Vector3.new(sign * 7.75, 14.85, -1.0)
 	local upper = segment(model, side .. "UpperArm", shoulder, elbow, 2.4, 2.2, ground, BODY); motor(torso, side .. "Shoulder", torso, upper, ground * CFrame.new(shoulder))
 	local lower = segment(model, side .. "LowerArm", elbow, wrist, 2.05, 1.85, ground, BODY); motor(upper, side .. "Elbow", upper, lower, ground * CFrame.new(elbow))
 	local deltoid = ellipsoid(geometry, side .. "DeltoidMass", Vector3.new(3.0, 3.1, 2.75), ground * CFrame.new(shoulder + Vector3.new(0, -0.55, 0)), BODY); weld(upper, deltoid)
@@ -118,10 +118,10 @@ local function buildHead(model: Model, geometry: Folder, torso: BasePart, ground
 	}) do
 		local crown = wedge(f, crownSpec[1] :: string, Vector3.new(crownSpec[3] :: number, crownSpec[4] :: number, crownSpec[5] :: number), ground * CFrame.new(crownSpec[2] :: number, 26.8, -1.0) * CFrame.Angles(math.rad(-8), math.rad(180), math.rad(crownSpec[6] :: number)), ARMOR); weld(head, crown)
 	end
-	local muzzleBase = ellipsoid(f, "MuzzleBase", Vector3.new(4.35, 1.85, 3.35), ground * CFrame.new(0, 24.7, -3.75) * CFrame.Angles(math.rad(-7), 0, 0), DARK); weld(head, muzzleBase)
-	local muzzleTip = wedge(f, "MuzzleTip", Vector3.new(3.25, 1.25, 2.35), ground * CFrame.new(0, 24.55, -5.25) * CFrame.Angles(math.rad(-8), 0, 0), DARK); weld(head, muzzleTip)
-	local nasalBridge = wedge(f, "NasalBridge", Vector3.new(2.15, 0.72, 2.3), ground * CFrame.new(0, 25.25, -4.55) * CFrame.Angles(math.rad(-10), math.rad(180), 0), ARMOR); weld(head, nasalBridge)
-	local jaw = ellipsoid(model, "Jaw", Vector3.new(3.9, 1.2, 3.25), ground * CFrame.new(0, 23.75, -4.35) * CFrame.Angles(math.rad(8), 0, 0), DARK); motor(head, "JawJoint", head, jaw, ground * CFrame.new(0, 24.15, -2.55))
+	-- Two strong blocks create a deliberate upper muzzle and lower jaw.
+	local upperMuzzle = angular(f, "UpperMuzzle", Vector3.new(4.65, 1.55, 3.65), ground * CFrame.new(0, 24.75, -4.15) * CFrame.Angles(math.rad(-5), 0, 0), DARK); weld(head, upperMuzzle)
+	local muzzleCap = wedge(f, "MuzzleCap", Vector3.new(4.25, 0.72, 2.6), ground * CFrame.new(0, 25.45, -4.45) * CFrame.Angles(math.rad(-7), math.rad(180), 0), ARMOR); weld(head, muzzleCap)
+	local jaw = angular(model, "Jaw", Vector3.new(4.45, 1.35, 3.5), ground * CFrame.new(0, 23.75, -4.1) * CFrame.Angles(math.rad(4), 0, 0), DARK); motor(head, "JawJoint", head, jaw, ground * CFrame.new(0, 24.15, -2.55))
 	for _, sign in ipairs({-1, 1}) do
 		local cheek = ellipsoid(f, sign < 0 and "LeftCheekMass" or "RightCheekMass", Vector3.new(1.8, 2.0, 2.8), ground * CFrame.new(sign * 2.1, 24.7, -2.85) * CFrame.Angles(0, sign * math.rad(14), 0), BODY); weld(head, cheek)
 		local brow = wedge(f, sign < 0 and "LeftBrowPlate" or "RightBrowPlate", Vector3.new(1.65, 0.55, 1.4), ground * CFrame.new(sign * 1.45, 25.72, -4.25) * CFrame.Angles(math.rad(-7), math.rad(180), sign * math.rad(8)), ARMOR); weld(head, brow)
@@ -150,10 +150,10 @@ end
 local function addLayeredBody(geometry: Folder, torso: BasePart, pelvis: BasePart, ground: CFrame)
 	local folder = Instance.new("Folder"); folder.Name = "LayeredBodyVolumes"; folder.Parent = geometry
 	for _, spec in ipairs({
-		{"LeftChestMass", Vector3.new(-2.55, 21.5, -1.25), Vector3.new(4.4, 5.7, 4.5), torso},
-		{"RightChestMass", Vector3.new(2.55, 21.5, -1.25), Vector3.new(4.4, 5.7, 4.5), torso},
-		{"UpperChestMass", Vector3.new(0, 23.0, -0.75), Vector3.new(6.4, 3.5, 4.7), torso},
-		{"AbdomenMass", Vector3.new(0, 18.0, -0.8), Vector3.new(6.2, 4.4, 4.6), pelvis},
+		{"LeftChestMass", Vector3.new(-3.05, 21.65, -1.15), Vector3.new(5.25, 6.45, 5.35), torso},
+		{"RightChestMass", Vector3.new(3.05, 21.65, -1.15), Vector3.new(5.25, 6.45, 5.35), torso},
+		{"UpperChestMass", Vector3.new(0, 23.35, -0.65), Vector3.new(8.25, 4.25, 5.7), torso},
+		{"AbdomenMass", Vector3.new(0, 18.25, -0.7), Vector3.new(7.15, 4.75, 5.15), pelvis},
 		{"LeftHipMass", Vector3.new(-2.65, 15.8, -0.2), Vector3.new(4.4, 4.7, 4.8), pelvis},
 		{"RightHipMass", Vector3.new(2.65, 15.8, -0.2), Vector3.new(4.4, 4.7, 4.8), pelvis},
 	}) do
@@ -178,13 +178,14 @@ end
 local function shatteredShield(folder: Folder, host: BasePart, index: number, pos: Vector3, scale: number, yaw: number, ground: CFrame)
 	local assembly = Instance.new("Model"); assembly.Name = string.format("StormShield_%02d", index); assembly.Parent = folder
 	-- Fan each plate around the vertical axis so front, side, rear, and three-quarter views see a face rather than only its thin edge.
-	local baseCF = ground * CFrame.new(pos) * CFrame.Angles(math.rad(-10), math.rad(yaw), math.rad(index % 2 == 0 and 7 or -7))
+	local faceYaw = yaw + (index % 2 == 0 and 32 or -32)
+	local baseCF = ground * CFrame.new(pos) * CFrame.Angles(math.rad(28), math.rad(faceYaw), math.rad(index % 2 == 0 and 7 or -7))
 	local center = wedge(assembly, "ShieldCore", Vector3.new(3.2 * scale, 3.65 * scale, 1.25 * scale), baseCF * CFrame.Angles(0, math.rad(180), 0), ARMOR); weld(host, center)
 	local left = wedge(assembly, "BrokenLeft", Vector3.new(2.25 * scale, 2.65 * scale, 1.15 * scale), baseCF * CFrame.new(-1.65 * scale, -0.4 * scale, 0.12) * CFrame.Angles(0, math.rad(158), math.rad(-18)), ARMOR); weld(host, left)
 	local right = wedge(assembly, "BrokenRight", Vector3.new(2.0 * scale, 3.0 * scale, 1.1 * scale), baseCF * CFrame.new(1.55 * scale, -0.25 * scale, 0.18) * CFrame.Angles(0, math.rad(202), math.rad(16)), ARMOR); weld(host, right)
 	local crown = wedge(assembly, "BrokenCrown", Vector3.new(1.35 * scale, 1.45 * scale, 1.2 * scale), baseCF * CFrame.new((index % 2 == 0 and -0.7 or 0.75) * scale, 1.65 * scale, 0.08) * CFrame.Angles(0, math.rad(180), math.rad(index % 2 == 0 and -21 or 21)), DARK); weld(host, crown)
 	for seamIndex, seamX in ipairs({-0.55, 0.5}) do
-		local seam = wedge(assembly, "EnergyFissure_" .. seamIndex, Vector3.new(0.22 * scale, 2.5 * scale, 0.22 * scale), baseCF * CFrame.new(seamX * scale, -0.15 * scale, -0.72 * scale) * CFrame.Angles(0, 0, math.rad(seamIndex == 1 and -16 or 14)), ENERGY_REVIEW)
+		local seam = wedge(assembly, "EnergyFissure_" .. seamIndex, Vector3.new(0.22 * scale, 2.5 * scale, 0.22 * scale), baseCF * CFrame.new(seamX * scale, -0.15 * scale, 0.72 * scale) * CFrame.Angles(0, 0, math.rad(seamIndex == 1 and -16 or 14)), ENERGY_REVIEW)
 		seam.Material = Enum.Material.Neon; weld(host, seam)
 	end
 	local a = Instance.new("Attachment"); a.Name = string.format("DorsalEnergy_%02d", index); a.Parent = center; assembly.PrimaryPart = center
@@ -194,13 +195,13 @@ local function build(target: Instance, ground: CFrame): Model
 	model:SetAttribute("AssetName", Specification.AssetName); model:SetAttribute("AssetId", Specification.AssetId)
 	model:SetAttribute("PipelinePhase", 4); model:SetAttribute("PipelineStatus", "AWAITING_GEOMETRY_APPROVAL")
 	model:SetAttribute("QualityGateA", "Approved"); model:SetAttribute("QualityGateB", "Pending"); model:SetAttribute("GeometryOnly", true)
-	model:SetAttribute("EvolutionStage", 1); model:SetAttribute("EvolutionName", "Bound Chimera"); model:SetAttribute("DesignVersion", "2.4.1")
+	model:SetAttribute("EvolutionStage", 1); model:SetAttribute("EvolutionName", "Bound Chimera"); model:SetAttribute("DesignVersion", "2.5.0")
 	model:SetAttribute("UprightDominant", true); model:SetAttribute("DigitigradeLegs", true); model:SetAttribute("DorsalShieldCount", 7)
 	model:SetAttribute("ForwardClawsPerFoot", 3); model:SetAttribute("RearClawsPerFoot", 1); model:SetAttribute("DressingDeferredToPhase", 5)
 	local geometry = detailFolder(model)
 	local root = part(model, "HumanoidRootPart", Vector3.new(3, 3, 2), ground * CFrame.new(0, 14.8, 0), Color3.new(1,1,1)); root.Transparency = 1; root.Anchored = true; root.Massless = false; model.PrimaryPart = root
-	local pelvis = ellipsoid(model, "LowerTorso", Vector3.new(7.6, 5.5, 5.3), ground * CFrame.new(0, 16.1, 0.35) * CFrame.Angles(math.rad(2), 0, 0), BODY); motor(root, "Root", root, pelvis, ground * CFrame.new(0, 14.9, 0))
-	local torso = ellipsoid(model, "UpperTorso", Vector3.new(8.2, 6.7, 5.5), ground * CFrame.new(0, 21.0, -0.05) * CFrame.Angles(math.rad(-3), 0, 0), BODY); motor(pelvis, "Waist", pelvis, torso, ground * CFrame.new(0, 18.6, 0.1))
+	local pelvis = ellipsoid(model, "LowerTorso", Vector3.new(8.4, 5.9, 5.8), ground * CFrame.new(0, 16.15, 0.35) * CFrame.Angles(math.rad(2), 0, 0), BODY); motor(root, "Root", root, pelvis, ground * CFrame.new(0, 14.9, 0))
+	local torso = ellipsoid(model, "UpperTorso", Vector3.new(10.1, 8.0, 6.8), ground * CFrame.new(0, 21.25, -0.05) * CFrame.Angles(math.rad(-3), 0, 0), BODY); motor(pelvis, "Waist", pelvis, torso, ground * CFrame.new(0, 18.6, 0.1))
 	addLayeredBody(geometry, torso, pelvis, ground)
 	addJointDefinition(geometry, ground, torso, pelvis)
 	local chest = wedge(geometry, "CentralChestKeel", Vector3.new(2.6, 2.9, 0.65), ground * CFrame.new(0, 21.45, -3.45) * CFrame.Angles(0, math.rad(180), 0), ARMOR); weld(torso, chest)
