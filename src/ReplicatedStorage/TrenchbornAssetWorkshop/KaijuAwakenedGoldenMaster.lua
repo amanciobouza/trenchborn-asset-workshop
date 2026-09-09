@@ -98,11 +98,13 @@ local function buildArm(model: Model, geometry: Folder, side: string, sign: numb
 	local forearmMass = ellipsoid(geometry, side .. "ForearmMass", Vector3.new(2.4, 2.75, 2.2), ground * CFrame.new((elbow + wrist) * 0.5), BODY); weld(lower, forearmMass)
 	-- Keep the elbow definition embedded in the joint mass instead of floating on its tip.
 	local elbowEdge = wedge(geometry, side .. "ElbowEdge", Vector3.new(0.9, 0.78, 1.0), ground * CFrame.new(elbow + Vector3.new(-sign * 0.12, 0.08, -0.38)) * CFrame.Angles(0, sign * math.rad(90), sign * math.rad(8)), ARMOR); weld(lower, elbowEdge)
-	local hand = ellipsoid(model, side .. "Hand", Vector3.new(2.65, 1.8, 2.4), ground * CFrame.new(wrist + Vector3.new(0, -0.55, -0.4)) * CFrame.Angles(math.rad(-12), 0, 0), DARK); motor(lower, side .. "Wrist", lower, hand, ground * CFrame.new(wrist))
+	local hand = ellipsoid(model, side .. "Hand", Vector3.new(3.35, 2.45, 2.9), ground * CFrame.new(wrist + Vector3.new(0, -0.65, -0.25)) * CFrame.Angles(math.rad(-6), 0, 0), DARK); motor(lower, side .. "Wrist", lower, hand, ground * CFrame.new(wrist))
 	local f = Instance.new("Folder"); f.Name = side .. "HandGeometry"; f.Parent = geometry
 	for i = 1, 3 do
-		local fingerX = wrist.X + (i - 2) * 0.68
-		local finger = ellipsoid(f, "Finger_" .. i, Vector3.new(0.54, 0.58, 1.35), ground * CFrame.new(fingerX, wrist.Y - 1.15, wrist.Z - 1.15) * CFrame.Angles(math.rad(-18), 0, 0), DARK); weld(hand, finger)
+		local fingerX = wrist.X + (i - 2) * 0.82
+		local finger = ellipsoid(f, "PawDigit_" .. i, Vector3.new(0.72, 1.25, 1.1), ground * CFrame.new(fingerX, wrist.Y - 1.55, wrist.Z - 0.7) * CFrame.Angles(math.rad(-5), 0, 0), DARK); weld(hand, finger)
+		-- Local -Z is rotated onto world -Y: the talons hang down instead of pointing forward.
+		local claw = wedge(f, "HandClaw_" .. i, Vector3.new(0.5, 0.62, 1.45), ground * CFrame.new(fingerX, wrist.Y - 2.55, wrist.Z - 0.72) * CFrame.Angles(math.rad(-90), 0, 0), CLAW); weld(finger, claw)
 	end
 end
 local function buildHead(model: Model, geometry: Folder, torso: BasePart, ground: CFrame): BasePart
@@ -195,7 +197,7 @@ local function build(target: Instance, ground: CFrame): Model
 	model:SetAttribute("AssetName", Specification.AssetName); model:SetAttribute("AssetId", Specification.AssetId)
 	model:SetAttribute("PipelinePhase", 4); model:SetAttribute("PipelineStatus", "AWAITING_GEOMETRY_APPROVAL")
 	model:SetAttribute("QualityGateA", "Approved"); model:SetAttribute("QualityGateB", "Pending"); model:SetAttribute("GeometryOnly", true)
-	model:SetAttribute("EvolutionStage", 1); model:SetAttribute("EvolutionName", "Bound Chimera"); model:SetAttribute("DesignVersion", "2.5.0")
+	model:SetAttribute("EvolutionStage", 1); model:SetAttribute("EvolutionName", "Bound Chimera"); model:SetAttribute("DesignVersion", "2.5.1")
 	model:SetAttribute("UprightDominant", true); model:SetAttribute("DigitigradeLegs", true); model:SetAttribute("DorsalShieldCount", 7)
 	model:SetAttribute("ForwardClawsPerFoot", 3); model:SetAttribute("RearClawsPerFoot", 1); model:SetAttribute("DressingDeferredToPhase", 5)
 	local geometry = detailFolder(model)
