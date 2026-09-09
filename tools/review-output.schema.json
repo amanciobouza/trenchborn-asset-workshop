@@ -1,7 +1,7 @@
 {
   "type": "object",
   "properties": {
-    "status": { "type": "string", "enum": ["PASS", "PASS_WITH_WARNINGS", "FAIL"] },
+    "status": { "type": "string", "enum": ["PASS", "PASS_WITH_WARNINGS", "FAIL", "CAPTURE_INVALID"] },
     "summary": { "type": "string" },
     "findings": {
       "type": "array",
