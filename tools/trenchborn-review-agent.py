@@ -76,10 +76,12 @@ def call_codex(session):
             "Judge every visualReviewCriterion using all camera views.",
             "Use the first attached image as the approved visual target and compare the model views against it.",
             "Explicitly inspect face-part orientation, arm/torso intersections, and every foot claw.",
-            "A criterion that cannot be verified from the evidence must FAIL, never pass by assumption.",
+            "First verify capture coverage: each arm close-up must include shoulder attachment, upper arm, lower arm, and complete hand; each foot close-up must include every front and rear claw.",
+            "If required anatomy is cropped, return CAPTURE_INVALID. Cropped evidence is a capture failure, never a model FAIL.",
+            "A criterion that cannot be verified for any non-cropping reason must FAIL, never pass by assumption.",
             "Distinguish deterministic findings from visual findings.",
             "Return JSON only with status, summary, findings, and criteria.",
-            "Status must be PASS, PASS_WITH_WARNINGS, or FAIL.",
+            "Status must be PASS, PASS_WITH_WARNINGS, FAIL, or CAPTURE_INVALID.",
             "Do not claim Quality Gate B is approved; the user owns approval.",
         ],
         "technicalReport": session["technicalReport"],
@@ -280,6 +282,9 @@ class Handler(BaseHTTPRequestHandler):
                 pathlib.Path(session["folder"], "review.json").write_text(
                     json.dumps(review, indent=2), encoding="utf-8"
                 )
+                if review.get("status") == "CAPTURE_INVALID":
+                    self.send_json(200, review)
+                    return
                 delivery = publish_review(session, review)
                 delivery["chatgpt"] = trigger_chatgpt(session, delivery)
                 review["delivery"] = delivery
