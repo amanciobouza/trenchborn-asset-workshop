@@ -121,9 +121,9 @@ local function buildHead(model: Model, geometry: Folder, torso: BasePart, ground
 		local crown = wedge(f, crownSpec[1] :: string, Vector3.new(crownSpec[3] :: number, crownSpec[4] :: number, crownSpec[5] :: number), ground * CFrame.new(crownSpec[2] :: number, 26.8, -1.0) * CFrame.Angles(math.rad(-8), math.rad(180), math.rad(crownSpec[6] :: number)), ARMOR); weld(head, crown)
 	end
 	-- Two strong blocks create a deliberate upper muzzle and lower jaw.
-	local upperMuzzle = angular(f, "UpperMuzzle", Vector3.new(4.3, 1.3, 3.25), ground * CFrame.new(0, 24.9, -4.1) * CFrame.Angles(math.rad(-4), 0, 0), DARK); weld(head, upperMuzzle)
+	local upperMuzzle = angular(f, "UpperMuzzle", Vector3.new(4.25, 1.2, 3.0), ground * CFrame.new(0, 25.05, -4.0) * CFrame.Angles(math.rad(-3), 0, 0), DARK); weld(head, upperMuzzle)
 	local muzzleCap = wedge(f, "MuzzleCap", Vector3.new(4.0, 0.65, 2.35), ground * CFrame.new(0, 25.5, -4.35) * CFrame.Angles(math.rad(-7), math.rad(180), 0), ARMOR); weld(head, muzzleCap)
-	local jaw = angular(model, "Jaw", Vector3.new(4.5, 1.55, 4.25), ground * CFrame.new(0, 23.15, -4.85) * CFrame.Angles(math.rad(7), 0, 0), DARK); motor(head, "JawJoint", head, jaw, ground * CFrame.new(0, 23.9, -2.65))
+	local jaw = angular(model, "Jaw", Vector3.new(4.55, 1.65, 4.55), ground * CFrame.new(0, 22.95, -5.05) * CFrame.Angles(math.rad(8), 0, 0), DARK); motor(head, "JawJoint", head, jaw, ground * CFrame.new(0, 23.85, -2.7))
 	for _, sign in ipairs({-1, 1}) do
 		local cheek = ellipsoid(f, sign < 0 and "LeftCheekMass" or "RightCheekMass", Vector3.new(1.8, 2.0, 2.8), ground * CFrame.new(sign * 2.1, 24.7, -2.85) * CFrame.Angles(0, sign * math.rad(14), 0), BODY); weld(head, cheek)
 		local brow = wedge(f, sign < 0 and "LeftBrowPlate" or "RightBrowPlate", Vector3.new(1.65, 0.55, 1.4), ground * CFrame.new(sign * 1.45, 25.72, -4.25) * CFrame.Angles(math.rad(-7), math.rad(180), sign * math.rad(8)), ARMOR); weld(head, brow)
@@ -144,9 +144,9 @@ local function buildCounterbalance(model: Model, geometry: Folder, pelvis: BaseP
 	for i, hostPart in ipairs(segments) do
 		if i <= 4 then
 			local midpoint = (points[i] + points[i + 1]) * 0.5
-			local lift = widths[i] * 0.95 + 0.55
-			local shieldCF = ground * CFrame.new(midpoint + Vector3.new(0, lift, 0.7)) * CFrame.Angles(math.rad(28), 0, math.rad(i % 2 == 0 and 7 or -7))
-			local p = wedge(armor, "TailShield_" .. i, Vector3.new(1.35, 2.1 + (#segments - i) * 0.22, 2.25), shieldCF, ARMOR); weld(hostPart, p)
+			local lift = widths[i] * 1.08 + 0.7
+			local shieldCF = ground * CFrame.new(midpoint + Vector3.new(0, lift, 1.0)) * CFrame.Angles(math.rad(28), 0, math.rad(i % 2 == 0 and 7 or -7))
+			local p = wedge(armor, "TailShield_" .. i, Vector3.new(1.45, 2.45 + (#segments - i) * 0.24, 2.5), shieldCF, ARMOR); weld(hostPart, p)
 		end
 	end
 	return segments
@@ -184,7 +184,7 @@ local function shatteredShield(folder: Folder, host: BasePart, index: number, po
 	local assembly = Instance.new("Model"); assembly.Name = string.format("StormShield_%02d", index); assembly.Parent = folder
 	-- Fan each plate around the vertical axis so front, side, rear, and three-quarter views see a face rather than only its thin edge.
 	local faceYaw = yaw + (index % 2 == 0 and 32 or -32)
-	local outwardPosition = pos + Vector3.new(0, 0, 1.45 + 0.35 * scale)
+	local outwardPosition = pos + Vector3.new(0, 0, 2.15 + 0.4 * scale)
 	local baseCF = ground * CFrame.new(outwardPosition) * CFrame.Angles(math.rad(28), math.rad(faceYaw), math.rad(index % 2 == 0 and 7 or -7))
 	local center = wedge(assembly, "ShieldCore", Vector3.new(3.75 * scale, 3.3 * scale, 1.35 * scale), baseCF * CFrame.Angles(0, math.rad(180), 0), ARMOR); weld(host, center)
 	local left = wedge(assembly, "BrokenLeft", Vector3.new(2.6 * scale, 2.4 * scale, 1.25 * scale), baseCF * CFrame.new(-1.65 * scale, -0.4 * scale, 0.12) * CFrame.Angles(0, math.rad(158), math.rad(-18)), ARMOR); weld(host, left)
@@ -201,7 +201,7 @@ local function build(target: Instance, ground: CFrame): Model
 	model:SetAttribute("AssetName", Specification.AssetName); model:SetAttribute("AssetId", Specification.AssetId)
 	model:SetAttribute("PipelinePhase", 4); model:SetAttribute("PipelineStatus", "AWAITING_GEOMETRY_APPROVAL")
 	model:SetAttribute("QualityGateA", "Approved"); model:SetAttribute("QualityGateB", "Pending"); model:SetAttribute("GeometryOnly", true)
-	model:SetAttribute("EvolutionStage", 1); model:SetAttribute("EvolutionName", "Bound Chimera"); model:SetAttribute("DesignVersion", "2.6.0")
+	model:SetAttribute("EvolutionStage", 1); model:SetAttribute("EvolutionName", "Bound Chimera"); model:SetAttribute("DesignVersion", "2.6.1")
 	model:SetAttribute("UprightDominant", true); model:SetAttribute("DigitigradeLegs", true); model:SetAttribute("DorsalShieldCount", Specification.Anatomy.DorsalShieldCount)
 	model:SetAttribute("ForwardClawsPerFoot", 3); model:SetAttribute("RearClawsPerFoot", 1); model:SetAttribute("DressingDeferredToPhase", 5)
 	local geometry = detailFolder(model)
@@ -228,11 +228,11 @@ local function build(target: Instance, ground: CFrame): Model
 	local rudder = buildCounterbalance(model, geometry, pelvis, ground)
 	local dorsals = Instance.new("Folder"); dorsals.Name = "DorsalPlates"; dorsals.Parent = geometry
 	local specs = {
-		{head, Vector3.new(0, 27.0, 1.15), 0.95, -34},
-		{torso, Vector3.new(0, 23.55, 2.8), 1.18, 30},
-		{torso, Vector3.new(0, 19.85, 3.35), 1.38, -27},
-		{pelvis, Vector3.new(0, 16.0, 3.55), 1.2, 24},
-		{rudder[1], Vector3.new(0, 12.05, 7.1), 0.92, -22},
+		{head, Vector3.new(0, 27.35, 1.25), 0.9, -34},
+		{torso, Vector3.new(0, 23.25, 2.9), 1.08, 30},
+		{torso, Vector3.new(0, 18.95, 3.45), 1.25, -27},
+		{pelvis, Vector3.new(0, 14.75, 3.7), 1.08, 24},
+		{rudder[1], Vector3.new(0, 10.8, 7.2), 0.82, -22},
 	}
 	for i, d in ipairs(specs) do shatteredShield(dorsals, d[1] :: BasePart, i, d[2] :: Vector3, d[3] :: number, d[4] :: number, ground) end
 	local hitboxes = Instance.new("Folder"); hitboxes.Name = "Hitboxes_GeometryReviewOnly"; hitboxes.Parent = model
