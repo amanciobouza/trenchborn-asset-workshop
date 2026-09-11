@@ -55,6 +55,10 @@ return {
 	},
 
 	Anatomy = {
+		DorsalShieldCount = 5,
+		TailDorsalShieldCount = 4,
+		ForwardClawsPerFoot = 3,
+		RearClawsPerFoot = 1,
 		Stance = "S1 upright neutral; temporary S2 forward attack posture",
 		Arms = "Long, extremely powerful, free hanging to mid-thigh, never ground support",
 		Hands = "Broad predator paws; three primary fingers plus one short side gripping digit; claws curve downward",
