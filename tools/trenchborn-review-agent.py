@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import threading
 import time
+import traceback
 import uuid
 import urllib.error
 import urllib.request
@@ -195,10 +196,10 @@ def trigger_chatgpt(session, delivery):
     agent_id = os.environ.get("CHATGPT_WORKSPACE_AGENT_ID")
     access_token = os.environ.get("CHATGPT_WORKSPACE_AGENT_TOKEN")
     if not agent_id or not access_token:
-        raise RuntimeError(
-            "Review was published, but ChatGPT was not triggered: set "
-            "CHATGPT_WORKSPACE_AGENT_ID and CHATGPT_WORKSPACE_AGENT_TOKEN"
-        )
+        return {
+            "status": "SKIPPED",
+            "reason": "Workspace Agent credentials are not configured for this ChatGPT Pro account.",
+        }
     conversation_key = os.environ.get(
         "CHATGPT_WORKSPACE_CONVERSATION_KEY",
         "trenchborn-bound-chimera-quality-gate-b",
@@ -286,12 +287,22 @@ class Handler(BaseHTTPRequestHandler):
                     self.send_json(200, review)
                     return
                 delivery = publish_review(session, review)
-                delivery["chatgpt"] = trigger_chatgpt(session, delivery)
+                try:
+                    delivery["chatgpt"] = trigger_chatgpt(session, delivery)
+                except Exception as trigger_error:
+                    # Notification is optional. A failed ChatGPT handoff must never
+                    # turn a completed and published review into HTTP 500.
+                    delivery["chatgpt"] = {
+                        "status": "FAILED",
+                        "reason": str(trigger_error),
+                    }
                 review["delivery"] = delivery
                 self.send_json(200, review)
             else:
                 self.send_json(404, {"error": "Unknown endpoint"})
         except Exception as error:
+            print("[bridge] ERROR while handling request:", str(error), flush=True)
+            traceback.print_exc()
             self.send_json(500, {"error": str(error)})
 
 
