@@ -2,6 +2,7 @@
 -- Kaiju-I Primal Beast | Phase 4 geometry-only Golden Master
 local Builder = {}
 local Specification = require(script.Parent:WaitForChild("KaijuVolcanicTitanSpecification"))
+local AssetService = game:GetService("AssetService")
 
 local HIDE = Color3.fromRGB(48, 52, 43)
 local HIDE_DARK = Color3.fromRGB(29, 33, 29)
@@ -36,13 +37,79 @@ local function block(parent: Instance, name: string, size: Vector3, cf: CFrame, 
 	return p
 end
 
-local function ellipsoid(parent: Instance, name: string, size: Vector3, cf: CFrame, color: Color3): Part
-	local p = block(parent, name, size, cf, color, Enum.Material.SmoothPlastic)
+local editableMeshAvailable = true
+local organicVariant = 0
+
+local function draftOrganicMesh(size: Vector3): MeshPart?
+	if not editableMeshAvailable then return nil end
+	local ok, result = pcall(function()
+		local mesh = AssetService:CreateEditableMesh()
+		local rings = 5
+		local sides = 10
+		local vertices = {}
+		local bottom = mesh:AddVertex(Vector3.new(0, -size.Y * 0.5, 0))
+		for ring = 1, rings do
+			local latitude = -math.pi * 0.5 + math.pi * ring / (rings + 1)
+			vertices[ring] = {}
+			for side = 1, sides do
+				local longitude = math.pi * 2 * (side - 1) / sides
+				local stagger = ((ring * 7 + side * 3 + organicVariant) % 5 - 2) * 0.025
+				local radius = math.cos(latitude) * (1 + stagger)
+				vertices[ring][side] = mesh:AddVertex(Vector3.new(
+					math.cos(longitude) * radius * size.X * 0.5,
+					math.sin(latitude) * size.Y * 0.5,
+					math.sin(longitude) * radius * size.Z * 0.5
+				))
+			end
+		end
+		local top = mesh:AddVertex(Vector3.new(0, size.Y * 0.5, 0))
+		for side = 1, sides do
+			local nextSide = side % sides + 1
+			mesh:AddTriangle(bottom, vertices[1][nextSide], vertices[1][side])
+			for ring = 1, rings - 1 do
+				local a = vertices[ring][side]
+				local b = vertices[ring][nextSide]
+				local c = vertices[ring + 1][side]
+				local d = vertices[ring + 1][nextSide]
+				mesh:AddTriangle(a, b, c)
+				mesh:AddTriangle(b, d, c)
+			end
+			mesh:AddTriangle(vertices[rings][side], vertices[rings][nextSide], top)
+		end
+		local part = AssetService:CreateMeshPartAsync(Content.fromObject(mesh), {
+			CollisionFidelity = Enum.CollisionFidelity.Hull,
+		})
+		mesh:Destroy()
+		return part
+	end)
+	if not ok then
+		editableMeshAvailable = false
+		warn("[Primal Beast] EditableMesh unavailable; using organic Part fallback: " .. tostring(result))
+		return nil
+	end
+	return result :: MeshPart
+end
+
+local function ellipsoid(parent: Instance, name: string, size: Vector3, cf: CFrame, color: Color3): BasePart
+	organicVariant += 1
+	local p = draftOrganicMesh(size)
+	if p then
+		p.Name = name
+		p.Size = size
+		p.CFrame = cf
+		p.Color = color
+		p.Material = Enum.Material.Slate
+		defaults(p)
+		p:SetAttribute("DraftGeometry", "FacetedEditableMesh")
+		p.Parent = parent
+		return p
+	end
+	local fallback = block(parent, name, size, cf, color, Enum.Material.Slate)
 	local mesh = Instance.new("SpecialMesh")
-	mesh.Name = "DraftOrganicMesh"
+	mesh.Name = "DraftOrganicMeshFallback"
 	mesh.MeshType = Enum.MeshType.Sphere
-	mesh.Parent = p
-	return p
+	mesh.Parent = fallback
+	return fallback
 end
 
 local function wedge(parent: Instance, name: string, size: Vector3, cf: CFrame, color: Color3, material: Enum.Material?): WedgePart
@@ -147,9 +214,9 @@ local function buildHand(model: Model, geometry: Folder, side: string, sign: num
 end
 
 local function buildArm(model: Model, geometry: Folder, torso: BasePart, side: string, sign: number, ground: CFrame)
-	local shoulder = Vector3.new(sign * 5.25, 21.9, -0.05)
-	local elbow = Vector3.new(sign * 7.0, 17.6, -0.35)
-	local wrist = Vector3.new(sign * 7.2, 13.55, -0.7)
+	local shoulder = Vector3.new(sign * 6.65, 21.9, -0.05)
+	local elbow = Vector3.new(sign * 7.75, 17.6, -0.35)
+	local wrist = Vector3.new(sign * 7.9, 13.55, -0.7)
 	local upper = segment(model, side .. "UpperArm", shoulder, elbow, 3.2, 3.0, ground, HIDE)
 	motor(torso, side .. "Shoulder", torso, upper, ground * CFrame.new(shoulder))
 	local lower = segment(model, side .. "LowerArm", elbow, wrist, 3.1, 2.8, ground, HIDE)
@@ -166,25 +233,25 @@ local function buildArm(model: Model, geometry: Folder, torso: BasePart, side: s
 end
 
 local function buildHead(model: Model, geometry: Folder, torso: BasePart, ground: CFrame): BasePart
-	local head = ellipsoid(model, "Head", Vector3.new(6.2, 4.8, 5.8), ground * CFrame.new(0, 26.4, -1.0) * CFrame.Angles(math.rad(-3), 0, 0), HIDE)
+	local head = ellipsoid(model, "Head", Vector3.new(6.9, 4.4, 6.5), ground * CFrame.new(0, 26.25, -1.35) * CFrame.Angles(math.rad(-3), 0, 0), HIDE)
 	motor(torso, "Neck", torso, head, ground * CFrame.new(0, 24.0, 0.15))
 	local folder = Instance.new("Folder")
 	folder.Name = "HeadGeometry"
 	folder.Parent = geometry
 
-	local neck = ellipsoid(folder, "ThickNeckMantle", Vector3.new(6.8, 5.2, 5.2), ground * CFrame.new(0, 24.15, 0.5) * CFrame.Angles(math.rad(-8), 0, 0), HIDE)
+	local neck = ellipsoid(folder, "ThickNeckMantle", Vector3.new(7.5, 5.4, 5.9), ground * CFrame.new(0, 24.0, 0.45) * CFrame.Angles(math.rad(-8), 0, 0), HIDE)
 	weld(head, neck)
 
-	local upperMuzzle = block(folder, "UpperMuzzle", Vector3.new(4.9, 1.55, 3.6), ground * CFrame.new(0, 26.0, -4.45) * CFrame.Angles(math.rad(-3), 0, 0), HIDE_DARK, Enum.Material.Slate)
+	local upperMuzzle = block(folder, "UpperMuzzle", Vector3.new(5.7, 1.5, 4.25), ground * CFrame.new(0, 25.85, -4.95) * CFrame.Angles(math.rad(-3), 0, 0), HIDE_DARK, Enum.Material.Slate)
 	weld(head, upperMuzzle)
-	local muzzleBridge = ellipsoid(folder, "MuzzleBridge", Vector3.new(4.5, 1.7, 3.0), ground * CFrame.new(0, 26.65, -3.75), HIDE)
+	local muzzleBridge = ellipsoid(folder, "MuzzleBridge", Vector3.new(5.0, 1.45, 3.45), ground * CFrame.new(0, 26.45, -4.1), HIDE)
 	weld(head, muzzleBridge)
 
-	local jaw = block(model, "Jaw", Vector3.new(4.8, 1.65, 4.0), ground * CFrame.new(0, 24.65, -4.65) * CFrame.Angles(math.rad(7), 0, 0), HIDE_DARK, Enum.Material.Slate)
+	local jaw = block(model, "Jaw", Vector3.new(5.6, 1.75, 4.7), ground * CFrame.new(0, 24.25, -5.15) * CFrame.Angles(math.rad(7), 0, 0), HIDE_DARK, Enum.Material.Slate)
 	motor(head, "JawJoint", head, jaw, ground * CFrame.new(0, 25.45, -2.95))
 
 	for _, sign in ipairs({-1, 1}) do
-		local cheek = ellipsoid(folder, sign < 0 and "LeftCheekMass" or "RightCheekMass", Vector3.new(2.25, 2.5, 3.0), ground * CFrame.new(sign * 2.25, 25.9, -2.75), HIDE)
+		local cheek = ellipsoid(folder, sign < 0 and "LeftCheekMass" or "RightCheekMass", Vector3.new(1.7, 2.1, 3.3), ground * CFrame.new(sign * 2.65, 25.75, -3.0), HIDE)
 		weld(head, cheek)
 		local brow = wedge(folder, sign < 0 and "LeftHeavyBrow" or "RightHeavyBrow", Vector3.new(2.0, 0.7, 1.6), ground * CFrame.new(sign * 1.55, 27.0, -4.45) * CFrame.Angles(math.rad(-5), math.rad(180), sign * math.rad(10)), VOLCANIC)
 		weld(head, brow)
@@ -269,11 +336,11 @@ local function build(target: Instance, ground: CFrame): Model
 	model:SetAttribute("GeometryOnly", true)
 	model:SetAttribute("EvolutionStage", 1)
 	model:SetAttribute("EvolutionName", "Primal Beast")
-	model:SetAttribute("DesignVersion", "3.0.0")
+	model:SetAttribute("DesignVersion", "3.1.0")
 	model:SetAttribute("TargetHeightStuds", 30)
 	model:SetAttribute("DorsalPlateCount", 5)
 	model:SetAttribute("TailDorsalPlateCount", 4)
-	model:SetAttribute("DraftMeshStrategy", "HybridPartsAndDraftOrganicMeshes")
+	model:SetAttribute("DraftMeshStrategy", "FacetedEditableMeshWithPartFallback")
 	model:SetAttribute("FinalTexturesDeferredToPhase", 5)
 
 	local geometry = Instance.new("Folder")
@@ -422,7 +489,7 @@ end
 function Builder.Build(target: Instance, config: BuildConfig?): Model
 	local existing = target:FindFirstChild(Specification.ModelName)
 	if existing then existing:Destroy() end
-	local model = build(target, (config and config.GroundCFrame) or CFrame.identity)
+	local requestedGround = (config and config.GroundCFrame) or CFrame.identity\n\tlocal model = build(target, requestedGround * CFrame.new(0, 0.3, 0))
 	local valid, issues = Builder.Validate(model)
 	if not valid then
 		for _, issue in ipairs(issues) do warn("[Primal Beast] " .. issue) end
