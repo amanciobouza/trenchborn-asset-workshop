@@ -33,14 +33,15 @@ scroll.Parent = widget
 local status = Instance.new("TextLabel")
 status.Name = "Status"
 status.Size = UDim2.new(1, -8, 0, 1600)
-status.BackgroundTransparency = 1
+status.BackgroundColor3 = Color3.fromRGB(22, 27, 31)
+status.BackgroundTransparency = 0
 status.TextColor3 = Color3.fromRGB(225, 235, 230)
 status.TextXAlignment = Enum.TextXAlignment.Left
 status.TextYAlignment = Enum.TextYAlignment.Top
 status.TextWrapped = true
 status.TextScaled = true
 status.Font = Enum.Font.Code
-status.Text = "Start the local review-only agent, then press Review Agent."
+status.Text = "REVIEW AGENT 1.2 READY\n\nStart the local review-only agent, then press Review Agent."
 status.Parent = scroll
 
 local padding = Instance.new("UIPadding")
@@ -219,20 +220,26 @@ local function captureAndReview(model, captureAttempt)
 	local oldType, oldCF, oldFov = camera.CameraType, camera.CFrame, camera.FieldOfView
 	-- Screenshots must contain model evidence only: no selection outlines and no dock widget occlusion.
 	Selection:Set({})
-	widget.Enabled = false
 	local captured, captureError = pcall(function()
 		camera.CameraType = Enum.CameraType.Scriptable
 		camera.FieldOfView = 34
 		local views, target = cameraViews(model, camera, captureAttempt)
 		for index, view in ipairs(views) do
-			status.Text = string.format("REVIEW ONLY\n\nCapturing %s (%d/%d)...", view.name, index, #views)
+			setStatus(string.format("REVIEW ONLY\n\nPreparing %s (%d/%d)...", view.name, index, #views))
 			camera.CFrame = CFrame.lookAt(view.position, view.target or target)
 			task.wait(0.75)
+			-- Hide only for the actual ImageGrab request. Keeping the widget disabled
+			-- for the complete sequence leaves an empty white dock in Studio.
+			widget.Enabled = false
+			task.wait(0.15)
 			post("/session/capture", {sessionId = session.sessionId, view = view.name})
+			setStatus(string.format("REVIEW ONLY\n\nCaptured %s (%d/%d).", view.name, index, #views))
+			task.wait(0.15)
 		end
 	end)
 	camera.CameraType, camera.CFrame, camera.FieldOfView = oldType, oldCF, oldFov
 	Selection:Set(previousSelection)
+	widget.Enabled = true
 	if not captured then
 		widget.Enabled = true
 		error(captureError)
