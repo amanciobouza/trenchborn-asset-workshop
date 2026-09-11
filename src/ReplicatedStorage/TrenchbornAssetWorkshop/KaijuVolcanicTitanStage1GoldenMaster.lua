@@ -291,8 +291,8 @@ local function buildTail(model: Model, geometry: Folder, pelvis: BasePart, groun
 	armor.Parent = geometry
 	for index = 1, 4 do
 		local midpoint = (points[index + 1] + points[index + 2]) * 0.5
-		local lift = widths[index + 1] * 0.62 + 1.2
-		local plate = wedge(armor, "TailPlate_" .. index, Vector3.new(1.2, 2.4 - index * 0.22, 2.2), ground * CFrame.new(midpoint + Vector3.new(0, lift, 0.25)) * CFrame.Angles(math.rad(24), 0, math.rad(index % 2 == 0 and 5 or -5)), VOLCANIC)
+		local lift = widths[index + 1] * 0.78 + 1.55
+		local plate = wedge(armor, "TailPlate_" .. index, Vector3.new(1.2, 2.4 - index * 0.22, 2.2), ground * CFrame.new(midpoint + Vector3.new(0, lift, 0.45)) * CFrame.Angles(math.rad(38), 0, math.rad(index % 2 == 0 and 5 or -5)), VOLCANIC)
 		weld(segments[index + 1], plate)
 	end
 	return segments
@@ -303,11 +303,11 @@ local function buildPrimaryDorsals(geometry: Folder, head: BasePart, torso: Base
 	folder.Name = "DorsalPlates"
 	folder.Parent = geometry
 	local specs = {
-		{head, Vector3.new(0, 28.3, 1.8), Vector3.new(2.5, 3.1, 1.25), -4},
-		{torso, Vector3.new(0, 25.0, 3.1), Vector3.new(3.2, 4.1, 1.5), 5},
-		{torso, Vector3.new(0, 21.0, 3.75), Vector3.new(3.7, 5.0, 1.7), -5},
-		{pelvis, Vector3.new(0, 17.0, 3.5), Vector3.new(3.5, 4.6, 1.65), 5},
-		{tail[1], Vector3.new(0, 13.5, 5.5), Vector3.new(2.8, 3.5, 1.4), -4},
+		{head, Vector3.new(0, 28.15, 3.35), Vector3.new(2.5, 3.1, 1.25), -4},
+		{torso, Vector3.new(0, 24.8, 4.45), Vector3.new(3.2, 4.1, 1.5), 5},
+		{torso, Vector3.new(0, 20.7, 4.9), Vector3.new(3.7, 5.0, 1.7), -5},
+		{pelvis, Vector3.new(0, 16.7, 4.2), Vector3.new(3.5, 4.6, 1.65), 5},
+		{tail[1], Vector3.new(0, 14.35, 6.0), Vector3.new(2.8, 3.5, 1.4), -4},
 	}
 	for index, spec in ipairs(specs) do
 		local assembly = Instance.new("Model")
@@ -317,11 +317,11 @@ local function buildPrimaryDorsals(geometry: Folder, head: BasePart, torso: Base
 		local position = spec[2] :: Vector3
 		local size = spec[3] :: Vector3
 		local roll = spec[4] :: number
-		local base = wedge(assembly, "VolcanicSlab", size, ground * CFrame.new(position) * CFrame.Angles(math.rad(18), math.rad(180), math.rad(roll)), VOLCANIC)
+		local base = wedge(assembly, "VolcanicSlab", size, ground * CFrame.new(position) * CFrame.Angles(math.rad(42), math.rad(180), math.rad(roll)), VOLCANIC)
 		weld(host, base)
-		local brokenTip = wedge(assembly, "BrokenTip", Vector3.new(size.X * 0.55, size.Y * 0.42, size.Z * 0.9), ground * CFrame.new(position + Vector3.new((index % 2 == 0 and -0.45 or 0.45), size.Y * 0.48, 0.05)) * CFrame.Angles(math.rad(18), math.rad(180), math.rad(-roll * 1.8)), HIDE_DARK)
+		local brokenTip = wedge(assembly, "BrokenTip", Vector3.new(size.X * 0.55, size.Y * 0.42, size.Z * 0.9), ground * CFrame.new(position + Vector3.new((index % 2 == 0 and -0.45 or 0.45), size.Y * 0.48, 0.05)) * CFrame.Angles(math.rad(42), math.rad(180), math.rad(-roll * 1.8)), HIDE_DARK)
 		weld(host, brokenTip)
-		local fissure = wedge(assembly, "FaintEnergyFissure", Vector3.new(0.18, size.Y * 0.55, 0.2), ground * CFrame.new(position + Vector3.new(0, -0.1, -size.Z * 0.48)) * CFrame.Angles(math.rad(18), 0, math.rad(roll)), ENERGY, Enum.Material.SmoothPlastic)
+		local fissure = wedge(assembly, "FaintEnergyFissure", Vector3.new(0.18, size.Y * 0.55, 0.2), ground * CFrame.new(position + Vector3.new(0, -0.1, -size.Z * 0.48)) * CFrame.Angles(math.rad(42), 0, math.rad(roll)), ENERGY, Enum.Material.SmoothPlastic)
 		weld(host, fissure)
 		assembly.PrimaryPart = base
 	end
