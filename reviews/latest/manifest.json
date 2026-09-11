@@ -3,8 +3,8 @@
   "reviewOnly": true,
   "assetId": "KAIJU-01-PRIMAL-BEAST",
   "modelName": "Kaiju_I_Primal_Beast_GoldenMaster",
-  "modelCommit": "9c30be2a98fd7fcc46db007988f83bf960cf0c01",
-  "createdUtc": "2026-09-11T04:19:15Z",
+  "modelCommit": "aed6d310a08e2d78be493237f131bbaf5045fa0b",
+  "createdUtc": "2026-09-11T05:13:51Z",
   "approvedTarget": "approved-target.png",
   "captures": [
     "captures/front.png",
