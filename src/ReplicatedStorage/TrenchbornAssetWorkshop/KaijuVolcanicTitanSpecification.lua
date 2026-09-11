@@ -35,8 +35,17 @@ return {
 	},
 
 	Scale = {
-		StageHeightMultipliers = {1.00, 1.02, 1.04, 1.07, 1.10},
-		Rule = "Evolution reads through new silhouette structures, not uniform scaling",
+		StageHeightMultipliers = {1.00, 1.12, 1.26, 1.43, 1.62},
+		StageShoulderWidthMultipliers = {1.00, 1.25, 1.38, 1.58, 1.85},
+		StageVolumeTargets = {1.00, 1.35, 1.80, 2.50, 3.60},
+		Rule = "Every adjacent stage must read as clearly larger; width and mass grow faster than height",
+		RuntimeRequirements = {
+			"Stage-specific Motor6D offsets and HipHeight",
+			"Camera distance and focus point scale with stage",
+			"Independent gameplay hitboxes scale conservatively",
+			"Attack origins and reach follow the evolved limb proportions",
+			"Shared animation language uses stage-specific rig proportions",
+		},
 	},
 
 	Anatomy = {
