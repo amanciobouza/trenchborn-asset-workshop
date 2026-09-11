@@ -142,7 +142,7 @@ local function motor(parent: Instance, name: string, a: BasePart, b: BasePart, w
 	joint.Parent = parent
 end
 
-local function segment(parent: Instance, name: string, a: Vector3, b: Vector3, width: number, depth: number, ground: CFrame, color: Color3): Part
+local function segment(parent: Instance, name: string, a: Vector3, b: Vector3, width: number, depth: number, ground: CFrame, color: Color3): BasePart
 	local worldA = ground:PointToWorldSpace(a)
 	local worldB = ground:PointToWorldSpace(b)
 	local delta = worldB - worldA
