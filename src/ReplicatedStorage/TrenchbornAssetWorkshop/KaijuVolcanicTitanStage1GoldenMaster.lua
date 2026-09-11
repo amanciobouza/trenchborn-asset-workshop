@@ -37,7 +37,11 @@ local function block(parent: Instance, name: string, size: Vector3, cf: CFrame, 
 	return p
 end
 
-local editableMeshAvailable = true
+-- EditableMesh objects do not replicate. The workshop model is built by a
+-- server Script, so runtime-generated mesh content appears as placeholder cubes
+-- on clients. Keep this disabled until the draft geometry is baked to asset IDs.
+local USE_RUNTIME_EDITABLE_MESH = false
+local editableMeshAvailable = USE_RUNTIME_EDITABLE_MESH
 local organicVariant = 0
 
 local function draftOrganicMesh(size: Vector3): MeshPart?
@@ -336,11 +340,11 @@ local function build(target: Instance, ground: CFrame): Model
 	model:SetAttribute("GeometryOnly", true)
 	model:SetAttribute("EvolutionStage", 1)
 	model:SetAttribute("EvolutionName", "Primal Beast")
-	model:SetAttribute("DesignVersion", "3.1.0")
+	model:SetAttribute("DesignVersion", "3.1.1")
 	model:SetAttribute("TargetHeightStuds", 30)
 	model:SetAttribute("DorsalPlateCount", 5)
 	model:SetAttribute("TailDorsalPlateCount", 4)
-	model:SetAttribute("DraftMeshStrategy", "FacetedEditableMeshWithPartFallback")
+	model:SetAttribute("DraftMeshStrategy", "ReplicatedPartsPendingBakedMeshAssets")
 	model:SetAttribute("FinalTexturesDeferredToPhase", 5)
 
 	local geometry = Instance.new("Folder")
