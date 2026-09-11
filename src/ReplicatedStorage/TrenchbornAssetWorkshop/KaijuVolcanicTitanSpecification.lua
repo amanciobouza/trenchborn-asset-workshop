@@ -52,8 +52,7 @@ return {
 	DorsalSystem = {
 		PrimaryAssemblyCount = 5,
 		TailAssemblyCount = 4,
-		PrimaryRhythm = "Clear rise and fall; assemblies 3 and 4 form the tallest reti? crown",
-		PrimaryRhythmCorrected = "Clear rise and fall; assemblies 3 and 4 form the tallest crown",
+		PrimaryRhythm = "Clear rise and fall; assemblies 3 and 4 form the tallest crown",
 		GeometryRule = "Each later assembly may contain multiple broken layers but remains one anatomically distinct plate with visible gaps",
 		ForbiddenShapes = {"Mushroom", "Shell", "Crystal", "Wing", "Leaf", "ThinTechnicalBlade"},
 		EnergySails = {
