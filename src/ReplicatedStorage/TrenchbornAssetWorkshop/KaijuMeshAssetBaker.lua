@@ -11,7 +11,7 @@ local function addTriangle(mesh: EditableMesh, a: Vector3, b: Vector3, c: Vector
 	mesh:AddTriangle(mesh:AddVertex(a), mesh:AddVertex(b), mesh:AddVertex(c))
 end
 
-local function organic(mesh: EditableMesh, a: Vector3, b: Vector3, c: Vector3)
+local function doubleTriangle(mesh: EditableMesh, a: Vector3, b: Vector3, c: Vector3)
 	addTriangle(mesh, a, b, c)
 	addTriangle(mesh, a, c, b)
 end
