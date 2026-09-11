@@ -489,7 +489,8 @@ end
 function Builder.Build(target: Instance, config: BuildConfig?): Model
 	local existing = target:FindFirstChild(Specification.ModelName)
 	if existing then existing:Destroy() end
-	local requestedGround = (config and config.GroundCFrame) or CFrame.identity\n\tlocal model = build(target, requestedGround * CFrame.new(0, 0.3, 0))
+	local requestedGround = (config and config.GroundCFrame) or CFrame.identity
+	local model = build(target, requestedGround * CFrame.new(0, 0.3, 0))
 	local valid, issues = Builder.Validate(model)
 	if not valid then
 		for _, issue in ipairs(issues) do warn("[Primal Beast] " .. issue) end
