@@ -1,18 +1,17 @@
--- Quality Gate B review profile for Kaiju-I Bound Chimera.
--- Hard rules are evaluated by AssetValidator. Visual-only rules are exported
--- as review prompts for the image-based agent and never auto-approve the gate.
+--!strict
+-- Quality Gate B review profile for Kaiju-I Primal Beast, evolution Stage 1.
 return {
-	ProfileId = "KAIJU-01-BOUND-CHIMERA-QGB",
-	ModelName = "Kaiju_I_Bound_Chimera_GoldenMaster",
-	ExpectedAssetId = "KAIJU-01-BOUND-CHIMERA",
+	ProfileId = "KAIJU-01-PRIMAL-BEAST-QGB",
+	ModelName = "Kaiju_I_Primal_Beast_GoldenMaster",
+	ExpectedAssetId = "KAIJU-01-PRIMAL-BEAST",
 	ExpectedPipelinePhase = 4,
-	GroundToleranceStuds = 0.12,
-	MinimumHandGroundClearanceStuds = 8,
-	MinimumHeightToDepthRatio = 1.35,
-	MinimumClawDirectionDot = 0.7,
-	MaximumArmTorsoPenetrationStuds = 0.65,
+	GroundToleranceStuds = 0.15,
+	MinimumHandGroundClearanceStuds = 7.5,
+	MinimumHeightToDepthRatio = 1.25,
+	MinimumClawDirectionDot = 0.68,
+	MaximumArmTorsoPenetrationStuds = 0.7,
 	RequiredRootParts = {
-		"HumanoidRootPart", "LowerTorso", "UpperTorso", "Head",
+		"HumanoidRootPart", "LowerTorso", "UpperTorso", "Head", "Jaw",
 		"LeftUpperArm", "LeftLowerArm", "LeftHand",
 		"RightUpperArm", "RightLowerArm", "RightHand",
 		"LeftUpperLeg", "LeftLowerLeg", "LeftFoot",
@@ -20,36 +19,44 @@ return {
 	},
 	VisualReviewCriteria = {
 		{
-			Id = "visual.target-image-match",
-			Prompt = "Compare against the supplied approved target image. The anatomy, posture, facial construction, proportions, and defining silhouette must clearly match; stylistic resemblance alone is insufficient. Confirm five large, individually readable primary dorsal shields with visible gaps; the four tail shields must project clearly beyond the cylinder silhouette. Confirm the rectangular lower jaw sits anatomically below the upper muzzle and projects farther forward and downward.",
+			Id = "visual.target-image-lineage",
+			Prompt = "Compare Stage 1 with the approved five-stage volcanic titan target. It must clearly establish the shared lineage anchors without showing later-stage shoulder armor, evolved head armor, Caldera chest, or catastrophe crown.",
 		},
 		{
-			Id = "visual.face-part-orientation",
-			Prompt = "Using the face close-ups, verify that crown, muzzle, jaw, vents, and eyes are correctly oriented, symmetric where intended, and form a coherent non-deformed face.",
+			Id = "visual.upright-s1",
+			Prompt = "The creature reads as an upright dominant biped with an open massive chest. It is not permanently hunched and its arms never support the body.",
 		},
 		{
-			Id = "visual.arms-clear-of-torso",
-			Prompt = "Using both arm close-ups, verify that the arms attach at the shoulders but do not disappear into or pass through the torso volume.",
+			Id = "visual.massive-proportions",
+			Prompt = "The silhouette has a barrel torso, broad shoulders, long powerful arms to mid-thigh, extremely thick load-bearing digitigrade legs, broad feet, and no thin joints.",
 		},
 		{
-			Id = "visual.claw-orientation",
-			Prompt = "Using both foot close-ups, verify that all three front claws point forward and the rear claw points backward; reject sideways, reversed, buried, or blunt cap-like claws.",
+			Id = "visual.predator-head",
+			Prompt = "The head is an original bestial predator with a moderately extended blunt muzzle, broad cheeks, low yellow eyes, heavy brows, and a deep clearly separate lower jaw. Reject pig-like, cute, humanoid, pure dinosaur, or direct Godzilla heads.",
 		},
 		{
-			Id = "visual.upright-not-hunched",
-			Prompt = "The creature reads as upright and dominant, not hunched or supported by its arms.",
+			Id = "visual.predator-paws",
+			Prompt = "Hands read as broad animal paws with three primary digits plus one short side digit; all claws curve downward rather than projecting like ballerina toes.",
 		},
 		{
-			Id = "visual.original-chimera-silhouette",
-			Prompt = "The silhouette reads as an original chimera and preserves its established lineage anchors.",
+			Id = "visual.digitigrade-feet",
+			Prompt = "Each foot shows three forward claws and one unobscured rear claw. Knees point forward and the high rear hock is clearly readable.",
 		},
 		{
-			Id = "visual.shattered-storm-shields",
-			Prompt = "The seven dorsal forms read as angular shattered storm shields, never mushrooms, shells, crystals, or simple spikes.",
+			Id = "visual.segmented-tail",
+			Prompt = "The heavy counterbalance tail is visibly constructed from overlapping tapered cylinder segments and remains above the ground.",
 		},
 		{
-			Id = "visual.massive-digitigrade-legs",
-			Prompt = "The digitigrade legs look massive, load-bearing, and visually stronger than the short free-hanging arms.",
+			Id = "visual.dorsal-count-and-shape",
+			Prompt = "Exactly five distinct upright primary volcanic slab assemblies and exactly four distinct tail plates are visible with clear gaps. The main rhythm rises to plates 3 and 4 and then falls. Reject mushrooms, shells, crystals, wings, leaves, and crowded spikes.",
+		},
+		{
+			Id = "visual.stage-one-restraint",
+			Prompt = "Stage 1 remains mostly organic charcoal animal hide with only a small sternum hardening and minor limb hardening. Yellow eyes and faint yellow fissures are present, but complete energy sails and later-stage armor are absent.",
+		},
+		{
+			Id = "visual.originality",
+			Prompt = "Godzilla influence is limited to monumental presence and dorsal rhythm. Reject direct copying, full reptile scales, feline traits, mechanical Jaeger armor, metal, or blue/red/orange energy.",
 		},
 	},
 }
