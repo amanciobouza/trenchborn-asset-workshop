@@ -5,7 +5,11 @@
 return {
 	SchemaVersion = 1,
 	SpecificationId = "KAIJU-VOLCANIC-TITAN-PHASE-3",
+	AssetName = "Kaiju-I Primal Beast",
+	AssetId = "KAIJU-01-PRIMAL-BEAST",
+	ModelName = "Kaiju_I_Primal_Beast_GoldenMaster",
 	AssetClass = "Playable Kaiju Evolution Line",
+	PipelinePhase = 4,
 	StageCount = 5,
 	CurrentPipelinePhase = 3,
 	QualityGateA = "Approved",
@@ -196,6 +200,10 @@ return {
 	},
 
 	PerformanceBudget = {
+		MaxVisibleParts = 190,
+		MaxGameplayHitboxes = 3,
+		PermanentLights = 0,
+		PermanentParticleEmitters = 0,
 		MaxVisiblePartsPerStage = 190,
 		MaxGameplayHitboxesPerStage = 3,
 		MaxPermanentLightsPhase4 = 0,
