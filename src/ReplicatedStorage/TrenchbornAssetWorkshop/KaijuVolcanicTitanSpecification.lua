@@ -35,6 +35,8 @@ return {
 	},
 
 	Scale = {
+		BaseHeightStuds = 30.0,
+		StageHeightsStuds = {30.0, 33.6, 37.8, 42.9, 48.6},
 		StageHeightMultipliers = {1.00, 1.12, 1.26, 1.43, 1.62},
 		StageShoulderWidthMultipliers = {1.00, 1.25, 1.38, 1.58, 1.85},
 		StageVolumeTargets = {1.00, 1.35, 1.80, 2.50, 3.60},
