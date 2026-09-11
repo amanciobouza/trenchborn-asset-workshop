@@ -62,14 +62,17 @@ def call_codex(session):
     codex = shutil.which("codex") or shutil.which("codex.cmd")
     if not codex:
         raise RuntimeError("Codex CLI is not installed or is not available on PATH")
-    target_image = os.environ.get("TRENCHBORN_TARGET_IMAGE")
-    if not target_image:
-        raise RuntimeError(
-            "TRENCHBORN_TARGET_IMAGE is not set; Quality Gate B requires the approved target image"
-        )
-    target_path = pathlib.Path(target_image).expanduser().resolve()
+    configured_target = os.environ.get("TRENCHBORN_TARGET_IMAGE")
+    target_path = (
+        pathlib.Path(configured_target).expanduser().resolve()
+        if configured_target
+        else (ROOT / "latest" / "approved-target.png").resolve()
+    )
     if not target_path.is_file():
-        raise RuntimeError(f"Approved target image was not found: {target_path}")
+        source = "TRENCHBORN_TARGET_IMAGE" if configured_target else "reviews/latest/approved-target.png"
+        raise RuntimeError(
+            f"Approved target image was not found via {source}: {target_path}"
+        )
     session["targetPath"] = str(target_path)
     prompt = {
         "task": "Perform Trenchborn Quality Gate B visual review.",
