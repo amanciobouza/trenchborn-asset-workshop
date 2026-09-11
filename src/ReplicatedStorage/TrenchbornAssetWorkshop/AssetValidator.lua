@@ -124,9 +124,13 @@ function Validator.Review(model, specification, profile, options)
 	local modelForward = model:GetPivot().LookVector
 	requireCondition(geometry ~= nil, "geometry.folder", "BodyGeometry is missing.", nil)
 	local dorsalFolder = geometry and geometry:FindFirstChild("DorsalPlates")
-	local expectedDorsals = specification.Anatomy.DorsalShieldCount
+	local expectedDorsals = specification.Anatomy and specification.Anatomy.DorsalShieldCount
 	local actualDorsals = dorsalFolder and #dorsalFolder:GetChildren() or 0
-	requireCondition(actualDorsals == expectedDorsals, "anatomy.dorsal-count", string.format("Expected %d dorsal shields, found %d.", expectedDorsals, actualDorsals), nil)
+	if type(expectedDorsals) ~= "number" then
+		requireCondition(false, "specification.dorsal-count", "Specification.Anatomy.DorsalShieldCount must be a number.", nil)
+	else
+		requireCondition(actualDorsals == expectedDorsals, "anatomy.dorsal-count", string.format("Expected %d dorsal shields, found %d.", expectedDorsals, actualDorsals), nil)
+	end
 
 	for _, side in ipairs({"Left", "Right"}) do
 		local foot = geometry and geometry:FindFirstChild(side .. "FootGeometry")
