@@ -72,6 +72,9 @@ return {
 		PrimaryAssemblyCount = 5,
 		TailAssemblyCount = 4,
 		PrimaryRhythm = "Clear rise and fall; assemblies 3 and 4 form the tallest crown",
+		OrientationRule = "Plate roots sit visibly outside the back surface; every plate projects away from the spine and points diagonally upward-backward instead of following the spine vertically",
+		TailOrientationRule = "Tail plates remain outside their cylinder surfaces and follow the tail arc while projecting clearly away from it",
+		MinimumVisibleGapRule = "No plate tip or layered component may visually stack over the neighboring primary assembly in neutral side view",
 		GeometryRule = "Each later assembly may contain multiple broken layers but remains one anatomically distinct plate with visible gaps",
 		ForbiddenShapes = {"Mushroom", "Shell", "Crystal", "Wing", "Leaf", "ThinTechnicalBlade"},
 		EnergySails = {
