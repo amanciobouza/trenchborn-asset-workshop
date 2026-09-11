@@ -48,7 +48,7 @@ return {
 		},
 		{
 			Id = "visual.dorsal-count-and-shape",
-			Prompt = "Exactly five distinct upright primary volcanic slab assemblies and exactly four distinct tail plates are visible with clear gaps. The main rhythm rises to plates 3 and 4 and then falls. Reject mushrooms, shells, crystals, wings, leaves, and crowded spikes.",
+			Prompt = "Exactly five distinct primary volcanic slab assemblies and exactly four distinct tail plates are visible with clear gaps. Every root sits outside the body surface and every plate projects away from the spine, pointing diagonally upward-backward rather than vertically along the back. Tail plates project outside their cylinder surfaces and follow the tail arc. The main rhythm rises to plates 3 and 4 and then falls. Reject stacked or interpenetrating plates, mushrooms, shells, crystals, wings, leaves, and crowded spikes.",
 		},
 		{
 			Id = "visual.stage-one-restraint",
