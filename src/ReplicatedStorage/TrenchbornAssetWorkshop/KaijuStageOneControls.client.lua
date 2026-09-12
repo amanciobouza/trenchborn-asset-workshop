@@ -19,7 +19,7 @@ CAS:BindAction(action, function(_, state)
 	if state == Enum.UserInputState.Begin then attack() end
 	return Enum.ContextActionResult.Sink
 end, true, Enum.KeyCode.F, Enum.KeyCode.ButtonR2)
-CAS:SetTitle(action, "Angriff")
+CAS:SetTitle(action, "Attack")
 CAS:SetPosition(action, UDim2.new(1,-150,1,-180))
 local prompt=Instance.new("TextLabel")
 prompt.Name="FinisherPrompt"
@@ -30,7 +30,7 @@ prompt.BackgroundColor3=Color3.fromRGB(30,32,38)
 prompt.BackgroundTransparency=0.15
 prompt.TextColor3=Color3.fromRGB(255,230,80)
 prompt.TextScaled=true
-prompt.Text="ZERREISSEN – nochmals angreifen"
+prompt.Text="RIP APART – attack again"
 prompt.Visible=false
 prompt.Parent=script.Parent
 local availabilityConnection
@@ -38,14 +38,14 @@ local alive=true
 local function watchCharacter(character)
 	if availabilityConnection then availabilityConnection:Disconnect();availabilityConnection=nil end
 	prompt.Visible=false
-	CAS:SetTitle(action,"Angriff")
+	CAS:SetTitle(action,"Attack")
 	task.spawn(function()
 		local model=character:WaitForChild("Stage_1_Primal_Beast",20)
 		if not alive or not model or player.Character~=character then return end
 		local function update()
 			local available=model:GetAttribute("FinisherAvailable")==true
 			prompt.Visible=available
-			CAS:SetTitle(action,available and "Zerreissen" or "Angriff")
+			CAS:SetTitle(action,available and "Rip Apart" or "Attack")
 		end
 		availabilityConnection=model:GetAttributeChangedSignal("FinisherAvailable"):Connect(update)
 		update()
