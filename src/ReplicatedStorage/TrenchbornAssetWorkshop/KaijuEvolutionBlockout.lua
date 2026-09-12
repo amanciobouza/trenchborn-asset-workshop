@@ -410,6 +410,12 @@ local function applyStylizedMasses(model: Model, origin: CFrame)
 		cylinderBetween(model, side .. "ThumbLower", thumbJoint, thumbTip, 0.95, origin, 1, 1, 1, BODY)
 		sphere(model, side .. "ThumbTip", Vector3.new(1.0, 1.05, 1.05), origin * CFrame.new(thumbTip), BODY)
 		claw(model, side .. "ThumbClaw", thumbTip + Vector3.new(0, -0.5, -0.12), 0, origin, 1, 1, 1, -90, 0.9)
+		-- Roll each claw around its own long local Z axis, mirrored per hand.
+		-- Post-multiplication preserves the center and longitudinal direction.
+		for _, name in ipairs({"HandClaw_1", "HandClaw_2", "HandClaw_3", "ThumbClaw"}) do
+			local nail = model:FindFirstChild(side .. name) :: BasePart
+			nail.CFrame *= CFrame.Angles(0, 0, sign * math.pi/2)
+		end
 
 		-- Keep the complete paw aligned with the forearm in side view.
 		-- Positive X pitch sends a downward finger toward local -Z (forward).
@@ -546,7 +552,7 @@ local function refineStageOne(model: Model, origin: CFrame)
 			item.Material = Enum.Material.SmoothPlastic
 		end
 	end
-	model:SetAttribute("GeometryRevision", "S1_ForwardHandBacks_Thumbs_04")
+	model:SetAttribute("GeometryRevision", "S1_HandClaws_LongAxisRoll_05")
 	model:SetAttribute("VisualTarget", "Approved simplified Stage 1 and Stage 2 maquette")
 	model:SetAttribute("GeometryMethod", "Roblox primitives and visual ellipsoids; no external assets")
 end
