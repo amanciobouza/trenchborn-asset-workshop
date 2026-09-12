@@ -297,7 +297,9 @@ local function buildStylizedHead(model: Model, origin: CFrame)
 		return sphere(model, name, size, origin * CFrame.new(pos), color)
 	end
 	mass("Neck", Vector3.new(5.0, 5.0, 4.6), Vector3.new(0, 25.0, 0.1), BODY_DARK)
-	mass("Cranium", Vector3.new(5.2, 3.7, 5.4), Vector3.new(0, 27.3, -0.8), BODY)
+	-- Low elongated skull: the crown meets the brow line instead of bulging above it.
+	local cranium = mass("Cranium", Vector3.new(4.8, 2.6, 4.8), Vector3.new(0, 27.05, -1.05), BODY)
+	cranium.CFrame *= CFrame.Angles(math.rad(-6), 0, 0)
 	mass("SnoutBridge", Vector3.new(3.5, 1.7, 4.2), Vector3.new(0, 27.0, -2.65), BODY)
 	roundedBox(model, "UpperMuzzle", Vector3.new(4.05, 1.2, 3.6), origin * CFrame.new(0, 26.55, -4.2), BODY, 0.28)
 	mass("LowerJawRear", Vector3.new(4.7, 2.4, 3.6), Vector3.new(0, 25.4, -1.8), BODY_DARK)
@@ -502,9 +504,9 @@ local function refineStageOne(model: Model, origin: CFrame)
 	mass("DorsalLumbarMass", Vector3.new(8.0, 9.3, 7.0), Vector3.new(0, 18.2, 2.0), skin)
 	mass("SacralMass", Vector3.new(8.1, 7.0, 7.5), Vector3.new(0, 14.7, 3.0), skin)
 	mass("TailRootMass", Vector3.new(6.9, 6.1, 8.6), Vector3.new(0, 12.8, 5.1), skin, CFrame.Angles(math.rad(-20), 0, 0))
-	mass("Neck", Vector3.new(5.0, 8.1, 4.8), Vector3.new(0, 25.65, -0.1), skin)
-	mass("NapeFlow", Vector3.new(5.3, 5.6, 5.0), Vector3.new(0, 24.2, 1.15), skin, CFrame.Angles(math.rad(-18), 0, 0))
-	mass("ThroatShield", Vector3.new(3.5, 6.1, 1.5), Vector3.new(0, 24.9, -2.15), underside)
+	mass("Neck", Vector3.new(5.0, 6.7, 4.8), Vector3.new(0, 25.15, -0.1), skin)
+	mass("NapeFlow", Vector3.new(5.3, 5.0, 4.8), Vector3.new(0, 23.95, 1.05), skin, CFrame.Angles(math.rad(-18), 0, 0))
+	mass("ThroatShield", Vector3.new(3.5, 5.1, 1.5), Vector3.new(0, 24.4, -2.15), underside)
 	mass("UpperRibcage", Vector3.new(11.3, 5.7, 6.6), Vector3.new(0, 22.65, 0.15), skin)
 	for _, sign in ipairs({-1, 1}) do
 		local side = sign < 0 and "Left" or "Right"
@@ -531,7 +533,7 @@ local function refineStageOne(model: Model, origin: CFrame)
 			headNames[side .. feature] = true
 		end
 	end
-	local headLift = origin:VectorToWorldSpace(Vector3.new(0, 1.8, 0))
+	local headLift = origin:VectorToWorldSpace(Vector3.new(0, 0.8, 0))
 	for _, item in ipairs(model:GetChildren()) do
 		if item:IsA("BasePart") then
 			local isHead = headNames[item.Name] == true
@@ -580,7 +582,7 @@ local function refineStageOne(model: Model, origin: CFrame)
 			item.Material = Enum.Material.SmoothPlastic
 		end
 	end
-	model:SetAttribute("GeometryRevision", "S1_InsetForwardEyes_NarrowBridge_09")
+	model:SetAttribute("GeometryRevision", "S1_ShorterNeck_LowSkull_10")
 	model:SetAttribute("VisualTarget", "Approved simplified Stage 1 and Stage 2 maquette")
 	model:SetAttribute("GeometryMethod", "Roblox primitives and visual ellipsoids; no external assets")
 end
