@@ -268,13 +268,14 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	}
 	local audioRandom=Random.new()
 	local activeSounds={}
-	local function makeSound(asset,source,volume,speed,looped)
+	local function makeSound(asset,source,volume,speed,looped,startAt)
 		if not owner then return nil end
 		local sound=Instance.new("Sound");sound.Name="KaijuAudio";sound.SoundId="rbxassetid://"..asset
 		sound.Volume=volume;sound.PlaybackSpeed=speed;sound.Looped=looped==true
 		sound.RollOffMinDistance=12*scale;sound.RollOffMaxDistance=160*scale
 		sound.Parent=source or bones.Torso;activeSounds[sound]=true
 		sound.Destroying:Once(function() activeSounds[sound]=nil end)
+		sound.TimePosition=startAt or 0
 		sound:Play()
 		if not looped then game:GetService("Debris"):AddItem(sound,5) end
 		return sound
@@ -282,7 +283,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	local function feedback(kind,source,soundOnly)
 		local definition=audioPresets[kind]
 		if not owner or not definition then return end
-		local sound=makeSound(definition[1],source,definition[2],definition[3]*audioRandom:NextNumber(0.96,1.04),false)
+		local sound=makeSound(definition[1],source,definition[2],definition[3]*audioRandom:NextNumber(0.96,1.04),false,kind=="Punch" and 0.06 or 0)
 		if sound and (kind=="Whoosh" or kind=="Punch" or kind=="Slam" or kind=="Finisher") then
 			sound.RollOffMinDistance=45*scale
 		end
