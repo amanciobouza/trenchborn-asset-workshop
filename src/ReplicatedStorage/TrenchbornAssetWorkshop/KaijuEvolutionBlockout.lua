@@ -497,12 +497,16 @@ local function refineStageOne(model: Model, origin: CFrame)
 	mass("DorsalLumbarMass", Vector3.new(8.0, 9.3, 7.0), Vector3.new(0, 18.2, 2.0), skin)
 	mass("SacralMass", Vector3.new(8.1, 7.0, 7.5), Vector3.new(0, 14.7, 3.0), skin)
 	mass("TailRootMass", Vector3.new(6.9, 6.1, 8.6), Vector3.new(0, 12.8, 5.1), skin, CFrame.Angles(math.rad(-20), 0, 0))
-	mass("Neck", Vector3.new(5.5, 7.0, 5.1), Vector3.new(0, 24.8, 0), skin)
-	mass("NapeFlow", Vector3.new(6.1, 6.4, 5.4), Vector3.new(0, 24.7, 1.35), skin, CFrame.Angles(math.rad(-18), 0, 0))
-	mass("ThroatShield", Vector3.new(3.5, 5.2, 1.5), Vector3.new(0, 24.15, -2.05), underside)
+	mass("Neck", Vector3.new(5.0, 8.1, 4.8), Vector3.new(0, 25.65, -0.1), skin)
+	mass("NapeFlow", Vector3.new(5.3, 5.6, 5.0), Vector3.new(0, 24.2, 1.15), skin, CFrame.Angles(math.rad(-18), 0, 0))
+	mass("ThroatShield", Vector3.new(3.5, 6.1, 1.5), Vector3.new(0, 24.9, -2.15), underside)
+	mass("UpperRibcage", Vector3.new(11.3, 5.7, 6.6), Vector3.new(0, 22.65, 0.15), skin)
 	for _, sign in ipairs({-1, 1}) do
 		local side = sign < 0 and "Left" or "Right"
 		mass(side .. "Pectoral", Vector3.new(5.35, 4.5, 1.95), Vector3.new(sign * 2.18, 22.45, -2.9), underside)
+		mass(side .. "Deltoid", Vector3.new(6.4, 5.5, 5.9), Vector3.new(sign * 5.7, 22.1, -0.1), skin)
+		mass(side .. "ShoulderJoint", Vector3.new(5.6, 5.3, 5.4), Vector3.new(sign * 5.7, 22.1, -0.1), skin)
+		mass(side .. "ShoulderBridge", Vector3.new(3.3, 3.1, 4.0), Vector3.new(sign * 3.9, 22.65, 0), skin)
 		mass(side .. "CheekMass", Vector3.new(1.65, 2.25, 2.8), Vector3.new(sign * 1.75, 26.25, -1.95), skin)
 		mass(side .. "BrowRidge", Vector3.new(1.7, 0.62, 1.65), Vector3.new(sign * 1.88, 27.8, -3.45), skin,
 			CFrame.Angles(0, -sign * math.rad(12), sign * math.rad(8)))
@@ -512,6 +516,25 @@ local function refineStageOne(model: Model, origin: CFrame)
 			CFrame.Angles(math.rad(-27), 0, 0))
 		mass(side .. "InstepFlow", Vector3.new(3.6, 4.4, 4.0), Vector3.new(sign * 3.25, 3.0, -0.35), skin,
 			CFrame.Angles(math.rad(12), 0, 0))
+	end
+	-- Lift the complete face as one assembly, including all rounded-box pieces.
+	-- Neck and throat were resized separately to retain overlap with the skull.
+	local headNames: {[string]: boolean} = {Cranium = true, SnoutBridge = true, LowerJawRear = true}
+	local headPrefixes = {"UpperMuzzle", "LowerJawFront"}
+	for _, side in ipairs({"Left", "Right"}) do
+		for _, feature in ipairs({"CheekMass", "BrowRidge", "EyeSocket", "Eye", "Pupil", "EyeHighlight", "Nostril"}) do
+			headNames[side .. feature] = true
+		end
+	end
+	local headLift = origin:VectorToWorldSpace(Vector3.new(0, 1.8, 0))
+	for _, item in ipairs(model:GetChildren()) do
+		if item:IsA("BasePart") then
+			local isHead = headNames[item.Name] == true
+			for _, prefix in ipairs(headPrefixes) do
+				if string.sub(item.Name, 1, #prefix) == prefix then isHead = true end
+			end
+			if isHead then item.CFrame += headLift end
+		end
 	end
 	-- Preserve the original seven cylinder segments and their stepped silhouette.
 	for _, item in ipairs(model:GetChildren()) do
@@ -552,7 +575,7 @@ local function refineStageOne(model: Model, origin: CFrame)
 			item.Material = Enum.Material.SmoothPlastic
 		end
 	end
-	model:SetAttribute("GeometryRevision", "S1_HandClaws_LongAxisRoll180_06")
+	model:SetAttribute("GeometryRevision", "S1_YouthfulNeck_RaisedHead_07")
 	model:SetAttribute("VisualTarget", "Approved simplified Stage 1 and Stage 2 maquette")
 	model:SetAttribute("GeometryMethod", "Roblox primitives and visual ellipsoids; no external assets")
 end
