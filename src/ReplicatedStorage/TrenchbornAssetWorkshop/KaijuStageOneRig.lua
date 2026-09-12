@@ -179,7 +179,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	local combo = Combo.new(combat and combat.PrepareFinisher)
 	local jump = Jump.new()
 	local savedSpeed, savedOwner, airDirection
-	local AIR_SPEED=14 -- Short, controllable jumps onto nearby roofs.
+	local AIR_SPEED=18 -- Moderate air travel, below the original speed of 30.
 	local JUMP_HEIGHT=14
 	local ownsPhysics=false
 	local function restoreJump()
@@ -292,13 +292,14 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				if combat then combat.Handle("Land",0) end
 			elseif jumpEvent=="Restore" then restoreJump() end
 			if jump.Phase=="Air" then
-				-- One horizontal controller; do not also accelerate through Humanoid:Move.
-				humanoid.WalkSpeed=0
-				humanoid:Move(Vector3.zero,false)
-				local velocity=movementRoot.AssemblyLinearVelocity
-				local horizontal=Vector3.new(velocity.X,0,velocity.Z)
-				local response=airDirection.Magnitude==0 and 1 or 1-math.exp(-poseDt/0.06)
-				movementRoot:ApplyImpulse((airDirection*AIR_SPEED-horizontal)*response*movementRoot.AssemblyMass)
+				-- Let the humanoid steer; a zero-speed Move command fights air travel.
+				humanoid.WalkSpeed=AIR_SPEED
+				humanoid:Move(airDirection,false)
+				if airDirection.Magnitude==0 then
+					-- Neutral input brakes only horizontal drift, preserving the fall.
+					local velocity=movementRoot.AssemblyLinearVelocity
+					movementRoot:ApplyImpulse(Vector3.new(-velocity.X,0,-velocity.Z)*movementRoot.AssemblyMass)
+				end
 			elseif jump.Phase=="Landing" then
 				humanoid.WalkSpeed=0
 				humanoid:Move(Vector3.zero,false)
