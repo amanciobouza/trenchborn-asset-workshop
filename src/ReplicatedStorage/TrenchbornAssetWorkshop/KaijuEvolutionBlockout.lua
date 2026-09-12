@@ -166,8 +166,14 @@ local function buildDorsals(parent: Instance, origin: CFrame, sx: number, sy: nu
 	}
 	for i, pos in ipairs(locations) do
 		local centerScale = 0.75 + math.sin((i - 1) / 6 * math.pi) * (0.55 + armorLevel * 0.13)
-		wedge(parent, string.format("DorsalShield_%02d", i), scaled(Vector3.new(1.5, 4.2 * centerScale, 2.5 * centerScale), sx, sy, sz), frame(origin, pos, sx, sy, sz) * CFrame.Angles(math.rad(-10), 0, math.rad((i % 2 == 0) and 5 or -5)), ARMOR)
-		local seam = wedge(parent, string.format("DorsalEnergy_%02d", i), scaled(Vector3.new(0.22, 2.7 * centerScale, 1.7 * centerScale), sx, sy, sz), frame(origin, pos + Vector3.new(0, 0, -0.08), sx, sy, sz) * CFrame.Angles(math.rad(-10), 0, 0), energyAmount > 0.75 and ENERGY_HIGH or ENERGY)
+		local rootHeight = 2.55 * centerScale
+		local projection = 4.35 * centerScale
+		local plateCenter = pos + Vector3.new(0, 0.25 * centerScale, projection * 0.38)
+		local sideVariation = (i % 2 == 0) and 4 or -4
+		local plateFrame = frame(origin, plateCenter, sx, sy, sz)
+			* CFrame.Angles(math.rad(-28), 0, math.rad(180 + sideVariation))
+		wedge(parent, string.format("DorsalShield_%02d", i), scaled(Vector3.new(1.5, rootHeight, projection), sx, sy, sz), plateFrame, ARMOR)
+		local seam = wedge(parent, string.format("DorsalEnergy_%02d", i), scaled(Vector3.new(0.22, rootHeight * 0.72, projection * 0.78), sx, sy, sz), plateFrame * CFrame.new(0, 0, -0.08), energyAmount > 0.75 and ENERGY_HIGH or ENERGY)
 		seam.Material = Enum.Material.Neon
 		seam.Transparency = 0.35 - energyAmount * 0.25
 	end
