@@ -27,8 +27,8 @@ end)
 
 local preview = blockout.BuildStage(workshop, 1, CFrame.new(0, 0, 145))
 workshop:SetAttribute("CurrentAsset", "Kaiju Stage 1 - Primal Beast")
-workshop:SetAttribute("CurrentPhase", 4)
-workshop:SetAttribute("QualityStatus", "Phase4_Stage1ProportionReview")
+workshop:SetAttribute("CurrentPhase", 5)
+workshop:SetAttribute("QualityStatus", "Phase5_Stage1DressingReview")
 workshop:SetAttribute("GoldenMasterReviewTarget", preview.Name)
 
-print("[Kaiju Evolution] Stage 1 Primal Beast blockout built | Awaiting proportion review")
+print("[Kaiju Evolution] Stage 1 Primal Beast | Geometry approved | Phase 5 materials and energy ready for review")
