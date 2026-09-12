@@ -1,5 +1,6 @@
 -- Jump timing is server-owned. Cooldown starts with activation.
 local Jump = {}
+local WINDUP=0.16 -- Brief anticipation, then immediate takeoff.
 local function smooth(t) t=math.max(0,math.min(1,t));return t*t*(3-2*t) end
 function Jump.new()
 	local s={Phase="Idle",Started=0,ReadyAt=0,LeftGround=false,Lead="Right"}
@@ -16,7 +17,7 @@ function Jump.new()
 		local event
 		if self.Phase=="Windup" then
 			if not grounded then self:Cancel();return nil,"Restore" end
-			if t>=0.32 then
+			if t>=WINDUP then
 				self.Phase,self.Started="Air",now
 				event="Takeoff";t=0
 			end
@@ -31,11 +32,11 @@ function Jump.new()
 			self:Cancel();return nil,"Restore"
 		end
 		if self.Phase=="Windup" then
-			local u=smooth(t/0.32)
+			local u=smooth(t/WINDUP)
 			-- One foot stays planted while the opposite knee drives up and forward.
-			return {Crouch=2.6*u,Tuck=0,LeadLift=2*u,TrailLift=0,
+			return {Crouch=1.3*u,Tuck=0,LeadLift=2*u,TrailLift=0,
 				LeadForward=-1.4*u,TrailForward=0,Asymmetry=u,
-				Pitch=-18*u,Arm=-12*u,Elbow=12*u,Head=7*u,Pulse=0},event
+				Pitch=-10*u,Arm=-12*u,Elbow=12*u,Head=5*u,Pulse=0},event
 		elseif self.Phase=="Air" then
 			-- Bring both feet down during descent, before contact rather than after it.
 			local ready=smooth(-verticalSpeed/18)
