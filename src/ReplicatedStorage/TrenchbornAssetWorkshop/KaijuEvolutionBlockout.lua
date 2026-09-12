@@ -631,7 +631,7 @@ local function dressStageOne(model: Model)
 	model:SetAttribute("QualityGateB", "ApprovedByUser")
 	model:SetAttribute("ApprovedGeometryCommit", "9aedccac1428207b5fbba954de9d941033989441")
 	model:SetAttribute("DressingRevision", "S1_MatteSkin_BasaltArmor_02")
-	model:SetAttribute("DressingReview", "Pending")
+	model:SetAttribute("DressingReview", "ApprovedByUser")
 end
 
 local function buildStage(parent: Instance, stage: Stage, index: number, origin: CFrame): Model
