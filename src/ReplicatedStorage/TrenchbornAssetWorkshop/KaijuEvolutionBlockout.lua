@@ -401,7 +401,10 @@ local function applyStylizedMasses(model: Model, origin: CFrame)
 		-- Positive X pitch sends a downward finger toward local -Z (forward).
 		local handPitch = math.atan2(elbow.Z - wrist.Z, elbow.Y - wrist.Y)
 		local wristFrame = origin * CFrame.new(wrist)
-		local handTransform = wristFrame * CFrame.Angles(handPitch, 0, 0) * wristFrame:Inverse()
+		-- Twist around the bent hand's longitudinal axis: palms face inward,
+		-- while fingers and claws retain the existing forward/downward bend.
+		local handTransform = wristFrame * CFrame.Angles(handPitch, 0, 0)
+			* CFrame.Angles(0, sign * math.rad(65), 0) * wristFrame:Inverse()
 		for _, item in ipairs(model:GetChildren()) do
 			if item:IsA("BasePart") then
 				for _, prefix in ipairs({"Palm", "WristJoint", "Finger_", "Knuckle_", "FingerPad_", "HandClaw_"}) do
@@ -490,26 +493,11 @@ local function refineStageOne(model: Model, origin: CFrame)
 		mass(side .. "InstepFlow", Vector3.new(3.6, 4.4, 4.0), Vector3.new(sign * 3.25, 3.0, -0.35), skin,
 			CFrame.Angles(math.rad(12), 0, 0))
 	end
-	-- Closely spaced tapering ellipsoids replace the exposed cylinder staircase.
-	-- This is an overlapping primitive surface, not a promised welded mesh.
+	-- Preserve the original seven cylinder segments and their stepped silhouette.
 	for _, item in ipairs(model:GetChildren()) do
-		if string.match(item.Name, "^TailSegment_") or string.match(item.Name, "^DorsalShield_") or string.match(item.Name, "^DorsalEnergy_") then
+		if string.match(item.Name, "^DorsalShield_") or string.match(item.Name, "^DorsalEnergy_") then
 			item:Destroy()
 		end
-	end
-	local function tailPoint(t: number): Vector3
-		return Vector3.new(0, 5.0 + 8.0 * (1 - t)^1.65, 5.0 + 15.5 * t)
-	end
-	local function tailRadius(t: number): number
-		return 0.22 + 2.8 * (1 - t)^1.15
-	end
-	for i = 0, 30 do
-		local t = i / 30
-		local center = tailPoint(t)
-		local tangent = tailPoint(math.min(1, t + 0.01)) - tailPoint(math.max(0, t - 0.01))
-		local diameter = tailRadius(t) * 2
-		mass(string.format("TailFlow_%02d", i), Vector3.new(diameter, diameter, math.max(1.0, diameter * 1.45)), center, skin,
-			CFrame.lookAt(Vector3.zero, tangent))
 	end
 	local function plate(i: number, root: Vector3, height: number, projection: number, pitch: number, inset: number)
 		local cf = origin * CFrame.new(root + Vector3.new(0, 0.2, projection * 0.35))
@@ -529,17 +517,22 @@ local function refineStageOne(model: Model, origin: CFrame)
 	plate(1, Vector3.new(0, 26.3, 2.65), 3.1, 4.4, -23, 0.55)
 	plate(2, Vector3.new(0, 22.1, 4.5), 3.9, 5.5, -32, 0.57)
 	plate(3, Vector3.new(0, 17.3, 5.15), 3.25, 4.6, -26, 0.52)
-	for i, t in ipairs({0.08, 0.25, 0.42, 0.59, 0.75, 0.89}) do
-		local root = tailPoint(t) + Vector3.new(0, tailRadius(t) * 0.87, 0)
-		local scale = 1 - t
-		plate(i + 3, root, 0.5 + 1.8*scale, 0.6 + 2.65*scale, -38, 0.40)
+	for segmentIndex = 2, 7 do
+		local segment = model:FindFirstChild(string.format("TailSegment_%02d", segmentIndex)) :: BasePart
+		local localFrame = origin:ToObjectSpace(segment.CFrame)
+		local axis = localFrame.RightVector
+		-- Project world-up onto the cylinder cross-section to locate its top.
+		local topDirection = (Vector3.yAxis - axis * axis.Y).Unit
+		local root = localFrame.Position + topDirection * (segment.Size.Y * 0.43)
+		local scale = (8 - segmentIndex) / 7
+		plate(segmentIndex + 2, root, 0.5 + 1.8*scale, 0.6 + 2.65*scale, -38, 0.40)
 	end
 	for _, item in ipairs(model:GetDescendants()) do
 		if item:IsA("BasePart") and item.Material ~= Enum.Material.Neon then
 			item.Material = Enum.Material.SmoothPlastic
 		end
 	end
-	model:SetAttribute("GeometryRevision", "S1_RobloxOrganicMaquette_02")
+	model:SetAttribute("GeometryRevision", "S1_CylinderTail_InwardPalms_03")
 	model:SetAttribute("VisualTarget", "Approved simplified Stage 1 and Stage 2 maquette")
 	model:SetAttribute("GeometryMethod", "Roblox primitives and visual ellipsoids; no external assets")
 end
