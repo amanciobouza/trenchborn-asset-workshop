@@ -263,7 +263,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		Step={113663232024295,0.38,0.95},RunStep={113663232024295,0.52,1.0},
 		Land={113663232024295,0.7,0.8},Punch={140192907374090,0.5,1.0},Slam={97522871949213,0.65,1.0},
 		Finisher={71814605717939,0.7,1.0},Hit={9116684884,0.3,0.7},HeavyHit={9116684884,0.55,0.52},
-		Discharge={137510557013265,0.8,0.65},
+		Discharge={72268417595029,0.8,1.0},
 		Defeat={9116684884,0.75,0.42},
 	}
 	local audioRandom=Random.new()
@@ -383,7 +383,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		area={Started=os.clock(),Hit=false,Point=hit.Position,StartRoot=movementRoot.Position,
 			Ground=CFrame.new(hit.Position)*movementRoot.CFrame.Rotation,
 			Speed=humanoid.WalkSpeed,Rotate=humanoid.AutoRotate,Colors={},Attachments={},Nodes={},Arcs={}}
-		area.ChargeSound=makeSound(127373754810578,bones.Torso,0.12,0.72,false)
+		area.ChargeSound=makeSound(122502397357855,bones.Torso,0.12,0.72,false)
 		if area.ChargeSound then game:GetService("TweenService"):Create(area.ChargeSound,TweenInfo.new(2.6),{Volume=0.5,PlaybackSpeed=1.05}):Play() end
 		area.Effects=Instance.new("Folder");area.Effects.Name="DorsalCharge";area.Effects.Parent=model
 		local function node(source,offset)
