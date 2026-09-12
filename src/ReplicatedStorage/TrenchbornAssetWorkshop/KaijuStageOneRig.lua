@@ -178,13 +178,15 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	local heartbeat, destroying
 	local combo = Combo.new(combat and combat.PrepareFinisher)
 	local jump = Jump.new()
-	local savedSpeed, savedOwner, airDirection
+	local savedSpeed, savedOwner, savedAutoRotate, airDirection
 	local AIR_SPEED=18 -- Moderate air travel, below the original speed of 30.
 	local JUMP_HEIGHT=14
 	local ownsPhysics=false
 	local function restoreJump()
 		if humanoid and savedSpeed then humanoid.WalkSpeed=savedSpeed end
 		savedSpeed=nil
+		if humanoid and savedAutoRotate~=nil then humanoid.AutoRotate=savedAutoRotate end
+		savedAutoRotate=nil
 		if ownsPhysics and movementRoot and movementRoot:IsDescendantOf(workspace) then
 			if savedOwner and savedOwner.Parent then movementRoot:SetNetworkOwner(savedOwner)
 			else movementRoot:SetNetworkOwnershipAuto() end
@@ -280,6 +282,9 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			jumpPose,jumpEvent=jump:Update(os.clock(),humanoid.FloorMaterial~=Enum.Material.Air,movementRoot.AssemblyLinearVelocity.Y)
 			if jumpEvent=="Takeoff" then
 				-- Direction comes only from movement input; neutral jumps are vertical.
+				-- Steering changes travel, while the body keeps its takeoff heading.
+				savedAutoRotate=humanoid.AutoRotate
+				humanoid.AutoRotate=false
 				savedOwner=movementRoot:GetNetworkOwner()
 				movementRoot:SetNetworkOwner(nil)
 				ownsPhysics=true
