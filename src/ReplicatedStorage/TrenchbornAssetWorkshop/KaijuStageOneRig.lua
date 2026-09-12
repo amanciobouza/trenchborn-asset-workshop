@@ -191,11 +191,17 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		focusReadyAt=os.clock()+1
 		model:SetAttribute("FocusPhase","Idle")
 	end
+	local upperLip=get("UpperMuzzleCoreY")
+	local lowerLip=get("LowerJawFrontCoreY")
+	local upperLipLocal=bones.Head.CFrame:PointToObjectSpace(upperLip.CFrame:PointToWorldSpace(
+		Vector3.new(0,-upperLip.Size.Y/2,-get("UpperMuzzleCoreZ").Size.Z/2+0.2*scale)))
+	local lowerLipLocal=bones.Jaw.CFrame:PointToObjectSpace(lowerLip.CFrame:PointToWorldSpace(
+		Vector3.new(0,lowerLip.Size.Y/2,-get("LowerJawFrontCoreZ").Size.Z/2+0.2*scale)))
 	local function mouthFrame()
-		local upper=get("UpperMuzzleCoreY")
-		local depth=get("UpperMuzzleCoreZ").Size.Z
-		-- Below the upper lip and slightly inside the opening, not on the nose.
-		return upper,CFrame.new(0,-upper.Size.Y/2-0.25*scale,-depth/2+0.25*scale)
+		-- Derive the opening from both lips in rig space, including jaw rotation.
+		local jawInHead=motors.Jaw.C0*motors.Jaw.C1:Inverse()
+		local lower=jawInHead:PointToWorldSpace(lowerLipLocal)
+		return bones.Head,CFrame.new((upperLipLocal+lower)/2)
 	end
 	local function mouthPosition()
 		local upper,offset=mouthFrame()
@@ -230,6 +236,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		local weld=Instance.new("Weld")
 		weld.Name="MouthChargeWeld";weld.Part0=upper;weld.Part1=focus.Orb
 		weld.C0=offset;weld.C1=CFrame.identity;weld.Parent=focus.Orb
+		focus.OrbWeld=weld
 		local endpoint=Instance.new("Attachment")
 		endpoint.Parent=focus.Impact
 		local function beam(name,color)
@@ -427,7 +434,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		-- planted feet retain their floor height. Recovery uses the same smoothing.
 		bob = bob - (attackCrouch or 0)*scale
 		if jumpPose then bob=-jumpPose.Crouch*scale end
-		if focus then bob=-1.3*scale*math.min(focusTime/0.4,1)*math.clamp((4.85-focusTime)/0.35,0,1) end
+		if focus then bob=-0.35*scale*math.min(focusTime/0.4,1)*math.clamp((4.85-focusTime)/0.35,0,1) end
 		local blend = 1-math.exp(-poseDt/0.10)
 		smoothedBob = smoothedBob + (bob-smoothedBob)*blend
 		if rootJoint then
@@ -520,7 +527,9 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			local recoil=firing and math.sin(t*35)*1.2 or 0
 			pose("Torso",(-8+recoil)*charge*fadeOut,0,0)
 			pose("Head",(pitch+8-recoil)*charge*fadeOut,yaw*charge*fadeOut,0)
-			pose("Jaw",(firing and 22 or 8*charge)*fadeOut,0,0)
+			-- Forward is -Z: negative X lowers the jaw. Open before the beam starts.
+			local opening=math.clamp((t-1.65)/0.25,0,1)
+			pose("Jaw",-28*opening*fadeOut,0,0)
 			for _,side in ipairs({"Left","Right"}) do
 				local sign=side=="Left" and -1 or 1
 				pose(side.."UpperArm",12*charge*fadeOut,0,-sign*12*charge*fadeOut)
@@ -531,7 +540,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				local onset=math.clamp((tailCount-index)/(tailCount-1),0,1)*1.5
 				p.Color=color:Lerp(focusColor,math.clamp((t-onset)/0.3,0,1)*fadeOut)
 			end
-			local orbSize=(0.2+charge*1.1)*scale*fadeOut
+			local orbSize=(0.15+charge*0.7)*scale*fadeOut
 			focus.Orb.Size=Vector3.new(orbSize,orbSize,orbSize)
 			focus.Orb.Transparency=0.15
 			for _,beam in ipairs({focus.Beam,focus.Core}) do
@@ -555,6 +564,12 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		end
 		-- Blend mode changes and step accents rather than snapping joint poses.
 		for name, m in pairs(motors) do m.C0 = previous[name]:Lerp(m.C0, blend) end
+		if focus then
+			-- Use the final blended jaw pose for both the beam and its charge orb.
+			local _,offset=mouthFrame()
+			focus.Mouth.CFrame=offset
+			focus.OrbWeld.C0=offset
+		end
 	end)
 	destroying = model.Destroying:Connect(stop)
 	print(string.format("[Kaiju Rig] %d parts | %d joints | Walk preview | AnimationMode: Walk / Idle | IdleEnabled=false pauses both", #visuals, 17 + tailCount))
