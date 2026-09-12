@@ -383,7 +383,8 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 					local swing = (t-STANCE)/(1-STANCE)
 					local smooth = swing*swing*(3-2*swing)
 					travel = STRIDE/2-STRIDE*smooth
-					lift = 1.05*math.sin(math.pi*swing)^2
+					-- Clear the ground visibly while the other foot bears the weight.
+					lift = 2.2*math.sin(math.pi*swing)^2
 				end
 				solveLeg(side, travel*scale*fade, lift*scale*fade, actualBob)
 				local swing = math.sin((cycle+offset+STANCE/2)*math.pi*2-0.25)*fade
