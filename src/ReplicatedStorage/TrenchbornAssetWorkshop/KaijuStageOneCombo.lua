@@ -56,6 +56,7 @@ function Combo.new(prepareFinisher)
 		state.Started, state.Active, state.Queued = now, true, false
 		state.HitSent, state.GrabSent, state.TearSoundSent = false, false, false
 		state.FinisherUntil=nil
+		if index<=2 then table.insert(state.Events,{Kind="Whoosh",Index=index}) end
 	end
 	function state:Request(now)
 		-- Keep the offer through the third strike's recovery AND 0.4s after it.
