@@ -82,6 +82,19 @@ local function equip(player, character)
 	combatModule.BuildRange(player, ground, character)
 	local combat = combatModule.Attach(kaiju, root, humanoid, height)
 	local rig = stageOneRig.Attach(kaiju, root, humanoid, combat)
+	local reactionTestConnection
+	if game:GetService("RunService"):IsStudio() then
+		local testRemote=Instance.new("RemoteEvent");testRemote.Name="TestReaction";testRemote.Parent=kaiju
+		local lastTest=-math.huge
+		reactionTestConnection=testRemote.OnServerEvent:Connect(function(sender,command)
+			if sender~=player or player.Character~=character or humanoid.Health<=0 or os.clock()-lastTest<0.3 then return end
+			if command~="Hit" and command~="Heavy Hit" and command~="Defeat" and command~="Heal" then return end
+			lastTest=os.clock()
+			if command=="Heal" then humanoid.Health=humanoid.MaxHealth
+			elseif command=="Defeat" then humanoid.Health=0
+			else humanoid.Health=math.max(0,humanoid.Health-humanoid.MaxHealth*(command=="Hit" and 0.08 or 0.25)) end
+		end)
+	end
 	local runRemote=Instance.new("RemoteEvent")
 	runRemote.Name="SetRunning";runRemote.Parent=kaiju
 	local runConnection=runRemote.OnServerEvent:Connect(function(sender,enabled)
@@ -167,6 +180,7 @@ local function equip(player, character)
 	if display and display.Parent then display:Destroy() end
 
 	character.Destroying:Once(function()
+		if reactionTestConnection then reactionTestConnection:Disconnect() end
 		runConnection:Disconnect()
 		areaConnection:Disconnect()
 		focusConnection:Disconnect()
