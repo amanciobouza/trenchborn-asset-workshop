@@ -253,10 +253,16 @@ function Rig.Attach(model, movementRoot, humanoid)
 		end
 		local actualBob = smoothedBob
 		if walking then
-			model:SetAttribute("AnimationPreview", "HeavyWalk_02")
+			model:SetAttribute("AnimationPreview", "HeavyWalk_03_ForwardLean")
 			local weightShift = math.sin(gaitPhase - 0.35)*fade
-			pose("Torso", (3.8 + compression*1.2)*fade, weightShift*2.5, weightShift*3.2)
-			pose("Head", (-2.4 - compression*0.5)*fade, -weightShift*1.8, -weightShift*1.4)
+			-- Forward is local -Z: negative X pitch brings the upper body forward.
+			pose("Torso", (-11.0 - compression*1.6)*fade, weightShift*2.5, weightShift*3.2)
+			-- The neck partly counters the lean to keep the gaze ahead. Head motion
+			-- follows the weight transfer with a delay instead of locking to the torso.
+			local headFollow = math.sin(gaitPhase - 0.80)*fade
+			local headNod = math.sin(gaitPhase*2 - 0.65)*2.2*fade
+			pose("Head", 6.0*fade + headNod - compression*0.8*fade,
+				-headFollow*3.5, -headFollow*1.8)
 			pose("Jaw", 0, 0, 0)
 			for _, side in ipairs({"Left", "Right"}) do
 				local offset = side == "Left" and 0 or 0.5
