@@ -261,8 +261,8 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	-- Reuse the workshop's existing Guardian/Sovereign audio assets, with heavier tuning.
 	local audioPresets={
 		Step={113663232024295,0.38,0.95},RunStep={113663232024295,0.52,1.0},
-		Land={113663232024295,0.7,0.8},Punch={9116684884,0.42,0.64},
-		Finisher={9116684884,0.7,0.48},Hit={9116684884,0.3,0.7},HeavyHit={9116684884,0.55,0.52},
+		Land={113663232024295,0.7,0.8},Punch={140192907374090,0.5,1.0},Slam={97522871949213,0.65,1.0},
+		Finisher={71814605717939,0.7,1.0},Hit={9116684884,0.3,0.7},HeavyHit={9116684884,0.55,0.52},
 		Discharge={137510557013265,0.8,0.65},
 		Defeat={9116684884,0.75,0.42},
 	}
@@ -283,11 +283,11 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		local definition=audioPresets[kind]
 		if not owner or not definition then return end
 		local sound=makeSound(definition[1],source,definition[2],definition[3]*audioRandom:NextNumber(0.96,1.04),false)
-		if sound and kind~="FocusFire" and kind~="Discharge" then
+		if sound and kind~="FocusFire" and kind~="Discharge" and kind~="Punch" and kind~="Slam" and kind~="Finisher" then
 			local eq=Instance.new("EqualizerSoundEffect");eq.LowGain=3;eq.MidGain=-3;eq.HighGain=-12;eq.Parent=sound
 			game:GetService("Debris"):AddItem(sound,(kind=="Step" or kind=="RunStep") and 1.2 or 2.4)
 		end
-		feedbackRemote:FireClient(owner,kind)
+		feedbackRemote:FireClient(owner,kind=="Slam" and "Punch" or kind)
 	end
 	model:SetAttribute("RunRequested",false)
 	model:SetAttribute("Running",false)
@@ -915,7 +915,9 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			if combat then
 				combat.Handle(event.Kind, event.Index, event.FinisherUntil)
 				if event.Kind=="Hit" and model:GetAttribute("LastAttackResult")=="Hit" then
-					feedback(event.Index==4 and "Finisher" or "Punch",bones.RightHand)
+					local soundKind=event.Index==4 and "Finisher" or event.Index==3 and "Slam" or "Punch"
+					local source=event.Index==1 and bones.LeftHand or event.Index==2 and bones.RightHand or bones.Torso
+					feedback(soundKind,source)
 				end
 			end
 		end
