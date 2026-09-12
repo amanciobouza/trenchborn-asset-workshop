@@ -594,6 +594,46 @@ local function refineStageOne(model: Model, origin: CFrame)
 	model:SetAttribute("GeometryMethod", "Roblox primitives and visual ellipsoids; no external assets")
 end
 
+-- Phase 5 is deliberately appearance-only: no transforms, sizes or new solids.
+local function dressStageOne(model: Model)
+	for _, item in ipairs(model:GetDescendants()) do
+		if item:IsA("BasePart") then
+			local name = item.Name
+			item.Reflectance = 0
+			if name == "LeftEye" or name == "RightEye" then
+				item.Material = Enum.Material.Neon
+				item.Color = Color3.fromRGB(240, 204, 42)
+				item.Transparency = 0
+			elseif string.match(name, "^DorsalEnergy_") then
+				local index = tonumber(string.match(name, "^DorsalEnergy_(%d+)")) or 1
+				item.Material = Enum.Material.Neon
+				item.Color = index <= 3 and Color3.fromRGB(176, 140, 28) or Color3.fromRGB(130, 107, 29)
+				item.Transparency = 0
+			elseif string.match(name, "^DorsalShield_") then
+				item.Material = Enum.Material.SmoothPlastic
+				item.Color = Color3.fromRGB(39, 45, 56)
+			elseif string.find(name, "Claw") then
+				item.Material = Enum.Material.SmoothPlastic
+				item.Color = Color3.fromRGB(190, 180, 147)
+			elseif string.find(name, "Eye") or string.find(name, "Pupil") or string.find(name, "Nostril") then
+				-- Preserve the dark sockets and pupils and the small eye catchlights.
+				item.Material = Enum.Material.SmoothPlastic
+			elseif name == "BellyShield" or name == "ThroatShield" or string.find(name, "Pectoral") then
+				item.Material = Enum.Material.Rubber
+				item.Color = Color3.fromRGB(113, 111, 86)
+			else
+				item.Material = Enum.Material.Rubber
+				item.Color = Color3.fromRGB(61, 69, 82)
+			end
+		end
+	end
+	model:SetAttribute("PipelinePhase", 5)
+	model:SetAttribute("QualityGateB", "ApprovedByUser")
+	model:SetAttribute("ApprovedGeometryCommit", "9aedccac1428207b5fbba954de9d941033989441")
+	model:SetAttribute("DressingRevision", "S1_MatteSkin_ControlledEnergy_01")
+	model:SetAttribute("DressingReview", "Pending")
+end
+
 local function buildStage(parent: Instance, stage: Stage, index: number, origin: CFrame): Model
 	local model = Instance.new("Model")
 	model.Name = stage.name
@@ -685,6 +725,7 @@ local function buildStage(parent: Instance, stage: Stage, index: number, origin:
 	if index == 1 then
 		applyStylizedMasses(model, origin)
 		refineStageOne(model, origin)
+		dressStageOne(model)
 	end
 
 	-- Normalize every stage to the agreed target height. This preserves the
@@ -716,6 +757,11 @@ function Builder.BuildStage(target: Instance, stageIndex: number, ground: CFrame
 	local collection = createCollection(target, string.format("Stage %d silhouette and proportion review", stageIndex))
 	collection:SetAttribute("VisibleStage", stageIndex)
 	buildStage(collection, stage, stageIndex, ground or CFrame.new(0, 0, 145))
+	if stageIndex == 1 then
+		collection:SetAttribute("PipelinePhase", 5)
+		collection:SetAttribute("QualityGateB", "ApprovedByUser")
+		collection:SetAttribute("Purpose", "Stage 1 material and energy review")
+	end
 	return collection
 end
 
