@@ -53,13 +53,55 @@ local function part(parent: Instance, name: string, size: Vector3, cf: CFrame, c
 end
 
 local function sphere(parent: Instance, name: string, size: Vector3, cf: CFrame, color: Color3): Part
-	local p = part(parent, name, size, cf, color)
+	local p = part(parent, name, size, cf, color, Enum.PartType.Ball)
 	p:SetAttribute("PrimitiveVolume", "Ellipsoid")
 	local mesh = Instance.new("SpecialMesh")
 	mesh.Name = "EllipsoidMesh"
 	mesh.MeshType = Enum.MeshType.Sphere
 	mesh.Parent = p
 	return p
+end
+
+local function tryUnion(parent: Instance, name: string, solids: {BasePart}): BasePart?
+	local primary = solids[1]
+	local others = {}
+	for index = 2, #solids do
+		table.insert(others, solids[index])
+	end
+	local ok, result = pcall(function()
+		return primary:UnionAsync(others)
+	end)
+	if not ok or not result then
+		warn(string.format("[Kaiju Evolution] CSG union fallback for %s", name))
+		return nil
+	end
+	result.Name = name
+	result.Color = primary.Color
+	defaults(result)
+	result.Parent = parent
+	for _, solid in ipairs(solids) do
+		if solid.Parent then solid:Destroy() end
+	end
+	return result
+end
+
+local function trySubtract(parent: Instance, name: string, solid: BasePart, cutters: {BasePart}): BasePart?
+	local ok, result = pcall(function()
+		return solid:SubtractAsync(cutters)
+	end)
+	for _, cutter in ipairs(cutters) do
+		if cutter.Parent then cutter:Destroy() end
+	end
+	if not ok or not result then
+		warn(string.format("[Kaiju Evolution] CSG subtraction fallback for %s", name))
+		return nil
+	end
+	result.Name = name
+	result.Color = solid.Color
+	defaults(result)
+	result.Parent = parent
+	if solid.Parent then solid:Destroy() end
+	return result
 end
 
 local function wedge(parent: Instance, name: string, size: Vector3, cf: CFrame, color: Color3): WedgePart
@@ -145,25 +187,38 @@ end
 
 local function buildHead(parent: Instance, origin: CFrame, sx: number, sy: number, sz: number, armorLevel: number)
 	part(parent, "Neck", scaled(Vector3.new(5.0, 4.8, 4.7), sx, sy, sz), frame(origin, Vector3.new(0, 24.65, 0.35), sx, sy, sz), BODY_DARK, Enum.PartType.Cylinder).Orientation = Vector3.new(0, 0, 90)
-	sphere(parent, "OccipitalMass", scaled(Vector3.new(5.8, 4.5, 4.6), sx, sy, sz), frame(origin, Vector3.new(0, 27.0, 0.45), sx, sy, sz), BODY_DARK)
-	sphere(parent, "Cranium", scaled(Vector3.new(6.1, 4.25, 5.4), sx, sy, sz), frame(origin, Vector3.new(0, 27.15, -0.85), sx, sy, sz), BODY)
-	sphere(parent, "CrownDome", scaled(Vector3.new(5.35, 1.85, 4.7), sx, sy, sz), frame(origin, Vector3.new(0, 28.65, -0.85), sx, sy, sz) * CFrame.Angles(math.rad(-7), 0, 0), BODY)
+	local skullSolids = {
+		sphere(parent, "OccipitalMass", scaled(Vector3.new(5.5, 4.0, 4.8), sx, sy, sz), frame(origin, Vector3.new(0, 26.9, 0.45), sx, sy, sz), BODY),
+		sphere(parent, "Cranium", scaled(Vector3.new(5.9, 3.55, 5.7), sx, sy, sz), frame(origin, Vector3.new(0, 27.1, -1.0), sx, sy, sz) * CFrame.Angles(math.rad(-5), 0, 0), BODY),
+		sphere(parent, "LowCrown", scaled(Vector3.new(4.9, 1.05, 3.9), sx, sy, sz), frame(origin, Vector3.new(0, 28.35, -1.15), sx, sy, sz) * CFrame.Angles(math.rad(-10), 0, 0), BODY),
+		sphere(parent, "SnoutBridge", scaled(Vector3.new(4.45, 1.35, 4.45), sx, sy, sz), frame(origin, Vector3.new(0, 26.95, -3.45), sx, sy, sz) * CFrame.Angles(math.rad(-9), 0, 0), BODY),
+		sphere(parent, "UpperMuzzle", scaled(Vector3.new(4.0, 1.35, 3.3), sx, sy, sz), frame(origin, Vector3.new(0, 26.45, -4.85), sx, sy, sz), BODY_DARK),
+	}
+	local skull = tryUnion(parent, "SkullUnion", skullSolids)
+	if skull then
+		local cutters = {
+			part(parent, "LeftEyeSocketCutter", scaled(Vector3.new(1.4, 1.1, 1.15), sx, sy, sz), frame(origin, Vector3.new(-2.45, 27.25, -3.0), sx, sy, sz), BODY_DARK, Enum.PartType.Ball),
+			part(parent, "RightEyeSocketCutter", scaled(Vector3.new(1.4, 1.1, 1.15), sx, sy, sz), frame(origin, Vector3.new(2.45, 27.25, -3.0), sx, sy, sz), BODY_DARK, Enum.PartType.Ball),
+		}
+		skull = trySubtract(parent, "SkullWithEyeSockets", skull, cutters) or skull
+	end
 	for _, sign in ipairs({-1, 1}) do
-		sphere(parent, sign < 0 and "LeftJawHinge" or "RightJawHinge", scaled(Vector3.new(2.85, 3.1, 3.1), sx, sy, sz), frame(origin, Vector3.new(sign * 1.75, 25.9, -1.35), sx, sy, sz), BODY_DARK)
-		sphere(parent, sign < 0 and "LeftCheekMass" or "RightCheekMass", scaled(Vector3.new(2.75, 2.45, 3.25), sx, sy, sz), frame(origin, Vector3.new(sign * 1.8, 26.55, -2.05), sx, sy, sz), BODY)
-		local brow = wedge(parent, sign < 0 and "LeftBrowRidge" or "RightBrowRidge", scaled(Vector3.new(2.65, 0.85, 2.9), sx, sy, sz), frame(origin, Vector3.new(sign * 1.45, 27.85, -2.75), sx, sy, sz) * CFrame.Angles(math.rad(-8), sign * math.rad(5), sign < 0 and math.rad(180) or 0), ARMOR)
+		sphere(parent, sign < 0 and "LeftJawHinge" or "RightJawHinge", scaled(Vector3.new(2.35, 2.65, 2.7), sx, sy, sz), frame(origin, Vector3.new(sign * 1.75, 25.75, -1.55), sx, sy, sz), BODY_DARK)
+		sphere(parent, sign < 0 and "LeftCheekMass" or "RightCheekMass", scaled(Vector3.new(2.35, 2.1, 2.85), sx, sy, sz), frame(origin, Vector3.new(sign * 1.75, 26.45, -2.15), sx, sy, sz), BODY)
+		local brow = wedge(parent, sign < 0 and "LeftBrowRidge" or "RightBrowRidge", scaled(Vector3.new(2.35, 0.65, 2.35), sx, sy, sz), frame(origin, Vector3.new(sign * 1.4, 27.65, -2.85), sx, sy, sz) * CFrame.Angles(math.rad(-11), sign * math.rad(7), sign < 0 and math.rad(180) or 0), ARMOR)
 		brow:SetAttribute("ContourPart", true)
-		sphere(parent, sign < 0 and "LeftEyeSocket" or "RightEyeSocket", scaled(Vector3.new(1.25, 0.9, 0.65), sx, sy, sz), frame(origin, Vector3.new(sign * 2.05, 27.3, -3.15), sx, sy, sz), BODY_DARK)
-		local eye = sphere(parent, sign < 0 and "LeftEye" or "RightEye", scaled(Vector3.new(0.48, 0.36, 0.26), sx, sy, sz), frame(origin, Vector3.new(sign * 2.18, 27.32, -3.42), sx, sy, sz), ENERGY)
+		sphere(parent, sign < 0 and "LeftEyeSocket" or "RightEyeSocket", scaled(Vector3.new(1.05, 0.72, 0.5), sx, sy, sz), frame(origin, Vector3.new(sign * 2.28, 27.22, -3.0), sx, sy, sz), BODY_DARK)
+		local eye = sphere(parent, sign < 0 and "LeftEye" or "RightEye", scaled(Vector3.new(0.24, 0.18, 0.14), sx, sy, sz), frame(origin, Vector3.new(sign * 2.48, 27.22, -3.16), sx, sy, sz), ENERGY)
 		eye.Material = Enum.Material.Neon
 	end
-	sphere(parent, "SnoutBridge", scaled(Vector3.new(4.65, 1.8, 4.1), sx, sy, sz), frame(origin, Vector3.new(0, 27.0, -3.35), sx, sy, sz) * CFrame.Angles(math.rad(-6), 0, 0), BODY)
-	sphere(parent, "UpperMuzzle", scaled(Vector3.new(4.35, 1.75, 3.25), sx, sy, sz), frame(origin, Vector3.new(0, 26.55, -4.65), sx, sy, sz), BODY_DARK)
-	sphere(parent, "NoseTip", scaled(Vector3.new(3.75, 1.25, 1.5), sx, sy, sz), frame(origin, Vector3.new(0, 26.7, -5.75), sx, sy, sz), ARMOR)
-	sphere(parent, "LowerJawRear", scaled(Vector3.new(5.0, 2.45, 3.8), sx, sy, sz), frame(origin, Vector3.new(0, 25.35, -2.55), sx, sy, sz), BODY_DARK)
-	sphere(parent, "LowerJawFront", scaled(Vector3.new(4.55, 1.9, 4.25), sx, sy, sz), frame(origin, Vector3.new(0, 25.15, -4.25), sx, sy, sz), BODY_DARK)
-	sphere(parent, "ChinMass", scaled(Vector3.new(4.15, 1.35, 3.25), sx, sy, sz), frame(origin, Vector3.new(0, 24.65, -4.35), sx, sy, sz), BODY_DARK)
-	part(parent, "MouthSeam", scaled(Vector3.new(4.0, 0.16, 3.0), sx, sy, sz), frame(origin, Vector3.new(0, 25.72, -4.45), sx, sy, sz), Color3.fromRGB(12, 13, 12))
+	sphere(parent, "NoseTip", scaled(Vector3.new(3.55, 0.9, 1.35), sx, sy, sz), frame(origin, Vector3.new(0, 26.45, -5.85), sx, sy, sz), ARMOR)
+	local jawSolids = {
+		sphere(parent, "LowerJawRear", scaled(Vector3.new(4.65, 1.8, 3.5), sx, sy, sz), frame(origin, Vector3.new(0, 25.2, -2.65), sx, sy, sz), BODY_DARK),
+		sphere(parent, "LowerJawFront", scaled(Vector3.new(4.2, 1.45, 4.0), sx, sy, sz), frame(origin, Vector3.new(0, 25.05, -4.25), sx, sy, sz), BODY_DARK),
+		sphere(parent, "ChinMass", scaled(Vector3.new(3.8, 0.85, 3.2), sx, sy, sz), frame(origin, Vector3.new(0, 24.62, -4.3), sx, sy, sz), BODY_DARK),
+	}
+	tryUnion(parent, "LowerJawUnion", jawSolids)
+	part(parent, "MouthSeam", scaled(Vector3.new(3.75, 0.08, 2.85), sx, sy, sz), frame(origin, Vector3.new(0, 25.68, -4.5), sx, sy, sz), Color3.fromRGB(12, 13, 12))
 	if armorLevel >= 2 then
 		for _, sign in ipairs({-1, 1}) do
 			corner(parent, sign < 0 and "LeftCrown" or "RightCrown", scaled(Vector3.new(2.5, 1.7 + armorLevel * 0.3, 2.4), sx, sy, sz), frame(origin, Vector3.new(sign * 2.45, 28.7, -0.1), sx, sy, sz) * CFrame.Angles(0, sign > 0 and math.rad(180) or 0, 0), ARMOR)
