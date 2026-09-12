@@ -260,10 +260,10 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	end
 	-- Reuse the workshop's existing Guardian/Sovereign audio assets, with heavier tuning.
 	local audioPresets={
-		Step={9118240078,0.38,0.72},RunStep={9118240078,0.52,0.78},
-		Land={9118240078,0.7,0.55},Punch={9116684884,0.42,0.64},
+		Step={113663232024295,0.38,0.95},RunStep={113663232024295,0.52,1.0},
+		Land={113663232024295,0.7,0.8},Punch={9116684884,0.42,0.64},
 		Finisher={9116684884,0.7,0.48},Hit={9116684884,0.3,0.7},HeavyHit={9116684884,0.55,0.52},
-		FocusFire={137510557013265,0.65,0.85},Discharge={137510557013265,0.8,0.65},
+		Discharge={137510557013265,0.8,0.65},
 		Defeat={9116684884,0.75,0.42},
 	}
 	local audioRandom=Random.new()
@@ -1101,8 +1101,8 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			if firing and not focus.SoundFired then
 				focus.SoundFired=true
 				if focus.ChargeSound then focus.ChargeSound:Destroy() end
-				focus.BeamSound=makeSound(102065163712158,focus.Mouth,0.28,0.78,true)
-				feedback("FocusFire",focus.Mouth)
+				focus.BeamSound=makeSound(139620337204036,focus.Mouth,0.4,1.0,true)
+				if feedbackRemote then feedbackRemote:FireClient(owner,"FocusFire") end
 			elseif t>=4.5 and focus.BeamSound then
 				focus.BeamSound:Destroy();focus.BeamSound=nil
 			end
