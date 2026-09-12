@@ -388,7 +388,7 @@ local function applyStylizedMasses(model: Model, origin: CFrame)
 		for i = 1, 3 do
 			local x = wrist.X + (i - 2) * 1.15
 			local base = Vector3.new(x, wrist.Y - 2.05, wrist.Z - 0.25)
-			local tip = base + Vector3.new(0, -0.75, -0.2)
+			local tip = base + Vector3.new(0, -0.75, -0.5)
 			local oldFinger = model:FindFirstChild(side .. "Finger_" .. i)
 			if oldFinger then oldFinger:Destroy() end
 			cylinderBetween(model, side .. "Finger_" .. i, base, tip, 0.95, origin, 1, 1, 1, BODY_DARK)
@@ -397,17 +397,31 @@ local function applyStylizedMasses(model: Model, origin: CFrame)
 			place("HandClaw_" .. i, Vector3.new(0.72, 0.68, 1.35), tip + Vector3.new(0, -0.8, 0), CFrame.Angles(-math.pi/2, 0, 0))
 		end
 
+		-- Distinct back-of-hand volume and short opposed thumb; both are created
+		-- in the same local hand frame as the fingers before the complete twist.
+		sphere(model, side .. "HandBack", Vector3.new(3.65, 2.25, 0.85),
+			origin * CFrame.new(wrist + Vector3.new(0, -1.15, 0.82)), BODY)
+		local thumbBase = wrist + Vector3.new(sign * 1.8, -0.65, -0.1)
+		local thumbJoint = wrist + Vector3.new(sign * 2.35, -1.25, -0.45)
+		local thumbTip = wrist + Vector3.new(sign * 2.1, -1.95, -0.8)
+		sphere(model, side .. "ThumbRoot", Vector3.new(1.5, 1.65, 1.5), origin * CFrame.new(thumbBase), BODY)
+		cylinderBetween(model, side .. "ThumbUpper", thumbBase, thumbJoint, 1.1, origin, 1, 1, 1, BODY)
+		sphere(model, side .. "ThumbJoint", Vector3.new(1.2, 1.2, 1.2), origin * CFrame.new(thumbJoint), BODY)
+		cylinderBetween(model, side .. "ThumbLower", thumbJoint, thumbTip, 0.95, origin, 1, 1, 1, BODY)
+		sphere(model, side .. "ThumbTip", Vector3.new(1.0, 1.05, 1.05), origin * CFrame.new(thumbTip), BODY)
+		claw(model, side .. "ThumbClaw", thumbTip + Vector3.new(0, -0.5, -0.12), 0, origin, 1, 1, 1, -90, 0.9)
+
 		-- Keep the complete paw aligned with the forearm in side view.
 		-- Positive X pitch sends a downward finger toward local -Z (forward).
 		local handPitch = math.atan2(elbow.Z - wrist.Z, elbow.Y - wrist.Y)
 		local wristFrame = origin * CFrame.new(wrist)
-		-- Twist around the bent hand's longitudinal axis: palms face inward,
-		-- while fingers and claws retain the existing forward/downward bend.
+		-- Local +Z is the hand back. At +/-125 degrees it faces forward/outward;
+		-- the palm (-Z) faces backward/inward instead of presenting to the viewer.
 		local handTransform = wristFrame * CFrame.Angles(handPitch, 0, 0)
-			* CFrame.Angles(0, sign * math.rad(65), 0) * wristFrame:Inverse()
+			* CFrame.Angles(0, sign * math.rad(125), 0) * wristFrame:Inverse()
 		for _, item in ipairs(model:GetChildren()) do
 			if item:IsA("BasePart") then
-				for _, prefix in ipairs({"Palm", "WristJoint", "Finger_", "Knuckle_", "FingerPad_", "HandClaw_"}) do
+				for _, prefix in ipairs({"Palm", "WristJoint", "Finger_", "Knuckle_", "FingerPad_", "HandClaw_", "HandBack", "Thumb"}) do
 					if string.sub(item.Name, 1, #side + #prefix) == side .. prefix then
 						item.CFrame = handTransform * item.CFrame
 						break
@@ -532,7 +546,7 @@ local function refineStageOne(model: Model, origin: CFrame)
 			item.Material = Enum.Material.SmoothPlastic
 		end
 	end
-	model:SetAttribute("GeometryRevision", "S1_CylinderTail_InwardPalms_03")
+	model:SetAttribute("GeometryRevision", "S1_ForwardHandBacks_Thumbs_04")
 	model:SetAttribute("VisualTarget", "Approved simplified Stage 1 and Stage 2 maquette")
 	model:SetAttribute("GeometryMethod", "Roblox primitives and visual ellipsoids; no external assets")
 end
