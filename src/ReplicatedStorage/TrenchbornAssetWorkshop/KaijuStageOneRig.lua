@@ -158,17 +158,38 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	local pelvisTurn=CFrame.identity
 	local hipYaw,hipRoll=0,0
 	local legs = {}
+	local footPivots={}
 	for _, side in ipairs({"Left", "Right"}) do
 		local hip = rootRest:PointToObjectSpace(bones[side .. "Thigh"].Position)
 		local knee = rootRest:PointToObjectSpace(bones[side .. "Shin"].Position)
 		local hock = rootRest:PointToObjectSpace(bones[side .. "Hock"].Position)
 		local a, b = knee - hip, hock - knee
+		local footFrame=bones[side.."Foot"].CFrame
+		local sole=get(side.."ForefootCoreY")
+		local solePoint=footFrame:PointToObjectSpace(sole.CFrame:PointToWorldSpace(Vector3.new(0,-sole.Size.Y/2,0)))
+		local front,back=math.huge,-math.huge
+		for _,part in ipairs(visuals) do
+			if part:GetAttribute("RigRegion")==side.."Foot" then
+				for _,x in ipairs({-1,1}) do for _,y in ipairs({-1,1}) do for _,z in ipairs({-1,1}) do
+					local point=footFrame:PointToObjectSpace(part.CFrame:PointToWorldSpace(Vector3.new(x*part.Size.X/2,y*part.Size.Y/2,z*part.Size.Z/2)))
+					front=math.min(front,point.Z);back=math.max(back,point.Z)
+				end end end
+			end
+		end
+		footPivots[side]={Toe=Vector3.new(solePoint.X,solePoint.Y,front),Heel=Vector3.new(solePoint.X,solePoint.Y,back)}
 		legs[side] = {hip=hip,offset = hock - hip, upper = math.sqrt(a.Y*a.Y + a.Z*a.Z),
 			lower = math.sqrt(b.Y*b.Y + b.Z*b.Z), upperAngle = math.atan2(-a.Z, -a.Y),
 			lowerAngle = math.atan2(-b.Z, -b.Y)}
 	end
-	local function solveLeg(side, forwardOffset, lift, bob)
+	local function solveLeg(side, forwardOffset, lift, bob, footPitch)
 		local leg = legs[side]
+		local footRotation=CFrame.Angles(math.rad(footPitch or 0),0,0)
+		if footPitch and math.abs(footPitch)>0.001 then
+			local pivot=footPitch<0 and footPivots[side].Toe or footPivots[side].Heel
+			-- Move the ankle with the rolling foot so its planted edge stays at ground height.
+			local ankleShift=pivot-footRotation:VectorToWorldSpace(pivot)
+			forwardOffset=forwardOffset+ankleShift.Z;lift=lift+ankleShift.Y
+		end
 		if math.abs(hipYaw)+math.abs(hipRoll)>0.0001 then
 			-- Foot targets stay in the unturned ground frame while the pelvis moves above them.
 			local hip=pelvisTurn*rest[side.."Thigh"]
@@ -196,7 +217,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			motors[side.."Thigh"].C0=rest[side.."Thigh"]*thighRotation
 			motors[side.."Shin"].C0=rest[side.."Shin"]*shinRotation
 			motors[side.."Hock"].C0=rest[side.."Hock"]*hockFrame.Rotation:Inverse()
-			motors[side.."Foot"].C0=rest[side.."Foot"]
+			motors[side.."Foot"].C0=rest[side.."Foot"]*footRotation
 			return
 		end
 		local y, z = leg.offset.Y + lift - bob, leg.offset.Z + forwardOffset
@@ -218,7 +239,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		motors[side .. "Shin"].C0 = rest[side .. "Shin"] * CFrame.Angles(lowerDelta-upperDelta, 0, 0)
 		-- Counter-rotate the hock to keep the heavy foot level throughout the step.
 		motors[side .. "Hock"].C0 = rest[side .. "Hock"] * CFrame.Angles(-lowerDelta, 0, 0)
-		motors[side .. "Foot"].C0 = rest[side .. "Foot"]
+		motors[side .. "Foot"].C0 = rest[side .. "Foot"]*footRotation
 	end
 	local elapsed, accumulator, stopped = 0, 0, false
 	local walkCycle, smoothedBob = 0, 0
@@ -739,8 +760,23 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 					if runContacts[side] and contact>runContacts[side] then runFootfall(side) end
 					runContacts[side]=contact
 				else runContacts[side]=nil end
-				walkFeet[side]={Travel=travel*scale*fade,Lift=lift*scale*fade}
-				solveLeg(side, travel*scale*fade, lift*scale*fade, actualBob)
+				local landingPitch=10+4*runBlend
+				local pushPitch=-(18+10*runBlend)
+				local footPitch
+				if t<stance then
+					local planted=t/stance
+					if planted<0.18 then
+						local q=planted/0.18;footPitch=landingPitch*(1-q*q*(3-2*q))
+					elseif planted>0.72 then
+						local q=(planted-0.72)/0.28;footPitch=pushPitch*q*q*(3-2*q)
+					else footPitch=0 end
+				else
+					local q=(t-stance)/(1-stance)
+					footPitch=pushPitch+(landingPitch-pushPitch)*q*q*(3-2*q)
+				end
+				footPitch=footPitch*fade
+				walkFeet[side]={Travel=travel*scale*fade,Lift=lift*scale*fade,Pitch=footPitch}
+				solveLeg(side, travel*scale*fade, lift*scale*fade, actualBob,footPitch)
 				local sign=side=="Left" and -1 or 1
 				local armPhase=(cycle+offset+stance/2)*math.pi*2
 				local swing=math.sin(armPhase-0.3)*fade
@@ -767,7 +803,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			model:SetAttribute("AnimationPreview", "PowerIdle_02")
 			for _, side in ipairs({"Left", "Right"}) do
 				local foot=walkFeet[side]
-				solveLeg(side,foot and foot.Travel*stopWeight or 0,foot and foot.Lift*stopWeight or 0,actualBob)
+				solveLeg(side,foot and foot.Travel*stopWeight or 0,foot and foot.Lift*stopWeight or 0,actualBob,foot and foot.Pitch*stopWeight or 0)
 			end
 		end
 		local upperNames={"Torso","Head","LeftUpperArm","RightUpperArm","LeftForearm","RightForearm","LeftHand","RightHand"}
