@@ -53,7 +53,13 @@ local function part(parent: Instance, name: string, size: Vector3, cf: CFrame, c
 end
 
 local function sphere(parent: Instance, name: string, size: Vector3, cf: CFrame, color: Color3): Part
-	return part(parent, name, size, cf, color, Enum.PartType.Ball)
+	local p = part(parent, name, size, cf, color)
+	p:SetAttribute("PrimitiveVolume", "Ellipsoid")
+	local mesh = Instance.new("SpecialMesh")
+	mesh.Name = "EllipsoidMesh"
+	mesh.MeshType = Enum.MeshType.Sphere
+	mesh.Parent = p
+	return p
 end
 
 local function wedge(parent: Instance, name: string, size: Vector3, cf: CFrame, color: Color3): WedgePart
@@ -94,8 +100,8 @@ local function cylinderBetween(parent: Instance, name: string, a: Vector3, b: Ve
 	return part(parent, name, Vector3.new(delta.Magnitude, diameter * sx, diameter * sz), CFrame.lookAt(mid, wb) * CFrame.Angles(0, math.rad(90), 0), color, Enum.PartType.Cylinder)
 end
 
-local function claw(parent: Instance, name: string, pos: Vector3, yaw: number, origin: CFrame, sx: number, sy: number, sz: number)
-	wedge(parent, name, scaled(Vector3.new(0.72, 0.68, 1.65), sx, sy, sz), frame(origin, pos, sx, sy, sz) * CFrame.Angles(math.rad(-8), math.rad(yaw), 0), CLAW)
+local function claw(parent: Instance, name: string, pos: Vector3, yaw: number, origin: CFrame, sx: number, sy: number, sz: number, pitch: number?)
+	wedge(parent, name, scaled(Vector3.new(0.72, 0.68, 1.65), sx, sy, sz), frame(origin, pos, sx, sy, sz) * CFrame.Angles(math.rad(pitch or -8), math.rad(yaw), 0), CLAW)
 end
 
 local function buildFoot(parent: Instance, side: string, sign: number, origin: CFrame, sx: number, sy: number, sz: number)
@@ -105,23 +111,25 @@ local function buildFoot(parent: Instance, side: string, sign: number, origin: C
 	for i, lateral in ipairs({-1.05, 0, 1.05}) do
 		local toeX = x + lateral
 		cylinderBetween(parent, side .. "Toe_" .. i, Vector3.new(toeX, 0.9, -1.3), Vector3.new(toeX, 0.72, -3.0), 0.78, origin, sx, sy, sz, BODY_DARK)
-		claw(parent, side .. "FrontClaw_" .. i, Vector3.new(toeX, 0.72, -3.75), 180, origin, sx, sy, sz)
+		claw(parent, side .. "FrontClaw_" .. i, Vector3.new(toeX, 0.72, -3.75), 0, origin, sx, sy, sz)
 	end
-	claw(parent, side .. "RearClaw", Vector3.new(x, 1.0, 1.95), 0, origin, sx, sy, sz)
+	claw(parent, side .. "RearClaw", Vector3.new(x, 1.0, 1.95), 180, origin, sx, sy, sz)
 end
 
 local function buildArm(parent: Instance, side: string, sign: number, origin: CFrame, sx: number, sy: number, sz: number, armorLevel: number)
 	local shoulder = Vector3.new(sign * 4.7, 22.0, -0.1)
 	local elbow = Vector3.new(sign * 5.55, 16.9, -0.35)
 	local wrist = Vector3.new(sign * 5.15, 12.7, -0.9)
-	part(parent, side .. "ShoulderMass", scaled(Vector3.new(3.8, 3.8, 3.6), sx, sy, sz), frame(origin, shoulder + Vector3.new(0, -0.5, 0), sx, sy, sz), BODY, Enum.PartType.Ball)
+	sphere(parent, side .. "ShoulderJoint", scaled(Vector3.new(4.3, 4.3, 4.0), sx, sy, sz), frame(origin, shoulder, sx, sy, sz), BODY)
 	cylinderBetween(parent, side .. "UpperArm", shoulder, elbow, 2.8, origin, sx, sy, sz, BODY)
+	sphere(parent, side .. "ElbowJoint", scaled(Vector3.new(3.05, 3.05, 3.0), sx, sy, sz), frame(origin, elbow, sx, sy, sz), BODY_DARK)
 	cylinderBetween(parent, side .. "Forearm", elbow, wrist, 3.15, origin, sx, sy, sz, BODY)
+	sphere(parent, side .. "WristJoint", scaled(Vector3.new(2.55, 2.45, 2.5), sx, sy, sz), frame(origin, wrist, sx, sy, sz), BODY_DARK)
 	sphere(parent, side .. "PalmMass", scaled(Vector3.new(2.9, 2.2, 2.7), sx, sy, sz), frame(origin, wrist + Vector3.new(0, -0.75, -0.2), sx, sy, sz), BODY_DARK)
 	for i = 1, 3 do
 		local fingerX = wrist.X + (i - 2) * 0.7
-		cylinderBetween(parent, side .. "Finger_" .. i, Vector3.new(fingerX, 11.75, -0.75), Vector3.new(fingerX, 11.25, -1.55), 0.62, origin, sx, sy, sz, BODY_DARK)
-		claw(parent, side .. "HandClaw_" .. i, Vector3.new(fingerX, 11.2, -2.0), 180, origin, sx, sy, sz)
+		cylinderBetween(parent, side .. "Finger_" .. i, Vector3.new(fingerX, 11.65, -0.85), Vector3.new(fingerX, 10.85, -0.95), 0.62, origin, sx, sy, sz, BODY_DARK)
+		claw(parent, side .. "HandClaw_" .. i, Vector3.new(fingerX, 10.15, -0.95), 0, origin, sx, sy, sz, 90)
 	end
 	if armorLevel >= 1 then
 		wedge(parent, side .. "ForearmShield", scaled(Vector3.new(2.5 + armorLevel * 0.25, 4.0, 1.5), sx, sy, sz), frame(origin, Vector3.new(sign * 5.6, 15.0, -1.5), sx, sy, sz) * CFrame.Angles(0, sign * math.rad(90), 0), ARMOR)
@@ -185,11 +193,13 @@ local function buildStage(parent: Instance, stage: Stage, index: number, origin:
 	sphere(model, "PelvisCenter", scaled(Vector3.new(6.2, 4.4, 5.4), sx, sy, sz), frame(origin, Vector3.new(0, 15.7, 0.45), sx, sy, sz), BODY_DARK)
 	sphere(model, "LowerAbdomen", scaled(Vector3.new(5.6, 3.8, 4.7), sx, sy, sz), frame(origin, Vector3.new(0, 18.0, 0.0), sx, sy, sz), BODY_DARK)
 	sphere(model, "UpperAbdomen", scaled(Vector3.new(6.4, 4.2, 5.0), sx, sy, sz), frame(origin, Vector3.new(0, 20.25, -0.1), sx, sy, sz), BODY)
-	sphere(model, "LowerRibcage", scaled(Vector3.new(7.7, 4.5, 5.5), sx, sy, sz), frame(origin, Vector3.new(0, 22.0, 0.0), sx, sy, sz), BODY)
-	sphere(model, "UpperRibcage", scaled(Vector3.new(9.1, 4.8, 5.8), sx, sy, sz), frame(origin, Vector3.new(0, 23.3, 0.15), sx, sy, sz), BODY)
-	cylinderBetween(model, "ClavicleMass", Vector3.new(-4.3, 23.6, -0.45), Vector3.new(4.3, 23.6, -0.45), 2.15, origin, sx, sy, sz, BODY)
+	sphere(model, "LowerRibcage", scaled(Vector3.new(8.8, 5.6, 6.1), sx, sy, sz), frame(origin, Vector3.new(0, 21.7, 0.0), sx, sy, sz), BODY)
+	sphere(model, "UpperRibcage", scaled(Vector3.new(10.7, 6.2, 6.6), sx, sy, sz), frame(origin, Vector3.new(0, 23.1, 0.15), sx, sy, sz), BODY)
+	sphere(model, "SternumMass", scaled(Vector3.new(4.2, 5.7, 2.7), sx, sy, sz), frame(origin, Vector3.new(0, 22.25, -3.0), sx, sy, sz), BELLY)
+	cylinderBetween(model, "ClavicleMass", Vector3.new(-4.65, 23.8, -0.6), Vector3.new(4.65, 23.8, -0.6), 2.5, origin, sx, sy, sz, BODY)
 	for _, sign in ipairs({-1, 1}) do
-		sphere(model, sign < 0 and "LeftPectoral" or "RightPectoral", scaled(Vector3.new(4.8, 3.5, 2.2), sx, sy, sz), frame(origin, Vector3.new(sign * 2.25, 22.6, -2.65), sx, sy, sz), BELLY)
+		sphere(model, sign < 0 and "LeftRibMass" or "RightRibMass", scaled(Vector3.new(5.0, 5.8, 5.6), sx, sy, sz), frame(origin, Vector3.new(sign * 2.8, 22.2, 0.1), sx, sy, sz), BODY)
+		sphere(model, sign < 0 and "LeftPectoral" or "RightPectoral", scaled(Vector3.new(5.4, 4.1, 2.8), sx, sy, sz), frame(origin, Vector3.new(sign * 2.45, 22.85, -2.75), sx, sy, sz), BELLY)
 		sphere(model, sign < 0 and "LeftFlank" or "RightFlank", scaled(Vector3.new(3.5, 4.0, 4.1), sx, sy, sz), frame(origin, Vector3.new(sign * 2.2, 19.4, 0.2), sx, sy, sz), BODY_DARK)
 		sphere(model, sign < 0 and "LeftHipMass" or "RightHipMass", scaled(Vector3.new(4.4, 4.6, 4.7), sx, sy, sz), frame(origin, Vector3.new(sign * 2.45, 15.1, 0.2), sx, sy, sz), BODY)
 	end
@@ -210,10 +220,16 @@ local function buildStage(parent: Instance, stage: Stage, index: number, origin:
 		local hip = Vector3.new(x, 15.4, 0.3)
 		local knee = Vector3.new(x, 10.2, -1.55)
 		local hock = Vector3.new(x, 5.55, 1.35)
-		part(model, side .. "ThighMass", scaled(Vector3.new(5.0, 5.6, 4.7), sx, sy, sz), frame(origin, (hip + knee) * 0.5, sx, sy, sz), BODY, Enum.PartType.Ball)
+		local ankle = Vector3.new(x, 2.35, 0.2)
+		sphere(model, side .. "HipJoint", scaled(Vector3.new(4.45, 4.3, 4.35), sx, sy, sz), frame(origin, hip, sx, sy, sz), BODY)
+		sphere(model, side .. "ThighMass", scaled(Vector3.new(5.0, 5.6, 4.7), sx, sy, sz), frame(origin, (hip + knee) * 0.5, sx, sy, sz), BODY)
 		cylinderBetween(model, side .. "UpperLeg", hip, knee, 4.2, origin, sx, sy, sz, BODY)
-		part(model, side .. "CalfMass", scaled(Vector3.new(4.25, 4.5, 4.0), sx, sy, sz), frame(origin, (knee + hock) * 0.5, sx, sy, sz), BODY, Enum.PartType.Ball)
+		sphere(model, side .. "KneeJoint", scaled(Vector3.new(4.35, 4.0, 4.25), sx, sy, sz), frame(origin, knee, sx, sy, sz), BODY_DARK)
+		sphere(model, side .. "CalfMass", scaled(Vector3.new(4.25, 4.5, 4.0), sx, sy, sz), frame(origin, (knee + hock) * 0.5, sx, sy, sz), BODY)
 		cylinderBetween(model, side .. "LowerLeg", knee, hock, 3.65, origin, sx, sy, sz, BODY_DARK)
+		sphere(model, side .. "HockJoint", scaled(Vector3.new(3.3, 3.15, 3.25), sx, sy, sz), frame(origin, hock, sx, sy, sz), BODY_DARK)
+		cylinderBetween(model, side .. "Metatarsal", hock, ankle, 2.8, origin, sx, sy, sz, BODY_DARK)
+		sphere(model, side .. "AnkleJoint", scaled(Vector3.new(2.9, 2.7, 2.9), sx, sy, sz), frame(origin, ankle, sx, sy, sz), BODY_DARK)
 		buildFoot(model, side, sign, origin, sx, sy, sz)
 	end
 
