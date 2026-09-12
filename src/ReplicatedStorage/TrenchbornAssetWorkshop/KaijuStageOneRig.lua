@@ -183,6 +183,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	local function endFocus()
 		if not focus then return end
 		for part,color in pairs(focus.Colors) do if part.Parent then part.Color=color end end
+		focus.Mouth:Destroy()
 		focus.Effects:Destroy()
 		humanoid.WalkSpeed=focus.Speed
 		humanoid.AutoRotate=focus.Rotate
@@ -190,9 +191,15 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		focusReadyAt=os.clock()+1
 		model:SetAttribute("FocusPhase","Idle")
 	end
+	local function mouthFrame()
+		local upper=get("UpperMuzzleCoreY")
+		local depth=get("UpperMuzzleCoreZ").Size.Z
+		-- Below the upper lip and slightly inside the opening, not on the nose.
+		return upper,CFrame.new(0,-upper.Size.Y/2-0.25*scale,-depth/2+0.25*scale)
+	end
 	local function mouthPosition()
-		local mouth=get("UpperMuzzleCoreZ")
-		return mouth.CFrame:PointToWorldSpace(Vector3.new(0,-0.35*scale,-mouth.Size.Z/2))
+		local upper,offset=mouthFrame()
+		return (upper.CFrame*offset).Position
 	end
 	local function requestFocus()
 		if stopped or focus or not combat or not combat.SelectFocusTarget or not humanoid
@@ -213,9 +220,27 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		end
 		focus={Started=os.clock(),Ticks=0,Target=target,Speed=humanoid.WalkSpeed,Rotate=humanoid.AutoRotate,
 			Effects=effects,Colors={},Orb=effect("Charge",Enum.PartType.Ball,focusColor),
-			Beam=effect("Beam",Enum.PartType.Cylinder,focusColor),
-			Core=effect("Core",Enum.PartType.Cylinder,Color3.fromRGB(220,255,255)),
 			Impact=effect("Impact",Enum.PartType.Ball,focusColor)}
+		local upper,offset=mouthFrame()
+		local mouth=Instance.new("Attachment")
+		mouth.Name="FocusMouth";mouth.CFrame=offset;mouth.Parent=upper
+		focus.Mouth=mouth
+		focus.Orb.CFrame=upper.CFrame*offset
+		focus.Orb.Anchored=false;focus.Orb.Massless=true
+		local weld=Instance.new("Weld")
+		weld.Name="MouthChargeWeld";weld.Part0=upper;weld.Part1=focus.Orb
+		weld.C0=offset;weld.C1=CFrame.identity;weld.Parent=focus.Orb
+		local endpoint=Instance.new("Attachment")
+		endpoint.Parent=focus.Impact
+		local function beam(name,color)
+			local b=Instance.new("Beam")
+			b.Name=name;b.Attachment0=mouth;b.Attachment1=endpoint
+			b.FaceCamera=true;b.LightEmission=1;b.LightInfluence=0
+			b.Color=ColorSequence.new(color);b.Enabled=false;b.Parent=effects
+			return b
+		end
+		focus.Beam=beam("Beam",focusColor)
+		focus.Core=beam("Core",Color3.fromRGB(220,255,255))
 		for _,p in ipairs(visuals) do
 			if string.match(p.Name,"^DorsalEnergy_") then focus.Colors[p]=p.Color end
 		end
@@ -508,13 +533,13 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			end
 			local orbSize=(0.2+charge*1.1)*scale*fadeOut
 			focus.Orb.Size=Vector3.new(orbSize,orbSize,orbSize)
-			focus.Orb.CFrame=CFrame.new(from);focus.Orb.Transparency=0.15
+			focus.Orb.Transparency=0.15
 			for _,beam in ipairs({focus.Beam,focus.Core}) do
-				beam.Transparency=t>=2 and 0.12+0.88*(1-fadeOut) or 1
+				beam.Enabled=t>=2 and delta.Magnitude>0.01
+				beam.Transparency=NumberSequence.new(0.12+0.88*(1-fadeOut))
 				if t>=2 and delta.Magnitude>0.01 then
 					local width=math.max(0.05,(beam==focus.Core and 0.45 or 1.15)*scale*fadeOut)
-					beam.Size=Vector3.new(delta.Magnitude,width,width)
-					beam.CFrame=CFrame.lookAt((from+point)/2,point)*CFrame.Angles(0,math.pi/2,0)
+					beam.Width0=width;beam.Width1=width
 				end
 			end
 			focus.Impact.Transparency=firing and visible and 0.25 or 1
