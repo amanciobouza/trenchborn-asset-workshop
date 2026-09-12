@@ -134,12 +134,17 @@ end
 function Combat.Attach(kaiju, root, humanoid, rootHeight)
 	local locked
 	local holder={} -- Unique server-side ownership token for this character.
-	local held, liftConnection
+	local held, reserved, liftConnection
+	local candidate, candidateExpires, cue = nil,0,nil
+	local function clearCue()
+		if cue then cue:Destroy();cue=nil end
+		kaiju:SetAttribute("FinisherAvailable",false)
+	end
 	local scale=kaiju:GetScale()
 	local function release(restore)
 		if liftConnection then liftConnection:Disconnect();liftConnection=nil end
-		local target=held
-		held=nil
+		local target=held or reserved
+		held,reserved=nil,nil
 		local data=target and targets[target]
 		if releaseReservation(data,holder) then
 			if target.Parent then
@@ -154,6 +159,8 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 	local function cancel()
 		release(true)
 		locked=nil
+		candidate=nil
+		clearCue()
 	end
 	local function lift(target)
 		local data=targets[target]
@@ -162,7 +169,7 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 		local left=joints and joints:FindFirstChild("LeftHand")
 		local right=joints and joints:FindFirstChild("RightHand")
 		if not left or not right then return end
-		if not reserveLethal(data,holder,DAMAGE[4]) then return end
+		if data.HeldBy~=holder or reserved~=target then return end
 		held=target
 		target:SetAttribute("Lifted",true)
 		for _,p in ipairs({data.Body,data.Roof}) do p.CanCollide=false;p.CanQuery=false end
@@ -180,10 +187,10 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 			target:PivotTo(initial:Lerp(destination,u))
 		end)
 	end
-	local function reachable(target)
+	local function reachable(target, allowReserved)
 		local data=targets[target]
 		if not data or data.Health<=0 or not target:IsDescendantOf(workspace) then return nil end
-		if data.HeldBy then return nil end -- Reserved buildings cannot be hit by another attacker.
+		if data.HeldBy and not (allowReserved and data.HeldBy==holder and not held) then return nil end
 		local body=data.Body
 		local localCenter=root.CFrame:PointToObjectSpace(body.Position)
 		if localCenter.Z>=0 then return nil end
@@ -213,16 +220,29 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 		end
 		return best
 	end
+	local function prepareFinisher()
+		if not candidate or os.clock()>candidateExpires or humanoid.Health<=0
+			or humanoid.FloorMaterial==Enum.Material.Air or not reachable(candidate) then return false end
+		local target=candidate
+		if not reserveLethal(targets[target],holder,DAMAGE[4]) then return false end
+		reserved,locked=target,target
+		candidate=nil
+		clearCue()
+		return true
+	end
 	local function handle(kind,index)
 		if humanoid.Health<=0 or not root:IsDescendantOf(workspace)
 			or humanoid.FloorMaterial==Enum.Material.Air then cancel();return end
 		if kind=="Grab" then
-			cancel()
-			locked=selectTarget()
-			if locked then lift(locked) end
+			-- Never switch to a different building during the finisher.
+			if reserved and locked==reserved and reachable(reserved,true) then
+				lift(reserved)
+			else cancel() end
 			return
 		end
 		if kind~="Hit" or not DAMAGE[index] then return end
+		candidate=nil
+		clearCue()
 		local target
 		if index==4 then target=locked else target=selectTarget() end
 		locked=nil
@@ -239,6 +259,20 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 		data.Bar.Size=UDim2.fromScale(data.Health/220,1)
 		flash(target)
 		chips(target,point,index==4,data.Health==0)
+		if index==3 and data.Health>0 and data.Health<=DAMAGE[4] then
+			candidate,candidateExpires=target,os.clock()+0.4
+			local h=Instance.new("Highlight")
+			h.FillColor=Color3.fromRGB(255,225,60)
+			h.FillTransparency,h.OutlineTransparency=0.4,0
+			h.OutlineColor=Color3.fromRGB(255,235,100)
+			h.DepthMode=Enum.HighlightDepthMode.Occluded
+			h.Adornee,h.Parent=target,target
+			cue=h
+			kaiju:SetAttribute("FinisherAvailable",true)
+			task.delay(0.4,function()
+				if cue==h then clearCue();candidate=nil end
+			end)
+		end
 		if data.Health==0 then
 			if lifted then splitBuilding(target,data,root.CFrame.RightVector) end
 			release(false)
@@ -259,6 +293,6 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 		end
 	end
 	kaiju.Destroying:Once(cancel)
-	return {Handle=handle,Cancel=cancel}
+	return {Handle=handle,Cancel=cancel,PrepareFinisher=prepareFinisher}
 end
 return Combat
