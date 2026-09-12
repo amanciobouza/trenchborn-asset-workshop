@@ -198,7 +198,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		Vector3.new(0,-upperLip.Size.Y/2,-get("UpperMuzzleCoreZ").Size.Z/2+0.2*scale)))
 	local lowerLipLocal=bones.Jaw.CFrame:PointToObjectSpace(lowerLip.CFrame:PointToWorldSpace(
 		Vector3.new(0,lowerLip.Size.Y/2,-get("LowerJawFrontCoreZ").Size.Z/2+0.2*scale)))
-	local throatInset=Vector3.new(0,0,1.6*scale)
+	local throatInset=Vector3.new(0,0,2.6*scale)
 	local function mouthFrame()
 		-- Derive the opening from both lips in rig space, including jaw rotation.
 		local jawInHead=motors.Jaw.C0*motors.Jaw.C1:Inverse()
@@ -524,15 +524,21 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			point=point or focus.Point or from+movementRoot.CFrame.LookVector*30
 			local delta=point-from
 			local horizontal=math.sqrt(delta.X*delta.X+delta.Z*delta.Z)
-			local pitch=math.clamp(math.deg(math.atan2(delta.Y,math.max(horizontal,0.01))),-50,15)
+			local aimPitch=math.deg(math.atan2(delta.Y,math.max(horizontal,0.01)))
+			-- Aim the beam at low targets without folding the jaw into the chest.
+			local pitch=math.clamp(aimPitch,-24,15)
+			local lowAim=math.clamp((-pitch-8)/16,0,1)
+			lowAim=lowAim*lowAim*(3-2*lowAim)
 			local localAim=movementRoot.CFrame:VectorToObjectSpace(delta)
 			local yaw=math.clamp(math.deg(math.atan2(-localAim.X,-localAim.Z)),-45,45)
 			local recoil=firing and math.sin(t*35)*1.2 or 0
 			pose("Torso",(-8+recoil)*charge*fadeOut,0,0)
-			pose("Head",(pitch+8-recoil)*charge*fadeOut,yaw*charge*fadeOut,0)
+			local reach=lowAim*charge*fadeOut
+			motors.Head.C0=rest.Head*CFrame.new(0,0.5*scale*reach,-1.2*scale*reach)
+				*CFrame.Angles(math.rad((pitch+8-recoil)*charge*fadeOut),math.rad(yaw*charge*fadeOut),0)
 			-- Forward is -Z: negative X lowers the jaw. Open before the beam starts.
 			local opening=math.clamp((t-1.5)/0.3,0,1)
-			pose("Jaw",-36*opening*fadeOut,0,0)
+			pose("Jaw",-(36-10*lowAim)*opening*fadeOut,0,0)
 			for _,side in ipairs({"Left","Right"}) do
 				local sign=side=="Left" and -1 or 1
 				pose(side.."UpperArm",12*charge*fadeOut,0,-sign*12*charge*fadeOut)
