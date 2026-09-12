@@ -30,7 +30,7 @@ prompt.BackgroundColor3=Color3.fromRGB(30,32,38)
 prompt.BackgroundTransparency=0.15
 prompt.TextColor3=Color3.fromRGB(255,230,80)
 prompt.TextScaled=true
-prompt.Text="RIP APART – attack again"
+prompt.Text="RIP APART"
 prompt.Visible=false
 prompt.Parent=script.Parent
 local availabilityConnection
