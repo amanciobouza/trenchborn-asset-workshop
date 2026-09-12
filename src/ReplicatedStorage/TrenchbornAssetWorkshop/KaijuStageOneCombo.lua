@@ -55,17 +55,20 @@ function Combo.new(prepareFinisher)
 		state.Index=index
 		state.Started, state.Active, state.Queued = now, true, false
 		state.HitSent, state.GrabSent = false, false
+		state.FinisherUntil=nil
 	end
 	function state:Request(now)
+		-- Keep the offer through the third strike's recovery AND 0.4s after it.
+		-- It must also work after Sample has marked the third animation complete.
+		if self.Index==3 and self.HitSent and self.FinisherUntil
+			and now<=self.FinisherUntil and prepareFinisher and prepareFinisher() then
+			start(4,now)
+			return true
+		end
 		if self.Active then
 			if self.Index==3 then
 				local sinceHit=now-self.Started-impactTimes[3]
 				if sinceHit<0 or not self.HitSent then return false end
-				if sinceHit<=0.4 and prepareFinisher and prepareFinisher() then
-					-- The third hit has landed; branch directly out of its recovery.
-					start(4,now)
-					return true
-				end
 				-- Failed/late finisher input becomes a normal left strike after recovery.
 				if not self.Queued then self.Queued=true;return true end
 				return false
@@ -85,6 +88,7 @@ function Combo.new(prepareFinisher)
 	function state:Cancel()
 		self.Index, self.Active, self.Queued, self.Ended = 0, false, false, -math.huge
 		self.Events = {}
+		self.FinisherUntil=nil
 	end
 	function state:DrainEvents()
 		local events = self.Events
@@ -104,12 +108,15 @@ function Combo.new(prepareFinisher)
 		end
 		if t >= impactTimes[self.Index] and not self.HitSent then
 			self.HitSent = true
-			table.insert(self.Events, {Kind="Hit", Index=self.Index})
+			if self.Index==3 then self.FinisherUntil=self.Started+duration+0.4 end
+			table.insert(self.Events, {Kind="Hit", Index=self.Index, FinisherUntil=self.FinisherUntil})
 		end
 		if t >= duration then
 			self.Ended, self.Active = self.Started+duration, false
 			if self.Queued then
-				self:Request(now)
+				-- A buffered normal strike is never retroactively promoted to a finisher.
+				local nextIndex=(self.Index==1 or self.Index==2) and self.Index+1 or 1
+				start(nextIndex,now)
 				return self:Sample(now)
 			end
 			return nil
