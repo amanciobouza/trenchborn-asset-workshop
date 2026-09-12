@@ -53,7 +53,7 @@ local function part(parent: Instance, name: string, size: Vector3, cf: CFrame, c
 end
 
 local function sphere(parent: Instance, name: string, size: Vector3, cf: CFrame, color: Color3): Part
-	local p = part(parent, name, size, cf, color, Enum.PartType.Ball)
+	local p = part(parent, name, size, cf, color, Enum.PartType.Block)
 	p:SetAttribute("PrimitiveVolume", "Ellipsoid")
 	local mesh = Instance.new("SpecialMesh")
 	mesh.Name = "EllipsoidMesh"
@@ -63,6 +63,14 @@ local function sphere(parent: Instance, name: string, size: Vector3, cf: CFrame,
 end
 
 local function tryUnion(parent: Instance, name: string, solids: {BasePart}): BasePart?
+	-- SpecialMesh is a visual deformation, not the solid used by CSG.
+	-- Preserve these ellipsoids instead of replacing them with carrier geometry.
+	for _, solid in ipairs(solids) do
+		if solid:FindFirstChildWhichIsA("SpecialMesh") then
+			parent:SetAttribute("HeadGeometryMode", "VisualEllipsoids_CSGDeferred")
+			return nil
+		end
+	end
 	local primary = solids[1]
 	local others = {}
 	for index = 2, #solids do
@@ -205,9 +213,9 @@ local function buildHead(parent: Instance, origin: CFrame, sx: number, sy: numbe
 	for _, sign in ipairs({-1, 1}) do
 		sphere(parent, sign < 0 and "LeftJawHinge" or "RightJawHinge", scaled(Vector3.new(2.35, 2.65, 2.7), sx, sy, sz), frame(origin, Vector3.new(sign * 1.75, 25.75, -1.55), sx, sy, sz), BODY_DARK)
 		sphere(parent, sign < 0 and "LeftCheekMass" or "RightCheekMass", scaled(Vector3.new(2.35, 2.1, 2.85), sx, sy, sz), frame(origin, Vector3.new(sign * 1.75, 26.45, -2.15), sx, sy, sz), BODY)
-		local brow = wedge(parent, sign < 0 and "LeftBrowRidge" or "RightBrowRidge", scaled(Vector3.new(2.35, 0.65, 2.35), sx, sy, sz), frame(origin, Vector3.new(sign * 1.4, 27.65, -2.85), sx, sy, sz) * CFrame.Angles(math.rad(-11), sign * math.rad(7), sign < 0 and math.rad(180) or 0), ARMOR)
+		local brow = sphere(parent, sign < 0 and "LeftBrowRidge" or "RightBrowRidge", scaled(Vector3.new(1.65, 0.7, 2.25), sx, sy, sz), frame(origin, Vector3.new(sign * 1.95, 27.65, -2.85), sx, sy, sz) * CFrame.Angles(math.rad(-11), sign * math.rad(7), 0), ARMOR)
 		brow:SetAttribute("ContourPart", true)
-		sphere(parent, sign < 0 and "LeftEyeSocket" or "RightEyeSocket", scaled(Vector3.new(1.05, 0.72, 0.5), sx, sy, sz), frame(origin, Vector3.new(sign * 2.28, 27.22, -3.0), sx, sy, sz), BODY_DARK)
+		sphere(parent, sign < 0 and "LeftEyeSocket" or "RightEyeSocket", scaled(Vector3.new(0.7, 0.48, 0.36), sx, sy, sz), frame(origin, Vector3.new(sign * 2.28, 27.22, -3.0), sx, sy, sz), BODY_DARK)
 		local eye = sphere(parent, sign < 0 and "LeftEye" or "RightEye", scaled(Vector3.new(0.24, 0.18, 0.14), sx, sy, sz), frame(origin, Vector3.new(sign * 2.48, 27.22, -3.16), sx, sy, sz), ENERGY)
 		eye.Material = Enum.Material.Neon
 	end
@@ -218,7 +226,7 @@ local function buildHead(parent: Instance, origin: CFrame, sx: number, sy: numbe
 		sphere(parent, "ChinMass", scaled(Vector3.new(3.8, 0.85, 3.2), sx, sy, sz), frame(origin, Vector3.new(0, 24.62, -4.3), sx, sy, sz), BODY_DARK),
 	}
 	tryUnion(parent, "LowerJawUnion", jawSolids)
-	part(parent, "MouthSeam", scaled(Vector3.new(3.75, 0.08, 2.85), sx, sy, sz), frame(origin, Vector3.new(0, 25.68, -4.5), sx, sy, sz), Color3.fromRGB(12, 13, 12))
+	sphere(parent, "MouthSeam", scaled(Vector3.new(3.65, 0.10, 2.65), sx, sy, sz), frame(origin, Vector3.new(0, 25.68, -4.5), sx, sy, sz), Color3.fromRGB(12, 13, 12))
 	if armorLevel >= 2 then
 		for _, sign in ipairs({-1, 1}) do
 			corner(parent, sign < 0 and "LeftCrown" or "RightCrown", scaled(Vector3.new(2.5, 1.7 + armorLevel * 0.3, 2.4), sx, sy, sz), frame(origin, Vector3.new(sign * 2.45, 28.7, -0.1), sx, sy, sz) * CFrame.Angles(0, sign > 0 and math.rad(180) or 0, 0), ARMOR)
