@@ -25,10 +25,10 @@ workshop.ChildAdded:Connect(function(instance)
 	end
 end)
 
-local preview = blockout.Build(workshop, CFrame.new(0, 0, 145))
-workshop:SetAttribute("CurrentAsset", "Kaiju Evolution Primitive Blockout")
+local preview = blockout.BuildStage(workshop, 1, CFrame.new(0, 0, 145))
+workshop:SetAttribute("CurrentAsset", "Kaiju Stage 1 - Primal Beast")
 workshop:SetAttribute("CurrentPhase", 4)
-workshop:SetAttribute("QualityStatus", "Phase4_FiveStageProportionReview")
+workshop:SetAttribute("QualityStatus", "Phase4_Stage1ProportionReview")
 workshop:SetAttribute("GoldenMasterReviewTarget", preview.Name)
 
-print("[Kaiju Evolution] Five-stage primitive blockout built | Awaiting proportion review")
+print("[Kaiju Evolution] Stage 1 Primal Beast blockout built | Awaiting proportion review")
