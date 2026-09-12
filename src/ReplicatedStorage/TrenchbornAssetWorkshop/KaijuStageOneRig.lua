@@ -121,6 +121,7 @@ function Rig.Attach(model, movementRoot, humanoid)
 	model:SetAttribute("RigJointCount", 17 + tailCount)
 	model:SetAttribute("PipelinePhase", 6)
 	model:SetAttribute("QualityGateC", "Pending")
+	model:SetAttribute("AttackReach", "LowBuildings")
 	model:SetAttribute("IdleEnabled", true)
 	model:SetAttribute("AnimationMode", "Walk")
 	model:SetAttribute("WalkCycleSeconds", CYCLE_SECONDS)
@@ -254,7 +255,12 @@ function Rig.Attach(model, movementRoot, humanoid)
 		-- Keep the stance foot on the floor through the leg solver below.
 		local sinceLanding = ((cycle + STANCE/2)*2)%1
 		local compression = math.sin(math.pi*math.min(sinceLanding/0.32, 1))^2
+		if humanoid and humanoid.Health <= 0 then combo:Cancel() end
+		local attackPose, attackWeight, attackName, attackIndex, attackCrouch = combo:Sample(os.clock())
 		local bob = walking and -(0.12 + 0.38*compression)*scale*fade or 0
+		-- Lower the pelvis as well as the torso; IK bends the legs while the
+		-- planted feet retain their floor height. Recovery uses the same smoothing.
+		bob = bob - (attackCrouch or 0)*scale
 		local blend = 1-math.exp(-poseDt/0.10)
 		smoothedBob = smoothedBob + (bob-smoothedBob)*blend
 		if rootJoint then
@@ -301,8 +307,6 @@ function Rig.Attach(model, movementRoot, humanoid)
 			model:SetAttribute("AnimationPreview", "PowerIdle_02")
 			for _, side in ipairs({"Left", "Right"}) do solveLeg(side, 0, 0, actualBob) end
 		end
-		if humanoid and humanoid.Health <= 0 then combo:Cancel() end
-		local attackPose, attackWeight, attackName, attackIndex = combo:Sample(os.clock())
 		model:SetAttribute("ComboStep", attackIndex or 0)
 		model:SetAttribute("AttackName", attackName or "")
 		if attackPose then
