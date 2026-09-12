@@ -2,6 +2,9 @@
 -- A movement root drives gameplay; without one this remains an anchored preview.
 local RunService = game:GetService("RunService")
 local Rig = {}
+local STRIDE = 7.0
+local STANCE = 0.70 -- Both feet support the body during 40% of the cycle.
+local CYCLE_SECONDS = 1.9
 
 function Rig.Attach(model, movementRoot, humanoid)
 	assert(model:GetAttribute("EvolutionStage") == 1, "Stage 1 rig only")
@@ -119,7 +122,7 @@ function Rig.Attach(model, movementRoot, humanoid)
 	model:SetAttribute("QualityGateC", "Pending")
 	model:SetAttribute("IdleEnabled", true)
 	model:SetAttribute("AnimationMode", "Walk")
-	model:SetAttribute("WalkCycleSeconds", 1.55)
+	model:SetAttribute("WalkCycleSeconds", CYCLE_SECONDS)
 	model:SetAttribute("AnimationPreview", "WalkInPlace_01")
 	local rootRest = bones.Pelvis.CFrame
 	local rootJoint, rootOffset
@@ -226,16 +229,21 @@ function Rig.Attach(model, movementRoot, humanoid)
 				and humanoid.FloorMaterial ~= Enum.Material.Air
 		end
 		local duration = model:GetAttribute("WalkCycleSeconds")
-		if type(duration) ~= "number" or duration ~= duration then duration = 1.55 end
-		duration = math.clamp(duration, 1.1, 2.4)
+		if type(duration) ~= "number" or duration ~= duration then duration = CYCLE_SECONDS end
+		duration = math.clamp(duration, 1.5, 3.0)
 		if walking then
 			-- Match the stance distance to actual travel, including slow starts.
-			local rate = movementRoot and math.min(speed, 20)/((3.5/0.62)*scale) or 1/duration
+			local rate = movementRoot and math.min(speed, 20)/((STRIDE/STANCE)*scale) or 1/duration
 			walkCycle = walkCycle + poseDt*rate
 		end
 		local cycle = walkCycle
 		local phase = cycle * math.pi * 2
-		local bob = walking and -0.18 * scale * (1-math.cos(phase*2)) * fade or 0
+		local gaitPhase = (cycle + STANCE/2) * math.pi * 2
+		-- A short, smooth compression after each landing, followed by recovery.
+		-- Keep the stance foot on the floor through the leg solver below.
+		local sinceLanding = ((cycle + STANCE/2)*2)%1
+		local compression = math.sin(math.pi*math.min(sinceLanding/0.32, 1))^2
+		local bob = walking and -(0.12 + 0.38*compression)*scale*fade or 0
 		local blend = 1-math.exp(-poseDt/0.10)
 		smoothedBob = smoothedBob + (bob-smoothedBob)*blend
 		if rootJoint then
@@ -245,27 +253,28 @@ function Rig.Attach(model, movementRoot, humanoid)
 		end
 		local actualBob = smoothedBob
 		if walking then
-			model:SetAttribute("AnimationPreview", movementRoot and "PlayerWalk_01" or "WalkInPlace_01")
-			pose("Torso", 3.0*fade + math.cos(phase*2)*0.8*fade, math.sin(phase)*2.3*fade, math.sin(phase)*1.7*fade)
-			pose("Head", -1.8*fade, -math.sin(phase)*1.8*fade, -math.sin(phase)*0.8*fade)
+			model:SetAttribute("AnimationPreview", "HeavyWalk_02")
+			local weightShift = math.sin(gaitPhase - 0.35)*fade
+			pose("Torso", (3.8 + compression*1.2)*fade, weightShift*2.5, weightShift*3.2)
+			pose("Head", (-2.4 - compression*0.5)*fade, -weightShift*1.8, -weightShift*1.4)
 			pose("Jaw", 0, 0, 0)
 			for _, side in ipairs({"Left", "Right"}) do
 				local offset = side == "Left" and 0 or 0.5
-				local t = (cycle+offset+0.31)%1
+				local t = (cycle+offset+STANCE/2)%1
 				local travel, lift
-				if t < 0.62 then
-					-- Stance travels rearward at constant speed in this treadmill preview.
-					travel, lift = -1.75 + 3.5*t/0.62, 0
+				if t < STANCE then
+					-- The planted foot moves back at the body's actual travel speed.
+					travel, lift = -STRIDE/2 + STRIDE*t/STANCE, 0
 				else
-					local swing = (t-0.62)/0.38
+					local swing = (t-STANCE)/(1-STANCE)
 					local smooth = swing*swing*(3-2*swing)
-					travel = 1.75-3.5*smooth
-					lift = 1.15*math.sin(math.pi*swing)^2
+					travel = STRIDE/2-STRIDE*smooth
+					lift = 0.85*math.sin(math.pi*swing)^2
 				end
 				solveLeg(side, travel*scale*fade, lift*scale*fade, actualBob)
-				local swing = math.sin((cycle+offset+0.31)*math.pi*2)*fade
-				pose(side .. "UpperArm", -swing*10, 0, 0)
-				pose(side .. "Forearm", -4*fade + swing*3, 0, 0)
+				local swing = math.sin((cycle+offset+STANCE/2)*math.pi*2-0.25)*fade
+				pose(side .. "UpperArm", -swing*7, 0, 0)
+				pose(side .. "Forearm", -5*fade + swing*2, 0, 0)
 				pose(side .. "Hand", -swing, 0, 0)
 			end
 			for i = 1, tailCount do
