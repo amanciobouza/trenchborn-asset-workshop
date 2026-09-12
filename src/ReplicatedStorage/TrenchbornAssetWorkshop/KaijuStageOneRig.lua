@@ -2,6 +2,7 @@
 -- A movement root drives gameplay; without one this remains an anchored preview.
 local RunService = game:GetService("RunService")
 local Combo = require(script.Parent:WaitForChild("KaijuStageOneCombo"))
+local Jump = require(script.Parent:WaitForChild("KaijuStageOneJump"))
 local Rig = {}
 local STRIDE = 10.0
 local STANCE = 0.70 -- Both feet support the body during 40% of the cycle.
@@ -176,13 +177,38 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	local walkCycle, smoothedBob = 0, 0
 	local heartbeat, destroying
 	local combo = Combo.new(combat and combat.PrepareFinisher)
+	local jump = Jump.new()
+	local savedSpeed, savedOwner, launchVelocity
+	local ownsPhysics=false
+	local function restoreJump()
+		if humanoid and savedSpeed then humanoid.WalkSpeed=savedSpeed end
+		savedSpeed=nil
+		if ownsPhysics and movementRoot and movementRoot:IsDescendantOf(workspace) then
+			if savedOwner and savedOwner.Parent then movementRoot:SetNetworkOwner(savedOwner)
+			else movementRoot:SetNetworkOwnershipAuto() end
+		end
+		ownsPhysics=false
+	end
+	local function requestJump()
+		if stopped or not humanoid or humanoid.Health<=0 or not movementRoot
+			or model:GetAttribute("IdleEnabled")==false then return false end
+		if not jump:Request(os.clock(),humanoid.FloorMaterial~=Enum.Material.Air) then return false end
+		combo:Cancel()
+		if combat then combat.Cancel() end
+		savedSpeed=humanoid.WalkSpeed
+		launchVelocity=movementRoot.AssemblyLinearVelocity
+		humanoid.WalkSpeed=0
+		return true
+	end
 	local function requestAttack()
-		if stopped or not humanoid or humanoid.Health <= 0
+		if stopped or jump.Phase~="Idle" or not humanoid or humanoid.Health <= 0
 			or humanoid.FloorMaterial == Enum.Material.Air
 			or model:GetAttribute("IdleEnabled") == false then return false end
 		return combo:Request(os.clock())
 	end
 	local function reset()
+		jump:Cancel()
+		restoreJump()
 		combo:Cancel()
 		if combat then combat.Cancel() end
 		model:SetAttribute("ComboStep", 0)
@@ -240,6 +266,24 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				+ alert * 0.45) * fade, 0)
 		end
 		local walking = model:GetAttribute("AnimationMode") == "Walk"
+		if humanoid and humanoid.Health<=0 then jump:Cancel();restoreJump() end
+		local jumpPose,jumpEvent
+		if movementRoot and humanoid then
+			jumpPose,jumpEvent=jump:Update(os.clock(),humanoid.FloorMaterial~=Enum.Material.Air,movementRoot.AssemblyLinearVelocity.Y)
+			if jumpEvent=="Takeoff" then
+				-- Brief scripted flight: preserve approach momentum, with no double jump.
+				savedOwner=movementRoot:GetNetworkOwner()
+				movementRoot:SetNetworkOwner(nil)
+				ownsPhysics=true
+				humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
+				local velocity=movementRoot.AssemblyLinearVelocity
+				local rise=math.sqrt(2*workspace.Gravity*12*scale)
+				local horizontal=Vector3.new(launchVelocity.X,0,launchVelocity.Z)
+				if horizontal.Magnitude>10 then horizontal=horizontal.Unit*10 end
+				movementRoot:ApplyImpulse((horizontal+Vector3.new(0,rise,0)-velocity)*movementRoot.AssemblyMass)
+			elseif jumpEvent=="Restore" then restoreJump() end
+		end
+		model:SetAttribute("JumpPhase",jump.Phase)
 		local speed = 0
 		if movementRoot then
 			local velocity = movementRoot.AssemblyLinearVelocity
@@ -247,6 +291,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			walking = speed > 0.5 and humanoid.Health > 0
 				and humanoid.FloorMaterial ~= Enum.Material.Air
 		end
+		if jumpPose then walking=false end
 		local duration = model:GetAttribute("WalkCycleSeconds")
 		if type(duration) ~= "number" or duration ~= duration then duration = CYCLE_SECONDS end
 		duration = math.clamp(duration, 1.5, 3.0)
@@ -274,6 +319,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		-- Lower the pelvis as well as the torso; IK bends the legs while the
 		-- planted feet retain their floor height. Recovery uses the same smoothing.
 		bob = bob - (attackCrouch or 0)*scale
+		if jumpPose then bob=-jumpPose.Crouch*scale end
 		local blend = 1-math.exp(-poseDt/0.10)
 		smoothedBob = smoothedBob + (bob-smoothedBob)*blend
 		if rootJoint then
@@ -328,12 +374,26 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				motors[name].C0 = motors[name].C0:Lerp(target, attackWeight)
 			end
 		end
+		if jumpPose then
+			pose("Torso",jumpPose.Pitch,0,0)
+			pose("Head",jumpPose.Head,0,0)
+			pose("Jaw",0,0,0)
+			for _,side in ipairs({"Left","Right"}) do
+				solveLeg(side,0,jumpPose.Tuck*scale,actualBob)
+				pose(side.."UpperArm",jumpPose.Arm,0,0)
+				pose(side.."Forearm",jumpPose.Elbow,0,0)
+				pose(side.."Hand",-jumpPose.Pulse*8,0,0)
+			end
+			for i=1,tailCount do
+				pose("Tail"..i,math.sin(elapsed*8-i*0.45)*jumpPose.Pulse*1.5,0,0)
+			end
+		end
 		-- Blend mode changes and step accents rather than snapping joint poses.
 		for name, m in pairs(motors) do m.C0 = previous[name]:Lerp(m.C0, blend) end
 	end)
 	destroying = model.Destroying:Connect(stop)
 	print(string.format("[Kaiju Rig] %d parts | %d joints | Walk preview | AnimationMode: Walk / Idle | IdleEnabled=false pauses both", #visuals, 17 + tailCount))
-	return {Stop = stop, Motors = motors, RequestAttack = requestAttack}
+	return {Stop = stop, Motors = motors, RequestAttack = requestAttack, RequestJump = requestJump}
 end
 
 return Rig
