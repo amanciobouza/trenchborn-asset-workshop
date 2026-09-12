@@ -70,10 +70,11 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		tailCount = tailCount + 1
 	end
 	assert(tailCount >= 7, "Incomplete tail")
+	bone("TailBase",get("SacralMass").Position,"Pelvis")
 	for i = 1, tailCount do
 		local segment = get(string.format("TailSegment_%02d", i))
 		bone("Tail" .. i, segment.Position - segment.CFrame.RightVector * segment.Size.X/2,
-			i == 1 and "Pelvis" or "Tail" .. (i-1))
+			i == 1 and "TailBase" or "Tail" .. (i-1))
 	end
 	local headNames = {Cranium=true, SnoutBridge=true, FrontalBridge=true}
 	local headFeatures = {CheekMass=true, OrbitalSupport=true, BrowRidge=true, EyeSocket=true,
@@ -85,6 +86,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	local pelvisNames = {PelvisCenter=true, SacralMass=true, TailRootMass=true}
 	local function starts(name, prefix) return string.sub(name, 1, #prefix) == prefix end
 	local function region(name)
+		if name == "TailRootMass" then return "TailBase" end
 		if name == "TailTip" then return "Tail" .. tailCount end
 		if starts(name, "LowerJaw") then return "Jaw" end
 		if headNames[name] or starts(name, "UpperMuzzle") then return "Head" end
@@ -126,7 +128,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	model.PrimaryPart = bones.Pelvis
 	model:SetAttribute("RigType", "CustomMotor6D_Stage1")
 	model:SetAttribute("FocusRigRevision", "MouthDiagnostic_01")
-	model:SetAttribute("RigJointCount", 17 + tailCount)
+	model:SetAttribute("RigJointCount", 18 + tailCount)
 	model:SetAttribute("PipelinePhase", 6)
 	model:SetAttribute("QualityGateC", "Pending")
 	model:SetAttribute("AttackReach", "LowBuildings")
@@ -290,6 +292,11 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	local focus,focusReadyAt=nil,0
 	local area,areaReadyAt=nil,0
 	local focusColor=Color3.fromRGB(65,225,255)
+	local palmRest={}
+	for _,side in ipairs({"Left","Right"}) do
+		local palm=get(side.."PalmCoreZ")
+		palmRest[side]={Local=bones[side.."Hand"].CFrame:ToObjectSpace(palm.CFrame),Thickness=palm.Size.Z}
+	end
 	local supportPalmNormal=bones.LeftHand.CFrame:VectorToObjectSpace(get("LeftPalmCoreZ").CFrame.LookVector)
 	local function braceLeftHand(ground,bob,weight)
 		local pelvis=movementRoot.CFrame*rootOffset*CFrame.new(0,bob,0)*pelvisTurn
@@ -589,7 +596,8 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			fallen(side.."Hand",0,0,0)
 		end
 		-- Counter the body's forward rotation so the long tail trails along the ground.
-		for i=1,tailCount do fallen("Tail"..i,i==1 and 66*fall or 0,(i==1 and 3 or 0.3)*fall,0) end
+		fallen("TailBase",80*fall,0,0)
+		for i=1,tailCount do fallen("Tail"..i,i==1 and -14*fall or 0,(i==1 and 3 or 0.3)*fall,0) end
 		local rootPose=defeat.Root*CFrame.new(0,-1.2*kneel*scale,-4*fall*scale)*CFrame.Angles(math.rad(-88*fall),0,0)
 		-- Only the corpse uses geometry-to-floor settling; live locomotion stays unchanged.
 		local frames={Pelvis=rootPose}
@@ -620,6 +628,31 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		rootPose=rootPose+Vector3.new(0,height-rootPose.Position.Y,0)
 		defeat.LastHeight=height
 		rootJoint.C0=movementRoot.CFrame:ToObjectSpace(rootPose)
+		-- Settle the tapered forearms and flat palms beside and ahead of the face.
+		-- Solve from the shoulder; do not lift the chest to accommodate the hands.
+		for _,side in ipairs({"Left","Right"}) do
+			local sign=side=="Left" and -1 or 1
+			local shoulder=rootPose*motors.Torso.C0*rest[side.."UpperArm"]
+			local direction=(movementRoot.CFrame.LookVector+movementRoot.CFrame.RightVector*sign*0.65).Unit
+			local palm=palmRest[side]
+			local wristRotation=CFrame.lookAt(Vector3.zero,-Vector3.yAxis,-direction)*palm.Local.Rotation:Inverse()
+			local wristHeight=defeat.Ground+palm.Thickness/2-wristRotation:VectorToWorldSpace(palm.Local.Position).Y
+			local a,b=rest[side.."Forearm"].Position,rest[side.."Hand"].Position
+			local upperLength,lowerLength=a.Magnitude,b.Magnitude
+			local elbowHeight=math.clamp(defeat.Ground+2.5*scale,
+				shoulder.Position.Y-upperLength+0.05*scale,shoulder.Position.Y+upperLength-0.05*scale)
+			local upperDrop=elbowHeight-shoulder.Position.Y
+			local elbow=shoulder.Position+direction*math.sqrt(math.max(0,upperLength^2-upperDrop^2))+Vector3.new(0,upperDrop,0)
+			local lowerDrop=math.clamp(wristHeight-elbowHeight,-lowerLength+0.01*scale,lowerLength-0.01*scale)
+			local wrist=elbow+direction*math.sqrt(math.max(0,lowerLength^2-lowerDrop^2))+Vector3.new(0,lowerDrop,0)
+			local upperRotation=rotateBetween(a,shoulder:VectorToObjectSpace(elbow-shoulder.Position))
+			local elbowFrame=shoulder*upperRotation*rest[side.."Forearm"]
+			local foreRotation=rotateBetween(b,elbowFrame:VectorToObjectSpace(wrist-elbow))
+			local wristFrame=elbowFrame*foreRotation*rest[side.."Hand"]
+			motors[side.."UpperArm"].C0=motors[side.."UpperArm"].C0:Lerp(rest[side.."UpperArm"]*upperRotation,settle)
+			motors[side.."Forearm"].C0=motors[side.."Forearm"].C0:Lerp(rest[side.."Forearm"]*foreRotation,settle)
+			motors[side.."Hand"].C0=motors[side.."Hand"].C0:Lerp(rest[side.."Hand"]*wristFrame.Rotation:Inverse()*wristRotation,settle)
+		end
 		if t>=1.8 and not defeat.Impact then
 			defeat.Impact=true
 			for i=1,10 do
@@ -1219,7 +1252,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		end
 	end)
 	destroying = model.Destroying:Connect(stop)
-	print(string.format("[Kaiju Rig] %d parts | %d joints | Walk preview | AnimationMode: Walk / Idle | IdleEnabled=false pauses both", #visuals, 17 + tailCount))
+	print(string.format("[Kaiju Rig] %d parts | %d joints | Walk preview | AnimationMode: Walk / Idle | IdleEnabled=false pauses both", #visuals, 18 + tailCount))
 	return {Stop = stop, Motors = motors, RequestAttack = requestAttack, RequestJump = requestJump, SetAirDirection=setAirDirection,RequestFocus=requestFocus,RequestArea=requestArea,SetRunning=setRunning}
 end
 
