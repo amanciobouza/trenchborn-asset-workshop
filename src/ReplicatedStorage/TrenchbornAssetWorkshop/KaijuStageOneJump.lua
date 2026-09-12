@@ -28,7 +28,7 @@ function Jump.new()
 				if self.LeftGround then event="Land" end
 				self.Phase,self.Started="Landing",now;t=0
 			elseif t>6 then self:Cancel();return nil,"Restore" end
-		elseif self.Phase=="Landing" and t>=0.85 then
+		elseif self.Phase=="Landing" and t>=1.05 then
 			self:Cancel();return nil,"Restore"
 		end
 		if self.Phase=="Windup" then
@@ -48,12 +48,12 @@ function Jump.new()
 		elseif self.Phase=="Landing" then
 			-- Compress once, hold the weight, then rise slowly without an overshoot.
 			local crouch
-			if t<0.12 then crouch=0.7+2.9*smooth(t/0.12)
-			elseif t<0.24 then crouch=3.6
-			else crouch=3.6*(1-smooth((t-0.24)/0.61)) end
-			local compression=crouch/3.6
-			return {Crouch=crouch,Tuck=0,Pitch=-24*compression,
-				Arm=-14*compression,Elbow=22*compression,Head=8*compression,Pulse=compression},event
+			if t<0.10 then crouch=0.7+3.9*smooth(t/0.10)
+			elseif t<0.32 then crouch=4.6
+			else crouch=4.6*(1-smooth((t-0.32)/0.73)) end
+			local compression=crouch/4.6
+			return {Crouch=crouch,Tuck=0,Pitch=-30*compression,
+				Arm=30*compression,Elbow=30*compression,Head=12*compression,Pulse=compression},event
 		end
 		return nil,event
 	end
