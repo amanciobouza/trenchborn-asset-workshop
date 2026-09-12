@@ -1,6 +1,7 @@
 -- Phase 6: articulated Stage 1 with a restless, powerful idle preview.
 -- A movement root drives gameplay; without one this remains an anchored preview.
 local RunService = game:GetService("RunService")
+local Combo = require(script.Parent:WaitForChild("KaijuStageOneCombo"))
 local Rig = {}
 local STRIDE = 7.0
 local STANCE = 0.70 -- Both feet support the body during 40% of the cycle.
@@ -167,7 +168,17 @@ function Rig.Attach(model, movementRoot, humanoid)
 	local elapsed, accumulator, stopped = 0, 0, false
 	local walkCycle, smoothedBob = 0, 0
 	local heartbeat, destroying
+	local combo = Combo.new()
+	local function requestAttack()
+		if stopped or not humanoid or humanoid.Health <= 0
+			or humanoid.FloorMaterial == Enum.Material.Air
+			or model:GetAttribute("IdleEnabled") == false then return false end
+		return combo:Request(os.clock())
+	end
 	local function reset()
+		combo:Cancel()
+		model:SetAttribute("ComboStep", 0)
+		model:SetAttribute("AttackName", "")
 		for name, m in pairs(motors) do m.C0 = rest[name] end
 		if rootJoint then rootJoint.C0 = rootOffset else bones.Pelvis.CFrame = rootRest end
 		smoothedBob, walkCycle = 0, 0
@@ -290,12 +301,22 @@ function Rig.Attach(model, movementRoot, humanoid)
 			model:SetAttribute("AnimationPreview", "PowerIdle_02")
 			for _, side in ipairs({"Left", "Right"}) do solveLeg(side, 0, 0, actualBob) end
 		end
+		if humanoid and humanoid.Health <= 0 then combo:Cancel() end
+		local attackPose, attackWeight, attackName, attackIndex = combo:Sample(os.clock())
+		model:SetAttribute("ComboStep", attackIndex or 0)
+		model:SetAttribute("AttackName", attackName or "")
+		if attackPose then
+			for name, angles in pairs(attackPose) do
+				local target = rest[name] * CFrame.Angles(math.rad(angles[1]),math.rad(angles[2]),math.rad(angles[3]))
+				motors[name].C0 = motors[name].C0:Lerp(target, attackWeight)
+			end
+		end
 		-- Blend mode changes and step accents rather than snapping joint poses.
 		for name, m in pairs(motors) do m.C0 = previous[name]:Lerp(m.C0, blend) end
 	end)
 	destroying = model.Destroying:Connect(stop)
 	print(string.format("[Kaiju Rig] %d parts | %d joints | Walk preview | AnimationMode: Walk / Idle | IdleEnabled=false pauses both", #visuals, 17 + tailCount))
-	return {Stop = stop, Motors = motors}
+	return {Stop = stop, Motors = motors, RequestAttack = requestAttack}
 end
 
 return Rig
