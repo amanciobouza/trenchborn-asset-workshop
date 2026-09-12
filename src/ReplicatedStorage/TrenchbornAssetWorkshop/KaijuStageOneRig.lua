@@ -262,7 +262,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		end
 		local attackPose, attackWeight, attackName, attackIndex, attackCrouch = combo:Sample(os.clock())
 		for _, event in ipairs(combo:DrainEvents()) do
-			if combat then combat.Handle(event.Kind, event.Index) end
+			if combat then combat.Handle(event.Kind, event.Index, event.FinisherUntil) end
 		end
 		local bob = walking and -(0.12 + 0.38*compression)*scale*fade or 0
 		-- Lower the pelvis as well as the torso; IK bends the legs while the
