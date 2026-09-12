@@ -183,6 +183,40 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	local focus,focusReadyAt=nil,0
 	local area,areaReadyAt=nil,0
 	local focusColor=Color3.fromRGB(65,225,255)
+	local supportPalmNormal=bones.LeftHand.CFrame:VectorToObjectSpace(get("LeftPalmCoreZ").CFrame.LookVector)
+	local function rotateBetween(a,b)
+		local x,y=a.Unit,b.Unit
+		local dot=math.clamp(x:Dot(y),-1,1)
+		local axis=x:Cross(y)
+		if axis.Magnitude<0.0001 then
+			if dot>0 then return CFrame.identity end
+			axis=x:Cross(math.abs(x.Y)<0.9 and Vector3.yAxis or Vector3.xAxis)
+		end
+		return CFrame.fromAxisAngle(axis.Unit,math.acos(dot))
+	end
+	local function braceLeftHand(ground,bob,weight)
+		local pelvis=movementRoot.CFrame*rootOffset*CFrame.new(0,bob,0)
+		local shoulder=pelvis*motors.Torso.C0*rest.LeftUpperArm
+		local target=ground:PointToWorldSpace(Vector3.new(-6,2.2,-7)*scale)
+		local delta=target-shoulder.Position
+		local a,b=rest.LeftForearm.Position,rest.LeftHand.Position
+		local lengthA,lengthB=a.Magnitude,b.Magnitude
+		local distance=math.clamp(delta.Magnitude,math.abs(lengthA-lengthB)+0.01,lengthA+lengthB-0.01)
+		local direction=delta.Unit
+		local hint=-shoulder.RightVector-shoulder.LookVector*0.3
+		local bend=hint-direction*hint:Dot(direction)
+		if bend.Magnitude<0.001 then bend=shoulder.UpVector-direction*shoulder.UpVector:Dot(direction) end
+		local along=(lengthA^2+distance^2-lengthB^2)/(2*distance)
+		local elbow=direction*along+bend.Unit*math.sqrt(math.max(0,lengthA^2-along^2))
+		local upperRotation=rotateBetween(a,shoulder:VectorToObjectSpace(elbow))
+		local elbowFrame=shoulder*upperRotation*rest.LeftForearm
+		local foreRotation=rotateBetween(b,elbowFrame:VectorToObjectSpace(direction*distance-elbow))
+		local wristFrame=elbowFrame*foreRotation*rest.LeftHand
+		local handRotation=rotateBetween(supportPalmNormal,wristFrame:VectorToObjectSpace(-ground.UpVector))
+		motors.LeftUpperArm.C0=motors.LeftUpperArm.C0:Lerp(rest.LeftUpperArm*upperRotation,weight)
+		motors.LeftForearm.C0=motors.LeftForearm.C0:Lerp(rest.LeftForearm*foreRotation,weight)
+		motors.LeftHand.C0=motors.LeftHand.C0:Lerp(rest.LeftHand*handRotation,weight)
+	end
 	local function endArea()
 		if not area then return end
 		for p,color in pairs(area.Colors) do if p.Parent then p.Color=color end end
@@ -665,6 +699,10 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				pose(side.."Forearm",60*tension+tremor,0,0)
 				pose(side.."Hand",-12*tension,sign*8*tension,0)
 			end
+			-- Right foot forward; left leg trails with a low knee and left hand supporting.
+			solveLeg("Right",-3.5*tension*scale,0,actualBob)
+			solveLeg("Left",4.0*tension*scale,0,actualBob)
+			braceLeftHand(area.Ground,actualBob,tension)
 			for i=1,tailCount do
 				local curl=(i==1 and 15 or 20)*tension
 				pose("Tail"..i,-curl,0,0)
