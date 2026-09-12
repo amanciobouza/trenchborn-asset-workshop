@@ -140,21 +140,6 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		model:SetAttribute("AnimationMode", "Automatic")
 	end
 	local scale = model:GetScale()
-	-- Calibrate against the flat soles, not the full model's bounding box
-	-- (which also includes claws and the angled tail).
-	local soleLocalY, supportOffset, supportParams
-	if movementRoot then
-		soleLocalY=math.huge
-		for _,side in ipairs({"Left","Right"}) do
-			local sole=get(side.."ForefootCoreY")
-			local bottom=sole.CFrame:PointToWorldSpace(Vector3.new(0,-sole.Size.Y/2,0))
-			soleLocalY=math.min(soleLocalY,movementRoot.CFrame:PointToObjectSpace(bottom).Y)
-		end
-		supportParams=RaycastParams.new()
-		supportParams.FilterType=Enum.RaycastFilterType.Exclude
-		supportParams.FilterDescendantsInstances={model.Parent}
-	end
-	supportOffset=0
 	local legs = {}
 	for _, side in ipairs({"Left", "Right"}) do
 		local hip = rootRest:PointToObjectSpace(bones[side .. "Thigh"].Position)
@@ -370,17 +355,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		local blend = 1-math.exp(-poseDt/0.10)
 		smoothedBob = smoothedBob + (bob-smoothedBob)*blend
 		if rootJoint then
-			if humanoid.FloorMaterial~=Enum.Material.Air and not jumpPose then
-				local hit=workspace:Raycast(movementRoot.Position,Vector3.new(0,-(math.abs(soleLocalY)+3*scale),0),supportParams)
-				if hit and hit.Normal.Y>0.7 then
-					local floorY=movementRoot.CFrame:PointToObjectSpace(hit.Position).Y
-					local correction=math.clamp(floorY-soleLocalY,-2*scale,2*scale)
-					supportOffset=supportOffset+(correction-supportOffset)*blend
-				end
-			end
-			-- Keep this separate from gait bob: leg IK must not undo floor alignment.
-			-- Retain the offset in flight rather than pulling the jumper toward terrain.
-			rootJoint.C0 = rootOffset * CFrame.new(0, smoothedBob+supportOffset, 0)
+			rootJoint.C0 = rootOffset * CFrame.new(0, smoothedBob, 0)
 		else
 			bones.Pelvis.CFrame = rootRest * CFrame.new(0, smoothedBob, 0)
 		end
