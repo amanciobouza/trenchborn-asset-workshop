@@ -1196,7 +1196,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			model:SetAttribute("FocusPhase",t<2 and "Charging" or t<4.5 and "Firing" or "Recovery")
 		end
 		if area then
-			if areaTime>=math.max(0,AREA_TIMING.Discharge-2) and not area.ImpulseSoundStarted then
+			if areaTime>=math.max(0,AREA_TIMING.Discharge-0.5) and not area.ImpulseSoundStarted then
 				area.ImpulseSoundStarted=true
 				feedback("Discharge",bones.Torso,true)
 			end
