@@ -119,6 +119,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	end
 	model.PrimaryPart = bones.Pelvis
 	model:SetAttribute("RigType", "CustomMotor6D_Stage1")
+	model:SetAttribute("FocusRigRevision", "MouthDiagnostic_01")
 	model:SetAttribute("RigJointCount", 17 + tailCount)
 	model:SetAttribute("PipelinePhase", 6)
 	model:SetAttribute("QualityGateC", "Pending")
@@ -570,6 +571,35 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			local _,offset=mouthFrame()
 			focus.Mouth.CFrame=offset
 			focus.OrbWeld.C0=offset
+			if focusTime>=2.3 and not focus.Diagnosed then
+				focus.Diagnosed=true
+				local intended=rest.Jaw:ToObjectSpace(motors.Jaw.C0)
+				local actual=rest.Jaw:ToObjectSpace(bones.Head.CFrame:ToObjectSpace(bones.Jaw.CFrame))
+				local requestedX=intended:ToOrientation()
+				local actualX=actual:ToOrientation()
+				local upperPoint=upperLip.CFrame:PointToWorldSpace(Vector3.new(0,-upperLip.Size.Y/2,
+					-get("UpperMuzzleCoreZ").Size.Z/2+0.2*scale))
+				local lowerPoint=lowerLip.CFrame:PointToWorldSpace(Vector3.new(0,lowerLip.Size.Y/2,
+					-get("LowerJawFrontCoreZ").Size.Z/2+0.2*scale))
+				local expected=upperPoint:Lerp(lowerPoint,0.68)
+				local visualJawPoint=bones.Jaw.CFrame:PointToWorldSpace(lowerLipLocal)
+				local jawParts,anchoredParts=0,0
+				for _,p in ipairs(visuals) do
+					if string.sub(p.Name,1,8)=="LowerJaw" then
+						jawParts=jawParts+1
+						if p.Anchored then anchoredParts=anchoredParts+1 end
+					end
+				end
+				local report={revision="MouthDiagnostic_01",requestedJawDegrees=math.deg(requestedX),
+					actualJawDegrees=math.deg(actualX),jawParts=jawParts,anchoredJawParts=anchoredParts,
+					jawVisualError=(visualJawPoint-lowerPoint).Magnitude,
+					mouthError=(focus.Mouth.WorldPosition-expected).Magnitude,
+					orbError=(focus.Orb.Position-expected).Magnitude,
+					lipGap=(upperPoint-lowerPoint).Magnitude,scale=scale}
+				local json=game:GetService("HttpService"):JSONEncode(report)
+				model:SetAttribute("FocusRigDiagnostic",json)
+				print("[Kaiju Focus Rig] "..json)
+			end
 		end
 	end)
 	destroying = model.Destroying:Connect(stop)
