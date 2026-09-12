@@ -6,6 +6,9 @@ local Jump = require(script.Parent:WaitForChild("KaijuStageOneJump"))
 local Rig = {}
 local STRIDE = 10.0
 local STANCE = 0.65 -- Longer swing; both feet still support the body during 30% of the cycle.
+local RUN_SPEED = 16
+local WALK_SPEED = 10
+local RUN_STRIDE, RUN_STANCE = 11, 0.48
 local CYCLE_SECONDS = 1.9
 local AREA_TIMING={Curl=2.2,Discharge=2.8,Recovery=3.2,Finish=4.6}
 
@@ -180,6 +183,34 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	local wasWalking,stopAge=false,nil
 	local walkFeet,lastWalkUpper={},{}
 	local previousMode,transitionLeft="Idle",0
+	local runRequested,runBlend=false,0
+	local runContacts={}
+	model:SetAttribute("RunRequested",false)
+	model:SetAttribute("Running",false)
+	local function setRunning(enabled)
+		if type(enabled)~="boolean" or stopped or not humanoid or humanoid.Health<=0 then return false end
+		runRequested=enabled;model:SetAttribute("RunRequested",enabled)
+		return true
+	end
+	local function runFootfall(side)
+		local foot=bones[side.."Foot"]
+		local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Exclude
+		params.FilterDescendantsInstances={model.Parent}
+		local hit=workspace:Raycast(foot.Position+Vector3.new(0,3*scale,0),Vector3.new(0,-12*scale,0),params)
+		if not hit then return end
+		for i=1,5 do
+			local dust=Instance.new("Part");dust.Name="RunDust";dust.Shape=Enum.PartType.Ball
+			dust.Anchored=true;dust.CanCollide=false;dust.CanTouch=false;dust.CanQuery=false;dust.CastShadow=false
+			dust.Material=Enum.Material.SmoothPlastic
+			dust.Color=hit.Instance:IsA("BasePart") and hit.Instance.Color or Color3.fromRGB(105,100,90)
+			dust.Size=Vector3.new(1,0.5,1)*scale;dust.Transparency=0.5
+			dust.Position=hit.Position+Vector3.new(0,0.2*scale,0);dust.Parent=folder
+			local spread=Vector3.new(math.cos(i*2.4)*2,0.7,math.sin(i*2.4)*2)*scale
+			game:GetService("TweenService"):Create(dust,TweenInfo.new(0.35),
+				{Position=dust.Position+spread,Size=Vector3.new(2,1.2,2)*scale,Transparency=1}):Play()
+			game:GetService("Debris"):AddItem(dust,0.4)
+		end
+	end
 	local heartbeat, destroying
 	local combo = Combo.new(combat and combat.PrepareFinisher)
 	local jump = Jump.new()
@@ -451,6 +482,9 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		smoothedBob, walkCycle = 0, 0
 		wasWalking,stopAge=false,nil;walkFeet,lastWalkUpper={},{}
 		previousMode,transitionLeft="Idle",0
+		runRequested,runBlend=false,0;runContacts={}
+		model:SetAttribute("RunRequested",false);model:SetAttribute("Running",false)
+		if humanoid then humanoid.WalkSpeed=WALK_SPEED end
 	end
 	local function stop()
 		if stopped then return end
@@ -564,20 +598,30 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		if jumpPose then walking=false end
 		if focus then walking=false;humanoid:Move(Vector3.zero,false) end
 		if area then walking=false;humanoid:Move(Vector3.zero,false) end
+		local runAllowed=not focus and not area and jump.Phase=="Idle"
+			and humanoid and humanoid.Health>0 and (model:GetAttribute("ComboStep") or 0)==0
+		if humanoid and not focus and not area and jump.Phase=="Idle" and humanoid.Health>0 then
+			humanoid.WalkSpeed=runRequested and runAllowed and RUN_SPEED or WALK_SPEED
+		end
+		local running=walking and runRequested and runAllowed
+		runBlend=runBlend+((running and 1 or 0)-runBlend)*(1-math.exp(-poseDt/0.22))
+		model:SetAttribute("Running",running==true)
+		local stride=STRIDE+(RUN_STRIDE-STRIDE)*runBlend
+		local stance=STANCE+(RUN_STANCE-STANCE)*runBlend
 		local duration = model:GetAttribute("WalkCycleSeconds")
 		if type(duration) ~= "number" or duration ~= duration then duration = CYCLE_SECONDS end
 		duration = math.clamp(duration, 1.5, 3.0)
 		if walking then
 			-- Match the stance distance to actual travel, including slow starts.
-			local rate = movementRoot and math.min(speed, 20)/((STRIDE/STANCE)*scale) or 1/duration
+			local rate = movementRoot and math.min(speed, 20)/((stride/stance)*scale) or 1/duration
 			walkCycle = walkCycle + poseDt*rate
 		end
 		local cycle = walkCycle
 		local phase = cycle * math.pi * 2
-		local gaitPhase = (cycle + STANCE/2) * math.pi * 2
+		local gaitPhase = (cycle + stance/2) * math.pi * 2
 		-- A short, smooth compression after each landing, followed by recovery.
 		-- Keep the stance foot on the floor through the leg solver below.
-		local sinceLanding = ((cycle + STANCE/2)*2)%1
+		local sinceLanding = ((cycle + stance/2)*2)%1
 		local compression = math.sin(math.pi*math.min(sinceLanding/0.32, 1))^2
 		if humanoid and humanoid.Health <= 0 then
 			combo:Cancel()
@@ -588,7 +632,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			if combat then combat.Handle(event.Kind, event.Index, event.FinisherUntil) end
 		end
 		local special=jumpPose or focus or area or attackPose
-		local mode=area and "Area" or focus and "Focus" or jumpPose and "Jump" or attackPose and "Attack" or walking and "Walk" or "Idle"
+		local mode=area and "Area" or focus and "Focus" or jumpPose and "Jump" or attackPose and "Attack" or running and "Run" or walking and "Walk" or "Idle"
 		if mode~=previousMode then transitionLeft=0.22;previousMode=mode end
 		transitionLeft=math.max(0,transitionLeft-poseDt)
 		if special or walking or (humanoid and (humanoid.Health<=0 or humanoid.FloorMaterial==Enum.Material.Air)) then stopAge=nil
@@ -602,7 +646,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			stopLoad=math.sin(math.pi*t)^2
 			if t>=1 then stopAge=nil end
 		end
-		local bob = walking and -(1.05 + 0.38*compression)*scale*fade or -(1.05*stopWeight+0.55*stopLoad)*scale
+		local bob = walking and -(1.05 + 0.55*runBlend + (0.38+0.3*runBlend)*compression)*scale*fade or -(1.05*stopWeight+0.55*stopLoad)*scale
 		-- Lower the pelvis as well as the torso; IK bends the legs while the
 		-- planted feet retain their floor height. Recovery uses the same smoothing.
 		bob = bob - (attackCrouch or 0)*scale
@@ -621,51 +665,56 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		end
 		local actualBob = smoothedBob
 		if walking then
-			model:SetAttribute("AnimationPreview", "HeavyWalk_04_ShoulderFollowThrough")
+			model:SetAttribute("AnimationPreview", running and "HeavyRun_01" or "HeavyWalk_04_ShoulderFollowThrough")
 			local weightShift = math.sin(gaitPhase - 0.35)*fade
 			-- Forward is local -Z: negative X pitch brings the upper body forward.
-			pose("Torso", (-11.0 - compression*1.6)*fade, weightShift*5.5, weightShift*3.8)
+			pose("Torso", (-11.0-9*runBlend - compression*(1.6+runBlend))*fade, weightShift*(5.5+2*runBlend), weightShift*3.8)
 			-- The neck partly counters the lean to keep the gaze ahead. Head motion
 			-- follows the weight transfer with a delay instead of locking to the torso.
 			local headFollow = math.sin(gaitPhase - 0.80)*fade
 			local headNod = math.sin(gaitPhase*2 - 0.65)*2.2*fade
-			pose("Head", 6.0*fade + headNod - compression*0.8*fade,
+			pose("Head", (6.0+6*runBlend)*fade + headNod - compression*0.8*fade,
 				-headFollow*4.5, -headFollow*2.2)
 			pose("Jaw", 0, 0, 0)
 			for _, side in ipairs({"Left", "Right"}) do
 				local offset = side == "Left" and 0 or 0.5
-				local t = (cycle+offset+STANCE/2)%1
+				local t = (cycle+offset+stance/2)%1
 				local travel, lift
-				if t < STANCE then
+				if t < stance then
 					-- The planted foot moves back at the body's actual travel speed.
-					travel, lift = -STRIDE/2 + STRIDE*t/STANCE, 0
+					travel, lift = -stride/2 + stride*t/stance, 0
 				else
-					local swing = (t-STANCE)/(1-STANCE)
+					local swing = (t-stance)/(1-stance)
 					local smooth = swing*swing*(3-2*swing)
-					travel = STRIDE/2-STRIDE*smooth
+					travel = stride/2-stride*smooth
 					-- Spend more of the swing lifting the heavy leg, then settle firmly.
 					-- Both ends and the apex have zero vertical velocity.
 					local liftPhase=swing<0.6 and swing/0.6 or (1-swing)/0.4
-					lift = 2.2*liftPhase*liftPhase*(3-2*liftPhase)
+					lift = (2.2+1.0*runBlend)*liftPhase*liftPhase*(3-2*liftPhase)
 				end
+				local contact=math.floor(cycle+offset+stance/2)
+				if running and runBlend>0.8 then
+					if runContacts[side] and contact>runContacts[side] then runFootfall(side) end
+					runContacts[side]=contact
+				else runContacts[side]=nil end
 				walkFeet[side]={Travel=travel*scale*fade,Lift=lift*scale*fade}
 				solveLeg(side, travel*scale*fade, lift*scale*fade, actualBob)
 				local sign=side=="Left" and -1 or 1
-				local armPhase=(cycle+offset+STANCE/2)*math.pi*2
+				local armPhase=(cycle+offset+stance/2)*math.pi*2
 				local swing=math.sin(armPhase-0.3)*fade
 				local elbowFollow=math.sin(armPhase-0.85)*fade
 				local wristFollow=math.sin(armPhase-1.25)*fade
 				local shoulderRoll=math.cos(armPhase-0.3)*fade
 				-- Shoulder leads; the bent elbow and heavy hand follow with separate delays.
 				-- A small outward arc keeps the hands clear of the thighs.
-				pose(side .. "UpperArm",8*fade-swing*17,sign*shoulderRoll*4,
+				pose(side .. "UpperArm",(8+6*runBlend)*fade-swing*(17+8*runBlend),sign*shoulderRoll*4,
 					-sign*(5*fade+3*shoulderRoll))
 				-- Flex behind the forward shoulder swing, then open as the arm returns.
-				pose(side .. "Forearm",26*fade-elbowFollow*20,0,sign*elbowFollow*3)
+				pose(side .. "Forearm",(26+12*runBlend)*fade-elbowFollow*(20+5*runBlend),0,sign*elbowFollow*3)
 				pose(side .. "Hand",-6*fade+wristFollow*6,sign*wristFollow*3,0)
 			end
 			for i = 1, tailCount do
-				pose("Tail" .. i, 0, -math.sin(phase-i*0.32)*(0.5+i*0.10)*fade, 0)
+				pose("Tail" .. i, -2.5*runBlend, -math.sin(phase-i*0.32)*(0.5+i*0.10)*fade, 0)
 			end
 		else
 			model:SetAttribute("AnimationPreview", "PowerIdle_02")
@@ -840,7 +889,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			end
 		end
 		-- Blend mode changes and step accents rather than snapping joint poses.
-		local enteringMotion=transitionLeft>0 and (mode=="Walk" or mode=="Attack")
+		local enteringMotion=transitionLeft>0 and (mode=="Walk" or mode=="Run" or mode=="Attack")
 		local motionBlend=enteringMotion and 1-math.exp(-poseDt/0.14) or blend
 		for name, m in pairs(motors) do m.C0 = previous[name]:Lerp(m.C0, motionBlend) end
 		if area then
@@ -905,7 +954,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	end)
 	destroying = model.Destroying:Connect(stop)
 	print(string.format("[Kaiju Rig] %d parts | %d joints | Walk preview | AnimationMode: Walk / Idle | IdleEnabled=false pauses both", #visuals, 17 + tailCount))
-	return {Stop = stop, Motors = motors, RequestAttack = requestAttack, RequestJump = requestJump, SetAirDirection=setAirDirection,RequestFocus=requestFocus,RequestArea=requestArea}
+	return {Stop = stop, Motors = motors, RequestAttack = requestAttack, RequestJump = requestJump, SetAirDirection=setAirDirection,RequestFocus=requestFocus,RequestArea=requestArea,SetRunning=setRunning}
 end
 
 return Rig
