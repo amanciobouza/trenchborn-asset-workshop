@@ -367,26 +367,42 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 		for _,target in ipairs(victims) do handle("Area",0,target,origin) end
 		kaiju:SetAttribute("AreaHitCount",#victims)
 		local cyan=Color3.fromRGB(65,225,255)
+		-- The discharge starts visibly at the large dorsal plates, then hits the ground.
+		for i=1,3 do
+			local plate=kaiju:FindFirstChild(string.format("DorsalShield_%02d",i))
+			if plate and plate:IsA("BasePart") then
+				local spark=part(workspace,"DorsalDischarge",Vector3.new(1,1,1)*scale,CFrame.new(plate.Position),cyan)
+				spark.Shape=Enum.PartType.Ball;spark.Material=Enum.Material.Neon
+				spark.CanCollide=false;spark.CanTouch=false;spark.CanQuery=false;spark.CastShadow=false
+				local light=Instance.new("PointLight")
+				light.Color=cyan;light.Brightness=4;light.Range=18*scale;light.Parent=spark
+				local outward=-root.CFrame.LookVector*(3+i)+Vector3.new(0,3+i,0)
+				TweenService:Create(spark,TweenInfo.new(0.35,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),
+					{Size=Vector3.new(7,7,7)*scale,CFrame=CFrame.new(plate.Position+outward*scale),Transparency=1}):Play()
+				TweenService:Create(light,TweenInfo.new(0.35),{Brightness=0}):Play()
+				Debris:AddItem(spark,0.4)
+			end
+		end
 		local burst=part(workspace,"AreaGroundFlash",Vector3.new(3,0.25,3)*scale,CFrame.new(origin),cyan)
 		burst.Shape=Enum.PartType.Ball;burst.Material=Enum.Material.Neon
 		burst.CanCollide=false;burst.CanTouch=false;burst.CanQuery=false;burst.CastShadow=false
 		TweenService:Create(burst,TweenInfo.new(0.35),{Size=Vector3.new(AREA_RADIUS*2,0.3,AREA_RADIUS*2)*scale,Transparency=1}):Play()
 		Debris:AddItem(burst,0.4)
-		for i=1,20 do
+		for i=1,28 do
 			local angle=i*2.39996
 			local direction=Vector3.new(math.cos(angle),0,math.sin(angle))
-			local start=origin+direction*(2+i%4)*scale
-			local rock=part(workspace,"AreaDebris",Vector3.new(0.8+i%3*0.4,0.8,1.2)*scale,CFrame.new(start),Color3.fromRGB(90,95,102))
+			local start=origin+direction*(4+i%6)*scale
+			local rock=part(workspace,"AreaDebris",Vector3.new(1.8+i%3*0.8,1.5+i%2*0.6,2.4)*scale,CFrame.new(start),Color3.fromRGB(90,95,102))
 			rock.CanCollide=false;rock.CanTouch=false;rock.CanQuery=false
-			local peak=start+(direction*(3+i%5)+Vector3.new(0,3+i%4,0))*scale
-			TweenService:Create(rock,TweenInfo.new(0.22,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),
+			local peak=start+(direction*(5+i%6)+Vector3.new(0,7+i%5,0))*scale
+			TweenService:Create(rock,TweenInfo.new(0.3,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),
 				{CFrame=CFrame.new(peak)*CFrame.Angles(i,0,i*0.4)}):Play()
-			task.delay(0.22,function()
+			task.delay(0.3,function()
 				if not rock.Parent then return end
-				TweenService:Create(rock,TweenInfo.new(0.4,Enum.EasingStyle.Quad,Enum.EasingDirection.In),
-					{CFrame=CFrame.new(peak+direction*3*scale-Vector3.new(0,6,0)*scale),Transparency=1}):Play()
+				TweenService:Create(rock,TweenInfo.new(0.6,Enum.EasingStyle.Quad,Enum.EasingDirection.In),
+					{CFrame=CFrame.new(peak+direction*4*scale-Vector3.new(0,11,0)*scale),Transparency=1}):Play()
 			end)
-			Debris:AddItem(rock,0.7)
+			Debris:AddItem(rock,1)
 		end
 	end
 	kaiju.Destroying:Once(cancel)
