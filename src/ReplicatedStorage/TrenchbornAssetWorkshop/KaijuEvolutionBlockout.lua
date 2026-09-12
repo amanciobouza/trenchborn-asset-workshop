@@ -100,8 +100,8 @@ local function cylinderBetween(parent: Instance, name: string, a: Vector3, b: Ve
 	return part(parent, name, Vector3.new(delta.Magnitude, diameter * sx, diameter * sz), CFrame.lookAt(mid, wb) * CFrame.Angles(0, math.rad(90), 0), color, Enum.PartType.Cylinder)
 end
 
-local function claw(parent: Instance, name: string, pos: Vector3, yaw: number, origin: CFrame, sx: number, sy: number, sz: number, pitch: number?)
-	wedge(parent, name, scaled(Vector3.new(0.72, 0.68, 1.65), sx, sy, sz), frame(origin, pos, sx, sy, sz) * CFrame.Angles(math.rad(pitch or -8), math.rad(yaw), 0), CLAW)
+local function claw(parent: Instance, name: string, pos: Vector3, yaw: number, origin: CFrame, sx: number, sy: number, sz: number, pitch: number?, length: number?)
+	wedge(parent, name, scaled(Vector3.new(0.72, 0.68, length or 1.65), sx, sy, sz), frame(origin, pos, sx, sy, sz) * CFrame.Angles(math.rad(pitch or -8), math.rad(yaw), 0), CLAW)
 end
 
 local function buildFoot(parent: Instance, side: string, sign: number, origin: CFrame, sx: number, sy: number, sz: number)
@@ -124,12 +124,16 @@ local function buildArm(parent: Instance, side: string, sign: number, origin: CF
 	cylinderBetween(parent, side .. "UpperArm", shoulder, elbow, 2.8, origin, sx, sy, sz, BODY)
 	sphere(parent, side .. "ElbowJoint", scaled(Vector3.new(3.05, 3.05, 3.0), sx, sy, sz), frame(origin, elbow, sx, sy, sz), BODY_DARK)
 	cylinderBetween(parent, side .. "Forearm", elbow, wrist, 3.15, origin, sx, sy, sz, BODY)
-	sphere(parent, side .. "WristJoint", scaled(Vector3.new(2.55, 2.45, 2.5), sx, sy, sz), frame(origin, wrist, sx, sy, sz), BODY_DARK)
-	sphere(parent, side .. "PalmMass", scaled(Vector3.new(2.9, 2.2, 2.7), sx, sy, sz), frame(origin, wrist + Vector3.new(0, -0.75, -0.2), sx, sy, sz), BODY_DARK)
+	sphere(parent, side .. "WristJoint", scaled(Vector3.new(3.0, 2.8, 2.9), sx, sy, sz), frame(origin, wrist, sx, sy, sz), BODY_DARK)
+	sphere(parent, side .. "PalmMass", scaled(Vector3.new(3.9, 3.25, 3.55), sx, sy, sz), frame(origin, wrist + Vector3.new(0, -1.0, -0.2), sx, sy, sz), BODY_DARK)
 	for i = 1, 3 do
-		local fingerX = wrist.X + (i - 2) * 0.7
-		cylinderBetween(parent, side .. "Finger_" .. i, Vector3.new(fingerX, 11.65, -0.85), Vector3.new(fingerX, 10.85, -0.95), 0.62, origin, sx, sy, sz, BODY_DARK)
-		claw(parent, side .. "HandClaw_" .. i, Vector3.new(fingerX, 10.15, -0.95), 0, origin, sx, sy, sz, 90)
+		local fingerX = wrist.X + (i - 2) * 0.9
+		local fingerBase = Vector3.new(fingerX, 11.45, -1.0)
+		local fingerTip = Vector3.new(fingerX, 10.7, -1.05)
+		cylinderBetween(parent, side .. "Finger_" .. i, fingerBase, fingerTip, 0.86, origin, sx, sy, sz, BODY_DARK)
+		sphere(parent, side .. "Knuckle_" .. i, scaled(Vector3.new(1.05, 1.0, 1.05), sx, sy, sz), frame(origin, fingerBase, sx, sy, sz), BODY_DARK)
+		sphere(parent, side .. "FingerPad_" .. i, scaled(Vector3.new(0.95, 0.95, 1.0), sx, sy, sz), frame(origin, fingerTip, sx, sy, sz), BODY_DARK)
+		claw(parent, side .. "HandClaw_" .. i, Vector3.new(fingerX, 9.95, -1.05), 0, origin, sx, sy, sz, -90, 1.35)
 	end
 	if armorLevel >= 1 then
 		wedge(parent, side .. "ForearmShield", scaled(Vector3.new(2.5 + armorLevel * 0.25, 4.0, 1.5), sx, sy, sz), frame(origin, Vector3.new(sign * 5.6, 15.0, -1.5), sx, sy, sz) * CFrame.Angles(0, sign * math.rad(90), 0), ARMOR)
