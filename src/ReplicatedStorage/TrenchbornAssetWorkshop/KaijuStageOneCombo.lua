@@ -106,7 +106,7 @@ function Combo.new(prepareFinisher)
 			self.GrabSent = true
 			table.insert(self.Events, {Kind="Grab", Index=4})
 		end
-		if self.Index==4 and t>=impactTimes[4]-0.18 and not self.TearSoundSent then
+		if self.Index==4 and t>=impactTimes[4]-0.33 and not self.TearSoundSent then
 			self.TearSoundSent=true
 			table.insert(self.Events,{Kind="TearSound",Index=4})
 		end
