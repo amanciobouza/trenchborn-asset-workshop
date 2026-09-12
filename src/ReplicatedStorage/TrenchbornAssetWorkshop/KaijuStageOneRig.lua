@@ -178,7 +178,8 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	local heartbeat, destroying
 	local combo = Combo.new(combat and combat.PrepareFinisher)
 	local jump = Jump.new()
-	local savedSpeed, savedOwner, launchVelocity
+	local savedSpeed, savedOwner, airDirection
+	local AIR_SPEED=30
 	local ownsPhysics=false
 	local function restoreJump()
 		if humanoid and savedSpeed then humanoid.WalkSpeed=savedSpeed end
@@ -189,14 +190,21 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		end
 		ownsPhysics=false
 	end
-	local function requestJump()
+	local function setAirDirection(direction)
+		if jump.Phase~="Air" and jump.Phase~="Windup" then return end
+		local flat=Vector3.new(direction.X,0,direction.Z)
+		if flat.Magnitude>0.05 then airDirection=flat.Unit end
+	end
+	local function requestJump(direction)
 		if stopped or not humanoid or humanoid.Health<=0 or not movementRoot
 			or model:GetAttribute("IdleEnabled")==false then return false end
 		if not jump:Request(os.clock(),humanoid.FloorMaterial~=Enum.Material.Air) then return false end
 		combo:Cancel()
 		if combat then combat.Cancel() end
 		savedSpeed=humanoid.WalkSpeed
-		launchVelocity=movementRoot.AssemblyLinearVelocity
+		local forward=movementRoot.CFrame.LookVector
+		airDirection=Vector3.new(forward.X,0,forward.Z).Unit
+		if direction then setAirDirection(direction) end
 		humanoid.WalkSpeed=0
 		return true
 	end
@@ -271,17 +279,23 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		if movementRoot and humanoid then
 			jumpPose,jumpEvent=jump:Update(os.clock(),humanoid.FloorMaterial~=Enum.Material.Air,movementRoot.AssemblyLinearVelocity.Y)
 			if jumpEvent=="Takeoff" then
-				-- Brief scripted flight: preserve approach momentum, with no double jump.
+				-- Launch forward even from rest; steering is applied on the server.
 				savedOwner=movementRoot:GetNetworkOwner()
 				movementRoot:SetNetworkOwner(nil)
 				ownsPhysics=true
 				humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
 				local velocity=movementRoot.AssemblyLinearVelocity
-				local rise=math.sqrt(2*workspace.Gravity*12*scale)
-				local horizontal=Vector3.new(launchVelocity.X,0,launchVelocity.Z)
-				if horizontal.Magnitude>10 then horizontal=horizontal.Unit*10 end
+				local rise=math.sqrt(2*workspace.Gravity*22*scale)
+				local horizontal=airDirection*AIR_SPEED
 				movementRoot:ApplyImpulse((horizontal+Vector3.new(0,rise,0)-velocity)*movementRoot.AssemblyMass)
 			elseif jumpEvent=="Restore" then restoreJump() end
+			if jump.Phase=="Air" then
+				humanoid.WalkSpeed=AIR_SPEED
+				humanoid:Move(airDirection,false)
+			elseif jump.Phase=="Landing" then
+				humanoid.WalkSpeed=0
+				humanoid:Move(Vector3.zero,false)
+			end
 		end
 		model:SetAttribute("JumpPhase",jump.Phase)
 		local speed = 0
@@ -393,7 +407,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	end)
 	destroying = model.Destroying:Connect(stop)
 	print(string.format("[Kaiju Rig] %d parts | %d joints | Walk preview | AnimationMode: Walk / Idle | IdleEnabled=false pauses both", #visuals, 17 + tailCount))
-	return {Stop = stop, Motors = motors, RequestAttack = requestAttack, RequestJump = requestJump}
+	return {Stop = stop, Motors = motors, RequestAttack = requestAttack, RequestJump = requestJump, SetAirDirection=setAirDirection}
 end
 
 return Rig
