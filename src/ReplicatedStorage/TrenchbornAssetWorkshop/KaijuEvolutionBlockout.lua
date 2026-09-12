@@ -228,15 +228,29 @@ local function buildStage(parent: Instance, stage: Stage, index: number, origin:
 	return model
 end
 
-function Builder.Build(target: Instance, ground: CFrame?): Model
+local function createCollection(target: Instance, purpose: string): Model
 	local existing = target:FindFirstChild("Kaiju_Evolution_Primitive_Blockout")
 	if existing then existing:Destroy() end
 	local collection = Instance.new("Model")
 	collection.Name = "Kaiju_Evolution_Primitive_Blockout"
 	collection:SetAttribute("PipelinePhase", 4)
 	collection:SetAttribute("QualityGateB", "Pending")
-	collection:SetAttribute("Purpose", "Five-stage silhouette and proportion review")
+	collection:SetAttribute("Purpose", purpose)
 	collection.Parent = target
+	return collection
+end
+
+function Builder.BuildStage(target: Instance, stageIndex: number, ground: CFrame?): Model
+	local stage = STAGES[stageIndex]
+	assert(stage, string.format("Unknown Kaiju evolution stage: %d", stageIndex))
+	local collection = createCollection(target, string.format("Stage %d silhouette and proportion review", stageIndex))
+	collection:SetAttribute("VisibleStage", stageIndex)
+	buildStage(collection, stage, stageIndex, ground or CFrame.new(0, 0, 145))
+	return collection
+end
+
+function Builder.Build(target: Instance, ground: CFrame?): Model
+	local collection = createCollection(target, "Five-stage silhouette and proportion review")
 	local base = ground or CFrame.new(0, 0, 145)
 	local offsets = {-68, -36, 0, 42, 96}
 	for index, stage in ipairs(STAGES) do
