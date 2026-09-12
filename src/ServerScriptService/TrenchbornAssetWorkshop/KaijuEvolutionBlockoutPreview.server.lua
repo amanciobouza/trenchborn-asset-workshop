@@ -82,6 +82,12 @@ local function equip(player, character)
 	combatModule.BuildRange(player, ground, character)
 	local combat = combatModule.Attach(kaiju, root, humanoid, height)
 	local rig = stageOneRig.Attach(kaiju, root, humanoid, combat)
+	local runRemote=Instance.new("RemoteEvent")
+	runRemote.Name="SetRunning";runRemote.Parent=kaiju
+	local runConnection=runRemote.OnServerEvent:Connect(function(sender,enabled)
+		if sender~=player or player.Character~=character or type(enabled)~="boolean" then return end
+		rig.SetRunning(enabled)
+	end)
 	local areaRemote=Instance.new("RemoteEvent")
 	areaRemote.Name="RequestArea";areaRemote.Parent=kaiju
 	local lastArea=-math.huge
@@ -161,6 +167,7 @@ local function equip(player, character)
 	if display and display.Parent then display:Destroy() end
 
 	character.Destroying:Once(function()
+		runConnection:Disconnect()
 		areaConnection:Disconnect()
 		focusConnection:Disconnect()
 		steerConnection:Disconnect()
