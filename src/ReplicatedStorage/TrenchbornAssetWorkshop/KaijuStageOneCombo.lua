@@ -19,14 +19,32 @@ local function both(pitch, arm, elbow, spread)
 		LeftForearm={elbow,0,0}, RightForearm={elbow,0,0},
 		LeftHand={0,-18,0}, RightHand={0,18,0}}
 end
+local function tear(pitch, arm, elbow, spread, head, jaw, flare)
+	local p = both(pitch, arm, elbow, spread)
+	p.Head = {head,0,0}
+	p.Jaw = {jaw,0,0}
+	p.LeftUpperArm[3], p.RightUpperArm[3] = -flare, flare
+	return p
+end
 local attacks = {
 	{Name="Links", Frames=hook("Left",-1)},
 	{Name="Rechts", Frames=hook("Right",1)},
 	{Name="Beide", Frames={{0,{},0},{0.34,both(-5,125,20,-8),0.4},
 		{0.54,both(-36,48,2,16),2.8},{0.65,both(-38,40,0,18),3.0},{1.2,{},0}}},
-	{Name="Zerreissen", Frames={{0,{},0},{0.38,both(-34,48,12,40),2.6},
-		{0.54,both(-36,46,10,42),2.8},{0.78,both(-22,38,24,-48),2.0},
-		{0.92,both(-18,34,28,-52),1.8},{1.45,{},0}}},
+	{Name="Zerreissen", Frames={
+		{0,{},0},
+		-- Reach low, close the grip and visibly load against resistance.
+		{0.38,tear(-34,48,12,40,4,-4,0),2.6},
+		{0.62,tear(-38,44,16,44,2,-7,0),3.0},
+		{0.84,tear(-39,42,20,44,0,-9,0),3.0},
+		-- Release in one large upward/outward pull; chest and head rise with it.
+		{1.08,tear(-5,82,12,-68,10,-18,24),0.7},
+		{1.20,tear(1,86,10,-74,14,-20,28),0.5},
+		-- Let the arms settle slightly, then hold the broad finishing silhouette.
+		{1.38,tear(-4,76,18,-66,9,-14,22),0.8},
+		{1.60,tear(-4,76,18,-66,9,-14,22),0.8},
+		{2.15,{},0},
+	}},
 }
 function Combo.new()
 	local state = {Index=0, Started=0, Ended=-math.huge, Active=false, Queued=false}
