@@ -169,7 +169,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	local elapsed, accumulator, stopped = 0, 0, false
 	local walkCycle, smoothedBob = 0, 0
 	local heartbeat, destroying
-	local combo = Combo.new()
+	local combo = Combo.new(combat and combat.PrepareFinisher)
 	local function requestAttack()
 		if stopped or not humanoid or humanoid.Health <= 0
 			or humanoid.FloorMaterial == Enum.Material.Air
