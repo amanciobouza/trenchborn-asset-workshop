@@ -201,7 +201,8 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		-- Derive the opening from both lips in rig space, including jaw rotation.
 		local jawInHead=motors.Jaw.C0*motors.Jaw.C1:Inverse()
 		local lower=jawInHead:PointToWorldSpace(lowerLipLocal)
-		return bones.Head,CFrame.new((upperLipLocal+lower)/2)
+		-- Bias the origin toward the lower lip so the upper muzzle stays clear.
+		return bones.Head,CFrame.new(upperLipLocal:Lerp(lower,0.68))
 	end
 	local function mouthPosition()
 		local upper,offset=mouthFrame()
@@ -528,8 +529,8 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			pose("Torso",(-8+recoil)*charge*fadeOut,0,0)
 			pose("Head",(pitch+8-recoil)*charge*fadeOut,yaw*charge*fadeOut,0)
 			-- Forward is -Z: negative X lowers the jaw. Open before the beam starts.
-			local opening=math.clamp((t-1.65)/0.25,0,1)
-			pose("Jaw",-28*opening*fadeOut,0,0)
+			local opening=math.clamp((t-1.5)/0.3,0,1)
+			pose("Jaw",-48*opening*fadeOut,0,0)
 			for _,side in ipairs({"Left","Right"}) do
 				local sign=side=="Left" and -1 or 1
 				pose(side.."UpperArm",12*charge*fadeOut,0,-sign*12*charge*fadeOut)
