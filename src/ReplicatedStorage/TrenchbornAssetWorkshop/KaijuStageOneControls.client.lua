@@ -135,11 +135,46 @@ if RunService:IsStudio() then
 		end)
 	end
 end
+local feedbackConnection,feedbackModel
+local cameraImpulses={}
+local cameraOffset=CFrame.identity
+local offsetCamera
+local cameraBefore="KaijuFeedbackBefore_"..player.UserId
+local cameraAfter="KaijuFeedbackAfter_"..player.UserId
+local impulsePresets={Step={0.14,0.16},RunStep={0.22,0.18},Land={0.65,0.35},Punch={0.28,0.2},
+	Finisher={0.65,0.35},Hit={0.3,0.2},HeavyHit={0.6,0.35},FocusFire={0.45,0.25},Discharge={0.85,0.45},Defeat={0.7,0.5}}
+local function clearCameraOffset()
+	if offsetCamera then offsetCamera.CFrame=offsetCamera.CFrame*cameraOffset:Inverse() end
+	offsetCamera=nil;cameraOffset=CFrame.identity
+end
+RunService:BindToRenderStep(cameraBefore,Enum.RenderPriority.Camera.Value-1,clearCameraOffset)
+RunService:BindToRenderStep(cameraAfter,Enum.RenderPriority.Camera.Value+1,function()
+	local camera=workspace.CurrentCamera
+	if not camera or camera.CameraType==Enum.CameraType.Scriptable or not feedbackModel or not feedbackModel.Parent then return end
+	local now=os.clock()
+	local strength=0
+	for i=#cameraImpulses,1,-1 do
+		local impulse=cameraImpulses[i];local age=now-impulse.Started
+		if age>=impulse.Duration then table.remove(cameraImpulses,i)
+		else strength=strength+impulse.Strength*(1-age/impulse.Duration)^2 end
+	end
+	local focusPhase=feedbackModel:GetAttribute("FocusPhase")
+	local areaPhase=feedbackModel:GetAttribute("AreaPhase")
+	if focusPhase=="Charging" or areaPhase=="Charging" then strength=strength+0.045
+	elseif focusPhase=="Firing" then strength=strength+0.06 end
+	strength=math.min(strength,1)
+	if strength<=0 then return end
+	cameraOffset=CFrame.new(math.sin(now*47)*0.12*strength,math.sin(now*61)*0.1*strength,0)
+		*CFrame.Angles(math.rad(math.sin(now*39)*0.35*strength),0,math.rad(math.sin(now*43)*0.2*strength))
+	camera.CFrame=camera.CFrame*cameraOffset;offsetCamera=camera
+end)
 local availabilityConnection
 local focusConnection
 local areaConnection
 local alive=true
 local function watchCharacter(character)
+	if feedbackConnection then feedbackConnection:Disconnect();feedbackConnection=nil end
+	feedbackModel=nil;cameraImpulses={};clearCameraOffset()
 	setRun(false)
 	if availabilityConnection then availabilityConnection:Disconnect();availabilityConnection=nil end
 	if focusConnection then focusConnection:Disconnect();focusConnection=nil end
@@ -151,6 +186,17 @@ local function watchCharacter(character)
 	task.spawn(function()
 		local model=character:WaitForChild("Stage_1_Primal_Beast",20)
 		if not alive or not model or player.Character~=character then return end
+		feedbackModel=model
+		local remote=model:WaitForChild("KaijuFeedback",10)
+		if not alive or player.Character~=character then return end
+		if remote then
+			feedbackConnection=remote.OnClientEvent:Connect(function(kind)
+				local preset=impulsePresets[kind]
+				if not preset then return end
+				if #cameraImpulses>=6 then table.remove(cameraImpulses,1) end
+				table.insert(cameraImpulses,{Started=os.clock(),Strength=preset[1],Duration=preset[2]})
+			end)
+		end
 		local function update()
 			local available=model:GetAttribute("FinisherAvailable")==true
 			prompt.Visible=available
@@ -185,6 +231,9 @@ task.spawn(function()
 	end
 end)
 script.Destroying:Connect(function()
+	if feedbackConnection then feedbackConnection:Disconnect() end
+	RunService:UnbindFromRenderStep(cameraBefore);RunService:UnbindFromRenderStep(cameraAfter)
+	clearCameraOffset()
 	setRun(false)
 	runFocusLost:Disconnect();runTextFocus:Disconnect();runGamepadLost:Disconnect()
 	CAS:UnbindAction(runAction)
