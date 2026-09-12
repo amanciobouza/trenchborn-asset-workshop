@@ -391,7 +391,7 @@ local function applyStylizedMasses(model: Model, origin: CFrame)
 		local oldPalm = model:FindFirstChild(side .. "PalmMass")
 		if oldPalm then oldPalm:Destroy() end
 		roundedBox(model, side .. "Palm", Vector3.new(4.3, 2.6, 2.4), origin * CFrame.new(wrist + Vector3.new(0, -1.1, -0.2)), BODY_DARK, 0.48)
-		place("WristJoint", Vector3.new(2.9, 2.5, 2.4), wrist)
+		place("WristJoint", Vector3.new(3.25, 3.1, 2.75), wrist)
 		for i = 1, 3 do
 			local x = wrist.X + (i - 2) * 1.15
 			local base = Vector3.new(x, wrist.Y - 2.05, wrist.Z - 0.25)
@@ -401,7 +401,7 @@ local function applyStylizedMasses(model: Model, origin: CFrame)
 			cylinderBetween(model, side .. "Finger_" .. i, base, tip, 0.95, origin, 1, 1, 1, BODY_DARK)
 			place("Knuckle_" .. i, Vector3.new(1.05, 0.85, 0.95), base)
 			place("FingerPad_" .. i, Vector3.new(0.95, 0.8, 0.95), tip)
-			place("HandClaw_" .. i, Vector3.new(0.72, 0.68, 1.35), tip + Vector3.new(0, -0.8, 0), CFrame.Angles(-math.pi/2, 0, 0))
+			place("HandClaw_" .. i, Vector3.new(0.86, 0.82, 0.95), tip + Vector3.new(0, -0.6, 0), CFrame.Angles(-math.pi/2, 0, 0))
 		end
 
 		-- Distinct back-of-hand volume and short opposed thumb; both are created
@@ -416,7 +416,9 @@ local function applyStylizedMasses(model: Model, origin: CFrame)
 		sphere(model, side .. "ThumbJoint", Vector3.new(1.2, 1.2, 1.2), origin * CFrame.new(thumbJoint), BODY)
 		cylinderBetween(model, side .. "ThumbLower", thumbJoint, thumbTip, 0.95, origin, 1, 1, 1, BODY)
 		sphere(model, side .. "ThumbTip", Vector3.new(1.0, 1.05, 1.05), origin * CFrame.new(thumbTip), BODY)
-		claw(model, side .. "ThumbClaw", thumbTip + Vector3.new(0, -0.5, -0.12), 0, origin, 1, 1, 1, -90, 0.9)
+		claw(model, side .. "ThumbClaw", thumbTip + Vector3.new(0, -0.42, -0.12), 0, origin, 1, 1, 1, -90, 0.72)
+		local thumbNail = model:FindFirstChild(side .. "ThumbClaw") :: BasePart
+		thumbNail.Size = Vector3.new(0.8, 0.78, 0.72)
 		-- Roll each claw around its own long local Z axis, mirrored per hand.
 		-- Post-multiplication preserves the center and longitudinal direction.
 		for _, name in ipairs({"HandClaw_1", "HandClaw_2", "HandClaw_3", "ThumbClaw"}) do
@@ -455,9 +457,9 @@ local function applyStylizedMasses(model: Model, origin: CFrame)
 			if toe then toe:Destroy() end
 			cylinderBetween(model, side .. "Toe_" .. i, Vector3.new(toeX, 1.0, -2.3), Vector3.new(toeX, 0.95, -3.6), 1.2, origin, 1, 1, 1, BODY_DARK)
 			sphere(model, side .. "ToePad_" .. i, Vector3.new(1.25, 1.05, 1.5), origin * CFrame.new(toeX, 0.95, -3.35), BODY_DARK)
-			place("FrontClaw_" .. i, Vector3.new(0.95, 0.8, 1.75), Vector3.new(toeX, 0.65, -4.45), CFrame.Angles(math.rad(-8), 0, 0))
+			place("FrontClaw_" .. i, Vector3.new(1.05, 0.95, 1.15), Vector3.new(toeX, 0.7, -4.15), CFrame.Angles(math.rad(-8), 0, 0))
 		end
-		place("RearClaw", Vector3.new(0.85, 0.8, 1.7), Vector3.new(footX, 1.0, 2.3), CFrame.Angles(math.rad(-8), math.pi, 0))
+		place("RearClaw", Vector3.new(0.95, 0.9, 1.15), Vector3.new(footX, 1.0, 2.05), CFrame.Angles(math.rad(-8), math.pi, 0))
 	end
 	local upperChest = model:FindFirstChild("UpperRibcage") :: BasePart
 	upperChest.Size = Vector3.new(11.3, 6.2, 6.6)
@@ -512,7 +514,7 @@ local function refineStageOne(model: Model, origin: CFrame)
 	mass("FrontalBridge", Vector3.new(4.0, 1.3, 3.9), Vector3.new(0, 27.65, -2.2), skin)
 	for _, sign in ipairs({-1, 1}) do
 		local side = sign < 0 and "Left" or "Right"
-		mass(side .. "Pectoral", Vector3.new(5.35, 4.5, 1.95), Vector3.new(sign * 2.18, 22.45, -2.9), underside)
+		mass(side .. "Pectoral", Vector3.new(5.7, 3.8, 1.35), Vector3.new(sign * 2.18, 22.45, -2.95), underside)
 		mass(side .. "Deltoid", Vector3.new(6.4, 5.5, 5.9), Vector3.new(sign * 5.7, 22.1, -0.1), skin)
 		mass(side .. "ShoulderJoint", Vector3.new(5.6, 5.3, 5.4), Vector3.new(sign * 5.7, 22.1, -0.1), skin)
 		mass(side .. "ShoulderBridge", Vector3.new(3.3, 3.1, 4.0), Vector3.new(sign * 3.9, 22.65, 0), skin)
@@ -525,7 +527,8 @@ local function refineStageOne(model: Model, origin: CFrame)
 		-- Long calf/instep envelopes bury flat cylinder ends and connect the foot.
 		mass(side .. "CalfMass", Vector3.new(4.8, 6.3, 4.65), Vector3.new(sign * 3.15, 7.8, 0.0), skin,
 			CFrame.Angles(math.rad(-27), 0, 0))
-		mass(side .. "InstepFlow", Vector3.new(3.6, 4.4, 4.0), Vector3.new(sign * 3.25, 3.0, -0.35), skin,
+		mass(side .. "AnkleJoint", Vector3.new(3.5, 3.2, 3.45), Vector3.new(sign * 3.25, 2.45, 0.0), skin)
+		mass(side .. "InstepFlow", Vector3.new(4.0, 4.8, 4.5), Vector3.new(sign * 3.25, 2.65, -0.6), skin,
 			CFrame.Angles(math.rad(12), 0, 0))
 	end
 	-- Lift the complete face as one assembly, including all rounded-box pieces.
@@ -586,7 +589,7 @@ local function refineStageOne(model: Model, origin: CFrame)
 			item.Material = Enum.Material.SmoothPlastic
 		end
 	end
-	model:SetAttribute("GeometryRevision", "S1_ConnectedForehead_EmbeddedBrows_11")
+	model:SetAttribute("GeometryRevision", "S1_ChestJointClawRefinement_12")
 	model:SetAttribute("VisualTarget", "Approved simplified Stage 1 and Stage 2 maquette")
 	model:SetAttribute("GeometryMethod", "Roblox primitives and visual ellipsoids; no external assets")
 end
