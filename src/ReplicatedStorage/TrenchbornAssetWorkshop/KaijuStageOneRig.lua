@@ -339,6 +339,23 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		weld.Name="MouthChargeWeld";weld.Part0=upper;weld.Part1=focus.Orb
 		weld.C0=offset;weld.C1=CFrame.identity;weld.Parent=focus.Orb
 		focus.OrbWeld=weld
+		focus.Motes={};focus.Pulses={};focus.Rubble={}
+		for i=1,12 do table.insert(focus.Motes,effect("IntakeSpark",Enum.PartType.Ball,focusColor)) end
+		for i=1,3 do table.insert(focus.Pulses,effect("BeamPulse",Enum.PartType.Ball,focusColor)) end
+		local groundParams=RaycastParams.new();groundParams.FilterType=Enum.RaycastFilterType.Exclude
+		groundParams.FilterDescendantsInstances={model.Parent}
+		for _,side in ipairs({"Left","Right"}) do
+			local foot=bones[side.."Foot"].Position
+			local hit=workspace:Raycast(foot+Vector3.new(0,5*scale,0),Vector3.new(0,-15*scale,0),groundParams)
+			if hit then
+				for i=1,8 do
+					local rock=effect("FocusGroundChip",Enum.PartType.Block,hit.Instance:IsA("BasePart") and hit.Instance.Color or Color3.fromRGB(90,90,85))
+					rock.Material=Enum.Material.Slate
+					local direction=movementRoot.CFrame:VectorToWorldSpace(Vector3.new(math.cos(i*2.4),0,1+math.sin(i*2.4)*0.4))
+					table.insert(focus.Rubble,{Part=rock,Origin=hit.Position+movementRoot.CFrame:VectorToWorldSpace(Vector3.new(0,0,side=="Right" and 2.6*scale or 0)),Direction=direction,Index=i})
+				end
+			end
+		end
 		local endpoint=Instance.new("Attachment")
 		endpoint.Parent=focus.Impact
 		local function beam(name,color)
@@ -548,7 +565,10 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		-- planted feet retain their floor height. Recovery uses the same smoothing.
 		bob = bob - (attackCrouch or 0)*scale
 		if jumpPose then bob=-jumpPose.Crouch*scale end
-		if focus then bob=-0.35*scale*math.min(focusTime/0.4,1)*math.clamp((4.85-focusTime)/0.35,0,1) end
+		if focus then
+			local kick=focusTime>=2 and math.exp(-(focusTime-2)*9) or 0
+			bob=-(1.7*math.min(focusTime/0.65,1)+0.65*kick)*scale*math.clamp((4.85-focusTime)/0.35,0,1)
+		end
 		if area then bob=-7.2*areaCharge*(1-areaRecover)*scale end
 		local blend = 1-math.exp(-poseDt/0.10)
 		smoothedBob = smoothedBob + (bob-smoothedBob)*blend
@@ -643,38 +663,69 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			lowAim=lowAim*lowAim*(3-2*lowAim)
 			local localAim=movementRoot.CFrame:VectorToObjectSpace(delta)
 			local yaw=math.clamp(math.deg(math.atan2(-localAim.X,-localAim.Z)),-45,45)
-			local recoil=firing and math.sin(t*35)*1.2 or 0
-			pose("Torso",(-8+recoil)*charge*fadeOut,0,0)
+			local kick=firing and math.exp(-(t-2)*9) or 0
+			local tremor=(firing and math.sin(t*32)*0.8 or t<1.8 and math.sin(t*42)*charge^4*0.9 or 0)
+			local build=math.min(t/1.5,1)
+			local torsoPitch=(-14*build+13*kick+tremor)*fadeOut
+			pose("Torso",torsoPitch,0,0)
+			local step=math.clamp(t/0.65,0,1);step=step*step*(3-2*step)
+			solveLeg("Left",0,0,actualBob)
+			solveLeg("Right",2.6*step*fadeOut*scale,t<0.65 and math.sin(math.pi*t/0.65)^2*1.2*scale or 0,actualBob)
 			local reach=lowAim*charge*fadeOut
-			motors.Head.C0=rest.Head*CFrame.new(0,0.5*scale*reach,-1.2*scale*reach)
-				*CFrame.Angles(math.rad((pitch+8-recoil)*charge*fadeOut),math.rad(yaw*charge*fadeOut),0)
+			motors.Head.C0=rest.Head*CFrame.new(0,0.5*scale*reach,(-1.2*reach+0.5*build*fadeOut+0.7*kick)*scale)
+				*CFrame.Angles(math.rad(pitch*charge*fadeOut-torsoPitch),math.rad(yaw*charge*fadeOut),0)
 			-- Forward is -Z: negative X lowers the jaw. Open before the beam starts.
 			local opening=math.clamp((t-1.5)/0.3,0,1)
 			pose("Jaw",-(36-10*lowAim)*opening*fadeOut,0,0)
 			for _,side in ipairs({"Left","Right"}) do
 				local sign=side=="Left" and -1 or 1
-				pose(side.."UpperArm",12*charge*fadeOut,0,-sign*12*charge*fadeOut)
-				pose(side.."Forearm",-24*charge*fadeOut,0,0)
+				pose(side.."UpperArm",(27*build-10*kick)*fadeOut,sign*8*build*fadeOut,-sign*24*build*fadeOut)
+				pose(side.."Forearm",(35*build-8*kick+tremor)*fadeOut,0,0)
+				pose(side.."Hand",-15*build*fadeOut,sign*12*build*fadeOut,0)
 			end
 			for p,color in pairs(focus.Colors) do
 				local index=tonumber(string.match(p.Name,"^DorsalEnergy_(%d+)")) or 1
 				local onset=math.clamp((tailCount-index)/(tailCount-1),0,1)*1.5
 				p.Color=color:Lerp(focusColor,math.clamp((t-onset)/0.3,0,1)*fadeOut)
 			end
-			local orbSize=(0.15+charge*0.7)*scale*fadeOut
+			local orbSize=(0.15+charge*0.85)*(1+0.08*math.sin(t*28)*charge)*scale*fadeOut
 			focus.Orb.Size=Vector3.new(orbSize,orbSize,orbSize)
 			focus.Orb.Transparency=0.15
 			for _,beam in ipairs({focus.Beam,focus.Core}) do
 				beam.Enabled=t>=2 and delta.Magnitude>0.01
 				beam.Transparency=NumberSequence.new(0.12+0.88*(1-fadeOut))
 				if t>=2 and delta.Magnitude>0.01 then
-					local width=math.max(0.05,(beam==focus.Core and 0.45 or 1.15)*scale*fadeOut)
+					local width=math.max(0.05,(beam==focus.Core and 0.45 or 1.15)*(1+0.25*kick+0.08*math.sin(t*25))*scale*fadeOut)
 					beam.Width0=width;beam.Width1=width
 				end
 			end
 			focus.Impact.Transparency=firing and visible and 0.25 or 1
 			focus.Impact.Size=Vector3.new(2,2,2)*scale*(1+0.12*math.sin(t*40))
 			focus.Impact.CFrame=CFrame.new(point)
+			-- Intake and travelling pulses follow the moving palate, never a cached world point.
+			local mouthCF=upperLip.CFrame*palateOffset
+			for i,mote in ipairs(focus.Motes) do
+				local progress=(t*1.4+i/12)%1
+				local angle=i*2.39996+t*2
+				local radius=(1-progress)*2.2*scale
+				mote.Position=mouthCF:PointToWorldSpace(Vector3.new(math.cos(angle)*radius,math.sin(angle)*radius,-(1-progress)*3*scale))
+				mote.Size=Vector3.new(1,1,1)*0.16*scale
+				mote.Transparency=t<1.8 and 1-charge*math.sin(progress*math.pi) or 1
+			end
+			for i,pulse in ipairs(focus.Pulses) do
+				local progress=((t-2)*2+(i-1)/3)%1
+				pulse.Position=from:Lerp(point,progress)
+				pulse.Size=Vector3.new(1,1,1)*1.45*scale
+				pulse.Transparency=firing and 0.6 or 1
+			end
+			for _,chip in ipairs(focus.Rubble) do
+				local age=t-2
+				local flight=math.clamp(age/0.65,0,1)
+				local offset=chip.Direction*flight*(3+chip.Index%3)*scale+Vector3.new(0,math.sin(flight*math.pi)*(1+chip.Index%3)*scale,0)
+				chip.Part.CFrame=CFrame.new(chip.Origin+offset)*CFrame.Angles(flight*4,chip.Index,flight*3)
+				chip.Part.Size=Vector3.new(0.5,0.35,0.65)*scale
+				chip.Part.Transparency=age>=0 and age<0.65 and flight or 1
+			end
 			-- Ten scheduled ticks; do not turn a delayed frame into an extra hit.
 			local due=math.clamp(math.floor((t-2)/0.25),0,10)
 			while focus.Ticks<due do
