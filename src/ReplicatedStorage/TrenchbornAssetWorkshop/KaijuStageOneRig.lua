@@ -7,6 +7,7 @@ local Rig = {}
 local STRIDE = 10.0
 local STANCE = 0.70 -- Both feet support the body during 40% of the cycle.
 local CYCLE_SECONDS = 1.9
+local AREA_TIMING={Curl=2.2,Discharge=2.8,Recovery=3.2,Finish=4.6}
 
 function Rig.Attach(model, movementRoot, humanoid, combat)
 	assert(model:GetAttribute("EvolutionStage") == 1, "Stage 1 rig only")
@@ -426,13 +427,13 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			or os.clock()-focus.Started>=4.85) then endFocus() end
 		local focusTime=focus and os.clock()-focus.Started
 		if area and (humanoid.Health<=0 or humanoid.FloorMaterial==Enum.Material.Air
-			or (movementRoot.Position-area.StartRoot).Magnitude>3*scale or os.clock()-area.Started>=2.4) then endArea() end
+			or (movementRoot.Position-area.StartRoot).Magnitude>3*scale or os.clock()-area.Started>=AREA_TIMING.Finish) then endArea() end
 		local areaTime=area and os.clock()-area.Started
 		local areaCharge,areaRecover=0,0
 		if area then
-			areaCharge=math.clamp(areaTime/1.0,0,1)
+			areaCharge=math.clamp(areaTime/AREA_TIMING.Curl,0,1)
 			areaCharge=areaCharge*areaCharge*(3-2*areaCharge)
-			areaRecover=math.clamp((areaTime-1.5)/0.9,0,1)
+			areaRecover=math.clamp((areaTime-AREA_TIMING.Recovery)/(AREA_TIMING.Finish-AREA_TIMING.Recovery),0,1)
 			areaRecover=areaRecover*areaRecover*(3-2*areaRecover)
 		end
 		if humanoid and humanoid.Health<=0 then jump:Cancel();restoreJump() end
@@ -652,7 +653,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			local hold=1-areaRecover
 			local tension=areaCharge*hold
 			local tremor=math.sin(areaTime*38)*0.55*areaCharge^4*hold
-			local release=areaTime>=1.2 and math.max(0,1-(areaTime-1.2)/0.22) or 0
+			local release=areaTime>=AREA_TIMING.Discharge and math.max(0,1-(areaTime-AREA_TIMING.Discharge)/0.22) or 0
 			-- Curl inward and contain the energy; the arms never swing overhead.
 			pose("Torso",-58*tension+tremor+4*release,0,tremor*0.4)
 			pose("Head",-10*tension-2*release,0,0)
@@ -672,8 +673,8 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				local charged=focusColor:Lerp(Color3.fromRGB(220,255,255),release*0.7)
 				p.Color=color:Lerp(charged,tension)
 			end
-			model:SetAttribute("AreaPhase",areaTime<1.2 and "Charging" or areaTime<1.5 and "Discharge" or "Recovery")
-			if areaTime>=1.2 and not area.Hit then
+			model:SetAttribute("AreaPhase",areaTime<AREA_TIMING.Discharge and "Charging" or areaTime<AREA_TIMING.Recovery and "Discharge" or "Recovery")
+			if areaTime>=AREA_TIMING.Discharge and not area.Hit then
 				area.Hit=true;combat.AreaImpact(area.Point)
 			end
 		end
@@ -681,8 +682,8 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		for name, m in pairs(motors) do m.C0 = previous[name]:Lerp(m.C0, blend) end
 		if area then
 			local intensity=areaCharge*(1-areaRecover)
-			local discharge=areaTime>=1.2
-			local envelope=discharge and math.max(0,1-(areaTime-1.2)/0.25) or intensity
+			local discharge=areaTime>=AREA_TIMING.Discharge
+			local envelope=discharge and math.max(0,1-(areaTime-AREA_TIMING.Discharge)/0.25) or intensity
 			for i,node in ipairs(area.Nodes) do
 				local pulse=1+0.12*math.sin(areaTime*(12+intensity*22)+i)
 				local size=(0.15+1.4*intensity*intensity)*scale*pulse
