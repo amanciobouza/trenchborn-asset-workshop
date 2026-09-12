@@ -21,6 +21,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		return p
 	end
 	local visuals = {}
+	local corpseGeometry={}
 	for _, p in ipairs(model:GetChildren()) do
 		if p:IsA("BasePart") then table.insert(visuals, p) end
 	end
@@ -118,6 +119,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		weld.Part0, weld.Part1 = bones[name], p
 		weld.Parent = p
 		p:SetAttribute("RigRegion", name)
+		table.insert(corpseGeometry,{Part=p,Bone=name,Local=bones[name].CFrame:ToObjectSpace(p.CFrame)})
 		p.Massless = true
 		p.Anchored = false
 	end
@@ -274,9 +276,17 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			game:GetService("Debris"):AddItem(dust,0.4)
 		end
 	end
-	local heartbeat, destroying
+	local heartbeat, destroying, healthConnection
 	local combo = Combo.new(combat and combat.PrepareFinisher)
 	local jump = Jump.new()
+	local hitReaction,defeat=nil,nil
+	local hitSide=1
+	local damageFlash=Instance.new("Highlight")
+	damageFlash.Name="DamageFeedback";damageFlash.Adornee=model;damageFlash.FillColor=Color3.fromRGB(255,65,45)
+	damageFlash.FillTransparency=1;damageFlash.OutlineTransparency=1;damageFlash.Parent=model
+	local function isStaggered()
+		return hitReaction and hitReaction.Heavy and os.clock()-hitReaction.Started<0.65
+	end
 	local focus,focusReadyAt=nil,0
 	local area,areaReadyAt=nil,0
 	local focusColor=Color3.fromRGB(65,225,255)
@@ -315,7 +325,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		area=nil;model:SetAttribute("AreaPhase","Idle")
 	end
 	local function requestArea()
-		if stopped or area or focus or not combat or not combat.AreaImpact or not humanoid or not movementRoot
+		if stopped or isStaggered() or area or focus or not combat or not combat.AreaImpact or not humanoid or not movementRoot
 			or humanoid.Health<=0 or humanoid.FloorMaterial==Enum.Material.Air or jump.Phase~="Idle"
 			or os.clock()<areaReadyAt or model:GetAttribute("IdleEnabled")==false
 			or (model:GetAttribute("ComboStep") or 0)~=0 then return false end
@@ -399,7 +409,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		return (upper.CFrame*offset).Position
 	end
 	local function requestFocus()
-		if stopped or focus or area or not combat or not combat.SelectFocusTarget or not humanoid
+		if stopped or isStaggered() or focus or area or not combat or not combat.SelectFocusTarget or not humanoid
 			or humanoid.Health<=0 or not movementRoot or jump.Phase~="Idle"
 			or humanoid.FloorMaterial==Enum.Material.Air or os.clock()<focusReadyAt
 			or model:GetAttribute("IdleEnabled")==false or (model:GetAttribute("ComboStep") or 0)~=0 then return false end
@@ -506,7 +516,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		airDirection=flat.Magnitude>0.05 and flat.Unit or Vector3.zero
 	end
 	local function requestJump(direction)
-		if stopped or focus or area or not humanoid or humanoid.Health<=0 or not movementRoot
+		if stopped or isStaggered() or focus or area or not humanoid or humanoid.Health<=0 or not movementRoot
 			or model:GetAttribute("IdleEnabled")==false then return false end
 		if not jump:Request(os.clock(),humanoid.FloorMaterial~=Enum.Material.Air) then return false end
 		combo:Cancel()
@@ -518,12 +528,13 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		return true
 	end
 	local function requestAttack()
-		if stopped or focus or area or jump.Phase~="Idle" or not humanoid or humanoid.Health <= 0
+		if stopped or isStaggered() or focus or area or jump.Phase~="Idle" or not humanoid or humanoid.Health <= 0
 			or humanoid.FloorMaterial == Enum.Material.Air
 			or model:GetAttribute("IdleEnabled") == false then return false end
 		return combo:Request(os.clock())
 	end
 	local function reset()
+		hitReaction=nil;damageFlash.FillTransparency=1
 		endArea()
 		endFocus()
 		jump:Cancel()
@@ -547,11 +558,118 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		stopped = true
 		if heartbeat then heartbeat:Disconnect() end
 		if destroying then destroying:Disconnect() end
+		if healthConnection then healthConnection:Disconnect() end
 		reset()
+		damageFlash:Destroy()
+	end
+	local function smooth(value)
+		local t=math.clamp(value,0,1);return t*t*(3-2*t)
+	end
+	local function updateDefeat(dt)
+		local t=os.clock()-defeat.Started
+		local kneel=smooth(t/0.7)
+		local fall=smooth((t-0.55)/1.35)
+		local settle=smooth((t-1.8)/0.8)
+		local function fallen(name,x,y,z)
+			local target=rest[name]*CFrame.Angles(math.rad(x),math.rad(y),math.rad(z))
+			motors[name].C0=motors[name].C0:Lerp(target,1-math.exp(-dt/0.09))
+		end
+		fallen("Torso",-24*kneel-12*fall,0,-8*fall)
+		fallen("Head",-18*kneel-12*settle,0,8*fall)
+		fallen("Jaw",-12*kneel,0,0)
+		for _,side in ipairs({"Left","Right"}) do
+			local sign=side=="Left" and -1 or 1
+			fallen(side.."Thigh",65*kneel,0,sign*8*fall)
+			fallen(side.."Shin",-100*kneel,0,0)
+			fallen(side.."Hock",35*kneel,0,0)
+			fallen(side.."Foot",-12*kneel,0,0)
+			fallen(side.."UpperArm",45*kneel+15*fall,0,-sign*(18*kneel-10*settle))
+			fallen(side.."Forearm",35*kneel+15*settle,0,0)
+			fallen(side.."Hand",-15*kneel,0,0)
+		end
+		for i=1,tailCount do fallen("Tail"..i,-1.5*kneel,(2+i*0.15)*fall,0) end
+		local rootPose=defeat.Root*CFrame.new(0,-7*kneel*scale,0)*CFrame.Angles(0,0,math.rad(78*fall))
+		-- Only the corpse uses geometry-to-floor settling; live locomotion stays unchanged.
+		local frames={Pelvis=rootPose}
+		local function worldBone(name)
+			if frames[name] then return frames[name] end
+			local motor=motors[name]
+			frames[name]=worldBone(motor.Part0.Name)*motor.C0
+			return frames[name]
+		end
+		local lowest=math.huge
+		for _,item in ipairs(corpseGeometry) do
+			local part=item.Part
+			local cf=worldBone(item.Bone)*item.Local
+			local h=part.Size/2
+			local x,y,z=cf.RightVector.Y*h.X,cf.UpVector.Y*h.Y,cf.LookVector.Y*h.Z
+			local extent=math.abs(x)+math.abs(y)+math.abs(z)
+			if part:IsA("Part") and part.Shape==Enum.PartType.Ball then extent=math.sqrt(x*x+y*y+z*z)
+			elseif part:IsA("Part") and part.Shape==Enum.PartType.Cylinder then extent=math.abs(x)+math.sqrt(y*y+z*z) end
+			lowest=math.min(lowest,cf.Position.Y-extent)
+		end
+		local correction=defeat.Ground-lowest
+		rootPose=rootPose+Vector3.new(0,correction<0 and correction*fall or correction,0)
+		rootJoint.C0=movementRoot.CFrame:ToObjectSpace(rootPose)
+		if t>=1.8 and not defeat.Impact then
+			defeat.Impact=true
+			for i=1,10 do
+				local dust=Instance.new("Part");dust.Name="DefeatDust";dust.Shape=Enum.PartType.Ball
+				dust.Anchored=true;dust.CanCollide=false;dust.CanTouch=false;dust.CanQuery=false;dust.CastShadow=false
+				dust.Material=Enum.Material.SmoothPlastic;dust.Color=Color3.fromRGB(100,100,95)
+				dust.Size=Vector3.new(2,0.6,2)*scale;dust.Transparency=0.45
+				dust.Position=Vector3.new(rootPose.Position.X,defeat.Ground+0.3*scale,rootPose.Position.Z)
+				dust.Parent=folder
+				local outward=Vector3.new(math.cos(i*2.4)*8,1.3,math.sin(i*2.4)*8)*scale
+				game:GetService("TweenService"):Create(dust,TweenInfo.new(0.7),
+					{Position=dust.Position+outward,Size=Vector3.new(5,2,5)*scale,Transparency=1}):Play()
+				game:GetService("Debris"):AddItem(dust,0.75)
+			end
+		end
+		damageFlash.FillTransparency=1-0.6*math.max(0,1-t/0.4)
+		model:SetAttribute("ReactionState",t<0.7 and "Buckling" or t<2.6 and "Falling" or "Defeated")
+		if t>=2.6 then defeat.Settled=true end
+	end
+	if humanoid and movementRoot then
+		humanoid.BreakJointsOnDeath=false
+		local previousHealth=humanoid.Health
+		healthConnection=humanoid.HealthChanged:Connect(function(health)
+			local damage=previousHealth-health;previousHealth=health
+			if stopped or defeat or damage<=0 then return end
+			if health<=0 then
+				endArea();endFocus();jump:Cancel();restoreJump();combo:Cancel()
+				if combat then combat.Cancel() end
+				runRequested=false;humanoid.WalkSpeed=0;humanoid.AutoRotate=false
+				humanoid:Move(Vector3.zero,false)
+				movementRoot.Anchored=true
+				local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Exclude
+				params.FilterDescendantsInstances={model.Parent}
+				local ground=workspace:Raycast(movementRoot.Position+Vector3.new(0,30*scale,0),Vector3.new(0,-150*scale,0),params)
+				defeat={Started=os.clock(),Root=movementRoot.CFrame*rootJoint.C0,
+					Ground=ground and ground.Position.Y or (movementRoot.CFrame*rootOffset).Position.Y-15.7*scale}
+				model:SetAttribute("Running",false);model:SetAttribute("RunRequested",false)
+				model:SetAttribute("ComboStep",0);model:SetAttribute("AttackName","")
+			else
+				hitSide=-hitSide
+				local heavy=damage>=humanoid.MaxHealth*0.18
+				hitReaction={Started=os.clock(),Heavy=heavy,Side=hitSide}
+				if heavy then
+					endArea();endFocus();combo:Cancel();if combat then combat.Cancel() end
+				end
+				model:SetAttribute("ReactionState",heavy and "Stagger" or "Hit")
+			end
+		end)
 	end
 	local wasEnabled = true
 	heartbeat = RunService.Heartbeat:Connect(function(dt)
 		if not model:IsDescendantOf(workspace) then stop(); return end
+		if defeat then
+			accumulator=accumulator+dt
+			if not defeat.Settled and accumulator>=1/30 then
+				local defeatDt=accumulator;accumulator=0;updateDefeat(defeatDt)
+			end
+			return
+		end
 		if model:GetAttribute("IdleEnabled") == false then
 			if wasEnabled then reset() end
 			wasEnabled = false
@@ -651,13 +769,13 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			walking = speed > 0.5 and humanoid.Health > 0
 				and humanoid.FloorMaterial ~= Enum.Material.Air
 		end
-		if jumpPose then walking=false end
+		if jumpPose or isStaggered() then walking=false end
 		if focus then walking=false;humanoid:Move(Vector3.zero,false) end
 		if area then walking=false;humanoid:Move(Vector3.zero,false) end
-		local runAllowed=not focus and not area and jump.Phase=="Idle"
+		local runAllowed=not isStaggered() and not focus and not area and jump.Phase=="Idle"
 			and humanoid and humanoid.Health>0 and (model:GetAttribute("ComboStep") or 0)==0
 		if humanoid and not focus and not area and jump.Phase=="Idle" and humanoid.Health>0 then
-			humanoid.WalkSpeed=runRequested and runAllowed and RUN_SPEED or WALK_SPEED
+			humanoid.WalkSpeed=isStaggered() and 0 or runRequested and runAllowed and RUN_SPEED or WALK_SPEED
 		end
 		local running=walking and runRequested and runAllowed
 		runBlend=runBlend+((running and 1 or 0)-runBlend)*(1-math.exp(-poseDt/0.22))
@@ -687,7 +805,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		for _, event in ipairs(combo:DrainEvents()) do
 			if combat then combat.Handle(event.Kind, event.Index, event.FinisherUntil) end
 		end
-		local special=jumpPose or focus or area or attackPose
+		local special=jumpPose or focus or area or attackPose or isStaggered()
 		local mode=area and "Area" or focus and "Focus" or jumpPose and "Jump" or attackPose and "Attack" or running and "Run" or walking and "Walk" or "Idle"
 		if mode~=previousMode then transitionLeft=0.22;previousMode=mode end
 		transitionLeft=math.max(0,transitionLeft-poseDt)
@@ -712,6 +830,10 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			bob=-(1.7*math.min(focusTime/0.65,1)+0.65*kick)*scale*math.clamp((4.85-focusTime)/0.35,0,1)
 		end
 		if area then bob=-7.2*areaCharge*(1-areaRecover)*scale end
+		if isStaggered() then
+			bob=bob-0.9*math.sin(math.pi*math.clamp((os.clock()-hitReaction.Started)/0.65,0,1))*scale
+			humanoid:Move(Vector3.zero,false)
+		end
 		local blend = 1-math.exp(-poseDt/0.10)
 		smoothedBob = smoothedBob + (bob-smoothedBob)*blend
 		local hipWeight=not special and (walking and 1 or stopWeight) or 0
@@ -975,6 +1097,24 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			model:SetAttribute("AreaPhase",areaTime<AREA_TIMING.Discharge and "Charging" or areaTime<AREA_TIMING.Recovery and "Discharge" or "Recovery")
 			if areaTime>=AREA_TIMING.Discharge and not area.Hit then
 				area.Hit=true;combat.AreaImpact(area.Point)
+			end
+		end
+		if hitReaction then
+			local age=os.clock()-hitReaction.Started
+			local duration=hitReaction.Heavy and 0.85 or 0.32
+			local weight=math.sin(math.pi*math.clamp(age/duration,0,1))*(1-age/duration)
+			if age>=duration then
+				hitReaction=nil;damageFlash.FillTransparency=1;model:SetAttribute("ReactionState","Idle")
+			else
+				damageFlash.FillTransparency=1-0.65*math.max(0,1-age/0.22)
+				local strength=hitReaction.Heavy and 20 or 7
+				motors.Torso.C0=motors.Torso.C0*CFrame.Angles(math.rad(strength*weight),0,math.rad(hitReaction.Side*strength*0.35*weight))
+				motors.Head.C0=motors.Head.C0*CFrame.Angles(math.rad(-strength*0.6*weight),0,0)
+				if hitReaction.Heavy then
+					for _,side in ipairs({"Left","Right"}) do
+						motors[side.."Forearm"].C0=motors[side.."Forearm"].C0*CFrame.Angles(math.rad(15*weight),0,0)
+					end
+				end
 			end
 		end
 		-- Preserve the intended chest/head aim while the hips turn underneath.
