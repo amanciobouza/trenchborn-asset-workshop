@@ -367,26 +367,36 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 		for _,target in ipairs(victims) do handle("Area",0,target,origin) end
 		kaiju:SetAttribute("AreaHitCount",#victims)
 		local cyan=Color3.fromRGB(65,225,255)
+		local radius=AREA_RADIUS*scale
+		local diameter=radius*2
 		-- The discharge starts visibly at the large dorsal plates, then hits the ground.
 		for i=1,3 do
 			local plate=kaiju:FindFirstChild(string.format("DorsalShield_%02d",i))
 			if plate and plate:IsA("BasePart") then
-				local spark=part(workspace,"DorsalDischarge",Vector3.new(1,1,1)*scale,CFrame.new(plate.Position),cyan)
+				local spark=part(workspace,"DorsalDischarge",Vector3.new(1,1,1)*(radius*0.08),CFrame.new(plate.Position),cyan)
 				spark.Shape=Enum.PartType.Ball;spark.Material=Enum.Material.Neon
+				spark.Transparency=0.3
 				spark.CanCollide=false;spark.CanTouch=false;spark.CanQuery=false;spark.CastShadow=false
 				local light=Instance.new("PointLight")
-				light.Color=cyan;light.Brightness=4;light.Range=18*scale;light.Parent=spark
-				local outward=-root.CFrame.LookVector*(3+i)+Vector3.new(0,3+i,0)
-				TweenService:Create(spark,TweenInfo.new(0.35,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),
-					{Size=Vector3.new(7,7,7)*scale,CFrame=CFrame.new(plate.Position+outward*scale),Transparency=1}):Play()
-				TweenService:Create(light,TweenInfo.new(0.35),{Brightness=0}):Play()
-				Debris:AddItem(spark,0.4)
+				light.Color=cyan;light.Brightness=4;light.Range=math.min(60,radius*1.25);light.Parent=spark
+				-- Each pressure sphere reaches the attack's full diameter. Center the
+				-- expanded volume over the impact so its horizontal reach matches damage.
+				local expansion=0.45+i*0.04
+				TweenService:Create(spark,TweenInfo.new(expansion,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),
+					{Size=Vector3.new(diameter,diameter,diameter),
+						CFrame=CFrame.new(origin+Vector3.new(0,radius*0.2,0)),Transparency=0.65}):Play()
+				task.delay(expansion,function()
+					if not spark.Parent then return end
+					TweenService:Create(spark,TweenInfo.new(0.25),{Transparency=1}):Play()
+				end)
+				TweenService:Create(light,TweenInfo.new(expansion+0.25),{Brightness=0}):Play()
+				Debris:AddItem(spark,expansion+0.3)
 			end
 		end
 		local burst=part(workspace,"AreaGroundFlash",Vector3.new(3,0.25,3)*scale,CFrame.new(origin),cyan)
 		burst.Shape=Enum.PartType.Ball;burst.Material=Enum.Material.Neon
 		burst.CanCollide=false;burst.CanTouch=false;burst.CanQuery=false;burst.CastShadow=false
-		TweenService:Create(burst,TweenInfo.new(0.35),{Size=Vector3.new(AREA_RADIUS*2,0.3,AREA_RADIUS*2)*scale,Transparency=1}):Play()
+		TweenService:Create(burst,TweenInfo.new(0.35),{Size=Vector3.new(diameter,0.3*scale,diameter),Transparency=1}):Play()
 		Debris:AddItem(burst,0.4)
 		for i=1,28 do
 			local angle=i*2.39996
