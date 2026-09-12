@@ -668,12 +668,12 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			model:SetAttribute("AnimationPreview", running and "HeavyRun_01" or "HeavyWalk_04_ShoulderFollowThrough")
 			local weightShift = math.sin(gaitPhase - 0.35)*fade
 			-- Forward is local -Z: negative X pitch brings the upper body forward.
-			pose("Torso", (-11.0-9*runBlend - compression*(1.6+runBlend))*fade, weightShift*(5.5+2*runBlend), weightShift*3.8)
+			pose("Torso", (-11.0-23*runBlend - compression*(1.6+runBlend))*fade, weightShift*(5.5+2*runBlend), weightShift*3.8)
 			-- The neck partly counters the lean to keep the gaze ahead. Head motion
 			-- follows the weight transfer with a delay instead of locking to the torso.
 			local headFollow = math.sin(gaitPhase - 0.80)*fade
 			local headNod = math.sin(gaitPhase*2 - 0.65)*2.2*fade
-			pose("Head", (6.0+6*runBlend)*fade + headNod - compression*0.8*fade,
+			pose("Head", (6.0+16*runBlend)*fade + headNod - compression*0.8*fade,
 				-headFollow*4.5, -headFollow*2.2)
 			pose("Jaw", 0, 0, 0)
 			for _, side in ipairs({"Left", "Right"}) do
@@ -707,14 +707,19 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				local shoulderRoll=math.cos(armPhase-0.3)*fade
 				-- Shoulder leads; the bent elbow and heavy hand follow with separate delays.
 				-- A small outward arc keeps the hands clear of the thighs.
-				pose(side .. "UpperArm",(8+6*runBlend)*fade-swing*(17+8*runBlend),sign*shoulderRoll*4,
+				pose(side .. "UpperArm",(8+20*runBlend)*fade-swing*(17+25*runBlend),sign*shoulderRoll*4,
 					-sign*(5*fade+3*shoulderRoll))
 				-- Flex behind the forward shoulder swing, then open as the arm returns.
 				pose(side .. "Forearm",(26+12*runBlend)*fade-elbowFollow*(20+5*runBlend),0,sign*elbowFollow*3)
 				pose(side .. "Hand",-6*fade+wristFollow*6,sign*wristFollow*3,0)
 			end
 			for i = 1, tailCount do
-				pose("Tail" .. i, -2.5*runBlend, -math.sin(phase-i*0.32)*(0.5+i*0.10)*fade, 0)
+				-- Lift mainly at the base; a delayed counter-swing travels down the tail.
+				local lift=i==1 and 12 or math.max(1.5,4.5-(i-2)*0.25)
+				local walkYaw=-math.sin(phase-i*0.32)*(0.5+i*0.10)
+				local balanceYaw=-math.sin(gaitPhase-0.35-i*0.18)*(2.3+i*0.32)
+				pose("Tail" .. i,-lift*runBlend,
+					(walkYaw*(1-runBlend)+balanceYaw*runBlend)*fade,0)
 			end
 		else
 			model:SetAttribute("AnimationPreview", "PowerIdle_02")
