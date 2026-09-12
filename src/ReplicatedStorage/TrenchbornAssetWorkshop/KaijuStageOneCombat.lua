@@ -8,6 +8,8 @@ local targets, ranges = {}, {}
 local DAMAGE = {40,40,55,85} -- Review values: one complete combo = 220 HP.
 local LAND_DAMAGE=55 -- Provisional workshop value; no area damage or repeated ticks.
 local FOCUS_DAMAGE=15 -- Workshop value per 0.25-second tick (150 per full beam).
+local AREA_DAMAGE=80 -- Provisional workshop value; once per building per slam.
+local AREA_RADIUS=26
 local function reserveLethal(data, holder, damage)
 	if not data or data.HeldBy or data.Health<=0 or data.Health>damage then return false end
 	data.HeldBy=holder
@@ -270,6 +272,16 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 		end
 		return best
 	end
+	local function areaPoint(target,origin)
+		local data=target and targets[target]
+		if not data or data.Health<=0 or data.HeldBy or not target:IsDescendantOf(workspace) then return nil end
+		local body=data.Body
+		local p=body.CFrame:PointToObjectSpace(origin)
+		local half=body.Size/2
+		local point=body.CFrame:PointToWorldSpace(Vector3.new(math.clamp(p.X,-half.X,half.X),
+			math.clamp(p.Y,-half.Y,half.Y),math.clamp(p.Z,-half.Z,half.Z)))
+		return (point-origin).Magnitude<=AREA_RADIUS*scale and point or nil
+	end
 	local function handle(kind,index,finisherUntil,from)
 		if humanoid.Health<=0 or not root:IsDescendantOf(workspace)
 			or humanoid.FloorMaterial==Enum.Material.Air then cancel();return end
@@ -282,12 +294,14 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 		end
 		local landing=kind=="Land"
 		local focus=kind=="Focus"
-		if not landing and not focus and (kind~="Hit" or not DAMAGE[index]) then return end
-		local damage=focus and FOCUS_DAMAGE or landing and LAND_DAMAGE or DAMAGE[index]
+		local area=kind=="Area"
+		if not landing and not focus and not area and (kind~="Hit" or not DAMAGE[index]) then return end
+		local damage=area and AREA_DAMAGE or focus and FOCUS_DAMAGE or landing and LAND_DAMAGE or DAMAGE[index]
 		candidate=nil
 		clearCue()
 		local target,point
-		if focus then
+		if area then target=finisherUntil;point=areaPoint(target,from)
+		elseif focus then
 			target=finisherUntil
 			local visible
 			point,visible=focusAim(target,from)
@@ -297,14 +311,14 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 		locked=nil
 		local data=target and targets[target]
 		local lifted=index==4 and held==target and data and data.HeldBy==holder
-		if not landing and not focus then
+		if not landing and not focus and not area then
 			if lifted then point=data.Body.Position else point=target and reachable(target) end
 		end
 		if not point then cancel();kaiju:SetAttribute("LastAttackResult","Miss");return end
 		data.Health=math.max(0,data.Health-damage)
 		target:SetAttribute("Health",data.Health)
 		target:SetAttribute("LastComboStep",index)
-		target:SetAttribute("LastDamageType",focus and "Focus" or landing and "Landing" or "Combo")
+		target:SetAttribute("LastDamageType",area and "Area" or focus and "Focus" or landing and "Landing" or "Combo")
 		kaiju:SetAttribute("LastAttackResult","Hit")
 		data.Gui.Enabled=true
 		data.Bar.Size=UDim2.fromScale(data.Health/220,1)
@@ -345,7 +359,37 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 			end)
 		end
 	end
+	local function areaImpact(origin)
+		if humanoid.Health<=0 or humanoid.FloorMaterial==Enum.Material.Air
+			or not root:IsDescendantOf(workspace) or (origin-root.Position).Magnitude>20*scale then return end
+		local victims={}
+		for target in pairs(targets) do if areaPoint(target,origin) then table.insert(victims,target) end end
+		for _,target in ipairs(victims) do handle("Area",0,target,origin) end
+		kaiju:SetAttribute("AreaHitCount",#victims)
+		local cyan=Color3.fromRGB(65,225,255)
+		local burst=part(workspace,"AreaGroundFlash",Vector3.new(3,0.25,3)*scale,CFrame.new(origin),cyan)
+		burst.Shape=Enum.PartType.Ball;burst.Material=Enum.Material.Neon
+		burst.CanCollide=false;burst.CanTouch=false;burst.CanQuery=false;burst.CastShadow=false
+		TweenService:Create(burst,TweenInfo.new(0.35),{Size=Vector3.new(AREA_RADIUS*2,0.3,AREA_RADIUS*2)*scale,Transparency=1}):Play()
+		Debris:AddItem(burst,0.4)
+		for i=1,20 do
+			local angle=i*2.39996
+			local direction=Vector3.new(math.cos(angle),0,math.sin(angle))
+			local start=origin+direction*(2+i%4)*scale
+			local rock=part(workspace,"AreaDebris",Vector3.new(0.8+i%3*0.4,0.8,1.2)*scale,CFrame.new(start),Color3.fromRGB(90,95,102))
+			rock.CanCollide=false;rock.CanTouch=false;rock.CanQuery=false
+			local peak=start+(direction*(3+i%5)+Vector3.new(0,3+i%4,0))*scale
+			TweenService:Create(rock,TweenInfo.new(0.22,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),
+				{CFrame=CFrame.new(peak)*CFrame.Angles(i,0,i*0.4)}):Play()
+			task.delay(0.22,function()
+				if not rock.Parent then return end
+				TweenService:Create(rock,TweenInfo.new(0.4,Enum.EasingStyle.Quad,Enum.EasingDirection.In),
+					{CFrame=CFrame.new(peak+direction*3*scale-Vector3.new(0,6,0)*scale),Transparency=1}):Play()
+			end)
+			Debris:AddItem(rock,0.7)
+		end
+	end
 	kaiju.Destroying:Once(cancel)
-	return {Handle=handle,Cancel=cancel,PrepareFinisher=prepareFinisher,FocusAim=focusAim,SelectFocusTarget=selectFocusTarget}
+	return {Handle=handle,Cancel=cancel,PrepareFinisher=prepareFinisher,FocusAim=focusAim,SelectFocusTarget=selectFocusTarget,AreaImpact=areaImpact}
 end
 return Combat
