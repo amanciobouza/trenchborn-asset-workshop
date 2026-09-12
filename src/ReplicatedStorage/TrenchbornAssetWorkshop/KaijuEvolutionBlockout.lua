@@ -345,8 +345,8 @@ local function applyStylizedMasses(model: Model, origin: CFrame)
 	for _, sign in ipairs({-1, 1}) do
 		local side = sign < 0 and "Left" or "Right"
 		local shoulder = Vector3.new(sign * 5.7, 22.5, -0.1)
-		local elbow = Vector3.new(sign * 9.2, 18.0, -0.4)
-		local wrist = Vector3.new(sign * 9.6, 13.3, -1.0)
+		local elbow = Vector3.new(sign * 9.2, 18.0, 1.0)
+		local wrist = Vector3.new(sign * 9.6, 13.3, -1.7)
 		local function place(name: string, size: Vector3, pos: Vector3, rotation: CFrame?)
 			local item = model:FindFirstChild(side .. name)
 			assert(item and item:IsA("BasePart"), "Missing arm part: " .. side .. name)
@@ -395,6 +395,22 @@ local function applyStylizedMasses(model: Model, origin: CFrame)
 			place("Knuckle_" .. i, Vector3.new(1.05, 0.85, 0.95), base)
 			place("FingerPad_" .. i, Vector3.new(0.95, 0.8, 0.95), tip)
 			place("HandClaw_" .. i, Vector3.new(0.72, 0.68, 1.35), tip + Vector3.new(0, -0.8, 0), CFrame.Angles(-math.pi/2, 0, 0))
+		end
+
+		-- Keep the complete paw aligned with the forearm in side view.
+		-- Positive X pitch sends a downward finger toward local -Z (forward).
+		local handPitch = math.atan2(elbow.Z - wrist.Z, elbow.Y - wrist.Y)
+		local wristFrame = origin * CFrame.new(wrist)
+		local handTransform = wristFrame * CFrame.Angles(handPitch, 0, 0) * wristFrame:Inverse()
+		for _, item in ipairs(model:GetChildren()) do
+			if item:IsA("BasePart") then
+				for _, prefix in ipairs({"Palm", "WristJoint", "Finger_", "Knuckle_", "FingerPad_", "HandClaw_"}) do
+					if string.sub(item.Name, 1, #side + #prefix) == side .. prefix then
+						item.CFrame = handTransform * item.CFrame
+						break
+					end
+				end
+			end
 		end
 
 		-- Wider planted foot with a thick forefoot and substantial toe pads.
