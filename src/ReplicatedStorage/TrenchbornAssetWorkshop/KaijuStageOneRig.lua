@@ -178,6 +178,51 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	local heartbeat, destroying
 	local combo = Combo.new(combat and combat.PrepareFinisher)
 	local jump = Jump.new()
+	local focus,focusReadyAt=nil,0
+	local focusColor=Color3.fromRGB(65,225,255)
+	local function endFocus()
+		if not focus then return end
+		for part,color in pairs(focus.Colors) do if part.Parent then part.Color=color end end
+		focus.Effects:Destroy()
+		humanoid.WalkSpeed=focus.Speed
+		humanoid.AutoRotate=focus.Rotate
+		focus=nil
+		focusReadyAt=os.clock()+1
+		model:SetAttribute("FocusPhase","Idle")
+	end
+	local function mouthPosition()
+		local mouth=get("UpperMuzzleCoreZ")
+		return mouth.CFrame:PointToWorldSpace(Vector3.new(0,-0.35*scale,-mouth.Size.Z/2))
+	end
+	local function requestFocus()
+		if stopped or focus or not combat or not combat.SelectFocusTarget or not humanoid
+			or humanoid.Health<=0 or not movementRoot or jump.Phase~="Idle"
+			or humanoid.FloorMaterial==Enum.Material.Air or os.clock()<focusReadyAt
+			or model:GetAttribute("IdleEnabled")==false or (model:GetAttribute("ComboStep") or 0)~=0 then return false end
+		local target=combat.SelectFocusTarget(mouthPosition())
+		if not target then model:SetAttribute("FocusPhase","No target");return false end
+		combo:Cancel();combat.Cancel()
+		local effects=Instance.new("Folder")
+		effects.Name="FocusEffects";effects.Parent=model
+		local function effect(name,shape,color)
+			local p=Instance.new("Part")
+			p.Name=name;p.Shape=shape;p.Color=color;p.Material=Enum.Material.Neon
+			p.Anchored=true;p.CanCollide=false;p.CanQuery=false;p.CanTouch=false;p.CastShadow=false
+			p.Transparency=1;p.Size=Vector3.new(0.1,0.1,0.1);p.Parent=effects
+			return p
+		end
+		focus={Started=os.clock(),Ticks=0,Target=target,Speed=humanoid.WalkSpeed,Rotate=humanoid.AutoRotate,
+			Effects=effects,Colors={},Orb=effect("Charge",Enum.PartType.Ball,focusColor),
+			Beam=effect("Beam",Enum.PartType.Cylinder,focusColor),
+			Core=effect("Core",Enum.PartType.Cylinder,Color3.fromRGB(220,255,255)),
+			Impact=effect("Impact",Enum.PartType.Ball,focusColor)}
+		for _,p in ipairs(visuals) do
+			if string.match(p.Name,"^DorsalEnergy_") then focus.Colors[p]=p.Color end
+		end
+		humanoid.WalkSpeed=0;humanoid.AutoRotate=false;humanoid:Move(Vector3.zero,false)
+		model:SetAttribute("FocusPhase","Charging")
+		return true
+	end
 	local savedSpeed, savedOwner, savedAutoRotate, airDirection
 	local AIR_SPEED=18 -- Moderate air travel, below the original speed of 30.
 	local JUMP_HEIGHT=14
@@ -199,7 +244,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		airDirection=flat.Magnitude>0.05 and flat.Unit or Vector3.zero
 	end
 	local function requestJump(direction)
-		if stopped or not humanoid or humanoid.Health<=0 or not movementRoot
+		if stopped or focus or not humanoid or humanoid.Health<=0 or not movementRoot
 			or model:GetAttribute("IdleEnabled")==false then return false end
 		if not jump:Request(os.clock(),humanoid.FloorMaterial~=Enum.Material.Air) then return false end
 		combo:Cancel()
@@ -211,12 +256,13 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		return true
 	end
 	local function requestAttack()
-		if stopped or jump.Phase~="Idle" or not humanoid or humanoid.Health <= 0
+		if stopped or focus or jump.Phase~="Idle" or not humanoid or humanoid.Health <= 0
 			or humanoid.FloorMaterial == Enum.Material.Air
 			or model:GetAttribute("IdleEnabled") == false then return false end
 		return combo:Request(os.clock())
 	end
 	local function reset()
+		endFocus()
 		jump:Cancel()
 		restoreJump()
 		combo:Cancel()
@@ -276,6 +322,9 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				+ alert * 0.45) * fade, 0)
 		end
 		local walking = model:GetAttribute("AnimationMode") == "Walk"
+		if focus and (humanoid.Health<=0 or humanoid.FloorMaterial==Enum.Material.Air
+			or os.clock()-focus.Started>=4.85) then endFocus() end
+		local focusTime=focus and os.clock()-focus.Started
 		if humanoid and humanoid.Health<=0 then jump:Cancel();restoreJump() end
 		local jumpPose,jumpEvent
 		if movementRoot and humanoid then
@@ -324,6 +373,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				and humanoid.FloorMaterial ~= Enum.Material.Air
 		end
 		if jumpPose then walking=false end
+		if focus then walking=false;humanoid:Move(Vector3.zero,false) end
 		local duration = model:GetAttribute("WalkCycleSeconds")
 		if type(duration) ~= "number" or duration ~= duration then duration = CYCLE_SECONDS end
 		duration = math.clamp(duration, 1.5, 3.0)
@@ -352,6 +402,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		-- planted feet retain their floor height. Recovery uses the same smoothing.
 		bob = bob - (attackCrouch or 0)*scale
 		if jumpPose then bob=-jumpPose.Crouch*scale end
+		if focus then bob=-1.3*scale*math.min(focusTime/0.4,1)*math.clamp((4.85-focusTime)/0.35,0,1) end
 		local blend = 1-math.exp(-poseDt/0.10)
 		smoothedBob = smoothedBob + (bob-smoothedBob)*blend
 		if rootJoint then
@@ -427,12 +478,62 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				pose("Tail"..i,math.sin(elapsed*8-i*0.45)*jumpPose.Pulse*1.5,0,0)
 			end
 		end
+		if focus then
+			local t=focusTime
+			local charge=math.clamp(t/2,0,1)
+			local firing=t>=2 and t<4.5
+			local fadeOut=math.clamp((4.85-t)/0.35,0,1)
+			local from=mouthPosition()
+			local point,visible=combat.FocusAim(focus.Target,from)
+			if point then focus.Point=point end
+			point=point or focus.Point or from+movementRoot.CFrame.LookVector*30
+			local delta=point-from
+			local horizontal=math.sqrt(delta.X*delta.X+delta.Z*delta.Z)
+			local pitch=math.clamp(math.deg(math.atan2(delta.Y,math.max(horizontal,0.01))),-50,15)
+			local localAim=movementRoot.CFrame:VectorToObjectSpace(delta)
+			local yaw=math.clamp(math.deg(math.atan2(-localAim.X,-localAim.Z)),-45,45)
+			local recoil=firing and math.sin(t*35)*1.2 or 0
+			pose("Torso",(-8+recoil)*charge*fadeOut,0,0)
+			pose("Head",(pitch+8-recoil)*charge*fadeOut,yaw*charge*fadeOut,0)
+			pose("Jaw",(firing and 22 or 8*charge)*fadeOut,0,0)
+			for _,side in ipairs({"Left","Right"}) do
+				local sign=side=="Left" and -1 or 1
+				pose(side.."UpperArm",12*charge*fadeOut,0,-sign*12*charge*fadeOut)
+				pose(side.."Forearm",-24*charge*fadeOut,0,0)
+			end
+			for p,color in pairs(focus.Colors) do
+				local index=tonumber(string.match(p.Name,"^DorsalEnergy_(%d+)")) or 1
+				local onset=math.clamp((tailCount-index)/(tailCount-1),0,1)*1.5
+				p.Color=color:Lerp(focusColor,math.clamp((t-onset)/0.3,0,1)*fadeOut)
+			end
+			local orbSize=(0.2+charge*1.1)*scale*fadeOut
+			focus.Orb.Size=Vector3.new(orbSize,orbSize,orbSize)
+			focus.Orb.CFrame=CFrame.new(from);focus.Orb.Transparency=0.15
+			for _,beam in ipairs({focus.Beam,focus.Core}) do
+				beam.Transparency=t>=2 and 0.12+0.88*(1-fadeOut) or 1
+				if t>=2 and delta.Magnitude>0.01 then
+					local width=math.max(0.05,(beam==focus.Core and 0.45 or 1.15)*scale*fadeOut)
+					beam.Size=Vector3.new(delta.Magnitude,width,width)
+					beam.CFrame=CFrame.lookAt((from+point)/2,point)*CFrame.Angles(0,math.pi/2,0)
+				end
+			end
+			focus.Impact.Transparency=firing and visible and 0.25 or 1
+			focus.Impact.Size=Vector3.new(2,2,2)*scale*(1+0.12*math.sin(t*40))
+			focus.Impact.CFrame=CFrame.new(point)
+			-- Ten scheduled ticks; do not turn a delayed frame into an extra hit.
+			local due=math.clamp(math.floor((t-2)/0.25),0,10)
+			while focus.Ticks<due do
+				focus.Ticks=focus.Ticks+1
+				combat.Handle("Focus",0,focus.Target,from)
+			end
+			model:SetAttribute("FocusPhase",t<2 and "Charging" or t<4.5 and "Firing" or "Recovery")
+		end
 		-- Blend mode changes and step accents rather than snapping joint poses.
 		for name, m in pairs(motors) do m.C0 = previous[name]:Lerp(m.C0, blend) end
 	end)
 	destroying = model.Destroying:Connect(stop)
 	print(string.format("[Kaiju Rig] %d parts | %d joints | Walk preview | AnimationMode: Walk / Idle | IdleEnabled=false pauses both", #visuals, 17 + tailCount))
-	return {Stop = stop, Motors = motors, RequestAttack = requestAttack, RequestJump = requestJump, SetAirDirection=setAirDirection}
+	return {Stop = stop, Motors = motors, RequestAttack = requestAttack, RequestJump = requestJump, SetAirDirection=setAirDirection,RequestFocus=requestFocus}
 end
 
 return Rig
