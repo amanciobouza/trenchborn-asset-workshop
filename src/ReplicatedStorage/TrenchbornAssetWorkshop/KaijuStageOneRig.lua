@@ -180,6 +180,35 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	local combo = Combo.new(combat and combat.PrepareFinisher)
 	local jump = Jump.new()
 	local focus,focusReadyAt=nil,0
+	local area,areaReadyAt=nil,0
+	local function endArea()
+		if not area then return end
+		for p,color in pairs(area.Colors) do if p.Parent then p.Color=color end end
+		humanoid.WalkSpeed=area.Speed;humanoid.AutoRotate=area.Rotate
+		area=nil;model:SetAttribute("AreaPhase","Idle")
+	end
+	local function requestArea()
+		if stopped or area or focus or not combat or not combat.AreaImpact or not humanoid or not movementRoot
+			or humanoid.Health<=0 or humanoid.FloorMaterial==Enum.Material.Air or jump.Phase~="Idle"
+			or os.clock()<areaReadyAt or model:GetAttribute("IdleEnabled")==false
+			or (model:GetAttribute("ComboStep") or 0)~=0 then return false end
+		local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Exclude
+		params.FilterDescendantsInstances={model.Parent}
+		local ahead=movementRoot.Position+movementRoot.CFrame.LookVector*7*scale
+		local hit=workspace:Raycast(ahead+Vector3.new(0,30*scale,0),Vector3.new(0,-70*scale,0),params)
+		if not hit or hit.Normal.Y<0.7 or (hit.Position-movementRoot.Position).Magnitude>20*scale then return false end
+		combo:Cancel();combat.Cancel()
+		area={Started=os.clock(),Hit=false,Point=hit.Position,StartRoot=movementRoot.Position,
+			Ground=CFrame.new(hit.Position)*movementRoot.CFrame.Rotation,
+			Speed=humanoid.WalkSpeed,Rotate=humanoid.AutoRotate,Colors={}}
+		for _,p in ipairs(visuals) do
+			if string.match(p.Name,"^DorsalEnergy_") then area.Colors[p]=p.Color end
+		end
+		areaReadyAt=os.clock()+4 -- Provisional workshop cooldown, starting at activation.
+		humanoid.WalkSpeed=0;humanoid.AutoRotate=false;humanoid:Move(Vector3.zero,false)
+		model:SetAttribute("AreaPhase","Charging")
+		return true
+	end
 	local focusColor=Color3.fromRGB(65,225,255)
 	local function endFocus()
 		if not focus then return end
@@ -206,7 +235,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		return (upper.CFrame*offset).Position
 	end
 	local function requestFocus()
-		if stopped or focus or not combat or not combat.SelectFocusTarget or not humanoid
+		if stopped or focus or area or not combat or not combat.SelectFocusTarget or not humanoid
 			or humanoid.Health<=0 or not movementRoot or jump.Phase~="Idle"
 			or humanoid.FloorMaterial==Enum.Material.Air or os.clock()<focusReadyAt
 			or model:GetAttribute("IdleEnabled")==false or (model:GetAttribute("ComboStep") or 0)~=0 then return false end
@@ -274,7 +303,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		airDirection=flat.Magnitude>0.05 and flat.Unit or Vector3.zero
 	end
 	local function requestJump(direction)
-		if stopped or focus or not humanoid or humanoid.Health<=0 or not movementRoot
+		if stopped or focus or area or not humanoid or humanoid.Health<=0 or not movementRoot
 			or model:GetAttribute("IdleEnabled")==false then return false end
 		if not jump:Request(os.clock(),humanoid.FloorMaterial~=Enum.Material.Air) then return false end
 		combo:Cancel()
@@ -286,12 +315,13 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		return true
 	end
 	local function requestAttack()
-		if stopped or focus or jump.Phase~="Idle" or not humanoid or humanoid.Health <= 0
+		if stopped or focus or area or jump.Phase~="Idle" or not humanoid or humanoid.Health <= 0
 			or humanoid.FloorMaterial == Enum.Material.Air
 			or model:GetAttribute("IdleEnabled") == false then return false end
 		return combo:Request(os.clock())
 	end
 	local function reset()
+		endArea()
 		endFocus()
 		jump:Cancel()
 		restoreJump()
@@ -355,6 +385,17 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		if focus and (humanoid.Health<=0 or humanoid.FloorMaterial==Enum.Material.Air
 			or os.clock()-focus.Started>=4.85) then endFocus() end
 		local focusTime=focus and os.clock()-focus.Started
+		if area and (humanoid.Health<=0 or humanoid.FloorMaterial==Enum.Material.Air
+			or (movementRoot.Position-area.StartRoot).Magnitude>3*scale or os.clock()-area.Started>=2.4) then endArea() end
+		local areaTime=area and os.clock()-area.Started
+		local areaCharge,areaSlam,areaRecover=0,0,0
+		if area then
+			areaCharge=math.clamp(areaTime/1.04,0,1)
+			areaCharge=areaCharge*areaCharge*(3-2*areaCharge)
+			areaSlam=math.clamp((areaTime-1.04)/0.16,0,1)
+			areaRecover=math.clamp((areaTime-1.5)/0.9,0,1)
+			areaRecover=areaRecover*areaRecover*(3-2*areaRecover)
+		end
 		if humanoid and humanoid.Health<=0 then jump:Cancel();restoreJump() end
 		local jumpPose,jumpEvent
 		if movementRoot and humanoid then
@@ -404,6 +445,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		end
 		if jumpPose then walking=false end
 		if focus then walking=false;humanoid:Move(Vector3.zero,false) end
+		if area then walking=false;humanoid:Move(Vector3.zero,false) end
 		local duration = model:GetAttribute("WalkCycleSeconds")
 		if type(duration) ~= "number" or duration ~= duration then duration = CYCLE_SECONDS end
 		duration = math.clamp(duration, 1.5, 3.0)
@@ -433,6 +475,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		bob = bob - (attackCrouch or 0)*scale
 		if jumpPose then bob=-jumpPose.Crouch*scale end
 		if focus then bob=-0.35*scale*math.min(focusTime/0.4,1)*math.clamp((4.85-focusTime)/0.35,0,1) end
+		if area then bob=-(0.6*areaCharge+6.6*areaSlam)*(1-areaRecover)*scale end
 		local blend = 1-math.exp(-poseDt/0.10)
 		smoothedBob = smoothedBob + (bob-smoothedBob)*blend
 		if rootJoint then
@@ -566,7 +609,56 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			end
 			model:SetAttribute("FocusPhase",t<2 and "Charging" or t<4.5 and "Firing" or "Recovery")
 		end
+		if area then
+			local hold=1-areaRecover
+			pose("Torso",(8*areaCharge-66*areaSlam)*hold,0,0)
+			pose("Head",(-6*areaCharge+25*areaSlam)*hold,0,0)
+			pose("Jaw",-6*areaSlam*hold,0,0)
+			local function rotationBetween(a,b)
+				local x,y=a.Unit,b.Unit
+				local dot=math.clamp(x:Dot(y),-1,1)
+				local axis=x:Cross(y)
+				if axis.Magnitude<0.0001 then
+					if dot>0 then return CFrame.identity end
+					axis=x:Cross(math.abs(x.Y)<0.9 and Vector3.yAxis or Vector3.xAxis)
+				end
+				return CFrame.fromAxisAngle(axis.Unit,math.acos(dot))
+			end
+			local pelvis=movementRoot.CFrame*rootOffset*CFrame.new(0,actualBob,0)
+			local torso=pelvis*motors.Torso.C0
+			for _,side in ipairs({"Left","Right"}) do
+				local sign=side=="Left" and -1 or 1
+				pose(side.."UpperArm",-150*areaCharge*hold,0,-sign*30*areaCharge*hold)
+				pose(side.."Forearm",-35*areaCharge*hold,0,0)
+				-- Place both wrists above the strike surface, allowing room for the hands.
+				local shoulder=torso*rest[side.."UpperArm"]
+				local target=area.Ground:PointToWorldSpace(Vector3.new(sign*5.5,2.2,0)*scale)
+				local delta=target-shoulder.Position
+				local a=rest[side.."Forearm"].Position
+				local b=rest[side.."Hand"].Position
+				local lengthA,lengthB=a.Magnitude,b.Magnitude
+				local distance=math.clamp(delta.Magnitude,math.abs(lengthA-lengthB)+0.01,lengthA+lengthB-0.01)
+				local direction=delta.Unit
+				local hint=shoulder.RightVector*sign-shoulder.LookVector*0.35
+				local bend=hint-direction*hint:Dot(direction)
+				if bend.Magnitude<0.001 then bend=shoulder.UpVector-direction*shoulder.UpVector:Dot(direction) end
+				local along=(lengthA^2+distance^2-lengthB^2)/(2*distance)
+				local elbow=direction*along+bend.Unit*math.sqrt(math.max(0,lengthA^2-along^2))
+				local upperRotation=rotationBetween(a,shoulder:VectorToObjectSpace(elbow))
+				local elbowFrame=shoulder*upperRotation*rest[side.."Forearm"]
+				local foreRotation=rotationBetween(b,elbowFrame:VectorToObjectSpace(direction*distance-elbow))
+				local weight=areaSlam*hold
+				motors[side.."UpperArm"].C0=motors[side.."UpperArm"].C0:Lerp(rest[side.."UpperArm"]*upperRotation,weight)
+				motors[side.."Forearm"].C0=motors[side.."Forearm"].C0:Lerp(rest[side.."Forearm"]*foreRotation,weight)
+			end
+			for p,color in pairs(area.Colors) do p.Color=color:Lerp(focusColor,areaCharge*hold) end
+			model:SetAttribute("AreaPhase",areaTime<1.2 and "Charging" or areaTime<1.5 and "Impact" or "Recovery")
+			if areaTime>=1.2 and not area.Hit then
+				area.Hit=true;combat.AreaImpact(area.Point)
+			end
+		end
 		-- Blend mode changes and step accents rather than snapping joint poses.
+		if area and areaTime>=1.04 and areaTime<1.5 then blend=1-math.exp(-poseDt/0.035) end
 		for name, m in pairs(motors) do m.C0 = previous[name]:Lerp(m.C0, blend) end
 		if focus then
 			-- Beam and charge share the same fixed palate attachment.
@@ -606,7 +698,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	end)
 	destroying = model.Destroying:Connect(stop)
 	print(string.format("[Kaiju Rig] %d parts | %d joints | Walk preview | AnimationMode: Walk / Idle | IdleEnabled=false pauses both", #visuals, 17 + tailCount))
-	return {Stop = stop, Motors = motors, RequestAttack = requestAttack, RequestJump = requestJump, SetAirDirection=setAirDirection,RequestFocus=requestFocus}
+	return {Stop = stop, Motors = motors, RequestAttack = requestAttack, RequestJump = requestJump, SetAirDirection=setAirDirection,RequestFocus=requestFocus,RequestArea=requestArea}
 end
 
 return Rig
