@@ -54,7 +54,7 @@ function Combo.new(prepareFinisher)
 	local function start(index, now)
 		state.Index=index
 		state.Started, state.Active, state.Queued = now, true, false
-		state.HitSent, state.GrabSent = false, false
+		state.HitSent, state.GrabSent, state.TearSoundSent = false, false, false
 		state.FinisherUntil=nil
 	end
 	function state:Request(now)
@@ -105,6 +105,10 @@ function Combo.new(prepareFinisher)
 		if self.Index == 4 and t >= 0.62 and not self.GrabSent then
 			self.GrabSent = true
 			table.insert(self.Events, {Kind="Grab", Index=4})
+		end
+		if self.Index==4 and t>=impactTimes[4]-0.18 and not self.TearSoundSent then
+			self.TearSoundSent=true
+			table.insert(self.Events,{Kind="TearSound",Index=4})
 		end
 		if t >= impactTimes[self.Index] and not self.HitSent then
 			self.HitSent = true
