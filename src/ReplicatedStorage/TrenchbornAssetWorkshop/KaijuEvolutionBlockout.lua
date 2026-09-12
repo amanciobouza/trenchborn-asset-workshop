@@ -414,7 +414,7 @@ local function applyStylizedMasses(model: Model, origin: CFrame)
 		-- Post-multiplication preserves the center and longitudinal direction.
 		for _, name in ipairs({"HandClaw_1", "HandClaw_2", "HandClaw_3", "ThumbClaw"}) do
 			local nail = model:FindFirstChild(side .. name) :: BasePart
-			nail.CFrame *= CFrame.Angles(0, 0, sign * math.pi/2)
+			nail.CFrame *= CFrame.Angles(0, 0, sign * math.pi)
 		end
 
 		-- Keep the complete paw aligned with the forearm in side view.
@@ -552,7 +552,7 @@ local function refineStageOne(model: Model, origin: CFrame)
 			item.Material = Enum.Material.SmoothPlastic
 		end
 	end
-	model:SetAttribute("GeometryRevision", "S1_HandClaws_LongAxisRoll_05")
+	model:SetAttribute("GeometryRevision", "S1_HandClaws_LongAxisRoll180_06")
 	model:SetAttribute("VisualTarget", "Approved simplified Stage 1 and Stage 2 maquette")
 	model:SetAttribute("GeometryMethod", "Roblox primitives and visual ellipsoids; no external assets")
 end
