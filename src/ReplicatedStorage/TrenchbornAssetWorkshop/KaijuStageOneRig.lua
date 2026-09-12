@@ -287,6 +287,8 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				local rise=math.sqrt(2*workspace.Gravity*22*scale)
 				local horizontal=airDirection*AIR_SPEED
 				movementRoot:ApplyImpulse((horizontal+Vector3.new(0,rise,0)-velocity)*movementRoot.AssemblyMass)
+			elseif jumpEvent=="Land" then
+				if combat then combat.Handle("Land",0) end
 			elseif jumpEvent=="Restore" then restoreJump() end
 			if jump.Phase=="Air" then
 				humanoid.WalkSpeed=AIR_SPEED
