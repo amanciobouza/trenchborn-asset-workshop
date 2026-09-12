@@ -4,6 +4,7 @@ local workshop = workspace:WaitForChild("TrenchbornAssetWorkshop")
 local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
 local blockout = require(packageFolder:WaitForChild("KaijuEvolutionBlockout"))
 local stageOneRig = require(packageFolder:WaitForChild("KaijuStageOneRig"))
+local combatModule = require(packageFolder:WaitForChild("KaijuStageOneCombat"))
 
 -- The retired bootstrap no longer creates Guardian models or controls.
 for _, child in ipairs(workshop:GetChildren()) do child:Destroy() end
@@ -65,7 +66,9 @@ local function equip(player, character)
 	local ground = root.CFrame * CFrame.new(0, -height, 0)
 	kaiju:PivotTo(ground * pivotFromGround)
 	kaiju.Parent = character
-	local rig = stageOneRig.Attach(kaiju, root, humanoid)
+	combatModule.BuildRange(player, ground, character)
+	local combat = combatModule.Attach(kaiju, root, humanoid, height)
+	local rig = stageOneRig.Attach(kaiju, root, humanoid, combat)
 	local remote = Instance.new("RemoteEvent")
 	remote.Name = "RequestAttack"
 	remote.Parent = kaiju
@@ -128,6 +131,7 @@ local function connectPlayer(player)
 	if player.Character then task.spawn(equip, player, player.Character) end
 end
 Players.PlayerAdded:Connect(connectPlayer)
+Players.PlayerRemoving:Connect(combatModule.RemoveRange)
 for _, player in ipairs(Players:GetPlayers()) do connectPlayer(player) end
 workshop:SetAttribute("CurrentAsset", "Kaiju Stage 1 - Primal Beast")
 workshop:SetAttribute("CurrentPhase", 6)
