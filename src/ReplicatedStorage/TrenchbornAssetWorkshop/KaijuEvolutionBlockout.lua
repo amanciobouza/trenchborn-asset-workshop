@@ -297,8 +297,8 @@ local function buildStylizedHead(model: Model, origin: CFrame)
 		return sphere(model, name, size, origin * CFrame.new(pos), color)
 	end
 	mass("Neck", Vector3.new(5.0, 5.0, 4.6), Vector3.new(0, 25.0, 0.1), BODY_DARK)
-	mass("Cranium", Vector3.new(5.6, 3.7, 5.4), Vector3.new(0, 27.3, -0.8), BODY)
-	mass("SnoutBridge", Vector3.new(4.6, 2.1, 4.7), Vector3.new(0, 27.0, -2.7), BODY)
+	mass("Cranium", Vector3.new(5.2, 3.7, 5.4), Vector3.new(0, 27.3, -0.8), BODY)
+	mass("SnoutBridge", Vector3.new(3.5, 1.7, 4.2), Vector3.new(0, 27.0, -2.65), BODY)
 	roundedBox(model, "UpperMuzzle", Vector3.new(4.05, 1.2, 3.6), origin * CFrame.new(0, 26.55, -4.2), BODY, 0.28)
 	mass("LowerJawRear", Vector3.new(4.7, 2.4, 3.6), Vector3.new(0, 25.4, -1.8), BODY_DARK)
 	roundedBox(model, "LowerJawFront", Vector3.new(3.9, 1.15, 4.25), origin * CFrame.new(0, 25.3, -3.65), BODY_DARK, 0.25)
@@ -306,9 +306,10 @@ local function buildStylizedHead(model: Model, origin: CFrame)
 		local side = sign < 0 and "Left" or "Right"
 		mass(side .. "CheekMass", Vector3.new(2.2, 2.4, 2.7), Vector3.new(sign * 1.85, 26.3, -1.8), BODY)
 		-- One shared eye frame keeps the socket, iris and pupil aligned.
-		-- Local -Z faces forward, rotated only 25 degrees toward the cheek.
-		local eyeFrame = origin * CFrame.new(sign * 2.05, 27.35, -3.7)
-			* CFrame.Angles(0, -sign * math.rad(25), 0)
+		-- Move the eyes above the muzzle rather than onto its outer cheeks.
+		-- A small outward cant retains depth while both eyes read from the front.
+		local eyeFrame = origin * CFrame.new(sign * 1.50, 27.55, -3.95)
+			* CFrame.Angles(0, -sign * math.rad(10), 0)
 		sphere(model, side .. "EyeSocket", Vector3.new(1.1, 0.85, 0.5), eyeFrame, BODY_DARK)
 		local eye = sphere(model, side .. "Eye", Vector3.new(0.64, 0.52, 0.18), eyeFrame * CFrame.new(0, 0, -0.24), ENERGY)
 		eye.Material = Enum.Material.Neon
@@ -511,9 +512,9 @@ local function refineStageOne(model: Model, origin: CFrame)
 		mass(side .. "Deltoid", Vector3.new(6.4, 5.5, 5.9), Vector3.new(sign * 5.7, 22.1, -0.1), skin)
 		mass(side .. "ShoulderJoint", Vector3.new(5.6, 5.3, 5.4), Vector3.new(sign * 5.7, 22.1, -0.1), skin)
 		mass(side .. "ShoulderBridge", Vector3.new(3.3, 3.1, 4.0), Vector3.new(sign * 3.9, 22.65, 0), skin)
-		mass(side .. "CheekMass", Vector3.new(1.65, 2.25, 2.8), Vector3.new(sign * 1.75, 26.25, -1.95), skin)
-		mass(side .. "BrowRidge", Vector3.new(1.7, 0.62, 1.65), Vector3.new(sign * 1.88, 27.8, -3.45), skin,
-			CFrame.Angles(0, -sign * math.rad(12), sign * math.rad(8)))
+		mass(side .. "CheekMass", Vector3.new(1.5, 2.25, 2.8), Vector3.new(sign * 1.65, 26.25, -1.95), skin)
+		mass(side .. "BrowRidge", Vector3.new(1.55, 0.62, 1.5), Vector3.new(sign * 1.45, 28.03, -3.68), skin,
+			CFrame.Angles(0, -sign * math.rad(8), sign * math.rad(8)))
 		mass(side .. "Flank", Vector3.new(4.1, 6.5, 5.0), Vector3.new(sign * 2.35, 18.65, 0.4), skin)
 		-- Long calf/instep envelopes bury flat cylinder ends and connect the foot.
 		mass(side .. "CalfMass", Vector3.new(4.8, 6.3, 4.65), Vector3.new(sign * 3.15, 7.8, 0.0), skin,
@@ -579,7 +580,7 @@ local function refineStageOne(model: Model, origin: CFrame)
 			item.Material = Enum.Material.SmoothPlastic
 		end
 	end
-	model:SetAttribute("GeometryRevision", "S1_ElongatedTaperedForearms_08")
+	model:SetAttribute("GeometryRevision", "S1_InsetForwardEyes_NarrowBridge_09")
 	model:SetAttribute("VisualTarget", "Approved simplified Stage 1 and Stage 2 maquette")
 	model:SetAttribute("GeometryMethod", "Roblox primitives and visual ellipsoids; no external assets")
 end
