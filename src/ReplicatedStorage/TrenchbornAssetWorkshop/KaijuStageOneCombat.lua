@@ -7,6 +7,7 @@ local Combat = {}
 local targets, ranges = {}, {}
 local DAMAGE = {40,40,55,85} -- Review values: one complete combo = 220 HP.
 local LAND_DAMAGE=55 -- Provisional workshop value; no area damage or repeated ticks.
+local FOCUS_DAMAGE=15 -- Workshop value per 0.25-second tick (150 per full beam).
 local function reserveLethal(data, holder, damage)
 	if not data or data.HeldBy or data.Health<=0 or data.Health>damage then return false end
 	data.HeldBy=holder
@@ -245,7 +246,31 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 		end
 		return nil
 	end
-	local function handle(kind,index,finisherUntil)
+	local function focusAim(target,from)
+		local data=target and targets[target]
+		if not data or data.Health<=0 or data.HeldBy or not target:IsDescendantOf(workspace) then return nil,false end
+		local delta=data.Body.Position-from
+		local flat=data.Body.Position-root.Position
+		flat=Vector3.new(flat.X,0,flat.Z)
+		if delta.Magnitude>70*scale or flat.Magnitude<0.01
+			or flat.Unit:Dot(root.CFrame.LookVector)<0.5 then return nil,false end
+		local params=RaycastParams.new()
+		params.FilterType=Enum.RaycastFilterType.Exclude
+		params.FilterDescendantsInstances={kaiju.Parent}
+		local hit=workspace:Raycast(from,delta,params)
+		return hit and hit.Position or data.Body.Position,hit~=nil and hit.Instance:IsDescendantOf(target)
+	end
+	local function selectFocusTarget(from)
+		local best,distance=nil,math.huge
+		for target in pairs(targets) do
+			local point,visible=focusAim(target,from)
+			if visible and (point-from).Magnitude<distance then
+				best,distance=target,(point-from).Magnitude
+			end
+		end
+		return best
+	end
+	local function handle(kind,index,finisherUntil,from)
 		if humanoid.Health<=0 or not root:IsDescendantOf(workspace)
 			or humanoid.FloorMaterial==Enum.Material.Air then cancel();return end
 		if kind=="Grab" then
@@ -256,24 +281,30 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 			return
 		end
 		local landing=kind=="Land"
-		if not landing and (kind~="Hit" or not DAMAGE[index]) then return end
-		local damage=landing and LAND_DAMAGE or DAMAGE[index]
+		local focus=kind=="Focus"
+		if not landing and not focus and (kind~="Hit" or not DAMAGE[index]) then return end
+		local damage=focus and FOCUS_DAMAGE or landing and LAND_DAMAGE or DAMAGE[index]
 		candidate=nil
 		clearCue()
 		local target,point
-		if landing then target,point=landingTarget()
+		if focus then
+			target=finisherUntil
+			local visible
+			point,visible=focusAim(target,from)
+			if not visible then point=nil end
+		elseif landing then target,point=landingTarget()
 		elseif index==4 then target=locked else target=selectTarget() end
 		locked=nil
 		local data=target and targets[target]
 		local lifted=index==4 and held==target and data and data.HeldBy==holder
-		if not landing then
+		if not landing and not focus then
 			if lifted then point=data.Body.Position else point=target and reachable(target) end
 		end
 		if not point then cancel();kaiju:SetAttribute("LastAttackResult","Miss");return end
 		data.Health=math.max(0,data.Health-damage)
 		target:SetAttribute("Health",data.Health)
 		target:SetAttribute("LastComboStep",index)
-		target:SetAttribute("LastDamageType",landing and "Landing" or "Combo")
+		target:SetAttribute("LastDamageType",focus and "Focus" or landing and "Landing" or "Combo")
 		kaiju:SetAttribute("LastAttackResult","Hit")
 		data.Gui.Enabled=true
 		data.Bar.Size=UDim2.fromScale(data.Health/220,1)
@@ -315,6 +346,6 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 		end
 	end
 	kaiju.Destroying:Once(cancel)
-	return {Handle=handle,Cancel=cancel,PrepareFinisher=prepareFinisher}
+	return {Handle=handle,Cancel=cancel,PrepareFinisher=prepareFinisher,FocusAim=focusAim,SelectFocusTarget=selectFocusTarget}
 end
 return Combat
