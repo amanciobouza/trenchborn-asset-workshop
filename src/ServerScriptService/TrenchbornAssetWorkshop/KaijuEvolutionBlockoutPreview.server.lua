@@ -73,6 +73,17 @@ local function equip(player, character)
 	remote.Name = "RequestAttack"
 	remote.Parent = kaiju
 	local lastAttackRequest = -math.huge
+	local jumpRemote=Instance.new("RemoteEvent")
+	jumpRemote.Name="RequestJump"
+	jumpRemote.Parent=kaiju
+	local lastJumpRequest=-math.huge
+	local jumpConnection=jumpRemote.OnServerEvent:Connect(function(sender)
+		if sender~=player or player.Character~=character then return end
+		local now=os.clock()
+		if now-lastJumpRequest<0.15 then return end
+		lastJumpRequest=now
+		rig.RequestJump()
+	end)
 	local attackConnection = remote.OnServerEvent:Connect(function(sender)
 		if sender ~= player or player.Character ~= character then return end
 		local now = os.clock()
@@ -99,7 +110,7 @@ local function equip(player, character)
 	humanoid.AutoRotate = true
 	humanoid.CameraOffset = Vector3.new(0, 12, 0)
 	humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
-	-- Walking is the current review scope; jumping has no reviewed pose yet.
+	-- The scripted jump owns takeoff timing; disable the default instant jump.
 	humanoid.UseJumpPower, humanoid.JumpPower = true, 0
 	humanoid.AutoJumpEnabled = false
 	player.CameraMinZoomDistance = 42
@@ -107,6 +118,7 @@ local function equip(player, character)
 	if display and display.Parent then display:Destroy() end
 
 	character.Destroying:Once(function()
+		jumpConnection:Disconnect()
 		attackConnection:Disconnect()
 		added:Disconnect()
 		appearance:Disconnect()
