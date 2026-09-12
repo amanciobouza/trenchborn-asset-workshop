@@ -115,6 +115,26 @@ prompt.TextScaled=true
 prompt.Text="RIP APART"
 prompt.Visible=false
 prompt.Parent=script.Parent
+local reactionPanel
+if RunService:IsStudio() then
+	reactionPanel=Instance.new("Frame");reactionPanel.Name="ReactionTests"
+	reactionPanel.Position=UDim2.new(0,12,0,120);reactionPanel.Size=UDim2.fromOffset(200,112)
+	reactionPanel.BackgroundTransparency=0.25;reactionPanel.BackgroundColor3=Color3.fromRGB(25,30,40);reactionPanel.Parent=script.Parent
+	local title=Instance.new("TextLabel");title.Size=UDim2.new(1,0,0,28);title.BackgroundTransparency=1
+	title.Text="Reaction test";title.TextScaled=true;title.TextColor3=Color3.new(1,1,1);title.Parent=reactionPanel
+	for i,command in ipairs({"Hit","Heavy Hit","Defeat","Heal"}) do
+		local button=Instance.new("TextButton");button.Size=UDim2.fromOffset(92,34)
+		button.Position=UDim2.fromOffset(6+((i-1)%2)*96,32+math.floor((i-1)/2)*38)
+		button.Text=command;button.TextScaled=true;button.BackgroundColor3=Color3.fromRGB(55,65,80)
+		button.TextColor3=Color3.new(1,1,1);button.Parent=reactionPanel
+		button.Activated:Connect(function()
+			local character=player.Character
+			local model=character and character:FindFirstChild("Stage_1_Primal_Beast")
+			local remote=model and model:FindFirstChild("TestReaction")
+			if remote then remote:FireServer(command) end
+		end)
+	end
+end
 local availabilityConnection
 local focusConnection
 local areaConnection
@@ -174,6 +194,7 @@ script.Destroying:Connect(function()
 	if availabilityConnection then availabilityConnection:Disconnect() end
 	if focusConnection then focusConnection:Disconnect() end
 	if areaConnection then areaConnection:Disconnect() end
+	if reactionPanel then reactionPanel:Destroy() end
 	prompt:Destroy()
 	mouse:Disconnect()
 	CAS:UnbindAction(action)
