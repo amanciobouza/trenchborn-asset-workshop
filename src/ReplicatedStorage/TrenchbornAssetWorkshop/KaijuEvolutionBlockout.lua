@@ -440,6 +440,110 @@ local function applyStylizedMasses(model: Model, origin: CFrame)
 	model:SetAttribute("HeadGeometryMode", "VisualEllipsoids_NoCSG")
 end
 
+-- Roblox-only refinement of the approved two-stage maquette, Stage 1.
+-- All ellipsoids remain visual SpecialMeshes: never feed them to CSG.
+local function refineStageOne(model: Model, origin: CFrame)
+	local skin = Color3.fromRGB(61, 69, 82)
+	local underside = Color3.fromRGB(119, 117, 88)
+	local plateColor = Color3.fromRGB(43, 49, 60)
+	local function remove(name: string)
+		local item = model:FindFirstChild(name)
+		if item then item:Destroy() end
+	end
+	local function mass(name: string, size: Vector3, pos: Vector3, color: Color3, rotation: CFrame?)
+		remove(name)
+		return sphere(model, name, size, origin * CFrame.new(pos) * (rotation or CFrame.identity), color)
+	end
+	-- One skin tone hides artificial joint bands. Keep pupils and nostrils dark.
+	for _, item in ipairs(model:GetDescendants()) do
+		if item:IsA("BasePart") then
+			if item.Color == BODY or item.Color == BODY_DARK then
+				if not string.find(item.Name, "EyeSocket") and not string.find(item.Name, "Nostril") then
+					item.Color = skin
+				end
+			elseif item.Color == BELLY then item.Color = underside
+			elseif item.Color == CLAW then item.Color = Color3.fromRGB(202, 193, 157)
+			end
+			item.Reflectance = 0
+		end
+	end
+	-- Broad continuous abdominal and back envelopes, with shallow chest relief.
+	mass("LowerAbdomen", Vector3.new(7.3, 7.2, 6.1), Vector3.new(0, 17.7, 0.35), skin)
+	mass("UpperAbdomen", Vector3.new(8.4, 7.1, 6.3), Vector3.new(0, 20.1, 0), skin)
+	mass("BellyShield", Vector3.new(6.8, 9.0, 1.9), Vector3.new(0, 18.95, -2.65), underside)
+	mass("DorsalLumbarMass", Vector3.new(8.0, 9.3, 7.0), Vector3.new(0, 18.2, 2.0), skin)
+	mass("SacralMass", Vector3.new(8.1, 7.0, 7.5), Vector3.new(0, 14.7, 3.0), skin)
+	mass("TailRootMass", Vector3.new(6.9, 6.1, 8.6), Vector3.new(0, 12.8, 5.1), skin, CFrame.Angles(math.rad(-20), 0, 0))
+	mass("Neck", Vector3.new(5.5, 7.0, 5.1), Vector3.new(0, 24.8, 0), skin)
+	mass("NapeFlow", Vector3.new(6.1, 6.4, 5.4), Vector3.new(0, 24.7, 1.35), skin, CFrame.Angles(math.rad(-18), 0, 0))
+	mass("ThroatShield", Vector3.new(3.5, 5.2, 1.5), Vector3.new(0, 24.15, -2.05), underside)
+	for _, sign in ipairs({-1, 1}) do
+		local side = sign < 0 and "Left" or "Right"
+		mass(side .. "Pectoral", Vector3.new(5.35, 4.5, 1.95), Vector3.new(sign * 2.18, 22.45, -2.9), underside)
+		mass(side .. "CheekMass", Vector3.new(1.65, 2.25, 2.8), Vector3.new(sign * 1.75, 26.25, -1.95), skin)
+		mass(side .. "BrowRidge", Vector3.new(1.7, 0.62, 1.65), Vector3.new(sign * 1.88, 27.8, -3.45), skin,
+			CFrame.Angles(0, -sign * math.rad(12), sign * math.rad(8)))
+		mass(side .. "Flank", Vector3.new(4.1, 6.5, 5.0), Vector3.new(sign * 2.35, 18.65, 0.4), skin)
+		-- Long calf/instep envelopes bury flat cylinder ends and connect the foot.
+		mass(side .. "CalfMass", Vector3.new(4.8, 6.3, 4.65), Vector3.new(sign * 3.15, 7.8, 0.0), skin,
+			CFrame.Angles(math.rad(-27), 0, 0))
+		mass(side .. "InstepFlow", Vector3.new(3.6, 4.4, 4.0), Vector3.new(sign * 3.25, 3.0, -0.35), skin,
+			CFrame.Angles(math.rad(12), 0, 0))
+	end
+	-- Closely spaced tapering ellipsoids replace the exposed cylinder staircase.
+	-- This is an overlapping primitive surface, not a promised welded mesh.
+	for _, item in ipairs(model:GetChildren()) do
+		if string.match(item.Name, "^TailSegment_") or string.match(item.Name, "^DorsalShield_") or string.match(item.Name, "^DorsalEnergy_") then
+			item:Destroy()
+		end
+	end
+	local function tailPoint(t: number): Vector3
+		return Vector3.new(0, 5.0 + 8.0 * (1 - t)^1.65, 5.0 + 15.5 * t)
+	end
+	local function tailRadius(t: number): number
+		return 0.22 + 2.8 * (1 - t)^1.15
+	end
+	for i = 0, 30 do
+		local t = i / 30
+		local center = tailPoint(t)
+		local tangent = tailPoint(math.min(1, t + 0.01)) - tailPoint(math.max(0, t - 0.01))
+		local diameter = tailRadius(t) * 2
+		mass(string.format("TailFlow_%02d", i), Vector3.new(diameter, diameter, math.max(1.0, diameter * 1.45)), center, skin,
+			CFrame.lookAt(Vector3.zero, tangent))
+	end
+	local function plate(i: number, root: Vector3, height: number, projection: number, pitch: number, inset: number)
+		local cf = origin * CFrame.new(root + Vector3.new(0, 0.2, projection * 0.35))
+			* CFrame.Angles(math.rad(pitch), math.pi, math.pi)
+		wedge(model, string.format("DorsalShield_%02d", i), Vector3.new(1.15, height, projection), cf, plateColor)
+		for _, sign in ipairs({-1, 1}) do
+			-- Homothetic inset about the triangular face centroid keeps a dark border
+			-- on all three edges. Wedge cross-section centroid is (-h/6,d/6).
+			local glow = wedge(model, string.format("DorsalEnergy_%02d_%s", i, sign < 0 and "Left" or "Right"),
+				Vector3.new(0.06, height * inset, projection * inset),
+				cf * CFrame.new(sign * 0.61, -(1-inset)*height/6, (1-inset)*projection/6), ENERGY)
+			glow.Material = Enum.Material.Neon
+			glow.Transparency = 0.12
+		end
+	end
+	-- Three dominant plates, then subordinate plates along the tail surface.
+	plate(1, Vector3.new(0, 26.3, 2.65), 3.1, 4.4, -23, 0.55)
+	plate(2, Vector3.new(0, 22.1, 4.5), 3.9, 5.5, -32, 0.57)
+	plate(3, Vector3.new(0, 17.3, 5.15), 3.25, 4.6, -26, 0.52)
+	for i, t in ipairs({0.08, 0.25, 0.42, 0.59, 0.75, 0.89}) do
+		local root = tailPoint(t) + Vector3.new(0, tailRadius(t) * 0.87, 0)
+		local scale = 1 - t
+		plate(i + 3, root, 0.5 + 1.8*scale, 0.6 + 2.65*scale, -38, 0.40)
+	end
+	for _, item in ipairs(model:GetDescendants()) do
+		if item:IsA("BasePart") and item.Material ~= Enum.Material.Neon then
+			item.Material = Enum.Material.SmoothPlastic
+		end
+	end
+	model:SetAttribute("GeometryRevision", "S1_RobloxOrganicMaquette_02")
+	model:SetAttribute("VisualTarget", "Approved simplified Stage 1 and Stage 2 maquette")
+	model:SetAttribute("GeometryMethod", "Roblox primitives and visual ellipsoids; no external assets")
+end
+
 local function buildStage(parent: Instance, stage: Stage, index: number, origin: CFrame): Model
 	local model = Instance.new("Model")
 	model.Name = stage.name
@@ -530,6 +634,7 @@ local function buildStage(parent: Instance, stage: Stage, index: number, origin:
 
 	if index == 1 then
 		applyStylizedMasses(model, origin)
+		refineStageOne(model, origin)
 	end
 
 	-- Normalize every stage to the agreed target height. This preserves the
