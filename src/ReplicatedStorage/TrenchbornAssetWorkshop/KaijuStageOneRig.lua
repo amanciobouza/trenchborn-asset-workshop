@@ -702,7 +702,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			stopLoad=math.sin(math.pi*t)^2
 			if t>=1 then stopAge=nil end
 		end
-		local bob = walking and -(1.05 + 0.55*runBlend + (0.38+0.3*runBlend)*compression)*scale*fade or -(1.05*stopWeight+0.55*stopLoad)*scale
+		local bob = walking and -(1.05 - 0.25*runBlend + (0.38+0.1*runBlend)*compression)*scale*fade or -(1.05*stopWeight+0.55*stopLoad)*scale
 		-- Lower the pelvis as well as the torso; IK bends the legs while the
 		-- planted feet retain their floor height. Recovery uses the same smoothing.
 		bob = bob - (attackCrouch or 0)*scale
@@ -753,8 +753,14 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 					-- Spend more of the swing lifting the heavy leg, then settle firmly.
 					-- Both ends and the apex have zero vertical velocity.
 					local liftPhase=swing<0.6 and swing/0.6 or (1-swing)/0.4
-					lift = (2.2+1.0*runBlend)*liftPhase*liftPhase*(3-2*liftPhase)
+					lift = (2.2+0.6*runBlend)*liftPhase*liftPhase*(3-2*liftPhase)
+					-- After toe-off, finish the push behind the hips before recovering forward.
+					local rearKick=math.sin(math.pi*math.min(swing/0.36,1))^2*runBlend
+					travel=travel+2.4*rearKick
+					lift=lift+1.5*rearKick
 				end
+				-- Shift the running step slightly behind the body, keeping stance speed unchanged.
+				travel=travel+0.6*runBlend
 				local contact=math.floor(cycle+offset+stance/2)
 				if running and runBlend>0.8 then
 					if runContacts[side] and contact>runContacts[side] then runFootfall(side) end
