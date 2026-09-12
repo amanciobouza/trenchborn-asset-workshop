@@ -7,7 +7,7 @@ local STRIDE = 7.0
 local STANCE = 0.70 -- Both feet support the body during 40% of the cycle.
 local CYCLE_SECONDS = 1.9
 
-function Rig.Attach(model, movementRoot, humanoid)
+function Rig.Attach(model, movementRoot, humanoid, combat)
 	assert(model:GetAttribute("EvolutionStage") == 1, "Stage 1 rig only")
 	assert(not model:FindFirstChild("Articulation"), "Rig already attached")
 	local function get(name)
@@ -257,6 +257,9 @@ function Rig.Attach(model, movementRoot, humanoid)
 		local compression = math.sin(math.pi*math.min(sinceLanding/0.32, 1))^2
 		if humanoid and humanoid.Health <= 0 then combo:Cancel() end
 		local attackPose, attackWeight, attackName, attackIndex, attackCrouch = combo:Sample(os.clock())
+		for _, event in ipairs(combo:DrainEvents()) do
+			if combat then combat.Handle(event.Kind, event.Index) end
+		end
 		local bob = walking and -(0.12 + 0.38*compression)*scale*fade or 0
 		-- Lower the pelvis as well as the torso; IK bends the legs while the
 		-- planted feet retain their floor height. Recovery uses the same smoothing.
