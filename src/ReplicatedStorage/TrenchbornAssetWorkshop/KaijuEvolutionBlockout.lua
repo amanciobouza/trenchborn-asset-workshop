@@ -165,25 +165,25 @@ end
 
 local function buildDorsals(parent: Instance, origin: CFrame, sx: number, sy: number, sz: number, armorLevel: number, energyAmount: number)
 	local locations = {
-		{position = Vector3.new(0, 27.8, 1.3), scale = 0.75},
-		{position = Vector3.new(0, 25.0, 2.8), scale = 1.02},
-		{position = Vector3.new(0, 22.0, 3.5), scale = 1.22},
-		{position = Vector3.new(0, 18.8, 3.7), scale = 1.30},
-		{position = Vector3.new(0, 15.5, 3.5), scale = 1.20},
-		{position = Vector3.new(0, 12.8, 4.5), scale = 1.00},
-		{position = Vector3.new(0, 10.3, 7.2), scale = 0.82},
-		{position = Vector3.new(0, 8.7, 10.0), scale = 0.68},
-		{position = Vector3.new(0, 7.3, 12.9), scale = 0.55},
-		{position = Vector3.new(0, 6.25, 15.4), scale = 0.43},
-		{position = Vector3.new(0, 5.55, 17.5), scale = 0.33},
-		{position = Vector3.new(0, 5.1, 19.0), scale = 0.24},
+		{position = Vector3.new(0, 27.8, 1.3), scale = 0.75, lift = 0.0},
+		{position = Vector3.new(0, 25.0, 2.8), scale = 1.02, lift = 0.0},
+		{position = Vector3.new(0, 22.0, 3.5), scale = 1.22, lift = 0.0},
+		{position = Vector3.new(0, 18.8, 3.7), scale = 1.30, lift = 0.0},
+		{position = Vector3.new(0, 15.5, 3.5), scale = 1.20, lift = 0.0},
+		{position = Vector3.new(0, 12.8, 4.5), scale = 1.00, lift = 0.0},
+		{position = Vector3.new(0, 10.3, 7.2), scale = 0.82, lift = 2.8},
+		{position = Vector3.new(0, 8.7, 10.0), scale = 0.68, lift = 2.6},
+		{position = Vector3.new(0, 7.3, 12.9), scale = 0.55, lift = 2.25},
+		{position = Vector3.new(0, 6.25, 15.4), scale = 0.43, lift = 1.9},
+		{position = Vector3.new(0, 5.55, 17.5), scale = 0.33, lift = 1.55},
+		{position = Vector3.new(0, 5.1, 19.0), scale = 0.24, lift = 1.25},
 	}
 	for i, location in ipairs(locations) do
 		local pos = location.position
 		local centerScale = location.scale * (1 + armorLevel * 0.1)
 		local rootHeight = 2.55 * centerScale
 		local projection = 4.35 * centerScale
-		local plateCenter = pos + Vector3.new(0, 0.25 * centerScale, projection * 0.38)
+		local plateCenter = pos + Vector3.new(0, location.lift + 0.25 * centerScale, projection * 0.38)
 		local sideVariation = (i % 2 == 0) and 4 or -4
 		local plateFrame = frame(origin, plateCenter, sx, sy, sz)
 			* CFrame.Angles(math.rad(-28), math.rad(180), math.rad(180 + sideVariation))
