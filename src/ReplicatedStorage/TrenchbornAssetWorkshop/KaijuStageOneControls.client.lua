@@ -6,6 +6,20 @@ local player = Players.LocalPlayer
 local action = "KaijuStageOneAttack"
 local jumpAction="KaijuStageOneJump"
 local focusAction="KaijuStageOneFocus"
+local areaAction="KaijuStageOneArea"
+local lastArea=-math.huge
+CAS:BindAction(areaAction,function(_,state)
+	if UIS:GetFocusedTextBox() then return Enum.ContextActionResult.Pass end
+	if state==Enum.UserInputState.Begin and os.clock()-lastArea>=0.2 then
+		local character=player.Character
+		local model=character and character:FindFirstChild("Stage_1_Primal_Beast")
+		local remote=model and model:FindFirstChild("RequestArea")
+		if remote then lastArea=os.clock();remote:FireServer() end
+	end
+	return Enum.ContextActionResult.Sink
+end,true,Enum.KeyCode.R,Enum.KeyCode.ButtonY)
+CAS:SetTitle(areaAction,"Area Slam")
+CAS:SetPosition(areaAction,UDim2.new(1,-240,1,-90))
 local lastFocus=-math.huge
 CAS:BindAction(focusAction,function(_,state)
 	if UIS:GetFocusedTextBox() then return Enum.ContextActionResult.Pass end
@@ -79,10 +93,13 @@ prompt.Visible=false
 prompt.Parent=script.Parent
 local availabilityConnection
 local focusConnection
+local areaConnection
 local alive=true
 local function watchCharacter(character)
 	if availabilityConnection then availabilityConnection:Disconnect();availabilityConnection=nil end
 	if focusConnection then focusConnection:Disconnect();focusConnection=nil end
+	if areaConnection then areaConnection:Disconnect();areaConnection=nil end
+	CAS:SetTitle(areaAction,"Area Slam")
 	CAS:SetTitle(focusAction,"Focus")
 	prompt.Visible=false
 	CAS:SetTitle(action,"Attack")
@@ -95,6 +112,10 @@ local function watchCharacter(character)
 			CAS:SetTitle(action,available and "Rip Apart" or "Attack")
 		end
 		availabilityConnection=model:GetAttributeChangedSignal("FinisherAvailable"):Connect(update)
+		areaConnection=model:GetAttributeChangedSignal("AreaPhase"):Connect(function()
+			local phase=model:GetAttribute("AreaPhase")
+			CAS:SetTitle(areaAction,phase=="Charging" and "Charging" or phase=="Recovery" and "Recovery" or "Area Slam")
+		end)
 		focusConnection=model:GetAttributeChangedSignal("FocusPhase"):Connect(function()
 			local phase=model:GetAttribute("FocusPhase")
 			CAS:SetTitle(focusAction,phase=="Charging" and "Charging" or phase=="Firing" and "Firing"
@@ -109,7 +130,7 @@ local mouse = UIS.InputBegan:Connect(function(input, processed)
 	if not processed and input.UserInputType == Enum.UserInputType.MouseButton1 then attack() end
 end)
 task.spawn(function()
-	for _,name in ipairs({action,jumpAction,focusAction}) do
+	for _,name in ipairs({action,jumpAction,focusAction,areaAction}) do
 		local button = CAS:GetButton(name)
 		if button then
 			for _, label in ipairs(button:GetDescendants()) do
@@ -124,9 +145,11 @@ script.Destroying:Connect(function()
 	characterConnection:Disconnect()
 	if availabilityConnection then availabilityConnection:Disconnect() end
 	if focusConnection then focusConnection:Disconnect() end
+	if areaConnection then areaConnection:Disconnect() end
 	prompt:Destroy()
 	mouse:Disconnect()
 	CAS:UnbindAction(action)
 	CAS:UnbindAction(jumpAction)
 	CAS:UnbindAction(focusAction)
+	CAS:UnbindAction(areaAction)
 end)
