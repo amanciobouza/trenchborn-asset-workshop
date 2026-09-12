@@ -194,17 +194,12 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	end
 	local upperLip=get("UpperMuzzleCoreY")
 	local lowerLip=get("LowerJawFrontCoreY")
-	local upperLipLocal=bones.Head.CFrame:PointToObjectSpace(upperLip.CFrame:PointToWorldSpace(
-		Vector3.new(0,-upperLip.Size.Y/2,-get("UpperMuzzleCoreZ").Size.Z/2+0.2*scale)))
 	local lowerLipLocal=bones.Jaw.CFrame:PointToObjectSpace(lowerLip.CFrame:PointToWorldSpace(
 		Vector3.new(0,lowerLip.Size.Y/2,-get("LowerJawFrontCoreZ").Size.Z/2+0.2*scale)))
-	local throatInset=Vector3.new(0,0,2.6*scale)
+	local palateOffset=CFrame.new(0,-upperLip.Size.Y/2-0.2*scale,get("UpperMuzzleCoreZ").Size.Z*0.25)
 	local function mouthFrame()
-		-- Derive the opening from both lips in rig space, including jaw rotation.
-		local jawInHead=motors.Jaw.C0*motors.Jaw.C1:Inverse()
-		local lower=jawInHead:PointToWorldSpace(lowerLipLocal)
-		-- Follow the opening, but originate deeper inside the mouth toward the throat.
-		return bones.Head,CFrame.new(upperLipLocal:Lerp(lower,0.68)+throatInset)
+		-- Charge grows from the rear palate, fixed to the underside of the upper jaw.
+		return upperLip,palateOffset
 	end
 	local function mouthPosition()
 		local upper,offset=mouthFrame()
@@ -574,7 +569,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		-- Blend mode changes and step accents rather than snapping joint poses.
 		for name, m in pairs(motors) do m.C0 = previous[name]:Lerp(m.C0, blend) end
 		if focus then
-			-- Use the final blended jaw pose for both the beam and its charge orb.
+			-- Beam and charge share the same fixed palate attachment.
 			local _,offset=mouthFrame()
 			focus.Mouth.CFrame=offset
 			focus.OrbWeld.C0=offset
@@ -588,7 +583,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 					-get("UpperMuzzleCoreZ").Size.Z/2+0.2*scale))
 				local lowerPoint=lowerLip.CFrame:PointToWorldSpace(Vector3.new(0,lowerLip.Size.Y/2,
 					-get("LowerJawFrontCoreZ").Size.Z/2+0.2*scale))
-				local expected=upperPoint:Lerp(lowerPoint,0.68)+bones.Head.CFrame:VectorToWorldSpace(throatInset)
+				local expected=(upperLip.CFrame*palateOffset).Position
 				local visualJawPoint=bones.Jaw.CFrame:PointToWorldSpace(lowerLipLocal)
 				local jawParts,anchoredParts=0,0
 				for _,p in ipairs(visuals) do
