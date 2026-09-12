@@ -77,12 +77,28 @@ local function equip(player, character)
 	jumpRemote.Name="RequestJump"
 	jumpRemote.Parent=kaiju
 	local lastJumpRequest=-math.huge
-	local jumpConnection=jumpRemote.OnServerEvent:Connect(function(sender)
+	local function validDirection(direction)
+		return typeof(direction)=="Vector3" and direction.X==direction.X and direction.Y==direction.Y
+			and direction.Z==direction.Z and direction.Magnitude<=1.05 and math.abs(direction.Y)<=0.1
+	end
+	local jumpConnection=jumpRemote.OnServerEvent:Connect(function(sender,direction)
 		if sender~=player or player.Character~=character then return end
+		if direction~=nil and not validDirection(direction) then return end
 		local now=os.clock()
 		if now-lastJumpRequest<0.15 then return end
 		lastJumpRequest=now
-		rig.RequestJump()
+		rig.RequestJump(direction)
+	end)
+	local steerRemote=Instance.new("RemoteEvent")
+	steerRemote.Name="SteerJump"
+	steerRemote.Parent=kaiju
+	local lastSteer=-math.huge
+	local steerConnection=steerRemote.OnServerEvent:Connect(function(sender,direction)
+		if sender~=player or player.Character~=character or not validDirection(direction) then return end
+		local now=os.clock()
+		if now-lastSteer<0.06 then return end
+		lastSteer=now
+		rig.SetAirDirection(direction)
 	end)
 	local attackConnection = remote.OnServerEvent:Connect(function(sender)
 		if sender ~= player or player.Character ~= character then return end
@@ -118,6 +134,7 @@ local function equip(player, character)
 	if display and display.Parent then display:Destroy() end
 
 	character.Destroying:Once(function()
+		steerConnection:Disconnect()
 		jumpConnection:Disconnect()
 		attackConnection:Disconnect()
 		added:Disconnect()
