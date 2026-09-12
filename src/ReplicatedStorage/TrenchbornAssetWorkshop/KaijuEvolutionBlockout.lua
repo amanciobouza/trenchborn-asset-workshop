@@ -1,0 +1,248 @@
+--!strict
+-- Phase 4 artistic blockout for the five-stage Primal Beast evolution.
+-- Deliberately restricted to Roblox primitive volumes.
+
+local Builder = {}
+
+local BODY = Color3.fromRGB(43, 45, 39)
+local BODY_DARK = Color3.fromRGB(27, 29, 26)
+local BELLY = Color3.fromRGB(73, 70, 52)
+local ARMOR = Color3.fromRGB(35, 37, 33)
+local ENERGY = Color3.fromRGB(224, 188, 30)
+local ENERGY_HIGH = Color3.fromRGB(173, 226, 45)
+local CLAW = Color3.fromRGB(139, 126, 96)
+
+type Stage = {
+	name: string,
+	height: number,
+	shoulders: number,
+	volume: number,
+	armor: number,
+	energy: number,
+}
+
+local STAGES: {Stage} = {
+	{name = "Stage_1_Primal_Beast", height = 1.00, shoulders = 1.00, volume = 1.00, armor = 0, energy = 0.15},
+	{name = "Stage_2_Storm_Hunter", height = 1.12, shoulders = 1.25, volume = 1.35, armor = 1, energy = 0.32},
+	{name = "Stage_3_Rift_Stalker", height = 1.26, shoulders = 1.38, volume = 1.80, armor = 2, energy = 0.52},
+	{name = "Stage_4_Caldera_Tyrant", height = 1.43, shoulders = 1.58, volume = 2.50, armor = 3, energy = 0.74},
+	{name = "Stage_5_Cataclysm_Titan", height = 1.62, shoulders = 1.85, volume = 3.60, armor = 4, energy = 1.00},
+}
+
+local function defaults(p: BasePart)
+	p.Anchored = true
+	p.CanCollide = false
+	p.CanQuery = false
+	p.CanTouch = false
+	p.CastShadow = true
+	p.Material = Enum.Material.Slate
+	p.TopSurface = Enum.SurfaceType.Smooth
+	p.BottomSurface = Enum.SurfaceType.Smooth
+end
+
+local function part(parent: Instance, name: string, size: Vector3, cf: CFrame, color: Color3, shape: Enum.PartType?): Part
+	local p = Instance.new("Part")
+	p.Name = name
+	p.Size = size
+	p.CFrame = cf
+	p.Color = color
+	p.Shape = shape or Enum.PartType.Block
+	defaults(p)
+	p.Parent = parent
+	return p
+end
+
+local function wedge(parent: Instance, name: string, size: Vector3, cf: CFrame, color: Color3): WedgePart
+	local p = Instance.new("WedgePart")
+	p.Name = name
+	p.Size = size
+	p.CFrame = cf
+	p.Color = color
+	defaults(p)
+	p.Parent = parent
+	return p
+end
+
+local function corner(parent: Instance, name: string, size: Vector3, cf: CFrame, color: Color3): CornerWedgePart
+	local p = Instance.new("CornerWedgePart")
+	p.Name = name
+	p.Size = size
+	p.CFrame = cf
+	p.Color = color
+	defaults(p)
+	p.Parent = parent
+	return p
+end
+
+local function scaled(v: Vector3, sx: number, sy: number, sz: number): Vector3
+	return Vector3.new(v.X * sx, v.Y * sy, v.Z * sz)
+end
+
+local function frame(origin: CFrame, p: Vector3, sx: number, sy: number, sz: number): CFrame
+	return origin * CFrame.new(scaled(p, sx, sy, sz))
+end
+
+local function cylinderBetween(parent: Instance, name: string, a: Vector3, b: Vector3, diameter: number, origin: CFrame, sx: number, sy: number, sz: number, color: Color3): Part
+	local wa = frame(origin, a, sx, sy, sz).Position
+	local wb = frame(origin, b, sx, sy, sz).Position
+	local delta = wb - wa
+	local mid = (wa + wb) * 0.5
+	return part(parent, name, Vector3.new(delta.Magnitude, diameter * sx, diameter * sz), CFrame.lookAt(mid, wb) * CFrame.Angles(0, math.rad(90), 0), color, Enum.PartType.Cylinder)
+end
+
+local function claw(parent: Instance, name: string, pos: Vector3, yaw: number, origin: CFrame, sx: number, sy: number, sz: number)
+	wedge(parent, name, scaled(Vector3.new(0.72, 0.68, 1.65), sx, sy, sz), frame(origin, pos, sx, sy, sz) * CFrame.Angles(math.rad(-8), math.rad(yaw), 0), CLAW)
+end
+
+local function buildFoot(parent: Instance, side: string, sign: number, origin: CFrame, sx: number, sy: number, sz: number)
+	local x = sign * 3.25
+	part(parent, side .. "FootMass", scaled(Vector3.new(3.5, 1.2, 4.2), sx, sy, sz), frame(origin, Vector3.new(x, 1.15, -0.55), sx, sy, sz), BODY_DARK)
+	for i, lateral in ipairs({-1.05, 0, 1.05}) do
+		local toeX = x + lateral
+		cylinderBetween(parent, side .. "Toe_" .. i, Vector3.new(toeX, 0.9, -1.3), Vector3.new(toeX, 0.72, -3.0), 0.78, origin, sx, sy, sz, BODY_DARK)
+		claw(parent, side .. "FrontClaw_" .. i, Vector3.new(toeX, 0.72, -3.75), 180, origin, sx, sy, sz)
+	end
+	claw(parent, side .. "RearClaw", Vector3.new(x, 1.0, 1.95), 0, origin, sx, sy, sz)
+end
+
+local function buildArm(parent: Instance, side: string, sign: number, origin: CFrame, sx: number, sy: number, sz: number, armorLevel: number)
+	local shoulder = Vector3.new(sign * 4.7, 22.0, -0.1)
+	local elbow = Vector3.new(sign * 5.55, 16.9, -0.35)
+	local wrist = Vector3.new(sign * 5.15, 12.7, -0.9)
+	part(parent, side .. "ShoulderMass", scaled(Vector3.new(3.8, 3.8, 3.6), sx, sy, sz), frame(origin, shoulder + Vector3.new(0, -0.5, 0), sx, sy, sz), BODY, Enum.PartType.Ball)
+	cylinderBetween(parent, side .. "UpperArm", shoulder, elbow, 2.8, origin, sx, sy, sz, BODY)
+	cylinderBetween(parent, side .. "Forearm", elbow, wrist, 3.15, origin, sx, sy, sz, BODY)
+	part(parent, side .. "Hand", scaled(Vector3.new(2.7, 2.0, 2.8), sx, sy, sz), frame(origin, wrist + Vector3.new(0, -0.85, -0.25), sx, sy, sz), BODY_DARK)
+	for i = 1, 3 do
+		local fingerX = wrist.X + (i - 2) * 0.7
+		claw(parent, side .. "HandClaw_" .. i, Vector3.new(fingerX, 11.2, -2.0), 180, origin, sx, sy, sz)
+	end
+	if armorLevel >= 1 then
+		wedge(parent, side .. "ForearmShield", scaled(Vector3.new(2.5 + armorLevel * 0.25, 4.0, 1.5), sx, sy, sz), frame(origin, Vector3.new(sign * 5.6, 15.0, -1.5), sx, sy, sz) * CFrame.Angles(0, sign * math.rad(90), 0), ARMOR)
+	end
+	if armorLevel >= 2 then
+		corner(parent, side .. "ShoulderArmor", scaled(Vector3.new(3.8 + armorLevel * 0.35, 2.5, 3.8), sx, sy, sz), frame(origin, Vector3.new(sign * 5.1, 23.2, 0.0), sx, sy, sz) * CFrame.Angles(0, sign > 0 and math.rad(180) or 0, 0), ARMOR)
+	end
+end
+
+local function buildHead(parent: Instance, origin: CFrame, sx: number, sy: number, sz: number, armorLevel: number)
+	part(parent, "Neck", scaled(Vector3.new(4.4, 4.5, 4.1), sx, sy, sz), frame(origin, Vector3.new(0, 24.4, 0.15), sx, sy, sz), BODY_DARK, Enum.PartType.Cylinder).Orientation = Vector3.new(0, 0, 90)
+	part(parent, "Skull", scaled(Vector3.new(5.7, 3.7, 4.5), sx, sy, sz), frame(origin, Vector3.new(0, 27.0, -1.0), sx, sy, sz), BODY)
+	wedge(parent, "PredatorBrow", scaled(Vector3.new(5.9, 1.4, 3.3), sx, sy, sz), frame(origin, Vector3.new(0, 28.15, -1.25), sx, sy, sz), ARMOR)
+	wedge(parent, "Muzzle", scaled(Vector3.new(4.4, 1.65, 3.0), sx, sy, sz), frame(origin, Vector3.new(0, 26.25, -3.05), sx, sy, sz) * CFrame.Angles(0, math.rad(180), 0), BODY_DARK)
+	part(parent, "Jaw", scaled(Vector3.new(4.45, 1.05, 2.75), sx, sy, sz), frame(origin, Vector3.new(0, 25.15, -2.9), sx, sy, sz), BODY_DARK)
+	for _, sign in ipairs({-1, 1}) do
+		part(parent, sign < 0 and "LeftEye" or "RightEye", scaled(Vector3.new(0.6, 0.42, 0.32), sx, sy, sz), frame(origin, Vector3.new(sign * 2.0, 27.25, -3.25), sx, sy, sz), ENERGY, Enum.PartType.Ball).Material = Enum.Material.Neon
+	end
+	if armorLevel >= 2 then
+		for _, sign in ipairs({-1, 1}) do
+			corner(parent, sign < 0 and "LeftCrown" or "RightCrown", scaled(Vector3.new(2.5, 1.7 + armorLevel * 0.3, 2.4), sx, sy, sz), frame(origin, Vector3.new(sign * 2.45, 28.7, -0.1), sx, sy, sz) * CFrame.Angles(0, sign > 0 and math.rad(180) or 0, 0), ARMOR)
+		end
+	end
+end
+
+local function buildDorsals(parent: Instance, origin: CFrame, sx: number, sy: number, sz: number, armorLevel: number, energyAmount: number)
+	local locations = {
+		Vector3.new(0, 27.8, 1.3), Vector3.new(0, 25.0, 2.8), Vector3.new(0, 22.0, 3.5),
+		Vector3.new(0, 18.8, 3.7), Vector3.new(0, 15.5, 3.5), Vector3.new(0, 12.8, 4.5), Vector3.new(0, 10.3, 7.2),
+	}
+	for i, pos in ipairs(locations) do
+		local centerScale = 0.75 + math.sin((i - 1) / 6 * math.pi) * (0.55 + armorLevel * 0.13)
+		wedge(parent, string.format("DorsalShield_%02d", i), scaled(Vector3.new(1.5, 4.2 * centerScale, 2.5 * centerScale), sx, sy, sz), frame(origin, pos, sx, sy, sz) * CFrame.Angles(math.rad(-10), 0, math.rad((i % 2 == 0) and 5 or -5)), ARMOR)
+		local seam = wedge(parent, string.format("DorsalEnergy_%02d", i), scaled(Vector3.new(0.22, 2.7 * centerScale, 1.7 * centerScale), sx, sy, sz), frame(origin, pos + Vector3.new(0, 0, -0.08), sx, sy, sz) * CFrame.Angles(math.rad(-10), 0, 0), energyAmount > 0.75 and ENERGY_HIGH or ENERGY)
+		seam.Material = Enum.Material.Neon
+		seam.Transparency = 0.35 - energyAmount * 0.25
+	end
+end
+
+local function buildStage(parent: Instance, stage: Stage, index: number, origin: CFrame): Model
+	local model = Instance.new("Model")
+	model.Name = stage.name
+	model:SetAttribute("EvolutionStage", index)
+	model:SetAttribute("TargetHeightStuds", 30 * stage.height)
+	model:SetAttribute("HeightPercent", math.round(stage.height * 100))
+	model:SetAttribute("ShoulderWidthPercent", math.round(stage.shoulders * 100))
+	model:SetAttribute("VolumePercent", math.round(stage.volume * 100))
+	model:SetAttribute("PrimitiveArtDirection", true)
+	model.Parent = parent
+
+	local sx = stage.shoulders
+	local sy = stage.height
+	local sz = stage.volume / (stage.height * stage.shoulders)
+
+	part(model, "PelvisCore", scaled(Vector3.new(7.2, 4.5, 5.5), sx, sy, sz), frame(origin, Vector3.new(0, 15.8, 0.35), sx, sy, sz), BODY)
+	part(model, "AbdomenCore", scaled(Vector3.new(6.2, 4.6, 4.8), sx, sy, sz), frame(origin, Vector3.new(0, 19.0, -0.1), sx, sy, sz), BODY_DARK)
+	part(model, "ChestCore", scaled(Vector3.new(8.6, 6.4, 5.8), sx, sy, sz), frame(origin, Vector3.new(0, 22.2, -0.15), sx, sy, sz), BODY)
+	for _, sign in ipairs({-1, 1}) do
+		part(model, sign < 0 and "LeftPectoral" or "RightPectoral", scaled(Vector3.new(4.5, 4.2, 2.0), sx, sy, sz), frame(origin, Vector3.new(sign * 2.25, 22.0, -3.0), sx, sy, sz), BELLY, Enum.PartType.Ball)
+		part(model, sign < 0 and "LeftHipMass" or "RightHipMass", scaled(Vector3.new(4.4, 4.6, 4.7), sx, sy, sz), frame(origin, Vector3.new(sign * 2.45, 15.1, 0.2), sx, sy, sz), BODY, Enum.PartType.Ball)
+	end
+	for band = 1, 4 do
+		wedge(model, "BellyBand_" .. band, scaled(Vector3.new(5.4 - band * 0.25, 0.7, 1.15), sx, sy, sz), frame(origin, Vector3.new(0, 21.3 - band * 1.1, -2.7), sx, sy, sz) * CFrame.Angles(0, math.rad(180), 0), BELLY)
+	end
+
+	buildHead(model, origin, sx, sy, sz, stage.armor)
+	buildArm(model, "Left", -1, origin, sx, sy, sz, stage.armor)
+	buildArm(model, "Right", 1, origin, sx, sy, sz, stage.armor)
+
+	for _, data in ipairs({{"Left", -1}, {"Right", 1}}) do
+		local side = data[1] :: string
+		local sign = data[2] :: number
+		local x = sign * 3.15
+		local hip = Vector3.new(x, 15.4, 0.3)
+		local knee = Vector3.new(x, 10.2, -1.55)
+		local hock = Vector3.new(x, 5.55, 1.35)
+		part(model, side .. "ThighMass", scaled(Vector3.new(5.0, 5.6, 4.7), sx, sy, sz), frame(origin, (hip + knee) * 0.5, sx, sy, sz), BODY, Enum.PartType.Ball)
+		cylinderBetween(model, side .. "UpperLeg", hip, knee, 4.2, origin, sx, sy, sz, BODY)
+		part(model, side .. "CalfMass", scaled(Vector3.new(4.25, 4.5, 4.0), sx, sy, sz), frame(origin, (knee + hock) * 0.5, sx, sy, sz), BODY, Enum.PartType.Ball)
+		cylinderBetween(model, side .. "LowerLeg", knee, hock, 3.65, origin, sx, sy, sz, BODY_DARK)
+		buildFoot(model, side, sign, origin, sx, sy, sz)
+	end
+
+	local tailPoints = {
+		Vector3.new(0, 14.5, 2.4), Vector3.new(0, 13.2, 5.5), Vector3.new(0, 11.5, 8.6),
+		Vector3.new(0, 9.5, 11.6), Vector3.new(0, 7.8, 14.2), Vector3.new(0, 6.4, 16.4),
+		Vector3.new(0, 5.5, 18.2), Vector3.new(0, 5.0, 19.7),
+	}
+	for i = 1, #tailPoints - 1 do
+		cylinderBetween(model, string.format("TailSegment_%02d", i), tailPoints[i], tailPoints[i + 1], 5.1 - i * 0.5, origin, sx, sy, sz, BODY_DARK)
+	end
+	buildDorsals(model, origin, sx, sy, sz, stage.armor, stage.energy)
+
+	if stage.armor >= 3 then
+		for rib = 1, 5 do
+			for _, sign in ipairs({-1, 1}) do
+				wedge(model, string.format("CalderaRib_%d_%d", rib, sign), scaled(Vector3.new(3.2, 0.8, 1.1), sx, sy, sz), frame(origin, Vector3.new(sign * 1.8, 24.0 - rib * 1.05, -3.35), sx, sy, sz) * CFrame.Angles(0, sign * math.rad(18), sign * math.rad(10)), ARMOR)
+			end
+		end
+	end
+
+	-- Normalize every stage to the agreed target height. This preserves the
+	-- primitive proportions while making the 30-stud Stage 1 baseline exact.
+	local _, unscaledSize = model:GetBoundingBox()
+	local targetHeight = 30 * stage.height
+	model:ScaleTo(model:GetScale() * (targetHeight / unscaledSize.Y))
+	local scaledCFrame, scaledSize = model:GetBoundingBox()
+	local bottomY = scaledCFrame.Position.Y - scaledSize.Y / 2
+	model:PivotTo(model:GetPivot() + Vector3.new(0, origin.Position.Y - bottomY, 0))
+	return model
+end
+
+function Builder.Build(target: Instance, ground: CFrame?): Model
+	local existing = target:FindFirstChild("Kaiju_Evolution_Primitive_Blockout")
+	if existing then existing:Destroy() end
+	local collection = Instance.new("Model")
+	collection.Name = "Kaiju_Evolution_Primitive_Blockout"
+	collection:SetAttribute("PipelinePhase", 4)
+	collection:SetAttribute("QualityGateB", "Pending")
+	collection:SetAttribute("Purpose", "Five-stage silhouette and proportion review")
+	collection.Parent = target
+	local base = ground or CFrame.new(0, 0, 145)
+	local offsets = {-68, -36, 0, 42, 96}
+	for index, stage in ipairs(STAGES) do
+		buildStage(collection, stage, index, base * CFrame.new(offsets[index], 0, 0))
+	end
+	return collection
+end
+
+return Builder
