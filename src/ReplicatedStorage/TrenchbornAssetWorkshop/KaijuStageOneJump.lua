@@ -23,6 +23,8 @@ function Jump.new()
 		elseif self.Phase=="Air" then
 			if not grounded then self.LeftGround=true end
 			if grounded and verticalSpeed<=1 and ((self.LeftGround and t>0.1) or t>0.5) then
+				-- Only a real airborne-to-ground transition can deal landing damage.
+				if self.LeftGround then event="Land" end
 				self.Phase,self.Started="Landing",now;t=0
 			elseif t>6 then self:Cancel();return nil,"Restore" end
 		elseif self.Phase=="Landing" and t>=0.65 then
