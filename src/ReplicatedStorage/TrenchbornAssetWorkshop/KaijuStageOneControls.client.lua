@@ -23,14 +23,15 @@ local lastSteer=0
 local steering=RunService.Heartbeat:Connect(function()
 	if os.clock()-lastSteer<0.08 then return end
 	lastSteer=os.clock()
-	if UIS:GetFocusedTextBox() then return end
 	local character=player.Character
 	local model=character and character:FindFirstChild("Stage_1_Primal_Beast")
 	local phase=model and model:GetAttribute("JumpPhase")
 	if phase~="Air" and phase~="Windup" then return end
 	local humanoid=character:FindFirstChildOfClass("Humanoid")
 	local remote=model:FindFirstChild("SteerJump")
-	if remote and humanoid then remote:FireServer(humanoid.MoveDirection) end
+	if remote and humanoid then
+		remote:FireServer(UIS:GetFocusedTextBox() and Vector3.zero or humanoid.MoveDirection)
+	end
 end)
 local lastRequest = -math.huge
 local function attack()
