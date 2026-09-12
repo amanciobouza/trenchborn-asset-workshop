@@ -261,7 +261,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	-- Reuse the workshop's existing Guardian/Sovereign audio assets, with heavier tuning.
 	local audioPresets={
 		Step={113663232024295,0.38,0.95},RunStep={113663232024295,0.52,1.0},
-		Land={113663232024295,0.7,0.8},Whoosh={140192907374090,0.9,1.0},JumpWhoosh={140192907374090,0.28,1.2},Punch={97522871949213,0.5,1.15},Slam={97522871949213,0.65,1.0},
+		Land={113663232024295,1.0,0.68},Whoosh={140192907374090,0.9,1.0},JumpWhoosh={140192907374090,0.28,1.2},Punch={97522871949213,0.5,1.15},Slam={97522871949213,0.65,1.0},
 		Finisher={71814605717939,0.7,1.0},Hit={9116684884,0.3,0.7},HeavyHit={9116684884,0.55,0.52},
 		Discharge={1040136448,1.25,1.0},
 		Defeat={9116684884,0.75,0.42},
@@ -292,7 +292,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			bass.LowGain=8;bass.MidGain=-2;bass.HighGain=-4;bass.Parent=sound
 		end
 		if sound and kind~="FocusFire" and kind~="Discharge" and kind~="JumpWhoosh" and kind~="Whoosh" and kind~="Punch" and kind~="Slam" and kind~="Finisher" then
-			local eq=Instance.new("EqualizerSoundEffect");eq.LowGain=3;eq.MidGain=-3;eq.HighGain=-12;eq.Parent=sound
+			local eq=Instance.new("EqualizerSoundEffect");eq.LowGain=kind=="Land" and 6 or 3;eq.MidGain=-3;eq.HighGain=-12;eq.Parent=sound
 			game:GetService("Debris"):AddItem(sound,(kind=="Step" or kind=="RunStep") and 1.2 or 2.4)
 		end
 		if not soundOnly then feedbackRemote:FireClient(owner,kind=="Slam" and "Punch" or kind) end
@@ -304,7 +304,8 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		runRequested=enabled;model:SetAttribute("RunRequested",enabled)
 		return true
 	end
-	local function runFootfall(side)
+	local function runFootfall(side,force)
+		local impact=force or 1
 		local foot=bones[side.."Foot"]
 		local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Exclude
 		params.FilterDescendantsInstances={model.Parent}
@@ -315,11 +316,11 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			dust.Anchored=true;dust.CanCollide=false;dust.CanTouch=false;dust.CanQuery=false;dust.CastShadow=false
 			dust.Material=Enum.Material.SmoothPlastic
 			dust.Color=hit.Instance:IsA("BasePart") and hit.Instance.Color or Color3.fromRGB(105,100,90)
-			dust.Size=Vector3.new(1,0.5,1)*scale;dust.Transparency=0.5
+			dust.Size=Vector3.new(1,0.5,1)*scale*impact;dust.Transparency=0.5
 			dust.Position=hit.Position+Vector3.new(0,0.2*scale,0);dust.Parent=folder
-			local spread=Vector3.new(math.cos(i*2.4)*2,0.7,math.sin(i*2.4)*2)*scale
+			local spread=Vector3.new(math.cos(i*2.4)*2,0.7,math.sin(i*2.4)*2)*scale*impact
 			game:GetService("TweenService"):Create(dust,TweenInfo.new(0.35),
-				{Position=dust.Position+spread,Size=Vector3.new(2,1.2,2)*scale,Transparency=1}):Play()
+				{Position=dust.Position+spread,Size=Vector3.new(2,1.2,2)*scale*impact,Transparency=1}):Play()
 			game:GetService("Debris"):AddItem(dust,0.4)
 		end
 	end
@@ -858,6 +859,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				movementRoot:ApplyImpulse((horizontal+Vector3.new(0,rise,0)-velocity)*movementRoot.AssemblyMass)
 			elseif jumpEvent=="Land" then
 				feedback("Land",bones.Pelvis)
+				runFootfall("Left",2.2);runFootfall("Right",2.2)
 				if combat then combat.Handle("Land",0) end
 			elseif jumpEvent=="Restore" then restoreJump() end
 			if jump.Phase=="Air" then
