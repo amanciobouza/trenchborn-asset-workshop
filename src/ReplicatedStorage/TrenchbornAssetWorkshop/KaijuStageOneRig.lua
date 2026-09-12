@@ -3,7 +3,7 @@
 local RunService = game:GetService("RunService")
 local Combo = require(script.Parent:WaitForChild("KaijuStageOneCombo"))
 local Rig = {}
-local STRIDE = 7.0
+local STRIDE = 10.0
 local STANCE = 0.70 -- Both feet support the body during 40% of the cycle.
 local CYCLE_SECONDS = 1.9
 
@@ -152,6 +152,12 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	local function solveLeg(side, forwardOffset, lift, bob)
 		local leg = legs[side]
 		local y, z = leg.offset.Y + lift - bob, leg.offset.Z + forwardOffset
+		-- During the first frames of a long step the pelvis is still lowering.
+		-- Limit horizontal reach until it settles, keeping the foot on the floor
+		-- and a small bend in the knee instead of stretching the leg straight.
+		local reach = leg.upper + leg.lower - 0.12*scale
+		local horizontalReach = math.sqrt(math.max(0, reach*reach-y*y))
+		z = math.clamp(z, -horizontalReach, horizontalReach)
 		local distance = math.sqrt(y*y + z*z)
 		distance = math.clamp(distance, math.abs(leg.upper-leg.lower)+0.001, leg.upper+leg.lower-0.001)
 		local angle = math.atan2(-z, -y)
@@ -264,7 +270,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		for _, event in ipairs(combo:DrainEvents()) do
 			if combat then combat.Handle(event.Kind, event.Index, event.FinisherUntil) end
 		end
-		local bob = walking and -(0.12 + 0.38*compression)*scale*fade or 0
+		local bob = walking and -(1.05 + 0.38*compression)*scale*fade or 0
 		-- Lower the pelvis as well as the torso; IK bends the legs while the
 		-- planted feet retain their floor height. Recovery uses the same smoothing.
 		bob = bob - (attackCrouch or 0)*scale
@@ -299,7 +305,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 					local swing = (t-STANCE)/(1-STANCE)
 					local smooth = swing*swing*(3-2*swing)
 					travel = STRIDE/2-STRIDE*smooth
-					lift = 0.85*math.sin(math.pi*swing)^2
+					lift = 1.05*math.sin(math.pi*swing)^2
 				end
 				solveLeg(side, travel*scale*fade, lift*scale*fade, actualBob)
 				local swing = math.sin((cycle+offset+STANCE/2)*math.pi*2-0.25)*fade
