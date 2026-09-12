@@ -263,7 +263,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		Step={113663232024295,0.38,0.95},RunStep={113663232024295,0.52,1.0},
 		Land={113663232024295,0.7,0.8},Punch={140192907374090,0.5,1.0},Slam={97522871949213,0.65,1.0},
 		Finisher={71814605717939,0.7,1.0},Hit={9116684884,0.3,0.7},HeavyHit={9116684884,0.55,0.52},
-		Discharge={72268417595029,0.8,1.0},
+		Discharge={1040136448,0.8,1.0},
 		Defeat={9116684884,0.75,0.42},
 	}
 	local audioRandom=Random.new()
