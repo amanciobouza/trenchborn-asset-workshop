@@ -576,7 +576,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		end
 		-- Lose support and pitch forward; the legs remain long instead of folding up.
 		fallen("Torso",-8*kneel*(1-fall),0,0)
-		fallen("Head",-8*kneel*(1-settle),12*settle,0)
+		fallen("Head",65*fall,18*fall,0)
 		fallen("Jaw",-10*kneel,0,0)
 		for _,side in ipairs({"Left","Right"}) do
 			local sign=side=="Left" and -1 or 1
@@ -584,9 +584,9 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			fallen(side.."Shin",-14*kneel*(1-fall),0,0)
 			fallen(side.."Hock",6*kneel*(1-fall),0,0)
 			fallen(side.."Foot",-8*fall,0,0)
-			fallen(side.."UpperArm",75*fall,0,-sign*(18*fall+8*settle))
-			fallen(side.."Forearm",18*fall*(1-settle),0,0)
-			fallen(side.."Hand",-10*fall,0,0)
+			fallen(side.."UpperArm",185*fall,0,sign*30*fall)
+			fallen(side.."Forearm",0,0,0)
+			fallen(side.."Hand",0,0,0)
 		end
 		-- Counter the body's forward rotation so the long tail trails along the ground.
 		for i=1,tailCount do fallen("Tail"..i,i==1 and 66*fall or 0,(i==1 and 3 or 0.3)*fall,0) end
@@ -608,10 +608,17 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			local extent=math.abs(x)+math.abs(y)+math.abs(z)
 			if part:IsA("Part") and part.Shape==Enum.PartType.Ball then extent=math.sqrt(x*x+y*y+z*z)
 			elseif part:IsA("Part") and part.Shape==Enum.PartType.Cylinder then extent=math.abs(x)+math.sqrt(y*y+z*z) end
-			lowest=math.min(lowest,cf.Position.Y-extent)
+			-- Rest the chest/head on the floor; a hand or tail must not prop up the whole corpse.
+			if item.Bone=="Torso" or item.Bone=="Head" or item.Bone=="Pelvis" then
+				lowest=math.min(lowest,cf.Position.Y-extent)
+			end
 		end
 		local correction=defeat.Ground-lowest
 		rootPose=rootPose+Vector3.new(0,correction<0 and correction*fall or correction,0)
+		-- Settling can lower the body, never lift it back into a push-up.
+		local height=math.min(rootPose.Position.Y,defeat.LastHeight or defeat.Root.Position.Y)
+		rootPose=rootPose+Vector3.new(0,height-rootPose.Position.Y,0)
+		defeat.LastHeight=height
 		rootJoint.C0=movementRoot.CFrame:ToObjectSpace(rootPose)
 		if t>=1.8 and not defeat.Impact then
 			defeat.Impact=true
@@ -629,14 +636,18 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			end
 		end
 		local dark=smooth(t/1.15)
+		local eyesDark=smooth((t-2.0)/0.8)
 		for _,glow in ipairs(defeat.Glow) do
-			glow.Part.Color=glow.Color:Lerp(Color3.fromRGB(25,32,40),dark)
-			if dark>=1 then glow.Part.Material=Enum.Material.SmoothPlastic end
+			local fade=glow.Eye and eyesDark or dark
+			glow.Part.Color=glow.Color:Lerp(Color3.fromRGB(25,32,40),fade)
+			if fade>=1 then glow.Part.Material=Enum.Material.SmoothPlastic end
 		end
-		for _,light in ipairs(defeat.Lights) do light.Part.Brightness=light.Brightness*(1-dark) end
+		for _,light in ipairs(defeat.Lights) do
+			light.Part.Brightness=light.Brightness*(1-(light.Eye and eyesDark or dark))
+		end
 		damageFlash.FillTransparency=1-0.6*math.max(0,1-t/0.4)
-		model:SetAttribute("ReactionState",t<0.7 and "Buckling" or t<2.6 and "Falling" or "Defeated")
-		if t>=2.6 then defeat.Settled=true end
+		model:SetAttribute("ReactionState",t<0.7 and "Buckling" or t<2.9 and "Falling" or "Defeated")
+		if t>=2.9 then defeat.Settled=true end
 	end
 	if humanoid and movementRoot then
 		humanoid.BreakJointsOnDeath=false
@@ -658,9 +669,9 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				defeat.Glow={};defeat.Lights={}
 				for _,part in ipairs(model:GetDescendants()) do
 					if part:IsA("BasePart") and part.Material==Enum.Material.Neon then
-						table.insert(defeat.Glow,{Part=part,Color=part.Color})
+						table.insert(defeat.Glow,{Part=part,Color=part.Color,Eye=string.find(part.Name,"Eye")~=nil})
 					elseif part:IsA("PointLight") or part:IsA("SpotLight") or part:IsA("SurfaceLight") then
-						table.insert(defeat.Lights,{Part=part,Brightness=part.Brightness})
+						table.insert(defeat.Lights,{Part=part,Brightness=part.Brightness,Eye=string.find(part.Parent.Name,"Eye")~=nil})
 					end
 				end
 				model:SetAttribute("Running",false);model:SetAttribute("RunRequested",false)
