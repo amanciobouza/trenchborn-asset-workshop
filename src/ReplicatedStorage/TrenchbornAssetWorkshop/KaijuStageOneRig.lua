@@ -177,6 +177,9 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	end
 	local elapsed, accumulator, stopped = 0, 0, false
 	local walkCycle, smoothedBob = 0, 0
+	local wasWalking,stopAge=false,nil
+	local walkFeet,lastWalkUpper={},{}
+	local previousMode,transitionLeft="Idle",0
 	local heartbeat, destroying
 	local combo = Combo.new(combat and combat.PrepareFinisher)
 	local jump = Jump.new()
@@ -446,6 +449,8 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		for name, m in pairs(motors) do m.C0 = rest[name] end
 		if rootJoint then rootJoint.C0 = rootOffset else bones.Pelvis.CFrame = rootRest end
 		smoothedBob, walkCycle = 0, 0
+		wasWalking,stopAge=false,nil;walkFeet,lastWalkUpper={},{}
+		previousMode,transitionLeft="Idle",0
 	end
 	local function stop()
 		if stopped then return end
@@ -582,7 +587,22 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		for _, event in ipairs(combo:DrainEvents()) do
 			if combat then combat.Handle(event.Kind, event.Index, event.FinisherUntil) end
 		end
-		local bob = walking and -(1.05 + 0.38*compression)*scale*fade or 0
+		local special=jumpPose or focus or area or attackPose
+		local mode=area and "Area" or focus and "Focus" or jumpPose and "Jump" or attackPose and "Attack" or walking and "Walk" or "Idle"
+		if mode~=previousMode then transitionLeft=0.22;previousMode=mode end
+		transitionLeft=math.max(0,transitionLeft-poseDt)
+		if special or walking or (humanoid and (humanoid.Health<=0 or humanoid.FloorMaterial==Enum.Material.Air)) then stopAge=nil
+		elseif wasWalking then stopAge=0 end
+		wasWalking=walking
+		local stopWeight,stopLoad=0,0
+		if stopAge then
+			stopAge=stopAge+poseDt
+			local t=math.clamp(stopAge/0.55,0,1)
+			stopWeight=1-t*t*(3-2*t)
+			stopLoad=math.sin(math.pi*t)^2
+			if t>=1 then stopAge=nil end
+		end
+		local bob = walking and -(1.05 + 0.38*compression)*scale*fade or -(1.05*stopWeight+0.55*stopLoad)*scale
 		-- Lower the pelvis as well as the torso; IK bends the legs while the
 		-- planted feet retain their floor height. Recovery uses the same smoothing.
 		bob = bob - (attackCrouch or 0)*scale
@@ -628,6 +648,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 					local liftPhase=swing<0.6 and swing/0.6 or (1-swing)/0.4
 					lift = 2.2*liftPhase*liftPhase*(3-2*liftPhase)
 				end
+				walkFeet[side]={Travel=travel*scale*fade,Lift=lift*scale*fade}
 				solveLeg(side, travel*scale*fade, lift*scale*fade, actualBob)
 				local sign=side=="Left" and -1 or 1
 				local armPhase=(cycle+offset+STANCE/2)*math.pi*2
@@ -648,7 +669,23 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			end
 		else
 			model:SetAttribute("AnimationPreview", "PowerIdle_02")
-			for _, side in ipairs({"Left", "Right"}) do solveLeg(side, 0, 0, actualBob) end
+			for _, side in ipairs({"Left", "Right"}) do
+				local foot=walkFeet[side]
+				solveLeg(side,foot and foot.Travel*stopWeight or 0,foot and foot.Lift*stopWeight or 0,actualBob)
+			end
+		end
+		local upperNames={"Torso","Head","LeftUpperArm","RightUpperArm","LeftForearm","RightForearm","LeftHand","RightHand"}
+		if walking and not special then
+			for _,name in ipairs(upperNames) do lastWalkUpper[name]=motors[name].C0 end
+		elseif stopWeight>0 then
+			for _,name in ipairs(upperNames) do
+				if lastWalkUpper[name] then motors[name].C0=motors[name].C0:Lerp(lastWalkUpper[name],stopWeight) end
+			end
+			-- Absorb forward momentum; the hands carry on a little as the chest settles.
+			motors.Torso.C0=motors.Torso.C0*CFrame.Angles(math.rad(-3*stopLoad),0,0)
+			for _,side in ipairs({"Left","Right"}) do
+				motors[side.."Forearm"].C0=motors[side.."Forearm"].C0*CFrame.Angles(math.rad(7*stopLoad),0,0)
+			end
 		end
 		model:SetAttribute("ComboStep", attackIndex or 0)
 		model:SetAttribute("AttackName", attackName or "")
@@ -803,7 +840,9 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			end
 		end
 		-- Blend mode changes and step accents rather than snapping joint poses.
-		for name, m in pairs(motors) do m.C0 = previous[name]:Lerp(m.C0, blend) end
+		local enteringMotion=transitionLeft>0 and (mode=="Walk" or mode=="Attack")
+		local motionBlend=enteringMotion and 1-math.exp(-poseDt/0.14) or blend
+		for name, m in pairs(motors) do m.C0 = previous[name]:Lerp(m.C0, motionBlend) end
 		if area then
 			local intensity=areaCharge*(1-areaRecover)
 			local discharge=areaTime>=AREA_TIMING.Discharge
