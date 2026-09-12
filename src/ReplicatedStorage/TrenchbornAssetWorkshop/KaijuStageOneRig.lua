@@ -339,9 +339,17 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		weld.Name="MouthChargeWeld";weld.Part0=upper;weld.Part1=focus.Orb
 		weld.C0=offset;weld.C1=CFrame.identity;weld.Parent=focus.Orb
 		focus.OrbWeld=weld
-		focus.Motes={};focus.Pulses={};focus.Rubble={}
+		focus.Motes={};focus.LastPulse=-1;focus.Rubble={}
 		for i=1,12 do table.insert(focus.Motes,effect("IntakeSpark",Enum.PartType.Ball,focusColor)) end
-		for i=1,3 do table.insert(focus.Pulses,effect("BeamPulse",Enum.PartType.Ball,focusColor)) end
+		-- Each pulse has a one-way lifetime; never interpolate a reused part back to the mouth.
+		focus.EmitPulse=function(from,to)
+			local pulse=effect("BeamPulse",Enum.PartType.Ball,focusColor)
+			pulse.Position=from;pulse.Size=Vector3.new(1,1,1)*1.45*scale
+			pulse.Transparency=0.4
+			game:GetService("TweenService"):Create(pulse,TweenInfo.new(0.55,Enum.EasingStyle.Linear),
+				{Position=to,Transparency=0.85}):Play()
+			game:GetService("Debris"):AddItem(pulse,0.56)
+		end
 		local groundParams=RaycastParams.new();groundParams.FilterType=Enum.RaycastFilterType.Exclude
 		groundParams.FilterDescendantsInstances={model.Parent}
 		for _,side in ipairs({"Left","Right"}) do
@@ -712,11 +720,12 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				mote.Size=Vector3.new(1,1,1)*0.16*scale
 				mote.Transparency=t<1.8 and 1-charge*math.sin(progress*math.pi) or 1
 			end
-			for i,pulse in ipairs(focus.Pulses) do
-				local progress=((t-2)*2+(i-1)/3)%1
-				pulse.Position=from:Lerp(point,progress)
-				pulse.Size=Vector3.new(1,1,1)*1.45*scale
-				pulse.Transparency=firing and 0.6 or 1
+			if firing then
+				local pulseIndex=math.floor((t-2)/0.24)
+				if pulseIndex>focus.LastPulse then
+					focus.LastPulse=pulseIndex
+					focus.EmitPulse(from,point)
+				end
 			end
 			for _,chip in ipairs(focus.Rubble) do
 				local age=t-2
