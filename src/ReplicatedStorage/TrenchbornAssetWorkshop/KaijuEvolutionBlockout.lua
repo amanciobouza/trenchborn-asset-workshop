@@ -278,21 +278,26 @@ local function buildStylizedHead(model: Model, origin: CFrame)
 	mass("Neck", Vector3.new(5.0, 5.0, 4.6), Vector3.new(0, 25.0, 0.1), BODY_DARK)
 	mass("Cranium", Vector3.new(5.6, 3.7, 5.4), Vector3.new(0, 27.3, -0.8), BODY)
 	mass("SnoutBridge", Vector3.new(4.6, 2.1, 4.7), Vector3.new(0, 27.0, -2.7), BODY)
-	mass("UpperMuzzle", Vector3.new(4.25, 1.65, 3.8), Vector3.new(0, 26.55, -4.2), BODY)
+	mass("UpperMuzzle", Vector3.new(4.25, 1.15, 3.8), Vector3.new(0, 26.55, -4.2), BODY)
+	part(model, "MuzzlePlanes", Vector3.new(3.65, 1.0, 3.2), origin * CFrame.new(0, 26.55, -4.2), BODY)
 	mass("LowerJawRear", Vector3.new(4.7, 2.4, 3.6), Vector3.new(0, 25.4, -1.8), BODY_DARK)
-	mass("LowerJawFront", Vector3.new(4.15, 1.6, 4.5), Vector3.new(0, 25.25, -3.65), BODY_DARK)
+	mass("LowerJawFront", Vector3.new(4.15, 1.15, 4.5), Vector3.new(0, 25.3, -3.65), BODY_DARK)
+	part(model, "MandiblePlanes", Vector3.new(3.55, 1.05, 3.7), origin * CFrame.new(0, 25.3, -3.65), BODY_DARK)
 	for _, sign in ipairs({-1, 1}) do
 		local side = sign < 0 and "Left" or "Right"
 		mass(side .. "CheekMass", Vector3.new(2.2, 2.4, 2.7), Vector3.new(sign * 1.85, 26.3, -1.8), BODY)
-		-- Side-facing eye stack: dark socket, golden iris, slit pupil, small highlight.
-		mass(side .. "EyeSocket", Vector3.new(0.38, 0.85, 1.15), Vector3.new(sign * 2.27, 27.12, -2.95), BODY_DARK)
-		local eye = mass(side .. "Eye", Vector3.new(0.18, 0.52, 0.64), Vector3.new(sign * 2.46, 27.12, -3.0), ENERGY)
-		eye.Material = Enum.Material.SmoothPlastic
-		mass(side .. "Pupil", Vector3.new(0.08, 0.37, 0.17), Vector3.new(sign * 2.55, 27.12, -3.05), Color3.fromRGB(12, 15, 10))
-		mass(side .. "EyeHighlight", Vector3.new(0.06, 0.10, 0.10), Vector3.new(sign * 2.60, 27.26, -3.13), Color3.fromRGB(255, 242, 185))
-		local brow = mass(side .. "BrowRidge", Vector3.new(1.1, 0.65, 2.5), Vector3.new(sign * 2.0, 27.7, -2.8), BODY_DARK)
+		-- One shared eye frame keeps the socket, iris and pupil aligned.
+		-- Local -Z faces forward, rotated only 25 degrees toward the cheek.
+		local eyeFrame = origin * CFrame.new(sign * 2.05, 27.35, -3.7)
+			* CFrame.Angles(0, -sign * math.rad(25), 0)
+		sphere(model, side .. "EyeSocket", Vector3.new(1.1, 0.85, 0.5), eyeFrame, BODY_DARK)
+		local eye = sphere(model, side .. "Eye", Vector3.new(0.64, 0.52, 0.18), eyeFrame * CFrame.new(0, 0, -0.24), ENERGY)
+		eye.Material = Enum.Material.Neon
+		sphere(model, side .. "Pupil", Vector3.new(0.17, 0.37, 0.08), eyeFrame * CFrame.new(0, 0, -0.34), Color3.fromRGB(12, 15, 10))
+		sphere(model, side .. "EyeHighlight", Vector3.new(0.10, 0.10, 0.06), eyeFrame * CFrame.new(-0.10, 0.14, -0.39), Color3.fromRGB(255, 242, 185))
+		local brow = mass(side .. "BrowRidge", Vector3.new(1.5, 0.65, 2.0), Vector3.new(sign * 1.95, 27.95, -3.2), BODY_DARK)
 		brow.CFrame *= CFrame.Angles(math.rad(-7), sign * math.rad(5), 0)
-		mass(side .. "Nostril", Vector3.new(0.2, 0.2, 0.36), Vector3.new(sign * 1.35, 26.85, -5.48), BODY_DARK)
+		mass(side .. "Nostril", Vector3.new(0.26, 0.18, 0.12), Vector3.new(sign * 1.25, 26.7, -5.82), BODY_DARK)
 	end
 end
 
@@ -308,7 +313,12 @@ local function applyStylizedMasses(model: Model, origin: CFrame)
 		sphere(model, side .. "Pectoral", Vector3.new(5.65, 5.1, 3.0), origin * CFrame.new(sign * 2.35, 22.65, -2.55), BELLY)
 		sphere(model, side .. "Deltoid", Vector3.new(4.8, 4.8, 4.5), origin * CFrame.new(sign * 4.7, 22.0, -0.1), BODY)
 		sphere(model, side .. "BicepsMass", Vector3.new(3.6, 5.0, 3.7), origin * CFrame.new(sign * 5.15, 19.35, -0.25), BODY)
-		sphere(model, side .. "ForearmMass", Vector3.new(4.0, 4.8, 3.9), origin * CFrame.new(sign * 5.35, 15.0, -0.6), BODY)
+		sphere(model, side .. "ForearmMass", Vector3.new(5.1, 5.3, 4.9), origin * CFrame.new(sign * 5.6, 15.0, -0.75), BODY)
+		sphere(model, side .. "ForearmFlexor", Vector3.new(3.6, 4.3, 3.3), origin * CFrame.new(sign * 5.5, 14.6, -1.65), BODY)
+		local thigh = model:FindFirstChild(side .. "ThighMass") :: BasePart
+		thigh.Size = Vector3.new(6.1, 6.5, 5.8)
+		thigh.CFrame = origin * CFrame.new(sign * 3.5, 12.8, -0.65)
+		sphere(model, side .. "OuterQuadriceps", Vector3.new(3.5, 5.2, 4.2), origin * CFrame.new(sign * 4.2, 12.9, -1.25), BODY)
 		local palm = model:FindFirstChild(side .. "PalmMass") :: BasePart
 		palm.Size = Vector3.new(4.3, 3.5, 3.8)
 	end
