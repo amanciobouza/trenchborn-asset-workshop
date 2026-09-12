@@ -179,7 +179,8 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	local combo = Combo.new(combat and combat.PrepareFinisher)
 	local jump = Jump.new()
 	local savedSpeed, savedOwner, airDirection
-	local AIR_SPEED=30
+	local AIR_SPEED=14 -- Short, controllable jumps onto nearby roofs.
+	local JUMP_HEIGHT=14
 	local ownsPhysics=false
 	local function restoreJump()
 		if humanoid and savedSpeed then humanoid.WalkSpeed=savedSpeed end
@@ -284,23 +285,28 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				ownsPhysics=true
 				humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
 				local velocity=movementRoot.AssemblyLinearVelocity
-				local rise=math.sqrt(2*workspace.Gravity*22*scale)
+				local rise=math.sqrt(2*workspace.Gravity*JUMP_HEIGHT*scale)
 				local horizontal=airDirection*AIR_SPEED
 				movementRoot:ApplyImpulse((horizontal+Vector3.new(0,rise,0)-velocity)*movementRoot.AssemblyMass)
 			elseif jumpEvent=="Land" then
 				if combat then combat.Handle("Land",0) end
 			elseif jumpEvent=="Restore" then restoreJump() end
 			if jump.Phase=="Air" then
-				humanoid.WalkSpeed=AIR_SPEED
-				humanoid:Move(airDirection,false)
-				if airDirection.Magnitude==0 then
-					-- Releasing movement stops horizontal drift without changing the fall.
-					local velocity=movementRoot.AssemblyLinearVelocity
-					movementRoot:ApplyImpulse(Vector3.new(-velocity.X,0,-velocity.Z)*movementRoot.AssemblyMass)
-				end
+				-- One horizontal controller; do not also accelerate through Humanoid:Move.
+				humanoid.WalkSpeed=0
+				humanoid:Move(Vector3.zero,false)
+				local velocity=movementRoot.AssemblyLinearVelocity
+				local horizontal=Vector3.new(velocity.X,0,velocity.Z)
+				local response=airDirection.Magnitude==0 and 1 or 1-math.exp(-poseDt/0.06)
+				movementRoot:ApplyImpulse((airDirection*AIR_SPEED-horizontal)*response*movementRoot.AssemblyMass)
 			elseif jump.Phase=="Landing" then
 				humanoid.WalkSpeed=0
 				humanoid:Move(Vector3.zero,false)
+				-- Absorb contact rebound and sliding, but allow falling if the roof breaks.
+				if humanoid.FloorMaterial~=Enum.Material.Air then
+					local velocity=movementRoot.AssemblyLinearVelocity
+					movementRoot:ApplyImpulse(Vector3.new(-velocity.X,-math.max(0,velocity.Y),-velocity.Z)*movementRoot.AssemblyMass)
+				end
 			end
 		end
 		model:SetAttribute("JumpPhase",jump.Phase)
