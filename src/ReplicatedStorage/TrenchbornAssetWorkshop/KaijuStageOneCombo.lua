@@ -27,11 +27,11 @@ local function tear(pitch, arm, elbow, spread, head, jaw, flare)
 	return p
 end
 local attacks = {
-	{Name="Links", Frames=hook("Left",-1)},
-	{Name="Rechts", Frames=hook("Right",1)},
-	{Name="Beide", Frames={{0,{},0},{0.34,both(-5,125,20,-8),0.4},
+	{Name="Left Hook", Frames=hook("Left",-1)},
+	{Name="Right Hook", Frames=hook("Right",1)},
+	{Name="Double Slam", Frames={{0,{},0},{0.34,both(-5,125,20,-8),0.4},
 		{0.54,both(-36,48,2,16),2.8},{0.65,both(-38,40,0,18),3.0},{1.2,{},0}}},
-	{Name="Zerreissen", Frames={
+	{Name="Rip Apart", Frames={
 		{0,{},0},
 		-- Reach low, close the grip and visibly load against resistance.
 		{0.38,tear(-34,48,12,40,4,-4,0),2.6},
