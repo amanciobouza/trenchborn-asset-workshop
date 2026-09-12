@@ -261,7 +261,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	-- Reuse the workshop's existing Guardian/Sovereign audio assets, with heavier tuning.
 	local audioPresets={
 		Step={113663232024295,0.38,0.95},RunStep={113663232024295,0.52,1.0},
-		Land={113663232024295,0.7,0.8},Whoosh={140192907374090,0.9,1.0},Punch={97522871949213,0.5,1.15},Slam={97522871949213,0.65,1.0},
+		Land={113663232024295,0.7,0.8},Whoosh={140192907374090,0.9,1.0},JumpWhoosh={140192907374090,0.28,1.2},Punch={97522871949213,0.5,1.15},Slam={97522871949213,0.65,1.0},
 		Finisher={71814605717939,0.7,1.0},Hit={9116684884,0.3,0.7},HeavyHit={9116684884,0.55,0.52},
 		Discharge={1040136448,1.25,1.0},
 		Defeat={9116684884,0.75,0.42},
@@ -290,7 +290,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			local bass=Instance.new("EqualizerSoundEffect")
 			bass.LowGain=8;bass.MidGain=-2;bass.HighGain=-4;bass.Parent=sound
 		end
-		if sound and kind~="FocusFire" and kind~="Discharge" and kind~="Whoosh" and kind~="Punch" and kind~="Slam" and kind~="Finisher" then
+		if sound and kind~="FocusFire" and kind~="Discharge" and kind~="JumpWhoosh" and kind~="Whoosh" and kind~="Punch" and kind~="Slam" and kind~="Finisher" then
 			local eq=Instance.new("EqualizerSoundEffect");eq.LowGain=3;eq.MidGain=-3;eq.HighGain=-12;eq.Parent=sound
 			game:GetService("Debris"):AddItem(sound,(kind=="Step" or kind=="RunStep") and 1.2 or 2.4)
 		end
@@ -842,6 +842,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		if movementRoot and humanoid then
 			jumpPose,jumpEvent=jump:Update(os.clock(),humanoid.FloorMaterial~=Enum.Material.Air,movementRoot.AssemblyLinearVelocity.Y)
 			if jumpEvent=="Takeoff" then
+				feedback("JumpWhoosh",bones.Pelvis,true)
 				-- Direction comes only from movement input; neutral jumps are vertical.
 				-- Steering changes travel, while the body keeps its takeoff heading.
 				savedAutoRotate=humanoid.AutoRotate
