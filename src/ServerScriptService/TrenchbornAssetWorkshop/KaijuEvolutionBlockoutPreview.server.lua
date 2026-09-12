@@ -12,6 +12,19 @@ local origin = CFrame.new(0, 0, 145)
 local preview = blockout.BuildStage(workshop, 1, origin)
 local display = preview:FindFirstChild("Stage_1_Primal_Beast")
 assert(display and display:IsA("Model"), "Stage 1 model missing")
+-- Place the unrigged geometry by its soles once. Never adjust the live rig
+-- against terrain while the humanoid is running or preparing a jump.
+local soleBottom=math.huge
+for _,side in ipairs({"Left","Right"}) do
+	local sole=display:FindFirstChild(side.."ForefootCoreY")
+	if sole and sole:IsA("BasePart") then
+		local bottom=sole.CFrame:PointToWorldSpace(Vector3.new(0,-sole.Size.Y/2,0))
+		soleBottom=math.min(soleBottom,bottom.Y)
+	end
+end
+if soleBottom<math.huge then
+	display:PivotTo(display:GetPivot()+Vector3.new(0,origin.Position.Y-soleBottom,0))
+end
 local template = display:Clone() -- Unrigged geometry for every respawn.
 local pivotFromGround = origin:ToObjectSpace(template:GetPivot())
 stageOneRig.Attach(display)
