@@ -194,7 +194,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			or (model:GetAttribute("ComboStep") or 0)~=0 then return false end
 		local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Exclude
 		params.FilterDescendantsInstances={model.Parent}
-		local ahead=movementRoot.Position+movementRoot.CFrame.LookVector*7*scale
+		local ahead=movementRoot.Position
 		local hit=workspace:Raycast(ahead+Vector3.new(0,30*scale,0),Vector3.new(0,-70*scale,0),params)
 		if not hit or hit.Normal.Y<0.7 or (hit.Position-movementRoot.Position).Magnitude>20*scale then return false end
 		combo:Cancel();combat.Cancel()
@@ -388,11 +388,10 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		if area and (humanoid.Health<=0 or humanoid.FloorMaterial==Enum.Material.Air
 			or (movementRoot.Position-area.StartRoot).Magnitude>3*scale or os.clock()-area.Started>=2.4) then endArea() end
 		local areaTime=area and os.clock()-area.Started
-		local areaCharge,areaSlam,areaRecover=0,0,0
+		local areaCharge,areaRecover=0,0
 		if area then
-			areaCharge=math.clamp(areaTime/1.04,0,1)
+			areaCharge=math.clamp(areaTime/1.0,0,1)
 			areaCharge=areaCharge*areaCharge*(3-2*areaCharge)
-			areaSlam=math.clamp((areaTime-1.04)/0.16,0,1)
 			areaRecover=math.clamp((areaTime-1.5)/0.9,0,1)
 			areaRecover=areaRecover*areaRecover*(3-2*areaRecover)
 		end
@@ -475,7 +474,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		bob = bob - (attackCrouch or 0)*scale
 		if jumpPose then bob=-jumpPose.Crouch*scale end
 		if focus then bob=-0.35*scale*math.min(focusTime/0.4,1)*math.clamp((4.85-focusTime)/0.35,0,1) end
-		if area then bob=-(0.6*areaCharge+6.6*areaSlam)*(1-areaRecover)*scale end
+		if area then bob=-7.2*areaCharge*(1-areaRecover)*scale end
 		local blend = 1-math.exp(-poseDt/0.10)
 		smoothedBob = smoothedBob + (bob-smoothedBob)*blend
 		if rootJoint then
@@ -611,54 +610,29 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		end
 		if area then
 			local hold=1-areaRecover
-			pose("Torso",(8*areaCharge-66*areaSlam)*hold,0,0)
-			pose("Head",(-6*areaCharge+25*areaSlam)*hold,0,0)
-			pose("Jaw",-6*areaSlam*hold,0,0)
-			local function rotationBetween(a,b)
-				local x,y=a.Unit,b.Unit
-				local dot=math.clamp(x:Dot(y),-1,1)
-				local axis=x:Cross(y)
-				if axis.Magnitude<0.0001 then
-					if dot>0 then return CFrame.identity end
-					axis=x:Cross(math.abs(x.Y)<0.9 and Vector3.yAxis or Vector3.xAxis)
-				end
-				return CFrame.fromAxisAngle(axis.Unit,math.acos(dot))
-			end
-			local pelvis=movementRoot.CFrame*rootOffset*CFrame.new(0,actualBob,0)
-			local torso=pelvis*motors.Torso.C0
+			local tension=areaCharge*hold
+			local tremor=math.sin(areaTime*38)*0.55*areaCharge^4*hold
+			local release=areaTime>=1.2 and math.max(0,1-(areaTime-1.2)/0.22) or 0
+			-- Curl inward and contain the energy; the arms never swing overhead.
+			pose("Torso",-58*tension+tremor+4*release,0,tremor*0.4)
+			pose("Head",-10*tension-2*release,0,0)
+			pose("Jaw",0,0,0)
 			for _,side in ipairs({"Left","Right"}) do
 				local sign=side=="Left" and -1 or 1
-				pose(side.."UpperArm",-150*areaCharge*hold,0,-sign*30*areaCharge*hold)
-				pose(side.."Forearm",-35*areaCharge*hold,0,0)
-				-- Place both wrists above the strike surface, allowing room for the hands.
-				local shoulder=torso*rest[side.."UpperArm"]
-				local target=area.Ground:PointToWorldSpace(Vector3.new(sign*5.5,2.2,0)*scale)
-				local delta=target-shoulder.Position
-				local a=rest[side.."Forearm"].Position
-				local b=rest[side.."Hand"].Position
-				local lengthA,lengthB=a.Magnitude,b.Magnitude
-				local distance=math.clamp(delta.Magnitude,math.abs(lengthA-lengthB)+0.01,lengthA+lengthB-0.01)
-				local direction=delta.Unit
-				local hint=shoulder.RightVector*sign-shoulder.LookVector*0.35
-				local bend=hint-direction*hint:Dot(direction)
-				if bend.Magnitude<0.001 then bend=shoulder.UpVector-direction*shoulder.UpVector:Dot(direction) end
-				local along=(lengthA^2+distance^2-lengthB^2)/(2*distance)
-				local elbow=direction*along+bend.Unit*math.sqrt(math.max(0,lengthA^2-along^2))
-				local upperRotation=rotationBetween(a,shoulder:VectorToObjectSpace(elbow))
-				local elbowFrame=shoulder*upperRotation*rest[side.."Forearm"]
-				local foreRotation=rotationBetween(b,elbowFrame:VectorToObjectSpace(direction*distance-elbow))
-				local weight=areaSlam*hold
-				motors[side.."UpperArm"].C0=motors[side.."UpperArm"].C0:Lerp(rest[side.."UpperArm"]*upperRotation,weight)
-				motors[side.."Forearm"].C0=motors[side.."Forearm"].C0:Lerp(rest[side.."Forearm"]*foreRotation,weight)
+				pose(side.."UpperArm",-25*tension,sign*15*tension,-sign*22*tension)
+				pose(side.."Forearm",-85*tension-tremor,0,0)
+				pose(side.."Hand",-12*tension,sign*8*tension,0)
 			end
-			for p,color in pairs(area.Colors) do p.Color=color:Lerp(focusColor,areaCharge*hold) end
-			model:SetAttribute("AreaPhase",areaTime<1.2 and "Charging" or areaTime<1.5 and "Impact" or "Recovery")
+			for p,color in pairs(area.Colors) do
+				local charged=focusColor:Lerp(Color3.fromRGB(220,255,255),release*0.7)
+				p.Color=color:Lerp(charged,tension)
+			end
+			model:SetAttribute("AreaPhase",areaTime<1.2 and "Charging" or areaTime<1.5 and "Discharge" or "Recovery")
 			if areaTime>=1.2 and not area.Hit then
 				area.Hit=true;combat.AreaImpact(area.Point)
 			end
 		end
 		-- Blend mode changes and step accents rather than snapping joint poses.
-		if area and areaTime>=1.04 and areaTime<1.5 then blend=1-math.exp(-poseDt/0.035) end
 		for name, m in pairs(motors) do m.C0 = previous[name]:Lerp(m.C0, blend) end
 		if focus then
 			-- Beam and charge share the same fixed palate attachment.
