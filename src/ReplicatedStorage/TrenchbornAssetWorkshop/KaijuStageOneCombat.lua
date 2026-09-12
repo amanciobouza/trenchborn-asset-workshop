@@ -230,7 +230,7 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 		clearCue()
 		return true
 	end
-	local function handle(kind,index)
+	local function handle(kind,index,finisherUntil)
 		if humanoid.Health<=0 or not root:IsDescendantOf(workspace)
 			or humanoid.FloorMaterial==Enum.Material.Air then cancel();return end
 		if kind=="Grab" then
@@ -259,8 +259,10 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 		data.Bar.Size=UDim2.fromScale(data.Health/220,1)
 		flash(target)
 		chips(target,point,index==4,data.Health==0)
-		if index==3 and data.Health>0 and data.Health<=DAMAGE[4] then
-			candidate,candidateExpires=target,os.clock()+0.4
+		if index==3 and data.Health>0 and data.Health<=DAMAGE[4]
+			and type(finisherUntil)=="number" and finisherUntil>os.clock() then
+			-- Use the animation's deadline, rather than starting a second timer.
+			candidate,candidateExpires=target,finisherUntil
 			local h=Instance.new("Highlight")
 			h.FillColor=Color3.fromRGB(255,225,60)
 			h.FillTransparency,h.OutlineTransparency=0.4,0
@@ -269,7 +271,7 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 			h.Adornee,h.Parent=target,target
 			cue=h
 			kaiju:SetAttribute("FinisherAvailable",true)
-			task.delay(0.4,function()
+			task.delay(math.max(0,finisherUntil-os.clock()),function()
 				if cue==h then clearCue();candidate=nil end
 			end)
 		end
