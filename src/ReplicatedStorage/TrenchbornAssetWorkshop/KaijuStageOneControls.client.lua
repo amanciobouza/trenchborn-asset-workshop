@@ -3,6 +3,20 @@ local CAS = game:GetService("ContextActionService")
 local UIS = game:GetService("UserInputService")
 local player = Players.LocalPlayer
 local action = "KaijuStageOneAttack"
+local jumpAction="KaijuStageOneJump"
+local lastJump=-math.huge
+CAS:BindActionAtPriority(jumpAction,function(_,state)
+	if UIS:GetFocusedTextBox() then return Enum.ContextActionResult.Pass end
+	if state==Enum.UserInputState.Begin and os.clock()-lastJump>=0.15 then
+		local character=player.Character
+		local model=character and character:FindFirstChild("Stage_1_Primal_Beast")
+		local remote=model and model:FindFirstChild("RequestJump")
+		if remote then lastJump=os.clock();remote:FireServer() end
+	end
+	return Enum.ContextActionResult.Sink
+end,true,3000,Enum.KeyCode.Space,Enum.KeyCode.ButtonA)
+CAS:SetTitle(jumpAction,"Jump")
+CAS:SetPosition(jumpAction,UDim2.new(1,-65,1,-100))
 local lastRequest = -math.huge
 local function attack()
 	if UIS:GetFocusedTextBox() or os.clock()-lastRequest < 0.12 then return end
@@ -57,10 +71,12 @@ local mouse = UIS.InputBegan:Connect(function(input, processed)
 	if not processed and input.UserInputType == Enum.UserInputType.MouseButton1 then attack() end
 end)
 task.spawn(function()
-	local button = CAS:GetButton(action)
-	if button then
-		for _, label in ipairs(button:GetDescendants()) do
-			if label:IsA("TextLabel") then label.TextScaled = true end
+	for _,name in ipairs({action,jumpAction}) do
+		local button = CAS:GetButton(name)
+		if button then
+			for _, label in ipairs(button:GetDescendants()) do
+				if label:IsA("TextLabel") then label.TextScaled = true end
+			end
 		end
 	end
 end)
@@ -71,4 +87,5 @@ script.Destroying:Connect(function()
 	prompt:Destroy()
 	mouse:Disconnect()
 	CAS:UnbindAction(action)
+	CAS:UnbindAction(jumpAction)
 end)
