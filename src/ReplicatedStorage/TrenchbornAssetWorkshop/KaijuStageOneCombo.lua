@@ -1,4 +1,4 @@
--- Server-owned four-hit animation sequence. No client-supplied step or timing.
+-- Three-hit combo with a server-authorized, optional lethal finisher.
 local Combo = {}
 local function hook(side, sign)
 	local other = side == "Left" and "Right" or "Left"
@@ -49,10 +49,27 @@ local attacks = {
 	}},
 }
 local impactTimes = {0.44, 0.44, 0.54, 1.34}
-function Combo.new()
+function Combo.new(prepareFinisher)
 	local state = {Index=0, Started=0, Ended=-math.huge, Active=false, Queued=false, Events={}}
+	local function start(index, now)
+		state.Index=index
+		state.Started, state.Active, state.Queued = now, true, false
+		state.HitSent, state.GrabSent = false, false
+	end
 	function state:Request(now)
 		if self.Active then
+			if self.Index==3 then
+				local sinceHit=now-self.Started-impactTimes[3]
+				if sinceHit<0 or not self.HitSent then return false end
+				if sinceHit<=0.4 and prepareFinisher and prepareFinisher() then
+					-- The third hit has landed; branch directly out of its recovery.
+					start(4,now)
+					return true
+				end
+				-- Failed/late finisher input becomes a normal left strike after recovery.
+				if not self.Queued then self.Queued=true;return true end
+				return false
+			end
 			local frames = attacks[self.Index].Frames
 			local remaining = self.Started + frames[#frames][1] - now
 			if remaining <= 0.35 and remaining >= 0 and not self.Queued then
@@ -61,9 +78,8 @@ function Combo.new()
 			end
 			return false
 		end
-		self.Index = now-self.Ended > 1.1 and 1 or self.Index%4+1
-		self.Started, self.Active, self.Queued = now, true, false
-		self.HitSent, self.GrabSent = false, false
+		local nextIndex = (self.Index==1 or self.Index==2) and self.Index+1 or 1
+		start(now-self.Ended > 1.1 and 1 or nextIndex, now)
 		return true
 	end
 	function state:Cancel()
