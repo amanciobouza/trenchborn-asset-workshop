@@ -18,7 +18,7 @@ CAS:BindAction(areaAction,function(_,state)
 	end
 	return Enum.ContextActionResult.Sink
 end,true,Enum.KeyCode.R,Enum.KeyCode.ButtonY)
-CAS:SetTitle(areaAction,"Area Slam")
+CAS:SetTitle(areaAction,"Discharge")
 CAS:SetPosition(areaAction,UDim2.new(1,-240,1,-90))
 local lastFocus=-math.huge
 CAS:BindAction(focusAction,function(_,state)
@@ -99,7 +99,7 @@ local function watchCharacter(character)
 	if availabilityConnection then availabilityConnection:Disconnect();availabilityConnection=nil end
 	if focusConnection then focusConnection:Disconnect();focusConnection=nil end
 	if areaConnection then areaConnection:Disconnect();areaConnection=nil end
-	CAS:SetTitle(areaAction,"Area Slam")
+	CAS:SetTitle(areaAction,"Discharge")
 	CAS:SetTitle(focusAction,"Focus")
 	prompt.Visible=false
 	CAS:SetTitle(action,"Attack")
@@ -114,7 +114,7 @@ local function watchCharacter(character)
 		availabilityConnection=model:GetAttributeChangedSignal("FinisherAvailable"):Connect(update)
 		areaConnection=model:GetAttributeChangedSignal("AreaPhase"):Connect(function()
 			local phase=model:GetAttribute("AreaPhase")
-			CAS:SetTitle(areaAction,phase=="Charging" and "Charging" or phase=="Recovery" and "Recovery" or "Area Slam")
+			CAS:SetTitle(areaAction,phase=="Charging" and "Charging" or phase=="Recovery" and "Recovery" or "Discharge")
 		end)
 		focusConnection=model:GetAttributeChangedSignal("FocusPhase"):Connect(function()
 			local phase=model:GetAttribute("FocusPhase")
