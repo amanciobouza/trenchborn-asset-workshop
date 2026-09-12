@@ -359,14 +359,18 @@ local function applyStylizedMasses(model: Model, origin: CFrame)
 		local upperDirection = CFrame.lookAt(Vector3.zero, elbow - shoulder) * CFrame.Angles(math.pi/2, 0, 0)
 		local lowerDirection = CFrame.lookAt(Vector3.zero, wrist - elbow) * CFrame.Angles(math.pi/2, 0, 0)
 		place("BicepsMass", Vector3.new(4.4, 6.0, 4.2), (shoulder + elbow)/2, upperDirection)
-		place("ForearmMass", Vector3.new(5.1, 5.3, 4.9), (elbow + wrist)/2, lowerDirection)
-		place("ForearmFlexor", Vector3.new(3.6, 4.3, 3.3), (elbow + wrist)/2 + Vector3.new(0, -0.3, -0.9), lowerDirection)
+		-- Elongated muscle belly near the elbow, with a slimmer distal forearm.
+		-- Both volumes follow the elbow-to-wrist axis instead of forming a ball.
+		place("ForearmMass", Vector3.new(4.2, 6.4, 3.6), elbow:Lerp(wrist, 0.40), lowerDirection)
+		place("ForearmFlexor", Vector3.new(3.0, 5.4, 2.5), elbow:Lerp(wrist, 0.43) + Vector3.new(0, 0, -0.45), lowerDirection)
+		sphere(model, side .. "ForearmTaper", Vector3.new(2.95, 3.5, 2.7),
+			origin * CFrame.new(elbow:Lerp(wrist, 0.78)) * lowerDirection, BODY)
 		for _, name in ipairs({"UpperArm", "Forearm"}) do
 			local old = model:FindFirstChild(side .. name)
 			if old then old:Destroy() end
 		end
 		cylinderBetween(model, side .. "UpperArm", shoulder, elbow, 3.8, origin, 1, 1, 1, BODY)
-		cylinderBetween(model, side .. "Forearm", elbow, wrist, 3.15, origin, 1, 1, 1, BODY)
+		cylinderBetween(model, side .. "Forearm", elbow, wrist, 2.7, origin, 1, 1, 1, BODY)
 		local offset = origin:VectorToWorldSpace(wrist - Vector3.new(sign * 5.15, 12.7, -0.9))
 		local function move(name: string)
 			local item = model:FindFirstChild(side .. name)
@@ -575,7 +579,7 @@ local function refineStageOne(model: Model, origin: CFrame)
 			item.Material = Enum.Material.SmoothPlastic
 		end
 	end
-	model:SetAttribute("GeometryRevision", "S1_YouthfulNeck_RaisedHead_07")
+	model:SetAttribute("GeometryRevision", "S1_ElongatedTaperedForearms_08")
 	model:SetAttribute("VisualTarget", "Approved simplified Stage 1 and Stage 2 maquette")
 	model:SetAttribute("GeometryMethod", "Roblox primitives and visual ellipsoids; no external assets")
 end
