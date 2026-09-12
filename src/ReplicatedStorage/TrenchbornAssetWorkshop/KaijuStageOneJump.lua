@@ -2,11 +2,12 @@
 local Jump = {}
 local function smooth(t) t=math.max(0,math.min(1,t));return t*t*(3-2*t) end
 function Jump.new()
-	local s={Phase="Idle",Started=0,ReadyAt=0,LeftGround=false}
+	local s={Phase="Idle",Started=0,ReadyAt=0,LeftGround=false,Lead="Right"}
 	function s:Request(now,grounded)
 		if self.Phase~="Idle" or not grounded or now<self.ReadyAt then return false end
 		self.Phase,self.Started,self.ReadyAt="Windup",now,now+1.2
 		self.LeftGround=false
+		self.Lead=self.Lead=="Left" and "Right" or "Left"
 		return true
 	end
 	function s:Cancel() self.Phase="Idle";self.LeftGround=false end
@@ -29,10 +30,15 @@ function Jump.new()
 		end
 		if self.Phase=="Windup" then
 			local u=smooth(t/0.32)
-			return {Crouch=3.2*u,Tuck=0,Pitch=-22*u,Arm=-25*u,Elbow=12*u,Head=7*u,Pulse=0},event
+			-- One foot stays planted while the opposite knee drives up and forward.
+			return {Crouch=2.6*u,Tuck=0,LeadLift=2*u,TrailLift=0,
+				LeadForward=-1.4*u,TrailForward=0,Asymmetry=u,
+				Pitch=-18*u,Arm=-12*u,Elbow=12*u,Head=7*u,Pulse=0},event
 		elseif self.Phase=="Air" then
 			local tuck=smooth(t/0.2)*(verticalSpeed>0 and 1 or 0.55)
-			return {Crouch=0,Tuck=3*tuck,Pitch=-8,Arm=verticalSpeed>0 and 65 or 28,Elbow=18,Head=3,Pulse=0},event
+			return {Crouch=0,Tuck=3*tuck,LeadLift=1.2+4.2*tuck,TrailLift=0.7*tuck,
+				LeadForward=-2.2*tuck,TrailForward=1.3*tuck,Asymmetry=1,
+				Pitch=-8,Arm=verticalSpeed>0 and 30 or 18,Elbow=18,Head=3,Pulse=0},event
 		elseif self.Phase=="Landing" then
 			local compression=t<0.12 and smooth(t/0.12) or 1-smooth((t-0.12)/0.53)
 			return {Crouch=3.6*compression,Tuck=0,Pitch=-24*compression,
