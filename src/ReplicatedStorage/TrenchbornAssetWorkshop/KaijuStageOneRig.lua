@@ -181,9 +181,12 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	local jump = Jump.new()
 	local focus,focusReadyAt=nil,0
 	local area,areaReadyAt=nil,0
+	local focusColor=Color3.fromRGB(65,225,255)
 	local function endArea()
 		if not area then return end
 		for p,color in pairs(area.Colors) do if p.Parent then p.Color=color end end
+		for _,a in ipairs(area.Attachments) do a:Destroy() end
+		area.Effects:Destroy()
 		humanoid.WalkSpeed=area.Speed;humanoid.AutoRotate=area.Rotate
 		area=nil;model:SetAttribute("AreaPhase","Idle")
 	end
@@ -200,7 +203,45 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		combo:Cancel();combat.Cancel()
 		area={Started=os.clock(),Hit=false,Point=hit.Position,StartRoot=movementRoot.Position,
 			Ground=CFrame.new(hit.Position)*movementRoot.CFrame.Rotation,
-			Speed=humanoid.WalkSpeed,Rotate=humanoid.AutoRotate,Colors={}}
+			Speed=humanoid.WalkSpeed,Rotate=humanoid.AutoRotate,Colors={},Attachments={},Nodes={},Arcs={}}
+		area.Effects=Instance.new("Folder");area.Effects.Name="DorsalCharge";area.Effects.Parent=model
+		local function node(source,offset)
+			local a=Instance.new("Attachment");a.Name="DischargeNode";a.CFrame=offset;a.Parent=source
+			table.insert(area.Attachments,a)
+			local orb=Instance.new("Part")
+			orb.Name="PlateCharge";orb.Shape=Enum.PartType.Ball;orb.Material=Enum.Material.Neon;orb.Color=focusColor
+			orb.Size=Vector3.new(0.1,0.1,0.1);orb.CFrame=source.CFrame*offset
+			orb.Massless=true;orb.CanCollide=false;orb.CanQuery=false;orb.CanTouch=false;orb.CastShadow=false
+			orb.Transparency=1;orb.Parent=area.Effects
+			local weld=Instance.new("Weld");weld.Part0=source;weld.Part1=orb;weld.C0=offset;weld.Parent=orb
+			local light=Instance.new("PointLight");light.Color=focusColor;light.Range=7*scale;light.Brightness=0;light.Parent=orb
+			table.insert(area.Nodes,{Attachment=a,Orb=orb,Light=light})
+		end
+		for i=1,9 do
+			local plate=model:FindFirstChild(string.format("DorsalShield_%02d",i))
+			if plate then node(plate,CFrame.new(0,0,-plate.Size.Z*0.35)) end
+		end
+		node(get("TailTip"),CFrame.identity)
+		local function arc(first,last)
+			local record={First=first.Attachment,Last=last.Attachment,Points={},Beams={}}
+			local chain={record.First}
+			for i=1,2 do
+				local p=Instance.new("Part");p.Name="ArcBend";p.Size=Vector3.new(0.1,0.1,0.1)
+				p.Anchored=true;p.Transparency=1;p.CanCollide=false;p.CanQuery=false;p.CanTouch=false;p.Parent=area.Effects
+				local a=Instance.new("Attachment");a.Parent=p
+				table.insert(record.Points,p);table.insert(chain,a)
+			end
+			table.insert(chain,record.Last)
+			for i=1,3 do
+				local beam=Instance.new("Beam");beam.Attachment0=chain[i];beam.Attachment1=chain[i+1]
+				beam.Color=ColorSequence.new(focusColor);beam.LightEmission=1;beam.LightInfluence=0
+				beam.FaceCamera=true;beam.Enabled=false;beam.Parent=area.Effects
+				table.insert(record.Beams,beam)
+			end
+			table.insert(area.Arcs,record)
+		end
+		for i=1,#area.Nodes-1 do arc(area.Nodes[i],area.Nodes[i+1]) end
+		if #area.Nodes>2 then arc(area.Nodes[#area.Nodes],area.Nodes[2]) end
 		for _,p in ipairs(visuals) do
 			if string.match(p.Name,"^DorsalEnergy_") then area.Colors[p]=p.Color end
 		end
@@ -209,7 +250,6 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		model:SetAttribute("AreaPhase","Charging")
 		return true
 	end
-	local focusColor=Color3.fromRGB(65,225,255)
 	local function endFocus()
 		if not focus then return end
 		for part,color in pairs(focus.Colors) do if part.Parent then part.Color=color end end
@@ -619,9 +659,14 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			pose("Jaw",0,0,0)
 			for _,side in ipairs({"Left","Right"}) do
 				local sign=side=="Left" and -1 or 1
-				pose(side.."UpperArm",-25*tension,sign*15*tension,-sign*22*tension)
-				pose(side.."Forearm",-85*tension-tremor,0,0)
+				-- Counter the forward torso curl: positive arm pitch brings the fists forward.
+				pose(side.."UpperArm",80*tension,sign*10*tension,-sign*18*tension)
+				pose(side.."Forearm",60*tension+tremor,0,0)
 				pose(side.."Hand",-12*tension,sign*8*tension,0)
+			end
+			for i=1,tailCount do
+				local curl=(i==1 and 15 or 20)*tension
+				pose("Tail"..i,-curl,0,0)
 			end
 			for p,color in pairs(area.Colors) do
 				local charged=focusColor:Lerp(Color3.fromRGB(220,255,255),release*0.7)
@@ -634,6 +679,30 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		end
 		-- Blend mode changes and step accents rather than snapping joint poses.
 		for name, m in pairs(motors) do m.C0 = previous[name]:Lerp(m.C0, blend) end
+		if area then
+			local intensity=areaCharge*(1-areaRecover)
+			local discharge=areaTime>=1.2
+			local envelope=discharge and math.max(0,1-(areaTime-1.2)/0.25) or intensity
+			for i,node in ipairs(area.Nodes) do
+				local pulse=1+0.12*math.sin(areaTime*(12+intensity*22)+i)
+				local size=(0.15+1.4*intensity*intensity)*scale*pulse
+				node.Orb.Size=Vector3.new(size,size,size)
+				node.Orb.Transparency=1-0.85*envelope
+				node.Light.Brightness=2.5*envelope
+			end
+			for i,arc in ipairs(area.Arcs) do
+				local first,last=arc.First.WorldPosition,arc.Last.WorldPosition
+				local flicker=math.sin(areaTime*(22+intensity*35)+i*2.3)
+				local active=envelope>0.15 and flicker>0.6-intensity*1.2 and (last-first).Magnitude<14*scale
+				for j,p in ipairs(arc.Points) do
+					local jitter=Vector3.new(math.sin(areaTime*71+i+j),math.cos(areaTime*57+i-j),math.sin(areaTime*49+j))*0.55*scale*intensity
+					p.CFrame=CFrame.new(first:Lerp(last,j/3)+jitter)
+				end
+				for _,beam in ipairs(arc.Beams) do
+					beam.Enabled=active;beam.Width0=(0.04+0.14*intensity)*scale;beam.Width1=beam.Width0
+				end
+			end
+		end
 		if focus then
 			-- Beam and charge share the same fixed palate attachment.
 			local _,offset=mouthFrame()
