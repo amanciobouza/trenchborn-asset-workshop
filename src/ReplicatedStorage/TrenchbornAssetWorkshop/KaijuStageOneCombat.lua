@@ -2,9 +2,20 @@
 -- damageable objects; main-game building damage must use its own service.
 local TweenService = game:GetService("TweenService")
 local Debris = game:GetService("Debris")
+local RunService = game:GetService("RunService")
 local Combat = {}
 local targets, ranges = {}, {}
 local DAMAGE = {40,40,55,85} -- Review values: one complete combo = 220 HP.
+local function reserveLethal(data, holder, damage)
+	if not data or data.HeldBy or data.Health<=0 or data.Health>damage then return false end
+	data.HeldBy=holder
+	return true
+end
+local function releaseReservation(data, holder)
+	if not data or data.HeldBy~=holder then return false end
+	data.HeldBy=nil
+	return true
+end
 
 local function part(parent, name, size, cf, color)
 	local p = Instance.new("Part")
@@ -35,6 +46,27 @@ local function flash(model)
 	h.Adornee, h.Parent = model,model
 	TweenService:Create(h,TweenInfo.new(0.22),{FillTransparency=1}):Play()
 	Debris:AddItem(h,0.25)
+end
+local function splitBuilding(target, data, right)
+	-- Two recognizable building halves, each retaining its piece of the roof.
+	for _, sign in ipairs({-1,1}) do
+		local pivot=data.Body.CFrame*CFrame.new(sign*data.Body.Size.X/4,0,0)
+		local shift=right*(sign*8)+Vector3.new(0,3,0)
+		local transform=CFrame.new(shift)*pivot*CFrame.Angles(0,0,-sign*0.35)*pivot:Inverse()
+		for _, source in ipairs({data.Body,data.Roof}) do
+			local p=part(target.Parent,"TornBuildingHalf",Vector3.new(source.Size.X/2,source.Size.Y,source.Size.Z),
+				source.CFrame*CFrame.new(sign*source.Size.X/4,0,0),source.Color)
+			p.CanCollide,p.CanTouch,p.CanQuery=false,false,false
+			local destination=transform*p.CFrame
+			TweenService:Create(p,TweenInfo.new(0.38,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{CFrame=destination}):Play()
+			task.delay(0.45,function()
+				if not p.Parent then return end
+				TweenService:Create(p,TweenInfo.new(0.7,Enum.EasingStyle.Quad,Enum.EasingDirection.In),
+					{CFrame=CFrame.new(0,-9,0)*destination,Transparency=1}):Play()
+			end)
+			Debris:AddItem(p,1.2)
+		end
+	end
 end
 function Combat.RemoveRange(player)
 	local range=ranges[player]
@@ -95,16 +127,63 @@ function Combat.BuildRange(player, ground, character)
 		bar.BackgroundColor3=Color3.fromRGB(221,172,64)
 		bar.BorderSizePixel=0
 		bar.Parent=back
-		targets[model]={Body=body,Roof=roof,Gui=gui,Bar=bar,Health=220,Generation=0}
+		targets[model]={Body=body,Roof=roof,Gui=gui,Bar=bar,Health=220,Generation=0,HomePivot=model:GetPivot()}
 	end
 end
 
 function Combat.Attach(kaiju, root, humanoid, rootHeight)
 	local locked
+	local holder={} -- Unique server-side ownership token for this character.
+	local held, liftConnection
 	local scale=kaiju:GetScale()
+	local function release(restore)
+		if liftConnection then liftConnection:Disconnect();liftConnection=nil end
+		local target=held
+		held=nil
+		local data=target and targets[target]
+		if releaseReservation(data,holder) then
+			if target.Parent then
+				target:SetAttribute("Lifted",false)
+				if restore and data.Health>0 then
+					target:PivotTo(data.HomePivot)
+					for _,p in ipairs({data.Body,data.Roof}) do p.CanCollide=true;p.CanQuery=true end
+				end
+			end
+		end
+	end
+	local function cancel()
+		release(true)
+		locked=nil
+	end
+	local function lift(target)
+		local data=targets[target]
+		if not data then return end
+		local joints=kaiju:FindFirstChild("Articulation")
+		local left=joints and joints:FindFirstChild("LeftHand")
+		local right=joints and joints:FindFirstChild("RightHand")
+		if not left or not right then return end
+		if not reserveLethal(data,holder,DAMAGE[4]) then return end
+		held=target
+		target:SetAttribute("Lifted",true)
+		for _,p in ipairs({data.Body,data.Roof}) do p.CanCollide=false;p.CanQuery=false end
+		local started=os.clock()
+		local startRoot=root.Position
+		local initial=target:GetPivot()
+		liftConnection=RunService.Heartbeat:Connect(function()
+			if not target.Parent or targets[target]~=data or humanoid.Health<=0
+				or not kaiju:IsDescendantOf(workspace) or humanoid.FloorMaterial==Enum.Material.Air
+				or os.clock()-started>2 or (root.Position-startRoot).Magnitude>6*scale then cancel();return end
+			local u=math.clamp((os.clock()-started)/0.3,0,1)
+			u=u*u*(3-2*u)
+			local grip=(left.Position+right.Position)/2
+			local destination=CFrame.new(grip)*root.CFrame.Rotation
+			target:PivotTo(initial:Lerp(destination,u))
+		end)
+	end
 	local function reachable(target)
 		local data=targets[target]
 		if not data or data.Health<=0 or not target:IsDescendantOf(workspace) then return nil end
+		if data.HeldBy then return nil end -- Reserved buildings cannot be hit by another attacker.
 		local body=data.Body
 		local localCenter=root.CFrame:PointToObjectSpace(body.Position)
 		if localCenter.Z>=0 then return nil end
@@ -136,15 +215,22 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 	end
 	local function handle(kind,index)
 		if humanoid.Health<=0 or not root:IsDescendantOf(workspace)
-			or humanoid.FloorMaterial==Enum.Material.Air then locked=nil;return end
-		if kind=="Grab" then locked=selectTarget(); return end
+			or humanoid.FloorMaterial==Enum.Material.Air then cancel();return end
+		if kind=="Grab" then
+			cancel()
+			locked=selectTarget()
+			if locked then lift(locked) end
+			return
+		end
 		if kind~="Hit" or not DAMAGE[index] then return end
 		local target
 		if index==4 then target=locked else target=selectTarget() end
 		locked=nil
-		local point=target and reachable(target)
-		if not point then kaiju:SetAttribute("LastAttackResult","Miss");return end
-		local data=targets[target]
+		local data=target and targets[target]
+		local lifted=index==4 and held==target and data and data.HeldBy==holder
+		local point
+		if lifted then point=data.Body.Position else point=target and reachable(target) end
+		if not point then cancel();kaiju:SetAttribute("LastAttackResult","Miss");return end
 		data.Health=math.max(0,data.Health-DAMAGE[index])
 		target:SetAttribute("Health",data.Health)
 		target:SetAttribute("LastComboStep",index)
@@ -154,6 +240,8 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 		flash(target)
 		chips(target,point,index==4,data.Health==0)
 		if data.Health==0 then
+			if lifted then splitBuilding(target,data,root.CFrame.RightVector) end
+			release(false)
 			target:SetAttribute("Destroyed",true)
 			data.Gui.Enabled=false
 			for _,p in ipairs({data.Body,data.Roof}) do p.Transparency=1;p.CanCollide=false;p.CanQuery=false end
@@ -162,6 +250,7 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 			task.delay(12,function()
 				if targets[target]~=data or data.Generation~=generation or not target.Parent then return end
 				data.Health=220
+				target:PivotTo(data.HomePivot)
 				target:SetAttribute("Health",220)
 				target:SetAttribute("Destroyed",false)
 				data.Bar.Size=UDim2.fromScale(1,1)
@@ -169,6 +258,7 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 			end)
 		end
 	end
-	return {Handle=handle}
+	kaiju.Destroying:Once(cancel)
+	return {Handle=handle,Cancel=cancel}
 end
 return Combat
