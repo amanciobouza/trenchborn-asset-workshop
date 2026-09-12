@@ -118,11 +118,43 @@ function Rig.Attach(model)
 	model:SetAttribute("PipelinePhase", 6)
 	model:SetAttribute("QualityGateC", "Pending")
 	model:SetAttribute("IdleEnabled", true)
-	model:SetAttribute("AnimationPreview", "PowerIdle_02")
+	model:SetAttribute("AnimationMode", "Walk")
+	model:SetAttribute("WalkCycleSeconds", 1.55)
+	model:SetAttribute("AnimationPreview", "WalkInPlace_01")
+	local rootRest = bones.Pelvis.CFrame
+	local scale = model:GetScale()
+	local legs = {}
+	for _, side in ipairs({"Left", "Right"}) do
+		local hip = rootRest:PointToObjectSpace(bones[side .. "Thigh"].Position)
+		local knee = rootRest:PointToObjectSpace(bones[side .. "Shin"].Position)
+		local hock = rootRest:PointToObjectSpace(bones[side .. "Hock"].Position)
+		local a, b = knee - hip, hock - knee
+		legs[side] = {offset = hock - hip, upper = math.sqrt(a.Y*a.Y + a.Z*a.Z),
+			lower = math.sqrt(b.Y*b.Y + b.Z*b.Z), upperAngle = math.atan2(-a.Z, -a.Y),
+			lowerAngle = math.atan2(-b.Z, -b.Y)}
+	end
+	local function solveLeg(side, forwardOffset, lift, bob)
+		local leg = legs[side]
+		local y, z = leg.offset.Y + lift - bob, leg.offset.Z + forwardOffset
+		local distance = math.sqrt(y*y + z*z)
+		distance = math.clamp(distance, math.abs(leg.upper-leg.lower)+0.001, leg.upper+leg.lower-0.001)
+		local angle = math.atan2(-z, -y)
+		local spread = math.acos(math.clamp((leg.upper^2 + distance^2 - leg.lower^2)/(2*leg.upper*distance), -1, 1))
+		local upper = angle + spread
+		local kneeY, kneeZ = -leg.upper*math.cos(upper), -leg.upper*math.sin(upper)
+		local lower = math.atan2(-(z-kneeZ), -(y-kneeY))
+		local upperDelta, lowerDelta = upper-leg.upperAngle, lower-leg.lowerAngle
+		motors[side .. "Thigh"].C0 = rest[side .. "Thigh"] * CFrame.Angles(upperDelta, 0, 0)
+		motors[side .. "Shin"].C0 = rest[side .. "Shin"] * CFrame.Angles(lowerDelta-upperDelta, 0, 0)
+		-- Counter-rotate the hock to keep the heavy foot level throughout the step.
+		motors[side .. "Hock"].C0 = rest[side .. "Hock"] * CFrame.Angles(-lowerDelta, 0, 0)
+		motors[side .. "Foot"].C0 = rest[side .. "Foot"]
+	end
 	local elapsed, accumulator, stopped = 0, 0, false
 	local heartbeat, destroying
 	local function reset()
 		for name, m in pairs(motors) do m.C0 = rest[name] end
+		bones.Pelvis.CFrame = rootRest
 	end
 	local function stop()
 		if stopped then return end
@@ -143,7 +175,10 @@ function Rig.Attach(model)
 		wasEnabled = true
 		elapsed, accumulator = elapsed + dt, accumulator + dt
 		if accumulator < 1/30 then return end
+		local poseDt = accumulator
 		accumulator = accumulator % (1/30)
+		local previous = {}
+		for name, m in pairs(motors) do previous[name] = m.C0 end
 		local fade = math.min(elapsed/1.5, 1)
 		local breath = math.sin(elapsed * math.pi/1.4) * fade
 		local sway = math.sin(elapsed * math.pi/2.7) * fade
@@ -169,9 +204,52 @@ function Rig.Attach(model)
 			pose("Tail" .. i, 0, (math.sin(elapsed * 1.35 - i * 0.48) * (0.55 + i*0.14)
 				+ alert * 0.45) * fade, 0)
 		end
+		local walking = model:GetAttribute("AnimationMode") == "Walk"
+		local duration = model:GetAttribute("WalkCycleSeconds")
+		if type(duration) ~= "number" or duration ~= duration then duration = 1.55 end
+		duration = math.clamp(duration, 1.1, 2.4)
+		local cycle = elapsed/duration
+		local phase = cycle * math.pi * 2
+		local bob = walking and -0.18 * scale * (1-math.cos(phase*2)) * fade or 0
+		local blend = 1-math.exp(-poseDt/0.10)
+		bones.Pelvis.CFrame = bones.Pelvis.CFrame:Lerp(rootRest * CFrame.new(0, bob, 0), blend)
+		local actualBob = rootRest:PointToObjectSpace(bones.Pelvis.Position).Y
+		if walking then
+			model:SetAttribute("AnimationPreview", "WalkInPlace_01")
+			pose("Torso", 3.0*fade + math.cos(phase*2)*0.8*fade, math.sin(phase)*2.3*fade, math.sin(phase)*1.7*fade)
+			pose("Head", -1.8*fade, -math.sin(phase)*1.8*fade, -math.sin(phase)*0.8*fade)
+			pose("Jaw", 0, 0, 0)
+			for _, side in ipairs({"Left", "Right"}) do
+				local offset = side == "Left" and 0 or 0.5
+				local t = (cycle+offset+0.31)%1
+				local travel, lift
+				if t < 0.62 then
+					-- Stance travels rearward at constant speed in this treadmill preview.
+					travel, lift = -1.75 + 3.5*t/0.62, 0
+				else
+					local swing = (t-0.62)/0.38
+					local smooth = swing*swing*(3-2*swing)
+					travel = 1.75-3.5*smooth
+					lift = 1.15*math.sin(math.pi*swing)^2
+				end
+				solveLeg(side, travel*scale*fade, lift*scale*fade, actualBob)
+				local swing = math.sin((cycle+offset+0.31)*math.pi*2)*fade
+				pose(side .. "UpperArm", -swing*10, 0, 0)
+				pose(side .. "Forearm", -4*fade + swing*3, 0, 0)
+				pose(side .. "Hand", -swing, 0, 0)
+			end
+			for i = 1, tailCount do
+				pose("Tail" .. i, 0, -math.sin(phase-i*0.32)*(0.5+i*0.10)*fade, 0)
+			end
+		else
+			model:SetAttribute("AnimationPreview", "PowerIdle_02")
+			for _, side in ipairs({"Left", "Right"}) do solveLeg(side, 0, 0, actualBob) end
+		end
+		-- Blend mode changes and step accents rather than snapping joint poses.
+		for name, m in pairs(motors) do m.C0 = previous[name]:Lerp(m.C0, blend) end
 	end)
 	destroying = model.Destroying:Connect(stop)
-	print(string.format("[Kaiju Rig] %d visible parts bound | %d joints | Power idle running | Set IdleEnabled=false to pause", #visuals, 17 + tailCount))
+	print(string.format("[Kaiju Rig] %d parts | %d joints | Walk preview | AnimationMode: Walk / Idle | IdleEnabled=false pauses both", #visuals, 17 + tailCount))
 	return {Stop = stop, Motors = motors}
 end
 
