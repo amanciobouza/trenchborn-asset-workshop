@@ -5,7 +5,7 @@ local Combo = require(script.Parent:WaitForChild("KaijuStageOneCombo"))
 local Jump = require(script.Parent:WaitForChild("KaijuStageOneJump"))
 local Rig = {}
 local STRIDE = 10.0
-local STANCE = 0.70 -- Both feet support the body during 40% of the cycle.
+local STANCE = 0.65 -- Longer swing; both feet still support the body during 30% of the cycle.
 local CYCLE_SECONDS = 1.9
 local AREA_TIMING={Curl=2.2,Discharge=2.8,Recovery=3.2,Finish=4.6}
 
@@ -601,16 +601,16 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		end
 		local actualBob = smoothedBob
 		if walking then
-			model:SetAttribute("AnimationPreview", "HeavyWalk_03_ForwardLean")
+			model:SetAttribute("AnimationPreview", "HeavyWalk_04_ShoulderFollowThrough")
 			local weightShift = math.sin(gaitPhase - 0.35)*fade
 			-- Forward is local -Z: negative X pitch brings the upper body forward.
-			pose("Torso", (-11.0 - compression*1.6)*fade, weightShift*2.5, weightShift*3.2)
+			pose("Torso", (-11.0 - compression*1.6)*fade, weightShift*5.5, weightShift*3.8)
 			-- The neck partly counters the lean to keep the gaze ahead. Head motion
 			-- follows the weight transfer with a delay instead of locking to the torso.
 			local headFollow = math.sin(gaitPhase - 0.80)*fade
 			local headNod = math.sin(gaitPhase*2 - 0.65)*2.2*fade
 			pose("Head", 6.0*fade + headNod - compression*0.8*fade,
-				-headFollow*3.5, -headFollow*1.8)
+				-headFollow*4.5, -headFollow*2.2)
 			pose("Jaw", 0, 0, 0)
 			for _, side in ipairs({"Left", "Right"}) do
 				local offset = side == "Left" and 0 or 0.5
@@ -623,14 +623,24 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 					local swing = (t-STANCE)/(1-STANCE)
 					local smooth = swing*swing*(3-2*swing)
 					travel = STRIDE/2-STRIDE*smooth
-					-- Clear the ground visibly while the other foot bears the weight.
-					lift = 2.2*math.sin(math.pi*swing)^2
+					-- Spend more of the swing lifting the heavy leg, then settle firmly.
+					-- Both ends and the apex have zero vertical velocity.
+					local liftPhase=swing<0.6 and swing/0.6 or (1-swing)/0.4
+					lift = 2.2*liftPhase*liftPhase*(3-2*liftPhase)
 				end
 				solveLeg(side, travel*scale*fade, lift*scale*fade, actualBob)
-				local swing = math.sin((cycle+offset+STANCE/2)*math.pi*2-0.25)*fade
-				pose(side .. "UpperArm", -swing*7, 0, 0)
-				pose(side .. "Forearm", -5*fade + swing*2, 0, 0)
-				pose(side .. "Hand", -swing, 0, 0)
+				local sign=side=="Left" and -1 or 1
+				local armPhase=(cycle+offset+STANCE/2)*math.pi*2
+				local swing=math.sin(armPhase-0.3)*fade
+				local elbowFollow=math.sin(armPhase-0.85)*fade
+				local wristFollow=math.sin(armPhase-1.25)*fade
+				local shoulderRoll=math.cos(armPhase-0.3)*fade
+				-- Shoulder leads; the bent elbow and heavy hand follow with separate delays.
+				-- A small outward arc keeps the hands clear of the thighs.
+				pose(side .. "UpperArm",8*fade-swing*17,sign*shoulderRoll*4,
+					-sign*(5*fade+3*shoulderRoll))
+				pose(side .. "Forearm",18*fade+elbowFollow*8,0,sign*elbowFollow*2)
+				pose(side .. "Hand",-6*fade+wristFollow*4,sign*wristFollow*3,0)
 			end
 			for i = 1, tailCount do
 				pose("Tail" .. i, 0, -math.sin(phase-i*0.32)*(0.5+i*0.10)*fade, 0)
