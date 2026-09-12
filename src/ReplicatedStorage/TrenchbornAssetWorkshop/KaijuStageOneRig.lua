@@ -198,12 +198,13 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		Vector3.new(0,-upperLip.Size.Y/2,-get("UpperMuzzleCoreZ").Size.Z/2+0.2*scale)))
 	local lowerLipLocal=bones.Jaw.CFrame:PointToObjectSpace(lowerLip.CFrame:PointToWorldSpace(
 		Vector3.new(0,lowerLip.Size.Y/2,-get("LowerJawFrontCoreZ").Size.Z/2+0.2*scale)))
+	local throatInset=Vector3.new(0,0,1.6*scale)
 	local function mouthFrame()
 		-- Derive the opening from both lips in rig space, including jaw rotation.
 		local jawInHead=motors.Jaw.C0*motors.Jaw.C1:Inverse()
 		local lower=jawInHead:PointToWorldSpace(lowerLipLocal)
-		-- Bias the origin toward the lower lip so the upper muzzle stays clear.
-		return bones.Head,CFrame.new(upperLipLocal:Lerp(lower,0.68))
+		-- Follow the opening, but originate deeper inside the mouth toward the throat.
+		return bones.Head,CFrame.new(upperLipLocal:Lerp(lower,0.68)+throatInset)
 	end
 	local function mouthPosition()
 		local upper,offset=mouthFrame()
@@ -531,7 +532,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			pose("Head",(pitch+8-recoil)*charge*fadeOut,yaw*charge*fadeOut,0)
 			-- Forward is -Z: negative X lowers the jaw. Open before the beam starts.
 			local opening=math.clamp((t-1.5)/0.3,0,1)
-			pose("Jaw",-48*opening*fadeOut,0,0)
+			pose("Jaw",-36*opening*fadeOut,0,0)
 			for _,side in ipairs({"Left","Right"}) do
 				local sign=side=="Left" and -1 or 1
 				pose(side.."UpperArm",12*charge*fadeOut,0,-sign*12*charge*fadeOut)
@@ -581,7 +582,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 					-get("UpperMuzzleCoreZ").Size.Z/2+0.2*scale))
 				local lowerPoint=lowerLip.CFrame:PointToWorldSpace(Vector3.new(0,lowerLip.Size.Y/2,
 					-get("LowerJawFrontCoreZ").Size.Z/2+0.2*scale))
-				local expected=upperPoint:Lerp(lowerPoint,0.68)
+				local expected=upperPoint:Lerp(lowerPoint,0.68)+bones.Head.CFrame:VectorToWorldSpace(throatInset)
 				local visualJawPoint=bones.Jaw.CFrame:PointToWorldSpace(lowerLipLocal)
 				local jawParts,anchoredParts=0,0
 				for _,p in ipairs(visuals) do
