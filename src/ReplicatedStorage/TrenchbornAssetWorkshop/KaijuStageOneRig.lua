@@ -193,7 +193,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	local function setAirDirection(direction)
 		if jump.Phase~="Air" and jump.Phase~="Windup" then return end
 		local flat=Vector3.new(direction.X,0,direction.Z)
-		if flat.Magnitude>0.05 then airDirection=flat.Unit end
+		airDirection=flat.Magnitude>0.05 and flat.Unit or Vector3.zero
 	end
 	local function requestJump(direction)
 		if stopped or not humanoid or humanoid.Health<=0 or not movementRoot
@@ -202,8 +202,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		combo:Cancel()
 		if combat then combat.Cancel() end
 		savedSpeed=humanoid.WalkSpeed
-		local forward=movementRoot.CFrame.LookVector
-		airDirection=Vector3.new(forward.X,0,forward.Z).Unit
+		airDirection=Vector3.zero
 		if direction then setAirDirection(direction) end
 		humanoid.WalkSpeed=0
 		return true
@@ -279,7 +278,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		if movementRoot and humanoid then
 			jumpPose,jumpEvent=jump:Update(os.clock(),humanoid.FloorMaterial~=Enum.Material.Air,movementRoot.AssemblyLinearVelocity.Y)
 			if jumpEvent=="Takeoff" then
-				-- Launch forward even from rest; steering is applied on the server.
+				-- Direction comes only from movement input; neutral jumps are vertical.
 				savedOwner=movementRoot:GetNetworkOwner()
 				movementRoot:SetNetworkOwner(nil)
 				ownsPhysics=true
@@ -292,6 +291,11 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			if jump.Phase=="Air" then
 				humanoid.WalkSpeed=AIR_SPEED
 				humanoid:Move(airDirection,false)
+				if airDirection.Magnitude==0 then
+					-- Releasing movement stops horizontal drift without changing the fall.
+					local velocity=movementRoot.AssemblyLinearVelocity
+					movementRoot:ApplyImpulse(Vector3.new(-velocity.X,0,-velocity.Z)*movementRoot.AssemblyMass)
+				end
 			elseif jump.Phase=="Landing" then
 				humanoid.WalkSpeed=0
 				humanoid:Move(Vector3.zero,false)
