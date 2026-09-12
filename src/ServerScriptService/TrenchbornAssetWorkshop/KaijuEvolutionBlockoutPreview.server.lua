@@ -66,6 +66,17 @@ local function equip(player, character)
 	kaiju:PivotTo(ground * pivotFromGround)
 	kaiju.Parent = character
 	local rig = stageOneRig.Attach(kaiju, root, humanoid)
+	local remote = Instance.new("RemoteEvent")
+	remote.Name = "RequestAttack"
+	remote.Parent = kaiju
+	local lastAttackRequest = -math.huge
+	local attackConnection = remote.OnServerEvent:Connect(function(sender)
+		if sender ~= player or player.Character ~= character then return end
+		local now = os.clock()
+		if now-lastAttackRequest < 0.12 then return end
+		lastAttackRequest = now
+		rig.RequestAttack()
+	end)
 	kaiju:SetAttribute("GeometryAmendmentReview", "ApprovedByUser")
 	kaiju:SetAttribute("ControlledBy", player.UserId)
 
@@ -93,6 +104,7 @@ local function equip(player, character)
 	if display and display.Parent then display:Destroy() end
 
 	character.Destroying:Once(function()
+		attackConnection:Disconnect()
 		added:Disconnect()
 		appearance:Disconnect()
 		rig.Stop()
@@ -100,6 +112,18 @@ local function equip(player, character)
 end
 
 local function connectPlayer(player)
+	-- Persist the input script through respawns in its own ScreenGui.
+	task.spawn(function()
+		local gui = player:WaitForChild("PlayerGui")
+		if not gui:FindFirstChild("KaijuStageOneInput") then
+			local container = Instance.new("ScreenGui")
+			container.Name = "KaijuStageOneInput"
+			container.ResetOnSpawn = false
+			local controls = packageFolder:WaitForChild("KaijuStageOneControls"):Clone()
+			controls.Parent = container
+			container.Parent = gui
+		end
+	end)
 	player.CharacterAdded:Connect(function(character) task.spawn(equip, player, character) end)
 	if player.Character then task.spawn(equip, player, player.Character) end
 end
