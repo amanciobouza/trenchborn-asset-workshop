@@ -171,7 +171,7 @@ local function buildDorsals(parent: Instance, origin: CFrame, sx: number, sy: nu
 		local plateCenter = pos + Vector3.new(0, 0.25 * centerScale, projection * 0.38)
 		local sideVariation = (i % 2 == 0) and 4 or -4
 		local plateFrame = frame(origin, plateCenter, sx, sy, sz)
-			* CFrame.Angles(math.rad(-28), 0, math.rad(180 + sideVariation))
+			* CFrame.Angles(math.rad(-28), math.rad(180), math.rad(sideVariation))
 		wedge(parent, string.format("DorsalShield_%02d", i), scaled(Vector3.new(1.5, rootHeight, projection), sx, sy, sz), plateFrame, ARMOR)
 		local seam = wedge(parent, string.format("DorsalEnergy_%02d", i), scaled(Vector3.new(0.22, rootHeight * 0.72, projection * 0.78), sx, sy, sz), plateFrame * CFrame.new(0, 0, -0.08), energyAmount > 0.75 and ENERGY_HIGH or ENERGY)
 		seam.Material = Enum.Material.Neon
