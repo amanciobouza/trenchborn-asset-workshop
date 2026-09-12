@@ -508,6 +508,8 @@ local function refineStageOne(model: Model, origin: CFrame)
 	mass("NapeFlow", Vector3.new(5.3, 5.0, 4.8), Vector3.new(0, 23.95, 1.05), skin, CFrame.Angles(math.rad(-18), 0, 0))
 	mass("ThroatShield", Vector3.new(3.5, 5.1, 1.5), Vector3.new(0, 24.4, -2.15), underside)
 	mass("UpperRibcage", Vector3.new(11.3, 5.7, 6.6), Vector3.new(0, 22.65, 0.15), skin)
+	-- Low frontal bridge reaches from the skull into the brow roots.
+	mass("FrontalBridge", Vector3.new(4.0, 1.3, 3.9), Vector3.new(0, 27.65, -2.2), skin)
 	for _, sign in ipairs({-1, 1}) do
 		local side = sign < 0 and "Left" or "Right"
 		mass(side .. "Pectoral", Vector3.new(5.35, 4.5, 1.95), Vector3.new(sign * 2.18, 22.45, -2.9), underside)
@@ -515,7 +517,9 @@ local function refineStageOne(model: Model, origin: CFrame)
 		mass(side .. "ShoulderJoint", Vector3.new(5.6, 5.3, 5.4), Vector3.new(sign * 5.7, 22.1, -0.1), skin)
 		mass(side .. "ShoulderBridge", Vector3.new(3.3, 3.1, 4.0), Vector3.new(sign * 3.9, 22.65, 0), skin)
 		mass(side .. "CheekMass", Vector3.new(1.5, 2.25, 2.8), Vector3.new(sign * 1.65, 26.25, -1.95), skin)
-		mass(side .. "BrowRidge", Vector3.new(1.55, 0.62, 1.5), Vector3.new(sign * 1.45, 28.03, -3.68), skin,
+		-- Fill behind each eye, leaving its forward luminous surface exposed.
+		mass(side .. "OrbitalSupport", Vector3.new(1.65, 1.55, 2.0), Vector3.new(sign * 1.45, 27.45, -3.05), skin)
+		mass(side .. "BrowRidge", Vector3.new(1.55, 0.62, 1.7), Vector3.new(sign * 1.45, 27.99, -3.6), skin,
 			CFrame.Angles(0, -sign * math.rad(8), sign * math.rad(8)))
 		mass(side .. "Flank", Vector3.new(4.1, 6.5, 5.0), Vector3.new(sign * 2.35, 18.65, 0.4), skin)
 		-- Long calf/instep envelopes bury flat cylinder ends and connect the foot.
@@ -526,10 +530,10 @@ local function refineStageOne(model: Model, origin: CFrame)
 	end
 	-- Lift the complete face as one assembly, including all rounded-box pieces.
 	-- Neck and throat were resized separately to retain overlap with the skull.
-	local headNames: {[string]: boolean} = {Cranium = true, SnoutBridge = true, LowerJawRear = true}
+	local headNames: {[string]: boolean} = {Cranium = true, SnoutBridge = true, LowerJawRear = true, FrontalBridge = true}
 	local headPrefixes = {"UpperMuzzle", "LowerJawFront"}
 	for _, side in ipairs({"Left", "Right"}) do
-		for _, feature in ipairs({"CheekMass", "BrowRidge", "EyeSocket", "Eye", "Pupil", "EyeHighlight", "Nostril"}) do
+		for _, feature in ipairs({"CheekMass", "OrbitalSupport", "BrowRidge", "EyeSocket", "Eye", "Pupil", "EyeHighlight", "Nostril"}) do
 			headNames[side .. feature] = true
 		end
 	end
@@ -582,7 +586,7 @@ local function refineStageOne(model: Model, origin: CFrame)
 			item.Material = Enum.Material.SmoothPlastic
 		end
 	end
-	model:SetAttribute("GeometryRevision", "S1_ShorterNeck_LowSkull_10")
+	model:SetAttribute("GeometryRevision", "S1_ConnectedForehead_EmbeddedBrows_11")
 	model:SetAttribute("VisualTarget", "Approved simplified Stage 1 and Stage 2 maquette")
 	model:SetAttribute("GeometryMethod", "Roblox primitives and visual ellipsoids; no external assets")
 end
