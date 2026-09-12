@@ -639,8 +639,9 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				-- A small outward arc keeps the hands clear of the thighs.
 				pose(side .. "UpperArm",8*fade-swing*17,sign*shoulderRoll*4,
 					-sign*(5*fade+3*shoulderRoll))
-				pose(side .. "Forearm",18*fade+elbowFollow*8,0,sign*elbowFollow*2)
-				pose(side .. "Hand",-6*fade+wristFollow*4,sign*wristFollow*3,0)
+				-- Flex behind the forward shoulder swing, then open as the arm returns.
+				pose(side .. "Forearm",26*fade-elbowFollow*20,0,sign*elbowFollow*3)
+				pose(side .. "Hand",-6*fade+wristFollow*6,sign*wristFollow*3,0)
 			end
 			for i = 1, tailCount do
 				pose("Tail" .. i, 0, -math.sin(phase-i*0.32)*(0.5+i*0.10)*fade, 0)
