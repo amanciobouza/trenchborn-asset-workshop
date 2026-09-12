@@ -556,16 +556,28 @@ local function refineStageOne(model: Model, origin: CFrame)
 			item:Destroy()
 		end
 	end
-	local function plate(i: number, root: Vector3, height: number, projection: number, pitch: number, inset: number)
+	-- Extend the original stepped cylinder tail with progressively smaller ends.
+	local extension = {
+		Vector3.new(0, 5.0, 19.7), Vector3.new(0, 4.55, 22.0),
+		Vector3.new(0, 4.25, 24.0), Vector3.new(0, 4.1, 25.5),
+	}
+	for i, diameter in ipairs({1.65, 1.0, 0.45}) do
+		cylinderBetween(model, string.format("TailSegment_%02d", i + 7), extension[i], extension[i+1], diameter, origin, 1, 1, 1, skin)
+	end
+	local tipDirection = (extension[4] - extension[3]).Unit
+	mass("TailTip", Vector3.new(0.45, 0.45, 1.2), extension[4], skin, CFrame.lookAt(Vector3.zero, tipDirection))
+	model:SetAttribute("GeometryAmendmentReview", "Pending_ExtendedTail")
+	local function plate(i: number, root: Vector3, height: number, projection: number, pitch: number, inset: number, thickness: number?)
+		local width = thickness or 1.15
 		local cf = origin * CFrame.new(root + Vector3.new(0, 0.2, projection * 0.35))
 			* CFrame.Angles(math.rad(pitch), math.pi, math.pi)
-		wedge(model, string.format("DorsalShield_%02d", i), Vector3.new(1.15, height, projection), cf, plateColor)
+		wedge(model, string.format("DorsalShield_%02d", i), Vector3.new(width, height, projection), cf, plateColor)
 		for _, sign in ipairs({-1, 1}) do
 			-- Homothetic inset about the triangular face centroid keeps a dark border
 			-- on all three edges. Wedge cross-section centroid is (-h/6,d/6).
 			local glow = wedge(model, string.format("DorsalEnergy_%02d_%s", i, sign < 0 and "Left" or "Right"),
 				Vector3.new(0.06, height * inset, projection * inset),
-				cf * CFrame.new(sign * 0.61, -(1-inset)*height/6, (1-inset)*projection/6), ENERGY)
+				cf * CFrame.new(sign * (width/2 + 0.035), -(1-inset)*height/6, (1-inset)*projection/6), ENERGY)
 			glow.Material = Enum.Material.Neon
 			glow.Transparency = 0.12
 		end
@@ -584,12 +596,14 @@ local function refineStageOne(model: Model, origin: CFrame)
 		local scale = (8 - segmentIndex) / 7
 		plate(segmentIndex + 2, root, 0.5 + 1.8*scale, 0.6 + 2.65*scale, -38, 0.40)
 	end
+	plate(10, Vector3.new(0, 5.4, 20.85), 0.65, 0.95, -38, 0.35, 0.55)
+	plate(11, Vector3.new(0, 4.8, 23.0), 0.38, 0.6, -38, 0.30, 0.32)
 	for _, item in ipairs(model:GetDescendants()) do
 		if item:IsA("BasePart") and item.Material ~= Enum.Material.Neon then
 			item.Material = Enum.Material.SmoothPlastic
 		end
 	end
-	model:SetAttribute("GeometryRevision", "S1_ChestJointClawRefinement_12")
+	model:SetAttribute("GeometryRevision", "S1_ExtendedTaperedCylinderTail_13")
 	model:SetAttribute("VisualTarget", "Approved simplified Stage 1 and Stage 2 maquette")
 	model:SetAttribute("GeometryMethod", "Roblox primitives and visual ellipsoids; no external assets")
 end
