@@ -252,6 +252,43 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	local previousMode,transitionLeft="Idle",0
 	local runRequested,runBlend=false,0
 	local runContacts={}
+	local soundContacts={}
+	local feedbackRemote
+	local owner=movementRoot and game:GetService("Players"):GetPlayerFromCharacter(model.Parent)
+	if owner then
+		feedbackRemote=Instance.new("RemoteEvent");feedbackRemote.Name="KaijuFeedback";feedbackRemote.Parent=model
+	end
+	-- Reuse the workshop's existing Guardian/Sovereign audio assets, with heavier tuning.
+	local audioPresets={
+		Step={9118240078,0.38,0.72},RunStep={9118240078,0.52,0.78},
+		Land={9118240078,0.7,0.55},Punch={9116684884,0.42,0.64},
+		Finisher={9116684884,0.7,0.48},Hit={9116684884,0.3,0.7},HeavyHit={9116684884,0.55,0.52},
+		FocusFire={137510557013265,0.65,0.85},Discharge={137510557013265,0.8,0.65},
+		Defeat={9116684884,0.75,0.42},
+	}
+	local audioRandom=Random.new()
+	local activeSounds={}
+	local function makeSound(asset,source,volume,speed,looped)
+		if not owner then return nil end
+		local sound=Instance.new("Sound");sound.Name="KaijuAudio";sound.SoundId="rbxassetid://"..asset
+		sound.Volume=volume;sound.PlaybackSpeed=speed;sound.Looped=looped==true
+		sound.RollOffMinDistance=12*scale;sound.RollOffMaxDistance=160*scale
+		sound.Parent=source or bones.Torso;activeSounds[sound]=true
+		sound.Destroying:Once(function() activeSounds[sound]=nil end)
+		sound:Play()
+		if not looped then game:GetService("Debris"):AddItem(sound,5) end
+		return sound
+	end
+	local function feedback(kind,source)
+		local definition=audioPresets[kind]
+		if not owner or not definition then return end
+		local sound=makeSound(definition[1],source,definition[2],definition[3]*audioRandom:NextNumber(0.96,1.04),false)
+		if sound and kind~="FocusFire" and kind~="Discharge" then
+			local eq=Instance.new("EqualizerSoundEffect");eq.LowGain=3;eq.MidGain=-3;eq.HighGain=-12;eq.Parent=sound
+			game:GetService("Debris"):AddItem(sound,(kind=="Step" or kind=="RunStep") and 1.2 or 2.4)
+		end
+		feedbackRemote:FireClient(owner,kind)
+	end
 	model:SetAttribute("RunRequested",false)
 	model:SetAttribute("Running",false)
 	local function setRunning(enabled)
@@ -325,6 +362,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	end
 	local function endArea()
 		if not area then return end
+		if area.ChargeSound then area.ChargeSound:Destroy() end
 		for p,color in pairs(area.Colors) do if p.Parent then p.Color=color end end
 		for _,a in ipairs(area.Attachments) do a:Destroy() end
 		area.Effects:Destroy()
@@ -345,6 +383,8 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		area={Started=os.clock(),Hit=false,Point=hit.Position,StartRoot=movementRoot.Position,
 			Ground=CFrame.new(hit.Position)*movementRoot.CFrame.Rotation,
 			Speed=humanoid.WalkSpeed,Rotate=humanoid.AutoRotate,Colors={},Attachments={},Nodes={},Arcs={}}
+		area.ChargeSound=makeSound(127373754810578,bones.Torso,0.12,0.72,false)
+		if area.ChargeSound then game:GetService("TweenService"):Create(area.ChargeSound,TweenInfo.new(2.6),{Volume=0.5,PlaybackSpeed=1.05}):Play() end
 		area.Effects=Instance.new("Folder");area.Effects.Name="DorsalCharge";area.Effects.Parent=model
 		local function node(source,offset)
 			local a=Instance.new("Attachment");a.Name="DischargeNode";a.CFrame=offset;a.Parent=source
@@ -393,6 +433,8 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	end
 	local function endFocus()
 		if not focus then return end
+		if focus.ChargeSound then focus.ChargeSound:Destroy() end
+		if focus.BeamSound then focus.BeamSound:Destroy() end
 		for part,color in pairs(focus.Colors) do if part.Parent then part.Color=color end end
 		focus.Mouth:Destroy()
 		focus.Effects:Destroy()
@@ -439,6 +481,8 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		local mouth=Instance.new("Attachment")
 		mouth.Name="FocusMouth";mouth.CFrame=offset;mouth.Parent=upper
 		focus.Mouth=mouth
+		focus.ChargeSound=makeSound(127373754810578,mouth,0.12,0.82,false)
+		if focus.ChargeSound then game:GetService("TweenService"):Create(focus.ChargeSound,TweenInfo.new(1.8),{Volume=0.42,PlaybackSpeed=1.1}):Play() end
 		focus.Orb.CFrame=upper.CFrame*offset
 		focus.Orb.Anchored=false;focus.Orb.Massless=true
 		local weld=Instance.new("Weld")
@@ -542,6 +586,8 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	end
 	local function reset()
 		hitReaction=nil;damageFlash.FillTransparency=1
+		for sound in pairs(activeSounds) do sound:Destroy() end
+		soundContacts={}
 		endArea()
 		endFocus()
 		jump:Cancel()
@@ -655,6 +701,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		end
 		if t>=1.8 and not defeat.Impact then
 			defeat.Impact=true
+			feedback("Defeat",bones.Torso)
 			for i=1,10 do
 				local dust=Instance.new("Part");dust.Name="DefeatDust";dust.Shape=Enum.PartType.Ball
 				dust.Anchored=true;dust.CanCollide=false;dust.CanTouch=false;dust.CanQuery=false;dust.CastShadow=false
@@ -717,6 +764,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 					endArea();endFocus();combo:Cancel();if combat then combat.Cancel() end
 				end
 				model:SetAttribute("ReactionState",heavy and "Stagger" or "Hit")
+				feedback(heavy and "HeavyHit" or "Hit",bones.Torso)
 			end
 		end)
 	end
@@ -800,6 +848,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				local horizontal=airDirection*AIR_SPEED
 				movementRoot:ApplyImpulse((horizontal+Vector3.new(0,rise,0)-velocity)*movementRoot.AssemblyMass)
 			elseif jumpEvent=="Land" then
+				feedback("Land",bones.Pelvis)
 				if combat then combat.Handle("Land",0) end
 			elseif jumpEvent=="Restore" then restoreJump() end
 			if jump.Phase=="Air" then
@@ -863,7 +912,12 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		end
 		local attackPose, attackWeight, attackName, attackIndex, attackCrouch = combo:Sample(os.clock())
 		for _, event in ipairs(combo:DrainEvents()) do
-			if combat then combat.Handle(event.Kind, event.Index, event.FinisherUntil) end
+			if combat then
+				combat.Handle(event.Kind, event.Index, event.FinisherUntil)
+				if event.Kind=="Hit" and model:GetAttribute("LastAttackResult")=="Hit" then
+					feedback(event.Index==4 and "Finisher" or "Punch",bones.RightHand)
+				end
+			end
 		end
 		local special=jumpPose or focus or area or attackPose or isStaggered()
 		local mode=area and "Area" or focus and "Focus" or jumpPose and "Jump" or attackPose and "Attack" or running and "Run" or walking and "Walk" or "Idle"
@@ -944,6 +998,10 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				-- Shift the running step slightly behind the body, keeping stance speed unchanged.
 				travel=travel+0.6*runBlend
 				local contact=math.floor(cycle+offset+stance/2)
+				if not special and soundContacts[side] and contact>soundContacts[side] then
+					feedback(running and "RunStep" or "Step",bones[side.."Foot"])
+				end
+				soundContacts[side]=contact
 				if running and runBlend>0.8 then
 					if runContacts[side] and contact>runContacts[side] then runFootfall(side) end
 					runContacts[side]=contact
@@ -988,6 +1046,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 					(walkYaw*(1-runBlend)+balanceYaw*runBlend)*fade,0)
 			end
 		else
+			soundContacts={}
 			model:SetAttribute("AnimationPreview", "PowerIdle_02")
 			for _, side in ipairs({"Left", "Right"}) do
 				local foot=walkFeet[side]
@@ -1039,6 +1098,14 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			local t=focusTime
 			local charge=math.clamp(t/2,0,1)
 			local firing=t>=2 and t<4.5
+			if firing and not focus.SoundFired then
+				focus.SoundFired=true
+				if focus.ChargeSound then focus.ChargeSound:Destroy() end
+				focus.BeamSound=makeSound(102065163712158,focus.Mouth,0.28,0.78,true)
+				feedback("FocusFire",focus.Mouth)
+			elseif t>=4.5 and focus.BeamSound then
+				focus.BeamSound:Destroy();focus.BeamSound=nil
+			end
 			local fadeOut=math.clamp((4.85-t)/0.35,0,1)
 			local from=mouthPosition()
 			local point,visible=combat.FocusAim(focus.Target,from)
@@ -1156,7 +1223,10 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			end
 			model:SetAttribute("AreaPhase",areaTime<AREA_TIMING.Discharge and "Charging" or areaTime<AREA_TIMING.Recovery and "Discharge" or "Recovery")
 			if areaTime>=AREA_TIMING.Discharge and not area.Hit then
-				area.Hit=true;combat.AreaImpact(area.Point)
+				area.Hit=true
+				if area.ChargeSound then area.ChargeSound:Destroy() end
+				feedback("Discharge",bones.Torso)
+				combat.AreaImpact(area.Point)
 			end
 		end
 		if hitReaction then
