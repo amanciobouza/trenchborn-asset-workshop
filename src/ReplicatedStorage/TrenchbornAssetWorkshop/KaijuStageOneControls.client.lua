@@ -7,6 +7,30 @@ local action = "KaijuStageOneAttack"
 local jumpAction="KaijuStageOneJump"
 local focusAction="KaijuStageOneFocus"
 local areaAction="KaijuStageOneArea"
+local runAction="KaijuStageOneRun"
+local runHeld=false
+local function setRun(enabled)
+	runHeld=enabled
+	CAS:SetTitle(runAction,enabled and "Walk" or "Run")
+	local character=player.Character
+	local model=character and character:FindFirstChild("Stage_1_Primal_Beast")
+	local remote=model and model:FindFirstChild("SetRunning")
+	if remote then remote:FireServer(enabled) end
+end
+CAS:BindActionAtPriority(runAction,function(_,state,input)
+	local keyboard=input.KeyCode==Enum.KeyCode.LeftShift or input.KeyCode==Enum.KeyCode.RightShift
+	if state==Enum.UserInputState.Cancel or (keyboard and state==Enum.UserInputState.End) then
+		setRun(false);return Enum.ContextActionResult.Sink
+	end
+	if UIS:GetFocusedTextBox() then return Enum.ContextActionResult.Pass end
+	if state==Enum.UserInputState.Begin then setRun(keyboard or not runHeld) end
+	return Enum.ContextActionResult.Sink
+end,true,3000,Enum.KeyCode.LeftShift,Enum.KeyCode.RightShift,Enum.KeyCode.ButtonL3)
+CAS:SetTitle(runAction,"Run")
+CAS:SetPosition(runAction,UDim2.new(1,-150,1,-90))
+local runFocusLost=UIS.WindowFocusReleased:Connect(function() setRun(false) end)
+local runTextFocus=UIS.TextBoxFocused:Connect(function() setRun(false) end)
+local runGamepadLost=UIS.GamepadDisconnected:Connect(function() setRun(false) end)
 local lastArea=-math.huge
 CAS:BindAction(areaAction,function(_,state)
 	if UIS:GetFocusedTextBox() then return Enum.ContextActionResult.Pass end
@@ -96,6 +120,7 @@ local focusConnection
 local areaConnection
 local alive=true
 local function watchCharacter(character)
+	setRun(false)
 	if availabilityConnection then availabilityConnection:Disconnect();availabilityConnection=nil end
 	if focusConnection then focusConnection:Disconnect();focusConnection=nil end
 	if areaConnection then areaConnection:Disconnect();areaConnection=nil end
@@ -130,7 +155,7 @@ local mouse = UIS.InputBegan:Connect(function(input, processed)
 	if not processed and input.UserInputType == Enum.UserInputType.MouseButton1 then attack() end
 end)
 task.spawn(function()
-	for _,name in ipairs({action,jumpAction,focusAction,areaAction}) do
+	for _,name in ipairs({action,jumpAction,focusAction,areaAction,runAction}) do
 		local button = CAS:GetButton(name)
 		if button then
 			for _, label in ipairs(button:GetDescendants()) do
@@ -140,6 +165,9 @@ task.spawn(function()
 	end
 end)
 script.Destroying:Connect(function()
+	setRun(false)
+	runFocusLost:Disconnect();runTextFocus:Disconnect();runGamepadLost:Disconnect()
+	CAS:UnbindAction(runAction)
 	steering:Disconnect()
 	alive=false
 	characterConnection:Disconnect()
