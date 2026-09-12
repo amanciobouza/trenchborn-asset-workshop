@@ -144,18 +144,26 @@ local function buildArm(parent: Instance, side: string, sign: number, origin: CF
 end
 
 local function buildHead(parent: Instance, origin: CFrame, sx: number, sy: number, sz: number, armorLevel: number)
-	part(parent, "Neck", scaled(Vector3.new(4.4, 4.5, 4.1), sx, sy, sz), frame(origin, Vector3.new(0, 24.4, 0.15), sx, sy, sz), BODY_DARK, Enum.PartType.Cylinder).Orientation = Vector3.new(0, 0, 90)
-	sphere(parent, "Cranium", scaled(Vector3.new(5.6, 3.9, 4.4), sx, sy, sz), frame(origin, Vector3.new(0, 27.05, -0.65), sx, sy, sz), BODY)
+	part(parent, "Neck", scaled(Vector3.new(5.0, 4.8, 4.7), sx, sy, sz), frame(origin, Vector3.new(0, 24.65, 0.35), sx, sy, sz), BODY_DARK, Enum.PartType.Cylinder).Orientation = Vector3.new(0, 0, 90)
+	sphere(parent, "OccipitalMass", scaled(Vector3.new(5.8, 4.5, 4.6), sx, sy, sz), frame(origin, Vector3.new(0, 27.0, 0.45), sx, sy, sz), BODY_DARK)
+	sphere(parent, "Cranium", scaled(Vector3.new(6.1, 4.25, 5.4), sx, sy, sz), frame(origin, Vector3.new(0, 27.15, -0.85), sx, sy, sz), BODY)
+	sphere(parent, "CrownDome", scaled(Vector3.new(5.35, 1.85, 4.7), sx, sy, sz), frame(origin, Vector3.new(0, 28.65, -0.85), sx, sy, sz) * CFrame.Angles(math.rad(-7), 0, 0), BODY)
 	for _, sign in ipairs({-1, 1}) do
-		sphere(parent, sign < 0 and "LeftCheekMass" or "RightCheekMass", scaled(Vector3.new(2.5, 2.25, 2.8), sx, sy, sz), frame(origin, Vector3.new(sign * 1.75, 26.25, -1.65), sx, sy, sz), BODY_DARK)
+		sphere(parent, sign < 0 and "LeftJawHinge" or "RightJawHinge", scaled(Vector3.new(2.85, 3.1, 3.1), sx, sy, sz), frame(origin, Vector3.new(sign * 1.75, 25.9, -1.35), sx, sy, sz), BODY_DARK)
+		sphere(parent, sign < 0 and "LeftCheekMass" or "RightCheekMass", scaled(Vector3.new(2.75, 2.45, 3.25), sx, sy, sz), frame(origin, Vector3.new(sign * 1.8, 26.55, -2.05), sx, sy, sz), BODY)
+		local brow = wedge(parent, sign < 0 and "LeftBrowRidge" or "RightBrowRidge", scaled(Vector3.new(2.65, 0.85, 2.9), sx, sy, sz), frame(origin, Vector3.new(sign * 1.45, 27.85, -2.75), sx, sy, sz) * CFrame.Angles(math.rad(-8), sign * math.rad(5), sign < 0 and math.rad(180) or 0), ARMOR)
+		brow:SetAttribute("ContourPart", true)
+		sphere(parent, sign < 0 and "LeftEyeSocket" or "RightEyeSocket", scaled(Vector3.new(1.25, 0.9, 0.65), sx, sy, sz), frame(origin, Vector3.new(sign * 2.05, 27.3, -3.15), sx, sy, sz), BODY_DARK)
+		local eye = sphere(parent, sign < 0 and "LeftEye" or "RightEye", scaled(Vector3.new(0.48, 0.36, 0.26), sx, sy, sz), frame(origin, Vector3.new(sign * 2.18, 27.32, -3.42), sx, sy, sz), ENERGY)
+		eye.Material = Enum.Material.Neon
 	end
-	wedge(parent, "PredatorBrow", scaled(Vector3.new(5.9, 1.4, 3.3), sx, sy, sz), frame(origin, Vector3.new(0, 28.15, -1.25), sx, sy, sz), ARMOR)
-	sphere(parent, "MuzzleMass", scaled(Vector3.new(4.2, 1.7, 3.0), sx, sy, sz), frame(origin, Vector3.new(0, 26.15, -2.9), sx, sy, sz), BODY_DARK)
-	wedge(parent, "NosePlane", scaled(Vector3.new(3.1, 0.75, 1.4), sx, sy, sz), frame(origin, Vector3.new(0, 26.4, -4.15), sx, sy, sz) * CFrame.Angles(0, math.rad(180), 0), ARMOR)
-	wedge(parent, "JawContour", scaled(Vector3.new(4.45, 1.05, 2.75), sx, sy, sz), frame(origin, Vector3.new(0, 25.15, -2.9), sx, sy, sz) * CFrame.Angles(0, math.rad(180), 0), BODY_DARK)
-	for _, sign in ipairs({-1, 1}) do
-		part(parent, sign < 0 and "LeftEye" or "RightEye", scaled(Vector3.new(0.6, 0.42, 0.32), sx, sy, sz), frame(origin, Vector3.new(sign * 2.0, 27.25, -3.25), sx, sy, sz), ENERGY, Enum.PartType.Ball).Material = Enum.Material.Neon
-	end
+	sphere(parent, "SnoutBridge", scaled(Vector3.new(4.65, 1.8, 4.1), sx, sy, sz), frame(origin, Vector3.new(0, 27.0, -3.35), sx, sy, sz) * CFrame.Angles(math.rad(-6), 0, 0), BODY)
+	sphere(parent, "UpperMuzzle", scaled(Vector3.new(4.35, 1.75, 3.25), sx, sy, sz), frame(origin, Vector3.new(0, 26.55, -4.65), sx, sy, sz), BODY_DARK)
+	sphere(parent, "NoseTip", scaled(Vector3.new(3.75, 1.25, 1.5), sx, sy, sz), frame(origin, Vector3.new(0, 26.7, -5.75), sx, sy, sz), ARMOR)
+	sphere(parent, "LowerJawRear", scaled(Vector3.new(5.0, 2.45, 3.8), sx, sy, sz), frame(origin, Vector3.new(0, 25.35, -2.55), sx, sy, sz), BODY_DARK)
+	sphere(parent, "LowerJawFront", scaled(Vector3.new(4.55, 1.9, 4.25), sx, sy, sz), frame(origin, Vector3.new(0, 25.15, -4.25), sx, sy, sz), BODY_DARK)
+	sphere(parent, "ChinMass", scaled(Vector3.new(4.15, 1.35, 3.25), sx, sy, sz), frame(origin, Vector3.new(0, 24.65, -4.35), sx, sy, sz), BODY_DARK)
+	part(parent, "MouthSeam", scaled(Vector3.new(4.0, 0.16, 3.0), sx, sy, sz), frame(origin, Vector3.new(0, 25.72, -4.45), sx, sy, sz), Color3.fromRGB(12, 13, 12))
 	if armorLevel >= 2 then
 		for _, sign in ipairs({-1, 1}) do
 			corner(parent, sign < 0 and "LeftCrown" or "RightCrown", scaled(Vector3.new(2.5, 1.7 + armorLevel * 0.3, 2.4), sx, sy, sz), frame(origin, Vector3.new(sign * 2.45, 28.7, -0.1), sx, sy, sz) * CFrame.Angles(0, sign > 0 and math.rad(180) or 0, 0), ARMOR)
