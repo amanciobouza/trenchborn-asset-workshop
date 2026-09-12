@@ -379,6 +379,39 @@ local function applyStylizedMasses(model: Model, origin: CFrame)
 			for _, prefix in ipairs({"Finger_", "Knuckle_", "FingerPad_", "HandClaw_"}) do move(prefix .. i) end
 		end
 		sphere(model, side .. "ShoulderBridge", Vector3.new(3.3, 3.5, 4.0), origin * CFrame.new(sign * 3.9, 23.1, 0), BODY)
+
+		-- Broad shallow palm, short digits: a paw rather than a spherical fist.
+		local oldPalm = model:FindFirstChild(side .. "PalmMass")
+		if oldPalm then oldPalm:Destroy() end
+		roundedBox(model, side .. "Palm", Vector3.new(4.3, 2.6, 2.4), origin * CFrame.new(wrist + Vector3.new(0, -1.1, -0.2)), BODY_DARK, 0.48)
+		place("WristJoint", Vector3.new(2.9, 2.5, 2.4), wrist)
+		for i = 1, 3 do
+			local x = wrist.X + (i - 2) * 1.15
+			local base = Vector3.new(x, wrist.Y - 2.05, wrist.Z - 0.25)
+			local tip = base + Vector3.new(0, -0.75, -0.2)
+			local oldFinger = model:FindFirstChild(side .. "Finger_" .. i)
+			if oldFinger then oldFinger:Destroy() end
+			cylinderBetween(model, side .. "Finger_" .. i, base, tip, 0.95, origin, 1, 1, 1, BODY_DARK)
+			place("Knuckle_" .. i, Vector3.new(1.05, 0.85, 0.95), base)
+			place("FingerPad_" .. i, Vector3.new(0.95, 0.8, 0.95), tip)
+			place("HandClaw_" .. i, Vector3.new(0.72, 0.68, 1.35), tip + Vector3.new(0, -0.8, 0), CFrame.Angles(-math.pi/2, 0, 0))
+		end
+
+		-- Wider planted foot with a thick forefoot and substantial toe pads.
+		local footX = sign * 3.25
+		place("HeelMass", Vector3.new(4.4, 2.3, 4.3), Vector3.new(footX, 1.5, 0.15))
+		local oldForefoot = model:FindFirstChild(side .. "ForefootMass")
+		if oldForefoot then oldForefoot:Destroy() end
+		roundedBox(model, side .. "Forefoot", Vector3.new(4.9, 1.9, 4.0), origin * CFrame.new(footX, 1.15, -1.5), BODY_DARK, 0.5)
+		for i = 1, 3 do
+			local toeX = footX + (i - 2) * 1.4
+			local toe = model:FindFirstChild(side .. "Toe_" .. i)
+			if toe then toe:Destroy() end
+			cylinderBetween(model, side .. "Toe_" .. i, Vector3.new(toeX, 1.0, -2.3), Vector3.new(toeX, 0.95, -3.6), 1.2, origin, 1, 1, 1, BODY_DARK)
+			sphere(model, side .. "ToePad_" .. i, Vector3.new(1.25, 1.05, 1.5), origin * CFrame.new(toeX, 0.95, -3.35), BODY_DARK)
+			place("FrontClaw_" .. i, Vector3.new(0.95, 0.8, 1.75), Vector3.new(toeX, 0.65, -4.45), CFrame.Angles(math.rad(-8), 0, 0))
+		end
+		place("RearClaw", Vector3.new(0.85, 0.8, 1.7), Vector3.new(footX, 1.0, 2.3), CFrame.Angles(math.rad(-8), math.pi, 0))
 	end
 	local upperChest = model:FindFirstChild("UpperRibcage") :: BasePart
 	upperChest.Size = Vector3.new(11.3, 6.2, 6.6)
