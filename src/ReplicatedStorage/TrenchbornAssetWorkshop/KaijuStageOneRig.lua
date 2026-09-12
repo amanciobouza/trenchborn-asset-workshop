@@ -279,7 +279,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		if not looped then game:GetService("Debris"):AddItem(sound,5) end
 		return sound
 	end
-	local function feedback(kind,source)
+	local function feedback(kind,source,soundOnly)
 		local definition=audioPresets[kind]
 		if not owner or not definition then return end
 		local sound=makeSound(definition[1],source,definition[2],definition[3]*audioRandom:NextNumber(0.96,1.04),false)
@@ -287,7 +287,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			local eq=Instance.new("EqualizerSoundEffect");eq.LowGain=3;eq.MidGain=-3;eq.HighGain=-12;eq.Parent=sound
 			game:GetService("Debris"):AddItem(sound,(kind=="Step" or kind=="RunStep") and 1.2 or 2.4)
 		end
-		feedbackRemote:FireClient(owner,kind=="Slam" and "Punch" or kind)
+		if not soundOnly then feedbackRemote:FireClient(owner,kind=="Slam" and "Punch" or kind) end
 	end
 	model:SetAttribute("RunRequested",false)
 	model:SetAttribute("Running",false)
@@ -1196,6 +1196,10 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			model:SetAttribute("FocusPhase",t<2 and "Charging" or t<4.5 and "Firing" or "Recovery")
 		end
 		if area then
+			if areaTime>=math.max(0,AREA_TIMING.Discharge-2) and not area.ImpulseSoundStarted then
+				area.ImpulseSoundStarted=true
+				feedback("Discharge",bones.Torso,true)
+			end
 			local hold=1-areaRecover
 			local tension=areaCharge*hold
 			local tremor=math.sin(areaTime*38)*0.55*areaCharge^4*hold
@@ -1227,7 +1231,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			if areaTime>=AREA_TIMING.Discharge and not area.Hit then
 				area.Hit=true
 				if area.ChargeSound then area.ChargeSound:Destroy() end
-				feedback("Discharge",bones.Torso)
+				if feedbackRemote then feedbackRemote:FireClient(owner,"Discharge") end
 				combat.AreaImpact(area.Point)
 			end
 		end
