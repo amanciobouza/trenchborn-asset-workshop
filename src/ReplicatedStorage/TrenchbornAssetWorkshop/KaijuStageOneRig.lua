@@ -481,7 +481,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		local mouth=Instance.new("Attachment")
 		mouth.Name="FocusMouth";mouth.CFrame=offset;mouth.Parent=upper
 		focus.Mouth=mouth
-		focus.ChargeSound=makeSound(127373754810578,mouth,0.12,0.82,false)
+		focus.ChargeSound=makeSound(1336756135,mouth,0.12,0.82,false)
 		if focus.ChargeSound then game:GetService("TweenService"):Create(focus.ChargeSound,TweenInfo.new(1.8),{Volume=0.42,PlaybackSpeed=1.1}):Play() end
 		focus.Orb.CFrame=upper.CFrame*offset
 		focus.Orb.Anchored=false;focus.Orb.Massless=true
