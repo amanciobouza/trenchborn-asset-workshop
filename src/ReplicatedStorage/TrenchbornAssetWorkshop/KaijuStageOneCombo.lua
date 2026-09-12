@@ -36,14 +36,16 @@ local attacks = {
 		-- Reach low, close the grip and visibly load against resistance.
 		{0.38,tear(-34,48,12,40,4,-4,0),2.6},
 		{0.62,tear(-38,44,16,44,2,-7,0),3.0},
-		{0.84,tear(-39,42,20,44,0,-9,0),3.0},
-		-- Release in one large upward/outward pull; chest and head rise with it.
-		{1.08,tear(-5,82,12,-68,10,-18,24),0.7},
-		{1.20,tear(1,86,10,-74,14,-20,28),0.5},
-		-- Let the arms settle slightly, then hold the broad finishing silhouette.
-		{1.38,tear(-4,76,18,-66,9,-14,22),0.8},
-		{1.60,tear(-4,76,18,-66,9,-14,22),0.8},
-		{2.15,{},0},
+		-- Lift the closed grip in front of the chest/eyes before tearing.
+		{0.92,tear(-5,100,30,70,5,-9,-20),0.5},
+		{1.08,tear(-5,100,30,70,5,-11,-20),0.5},
+		-- Shoulder roll lifts the arms to the sides. Yaw alone left them low.
+		{1.34,tear(-5,10,15,-10,8,-18,85),0.3},
+		{1.46,tear(-3,0,12,-8,10,-20,95),0.2},
+		-- Hold both hands above the shoulders in a broad, raised finishing pose.
+		{1.64,tear(-5,15,18,-10,7,-14,85),0.4},
+		{1.90,tear(-5,15,18,-10,7,-14,85),0.4},
+		{2.45,{},0},
 	}},
 }
 function Combo.new()
