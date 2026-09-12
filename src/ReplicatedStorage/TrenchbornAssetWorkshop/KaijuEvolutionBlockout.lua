@@ -609,8 +609,8 @@ local function dressStageOne(model: Model)
 				item.Material = Enum.Material.Neon
 				item.Color = index <= 3 and Color3.fromRGB(176, 140, 28) or Color3.fromRGB(130, 107, 29)
 				item.Transparency = 0
-			elseif string.match(name, "^DorsalShield_") then
-				item.Material = Enum.Material.SmoothPlastic
+			elseif string.match(name, "^DorsalShield_") or string.find(name, "Armor") or name == "LeftForearmShield" or name == "RightForearmShield" then
+				item.Material = Enum.Material.Basalt
 				item.Color = Color3.fromRGB(39, 45, 56)
 			elseif string.find(name, "Claw") then
 				item.Material = Enum.Material.SmoothPlastic
@@ -630,7 +630,7 @@ local function dressStageOne(model: Model)
 	model:SetAttribute("PipelinePhase", 5)
 	model:SetAttribute("QualityGateB", "ApprovedByUser")
 	model:SetAttribute("ApprovedGeometryCommit", "9aedccac1428207b5fbba954de9d941033989441")
-	model:SetAttribute("DressingRevision", "S1_MatteSkin_ControlledEnergy_01")
+	model:SetAttribute("DressingRevision", "S1_MatteSkin_BasaltArmor_02")
 	model:SetAttribute("DressingReview", "Pending")
 end
 
