@@ -4,6 +4,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local workshop = Workspace:WaitForChild("TrenchbornAssetWorkshop")
 local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
 local blockout = require(packageFolder:WaitForChild("KaijuEvolutionBlockout"))
+local stageOneRig = require(packageFolder:WaitForChild("KaijuStageOneRig"))
 
 local PREVIEW_NAME = "Kaiju_Evolution_Primitive_Blockout"
 
@@ -26,9 +27,15 @@ workshop.ChildAdded:Connect(function(instance)
 end)
 
 local preview = blockout.BuildStage(workshop, 1, CFrame.new(0, 0, 145))
+local kaiju = preview:FindFirstChild("Stage_1_Primal_Beast")
+assert(kaiju and kaiju:IsA("Model"), "Stage 1 model missing")
+stageOneRig.Attach(kaiju)
+preview:SetAttribute("PipelinePhase", 6)
+preview:SetAttribute("Purpose", "Stage 1 rig and idle review")
+preview:SetAttribute("QualityGateC", "Pending")
 workshop:SetAttribute("CurrentAsset", "Kaiju Stage 1 - Primal Beast")
-workshop:SetAttribute("CurrentPhase", 5)
-workshop:SetAttribute("QualityStatus", "Phase5_Stage1DressingReview")
+workshop:SetAttribute("CurrentPhase", 6)
+workshop:SetAttribute("QualityStatus", "Phase6_Stage1RigIdleReview")
 workshop:SetAttribute("GoldenMasterReviewTarget", preview.Name)
 
-print("[Kaiju Evolution] Stage 1 Primal Beast | Geometry approved | Phase 5 materials and energy ready for review")
+print("[Kaiju Evolution] Stage 1 Primal Beast | Geometry and materials approved | Phase 6 rig and idle running")
