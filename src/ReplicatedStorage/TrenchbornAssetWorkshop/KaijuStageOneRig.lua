@@ -393,13 +393,19 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			end
 		end
 		if jumpPose then
-			pose("Torso",jumpPose.Pitch,0,0)
+			local asymmetry=jumpPose.Asymmetry or 0
+			local leadSign=jump.Lead=="Left" and -1 or 1
+			pose("Torso",jumpPose.Pitch,leadSign*3*asymmetry,leadSign*4*asymmetry)
 			pose("Head",jumpPose.Head,0,0)
 			pose("Jaw",0,0,0)
 			for _,side in ipairs({"Left","Right"}) do
-				solveLeg(side,0,jumpPose.Tuck*scale,actualBob)
-				pose(side.."UpperArm",jumpPose.Arm,0,0)
-				pose(side.."Forearm",jumpPose.Elbow,0,0)
+				local lead=side==jump.Lead
+				local lift=lead and jumpPose.LeadLift or jumpPose.TrailLift
+				local forward=lead and jumpPose.LeadForward or jumpPose.TrailForward
+				solveLeg(side,(forward or 0)*scale,(lift or jumpPose.Tuck)*scale,actualBob)
+				-- The arm opposite the raised knee swings forward for balance.
+				pose(side.."UpperArm",jumpPose.Arm+(lead and -32 or 32)*asymmetry,0,0)
+				pose(side.."Forearm",jumpPose.Elbow+(lead and 0 or 14)*asymmetry,0,0)
 				pose(side.."Hand",-jumpPose.Pulse*8,0,0)
 			end
 			for i=1,tailCount do
