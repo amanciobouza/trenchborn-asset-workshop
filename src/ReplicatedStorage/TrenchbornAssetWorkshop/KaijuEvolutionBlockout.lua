@@ -269,6 +269,58 @@ local function buildDorsals(parent: Instance, origin: CFrame, sx: number, sy: nu
 	end
 end
 
+-- Approved animated-feature concept: large readable masses and embedded features.
+-- Stage 1 only; keep the other evolution stages unchanged until reviewed.
+local function buildStylizedHead(model: Model, origin: CFrame)
+	local function mass(name: string, size: Vector3, pos: Vector3, color: Color3): Part
+		return sphere(model, name, size, origin * CFrame.new(pos), color)
+	end
+	mass("Neck", Vector3.new(5.0, 5.0, 4.6), Vector3.new(0, 25.0, 0.1), BODY_DARK)
+	mass("Cranium", Vector3.new(5.6, 3.7, 5.4), Vector3.new(0, 27.3, -0.8), BODY)
+	mass("SnoutBridge", Vector3.new(4.6, 2.1, 4.7), Vector3.new(0, 27.0, -2.7), BODY)
+	mass("UpperMuzzle", Vector3.new(4.25, 1.65, 3.8), Vector3.new(0, 26.55, -4.2), BODY)
+	mass("LowerJawRear", Vector3.new(4.7, 2.4, 3.6), Vector3.new(0, 25.4, -1.8), BODY_DARK)
+	mass("LowerJawFront", Vector3.new(4.15, 1.6, 4.5), Vector3.new(0, 25.25, -3.65), BODY_DARK)
+	for _, sign in ipairs({-1, 1}) do
+		local side = sign < 0 and "Left" or "Right"
+		mass(side .. "CheekMass", Vector3.new(2.2, 2.4, 2.7), Vector3.new(sign * 1.85, 26.3, -1.8), BODY)
+		-- Side-facing eye stack: dark socket, golden iris, slit pupil, small highlight.
+		mass(side .. "EyeSocket", Vector3.new(0.38, 0.85, 1.15), Vector3.new(sign * 2.27, 27.12, -2.95), BODY_DARK)
+		local eye = mass(side .. "Eye", Vector3.new(0.18, 0.52, 0.64), Vector3.new(sign * 2.46, 27.12, -3.0), ENERGY)
+		eye.Material = Enum.Material.SmoothPlastic
+		mass(side .. "Pupil", Vector3.new(0.08, 0.37, 0.17), Vector3.new(sign * 2.55, 27.12, -3.05), Color3.fromRGB(12, 15, 10))
+		mass(side .. "EyeHighlight", Vector3.new(0.06, 0.10, 0.10), Vector3.new(sign * 2.60, 27.26, -3.13), Color3.fromRGB(255, 242, 185))
+		local brow = mass(side .. "BrowRidge", Vector3.new(1.1, 0.65, 2.5), Vector3.new(sign * 2.0, 27.7, -2.8), BODY_DARK)
+		brow.CFrame *= CFrame.Angles(math.rad(-7), sign * math.rad(5), 0)
+		mass(side .. "Nostril", Vector3.new(0.2, 0.2, 0.36), Vector3.new(sign * 1.35, 26.85, -5.48), BODY_DARK)
+	end
+end
+
+local function applyStylizedMasses(model: Model, origin: CFrame)
+	-- Remove the ladder-like belly and small pectoral beads from this generated model.
+	for _, name in ipairs({"SternumMass", "ClavicleMass", "LeftPectoral", "RightPectoral", "BellyBand_1", "BellyBand_2", "BellyBand_3", "BellyBand_4"}) do
+		local old = model:FindFirstChild(name)
+		if old then old:Destroy() end
+	end
+	sphere(model, "BellyShield", Vector3.new(6.2, 6.8, 2.5), origin * CFrame.new(0, 19.1, -2.25), BELLY)
+	for _, sign in ipairs({-1, 1}) do
+		local side = sign < 0 and "Left" or "Right"
+		sphere(model, side .. "Pectoral", Vector3.new(5.65, 5.1, 3.0), origin * CFrame.new(sign * 2.35, 22.65, -2.55), BELLY)
+		sphere(model, side .. "Deltoid", Vector3.new(4.8, 4.8, 4.5), origin * CFrame.new(sign * 4.7, 22.0, -0.1), BODY)
+		sphere(model, side .. "BicepsMass", Vector3.new(3.6, 5.0, 3.7), origin * CFrame.new(sign * 5.15, 19.35, -0.25), BODY)
+		sphere(model, side .. "ForearmMass", Vector3.new(4.0, 4.8, 3.9), origin * CFrame.new(sign * 5.35, 15.0, -0.6), BODY)
+		local palm = model:FindFirstChild(side .. "PalmMass") :: BasePart
+		palm.Size = Vector3.new(4.3, 3.5, 3.8)
+	end
+	for _, item in ipairs(model:GetDescendants()) do
+		if item:IsA("BasePart") and item.Material ~= Enum.Material.Neon then
+			item.Material = Enum.Material.SmoothPlastic
+		end
+	end
+	model:SetAttribute("ArtDirection", "PixarInspired_PrimitiveMaquette")
+	model:SetAttribute("HeadGeometryMode", "VisualEllipsoids_NoCSG")
+end
+
 local function buildStage(parent: Instance, stage: Stage, index: number, origin: CFrame): Model
 	local model = Instance.new("Model")
 	model.Name = stage.name
@@ -311,7 +363,11 @@ local function buildStage(parent: Instance, stage: Stage, index: number, origin:
 	sphere(model, "SacralMass", scaled(Vector3.new(7.4, 6.3, 7.2), sx, sy, sz), frame(origin, Vector3.new(0, 15.0, 3.15), sx, sy, sz), BODY_DARK)
 	sphere(model, "TailRootMass", scaled(Vector3.new(6.4, 5.6, 8.0), sx, sy, sz), frame(origin, Vector3.new(0, 13.1, 5.1), sx, sy, sz) * CFrame.Angles(math.rad(-15), 0, 0), BODY_DARK)
 
-	buildHead(model, origin, sx, sy, sz, stage.armor)
+	if index == 1 then
+		buildStylizedHead(model, origin)
+	else
+		buildHead(model, origin, sx, sy, sz, stage.armor)
+	end
 	buildArm(model, "Left", -1, origin, sx, sy, sz, stage.armor)
 	buildArm(model, "Right", 1, origin, sx, sy, sz, stage.armor)
 
@@ -351,6 +407,10 @@ local function buildStage(parent: Instance, stage: Stage, index: number, origin:
 				wedge(model, string.format("CalderaRib_%d_%d", rib, sign), scaled(Vector3.new(3.2, 0.8, 1.1), sx, sy, sz), frame(origin, Vector3.new(sign * 1.8, 24.0 - rib * 1.05, -3.35), sx, sy, sz) * CFrame.Angles(0, sign * math.rad(18), sign * math.rad(10)), ARMOR)
 			end
 		end
+	end
+
+	if index == 1 then
+		applyStylizedMasses(model, origin)
 	end
 
 	-- Normalize every stage to the agreed target height. This preserves the
