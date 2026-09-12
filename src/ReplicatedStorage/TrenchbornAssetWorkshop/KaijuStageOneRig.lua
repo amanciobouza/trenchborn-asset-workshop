@@ -145,18 +145,60 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		model:SetAttribute("AnimationMode", "Automatic")
 	end
 	local scale = model:GetScale()
+	local function rotateBetween(a,b)
+		local x,y=a.Unit,b.Unit
+		local dot=math.clamp(x:Dot(y),-1,1)
+		local axis=x:Cross(y)
+		if axis.Magnitude<0.0001 then
+			if dot>0 then return CFrame.identity end
+			axis=x:Cross(math.abs(x.Y)<0.9 and Vector3.yAxis or Vector3.xAxis)
+		end
+		return CFrame.fromAxisAngle(axis.Unit,math.acos(dot))
+	end
+	local pelvisTurn=CFrame.identity
+	local hipYaw,hipRoll=0,0
 	local legs = {}
 	for _, side in ipairs({"Left", "Right"}) do
 		local hip = rootRest:PointToObjectSpace(bones[side .. "Thigh"].Position)
 		local knee = rootRest:PointToObjectSpace(bones[side .. "Shin"].Position)
 		local hock = rootRest:PointToObjectSpace(bones[side .. "Hock"].Position)
 		local a, b = knee - hip, hock - knee
-		legs[side] = {offset = hock - hip, upper = math.sqrt(a.Y*a.Y + a.Z*a.Z),
+		legs[side] = {hip=hip,offset = hock - hip, upper = math.sqrt(a.Y*a.Y + a.Z*a.Z),
 			lower = math.sqrt(b.Y*b.Y + b.Z*b.Z), upperAngle = math.atan2(-a.Z, -a.Y),
 			lowerAngle = math.atan2(-b.Z, -b.Y)}
 	end
 	local function solveLeg(side, forwardOffset, lift, bob)
 		local leg = legs[side]
+		if math.abs(hipYaw)+math.abs(hipRoll)>0.0001 then
+			-- Foot targets stay in the unturned ground frame while the pelvis moves above them.
+			local hip=pelvisTurn*rest[side.."Thigh"]
+			local target=leg.hip+leg.offset+Vector3.new(0,lift-bob,forwardOffset)
+			local delta=target-hip.Position
+			local a,b=rest[side.."Shin"].Position,rest[side.."Hock"].Position
+			local lengthA,lengthB=a.Magnitude,b.Magnitude
+			local reach=lengthA+lengthB-0.12*scale
+			local horizontal=Vector3.new(delta.X,0,delta.Z)
+			local horizontalReach=math.sqrt(math.max(0,reach*reach-delta.Y*delta.Y))
+			if horizontal.Magnitude>horizontalReach then
+				delta=horizontal.Unit*horizontalReach+Vector3.new(0,delta.Y,0)
+			end
+			local distance=math.clamp(delta.Magnitude,math.abs(lengthA-lengthB)+0.001,lengthA+lengthB-0.001)
+			local direction=delta.Unit
+			local hint=-Vector3.zAxis
+			local bend=hint-direction*hint:Dot(direction)
+			if bend.Magnitude<0.001 then bend=Vector3.yAxis-direction*direction.Y end
+			local along=(lengthA^2+distance^2-lengthB^2)/(2*distance)
+			local knee=direction*along+bend.Unit*math.sqrt(math.max(0,lengthA^2-along^2))
+			local thighRotation=rotateBetween(a,hip:VectorToObjectSpace(knee))
+			local kneeFrame=hip*thighRotation*rest[side.."Shin"]
+			local shinRotation=rotateBetween(b,kneeFrame:VectorToObjectSpace(direction*distance-knee))
+			local hockFrame=kneeFrame*shinRotation*rest[side.."Hock"]
+			motors[side.."Thigh"].C0=rest[side.."Thigh"]*thighRotation
+			motors[side.."Shin"].C0=rest[side.."Shin"]*shinRotation
+			motors[side.."Hock"].C0=rest[side.."Hock"]*hockFrame.Rotation:Inverse()
+			motors[side.."Foot"].C0=rest[side.."Foot"]
+			return
+		end
 		local y, z = leg.offset.Y + lift - bob, leg.offset.Z + forwardOffset
 		-- During the first frames of a long step the pelvis is still lowering.
 		-- Limit horizontal reach until it settles, keeping the foot on the floor
@@ -218,19 +260,11 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	local area,areaReadyAt=nil,0
 	local focusColor=Color3.fromRGB(65,225,255)
 	local supportPalmNormal=bones.LeftHand.CFrame:VectorToObjectSpace(get("LeftPalmCoreZ").CFrame.LookVector)
-	local function rotateBetween(a,b)
-		local x,y=a.Unit,b.Unit
-		local dot=math.clamp(x:Dot(y),-1,1)
-		local axis=x:Cross(y)
-		if axis.Magnitude<0.0001 then
-			if dot>0 then return CFrame.identity end
-			axis=x:Cross(math.abs(x.Y)<0.9 and Vector3.yAxis or Vector3.xAxis)
-		end
-		return CFrame.fromAxisAngle(axis.Unit,math.acos(dot))
-	end
 	local function braceLeftHand(ground,bob,weight)
-		local pelvis=movementRoot.CFrame*rootOffset*CFrame.new(0,bob,0)
-		local shoulder=pelvis*motors.Torso.C0*rest.LeftUpperArm
+		local pelvis=movementRoot.CFrame*rootOffset*CFrame.new(0,bob,0)*pelvisTurn
+		local torso=motors.Torso.C0
+		local counterTorso=CFrame.new(torso.Position)*pelvisTurn:Inverse()*torso.Rotation
+		local shoulder=pelvis*counterTorso*rest.LeftUpperArm
 		local target=ground:PointToWorldSpace(Vector3.new(-6,2.2,-7)*scale)
 		local delta=target-shoulder.Position
 		local a,b=rest.LeftForearm.Position,rest.LeftHand.Position
@@ -480,6 +514,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		for name, m in pairs(motors) do m.C0 = rest[name] end
 		if rootJoint then rootJoint.C0 = rootOffset else bones.Pelvis.CFrame = rootRest end
 		smoothedBob, walkCycle = 0, 0
+		hipYaw,hipRoll=0,0;pelvisTurn=CFrame.identity
 		wasWalking,stopAge=false,nil;walkFeet,lastWalkUpper={},{}
 		previousMode,transitionLeft="Idle",0
 		runRequested,runBlend=false,0;runContacts={}
@@ -658,10 +693,17 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		if area then bob=-7.2*areaCharge*(1-areaRecover)*scale end
 		local blend = 1-math.exp(-poseDt/0.10)
 		smoothedBob = smoothedBob + (bob-smoothedBob)*blend
+		local hipWeight=not special and (walking and 1 or stopWeight) or 0
+		-- The pelvis leads the stride; the ribcage counters above it.
+		local targetYaw=-math.sin(gaitPhase-0.15)*(6+3*runBlend)*fade*hipWeight
+		local targetRoll=math.sin(gaitPhase-0.45)*(2.5+1.0*runBlend)*fade*hipWeight
+		hipYaw=hipYaw+(targetYaw-hipYaw)*blend
+		hipRoll=hipRoll+(targetRoll-hipRoll)*blend
+		pelvisTurn=CFrame.Angles(0,math.rad(hipYaw),math.rad(hipRoll))
 		if rootJoint then
-			rootJoint.C0 = rootOffset * CFrame.new(0, smoothedBob, 0)
+			rootJoint.C0 = rootOffset * CFrame.new(0, smoothedBob, 0)*pelvisTurn
 		else
-			bones.Pelvis.CFrame = rootRest * CFrame.new(0, smoothedBob, 0)
+			bones.Pelvis.CFrame = rootRest * CFrame.new(0, smoothedBob, 0)*pelvisTurn
 		end
 		local actualBob = smoothedBob
 		if walking then
@@ -893,6 +935,9 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				area.Hit=true;combat.AreaImpact(area.Point)
 			end
 		end
+		-- Preserve the intended chest/head aim while the hips turn underneath.
+		local torso=motors.Torso.C0
+		motors.Torso.C0=CFrame.new(torso.Position)*pelvisTurn:Inverse()*torso.Rotation
 		-- Blend mode changes and step accents rather than snapping joint poses.
 		local enteringMotion=transitionLeft>0 and (mode=="Walk" or mode=="Run" or mode=="Attack")
 		local motionBlend=enteringMotion and 1-math.exp(-poseDt/0.14) or blend
