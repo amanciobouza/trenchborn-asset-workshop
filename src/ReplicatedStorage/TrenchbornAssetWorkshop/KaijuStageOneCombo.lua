@@ -3,17 +3,18 @@ local Combo = {}
 local function hook(side, sign)
 	local other = side == "Left" and "Right" or "Left"
 	local function pose(pitch, yaw, arm, elbow, cross)
-		return {Torso={pitch,yaw,sign*3}, Head={-pitch*0.4,-yaw*0.5,0},
+		return {Torso={pitch,yaw,sign*3}, Head={-pitch*0.2,-yaw*0.5,0},
 			[side.."UpperArm"]={arm,sign*cross,-sign*12},
 			[side.."Forearm"]={elbow,0,0}, [side.."Hand"]={0,sign*12,0},
 			[other.."UpperArm"]={22,0,0}, [other.."Forearm"]={30,0,0}}
 	end
-	return {{0,{}}, {0.28,pose(-3,-sign*18,12,48,-22)},
-		{0.44,pose(-13,sign*20,70,8,35)},
-		{0.53,pose(-14,sign*23,74,6,40)}, {0.95,{}}}
+	-- Raise the striking arm, then sweep diagonally down toward a low roof.
+	return {{0,{},0}, {0.28,pose(-10,-sign*18,65,40,-22),0.8},
+		{0.44,pose(-32,sign*20,42,4,28),2.3},
+		{0.53,pose(-35,sign*23,34,2,34),2.5}, {0.95,{},0}}
 end
 local function both(pitch, arm, elbow, spread)
-	return {Torso={pitch,0,0}, Head={-pitch*0.4,0,0}, Jaw={-5,0,0},
+	return {Torso={pitch,0,0}, Head={-pitch*0.2,0,0}, Jaw={-5,0,0},
 		LeftUpperArm={arm,-spread,10}, RightUpperArm={arm,spread,-10},
 		LeftForearm={elbow,0,0}, RightForearm={elbow,0,0},
 		LeftHand={0,-18,0}, RightHand={0,18,0}}
@@ -21,11 +22,11 @@ end
 local attacks = {
 	{Name="Links", Frames=hook("Left",-1)},
 	{Name="Rechts", Frames=hook("Right",1)},
-	{Name="Beide", Frames={{0,{}},{0.34,both(2,15,48,-12)},
-		{0.54,both(-17,76,6,16)},{0.65,both(-18,80,5,18)},{1.2,{}}}},
-	{Name="Zerreissen", Frames={{0,{}},{0.38,both(-13,72,20,40)},
-		{0.54,both(-14,76,18,42)},{0.78,both(3,52,32,-48)},
-		{0.92,both(4,48,36,-52)},{1.45,{}}}},
+	{Name="Beide", Frames={{0,{},0},{0.34,both(-5,125,20,-8),0.4},
+		{0.54,both(-36,48,2,16),2.8},{0.65,both(-38,40,0,18),3.0},{1.2,{},0}}},
+	{Name="Zerreissen", Frames={{0,{},0},{0.38,both(-34,48,12,40),2.6},
+		{0.54,both(-36,46,10,42),2.8},{0.78,both(-22,38,24,-48),2.0},
+		{0.92,both(-18,34,28,-52),1.8},{1.45,{},0}}},
 }
 function Combo.new()
 	local state = {Index=0, Started=0, Ended=-math.huge, Active=false, Queued=false}
@@ -74,7 +75,8 @@ function Combo.new()
 			result[name]={p[1]+(q[1]-p[1])*u,p[2]+(q[2]-p[2])*u,p[3]+(q[3]-p[3])*u}
 		end
 		local weight=math.max(0,math.min(1,t/0.12,(duration-t)/0.25))
-		return result, weight, attack.Name, self.Index
+		local crouch=(a[3] or 0)+((b[3] or 0)-(a[3] or 0))*u
+		return result, weight, attack.Name, self.Index, crouch
 	end
 	return state
 end
