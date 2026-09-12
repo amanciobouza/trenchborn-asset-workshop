@@ -567,28 +567,30 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	end
 	local function updateDefeat(dt)
 		local t=os.clock()-defeat.Started
-		local kneel=smooth(t/0.7)
-		local fall=smooth((t-0.55)/1.35)
+		local kneel=smooth(t/0.45)
+		local fall=smooth((t-0.25)/1.55)
 		local settle=smooth((t-1.8)/0.8)
 		local function fallen(name,x,y,z)
 			local target=rest[name]*CFrame.Angles(math.rad(x),math.rad(y),math.rad(z))
 			motors[name].C0=motors[name].C0:Lerp(target,1-math.exp(-dt/0.09))
 		end
-		fallen("Torso",-24*kneel-12*fall,0,-8*fall)
-		fallen("Head",-18*kneel-12*settle,0,8*fall)
-		fallen("Jaw",-12*kneel,0,0)
+		-- Lose support and pitch forward; the legs remain long instead of folding up.
+		fallen("Torso",-8*kneel*(1-fall),0,0)
+		fallen("Head",-8*kneel*(1-settle),12*settle,0)
+		fallen("Jaw",-10*kneel,0,0)
 		for _,side in ipairs({"Left","Right"}) do
 			local sign=side=="Left" and -1 or 1
-			fallen(side.."Thigh",65*kneel,0,sign*8*fall)
-			fallen(side.."Shin",-100*kneel,0,0)
-			fallen(side.."Hock",35*kneel,0,0)
-			fallen(side.."Foot",-12*kneel,0,0)
-			fallen(side.."UpperArm",45*kneel+15*fall,0,-sign*(18*kneel-10*settle))
-			fallen(side.."Forearm",35*kneel+15*settle,0,0)
-			fallen(side.."Hand",-15*kneel,0,0)
+			fallen(side.."Thigh",8*kneel*(1-fall),0,sign*7*fall)
+			fallen(side.."Shin",-14*kneel*(1-fall),0,0)
+			fallen(side.."Hock",6*kneel*(1-fall),0,0)
+			fallen(side.."Foot",-8*fall,0,0)
+			fallen(side.."UpperArm",75*fall,0,-sign*(18*fall+8*settle))
+			fallen(side.."Forearm",18*fall*(1-settle),0,0)
+			fallen(side.."Hand",-10*fall,0,0)
 		end
-		for i=1,tailCount do fallen("Tail"..i,-1.5*kneel,(2+i*0.15)*fall,0) end
-		local rootPose=defeat.Root*CFrame.new(0,-7*kneel*scale,0)*CFrame.Angles(0,0,math.rad(78*fall))
+		-- Counter the body's forward rotation so the long tail trails along the ground.
+		for i=1,tailCount do fallen("Tail"..i,i==1 and 66*fall or 0,(i==1 and 3 or 0.3)*fall,0) end
+		local rootPose=defeat.Root*CFrame.new(0,-1.2*kneel*scale,-4*fall*scale)*CFrame.Angles(math.rad(-88*fall),0,0)
 		-- Only the corpse uses geometry-to-floor settling; live locomotion stays unchanged.
 		local frames={Pelvis=rootPose}
 		local function worldBone(name)
@@ -626,6 +628,12 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				game:GetService("Debris"):AddItem(dust,0.75)
 			end
 		end
+		local dark=smooth(t/1.15)
+		for _,glow in ipairs(defeat.Glow) do
+			glow.Part.Color=glow.Color:Lerp(Color3.fromRGB(25,32,40),dark)
+			if dark>=1 then glow.Part.Material=Enum.Material.SmoothPlastic end
+		end
+		for _,light in ipairs(defeat.Lights) do light.Part.Brightness=light.Brightness*(1-dark) end
 		damageFlash.FillTransparency=1-0.6*math.max(0,1-t/0.4)
 		model:SetAttribute("ReactionState",t<0.7 and "Buckling" or t<2.6 and "Falling" or "Defeated")
 		if t>=2.6 then defeat.Settled=true end
@@ -647,6 +655,14 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				local ground=workspace:Raycast(movementRoot.Position+Vector3.new(0,30*scale,0),Vector3.new(0,-150*scale,0),params)
 				defeat={Started=os.clock(),Root=movementRoot.CFrame*rootJoint.C0,
 					Ground=ground and ground.Position.Y or (movementRoot.CFrame*rootOffset).Position.Y-15.7*scale}
+				defeat.Glow={};defeat.Lights={}
+				for _,part in ipairs(model:GetDescendants()) do
+					if part:IsA("BasePart") and part.Material==Enum.Material.Neon then
+						table.insert(defeat.Glow,{Part=part,Color=part.Color})
+					elseif part:IsA("PointLight") or part:IsA("SpotLight") or part:IsA("SurfaceLight") then
+						table.insert(defeat.Lights,{Part=part,Brightness=part.Brightness})
+					end
+				end
 				model:SetAttribute("Running",false);model:SetAttribute("RunRequested",false)
 				model:SetAttribute("ComboStep",0);model:SetAttribute("AttackName","")
 			else
@@ -1111,8 +1127,15 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				motors.Torso.C0=motors.Torso.C0*CFrame.Angles(math.rad(strength*weight),0,math.rad(hitReaction.Side*strength*0.35*weight))
 				motors.Head.C0=motors.Head.C0*CFrame.Angles(math.rad(-strength*0.6*weight),0,0)
 				if hitReaction.Heavy then
+					if jump.Phase=="Idle" and humanoid.FloorMaterial~=Enum.Material.Air then
+						local step=smooth(age/0.22)*(1-smooth((age-0.4)/0.25))
+						local lift=age<0.22 and math.sin(math.pi*age/0.22)^2*0.9 or 0
+						local catchSide=hitReaction.Side>0 and "Right" or "Left"
+						solveLeg(catchSide,2.8*step*scale,lift*scale,actualBob)
+					end
 					for _,side in ipairs({"Left","Right"}) do
-						motors[side.."Forearm"].C0=motors[side.."Forearm"].C0*CFrame.Angles(math.rad(15*weight),0,0)
+						motors[side.."UpperArm"].C0=motors[side.."UpperArm"].C0*CFrame.Angles(math.rad(55*weight),0,0)
+						motors[side.."Forearm"].C0=motors[side.."Forearm"].C0*CFrame.Angles(math.rad(35*weight),0,0)
 					end
 				end
 			end
