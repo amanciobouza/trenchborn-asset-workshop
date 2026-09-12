@@ -341,24 +341,47 @@ local function applyStylizedMasses(model: Model, origin: CFrame)
 		local palm = model:FindFirstChild(side .. "PalmMass") :: BasePart
 		palm.Size = Vector3.new(4.3, 3.5, 3.8)
 	end
-	-- Move complete arms together; never separate the wrist, fingers or claws.
-	local armNames = {"ShoulderJoint", "UpperArm", "ElbowJoint", "Forearm", "WristJoint", "PalmMass", "Deltoid", "BicepsMass", "ForearmMass", "ForearmFlexor"}
+	-- Broad stance comes from abducted upper arms, not horizontal shoulder spacers.
 	for _, sign in ipairs({-1, 1}) do
 		local side = sign < 0 and "Left" or "Right"
-		local offset = origin:VectorToWorldSpace(Vector3.new(sign * 3.8, 0, 0))
-		local function move(name: string)
+		local shoulder = Vector3.new(sign * 5.7, 22.5, -0.1)
+		local elbow = Vector3.new(sign * 9.2, 18.0, -0.4)
+		local wrist = Vector3.new(sign * 9.6, 13.3, -1.0)
+		local function place(name: string, size: Vector3, pos: Vector3, rotation: CFrame?)
 			local item = model:FindFirstChild(side .. name)
 			assert(item and item:IsA("BasePart"), "Missing arm part: " .. side .. name)
+			item.Size = size
+			item.CFrame = origin * CFrame.new(pos) * (rotation or CFrame.identity)
+		end
+		place("ShoulderJoint", Vector3.new(5.6, 5.6, 5.4), shoulder)
+		place("Deltoid", Vector3.new(6.4, 6.1, 5.9), shoulder)
+		place("ElbowJoint", Vector3.new(3.7, 3.7, 3.6), elbow)
+		local upperDirection = CFrame.lookAt(Vector3.zero, elbow - shoulder) * CFrame.Angles(math.pi/2, 0, 0)
+		local lowerDirection = CFrame.lookAt(Vector3.zero, wrist - elbow) * CFrame.Angles(math.pi/2, 0, 0)
+		place("BicepsMass", Vector3.new(4.4, 6.0, 4.2), (shoulder + elbow)/2, upperDirection)
+		place("ForearmMass", Vector3.new(5.1, 5.3, 4.9), (elbow + wrist)/2, lowerDirection)
+		place("ForearmFlexor", Vector3.new(3.6, 4.3, 3.3), (elbow + wrist)/2 + Vector3.new(0, -0.3, -0.9), lowerDirection)
+		for _, name in ipairs({"UpperArm", "Forearm"}) do
+			local old = model:FindFirstChild(side .. name)
+			if old then old:Destroy() end
+		end
+		cylinderBetween(model, side .. "UpperArm", shoulder, elbow, 3.8, origin, 1, 1, 1, BODY)
+		cylinderBetween(model, side .. "Forearm", elbow, wrist, 3.15, origin, 1, 1, 1, BODY)
+		local offset = origin:VectorToWorldSpace(wrist - Vector3.new(sign * 5.15, 12.7, -0.9))
+		local function move(name: string)
+			local item = model:FindFirstChild(side .. name)
+			assert(item and item:IsA("BasePart"), "Missing hand part: " .. side .. name)
 			item.CFrame += offset
 		end
-		for _, name in ipairs(armNames) do move(name) end
+		move("WristJoint")
+		move("PalmMass")
 		for i = 1, 3 do
 			for _, prefix in ipairs({"Finger_", "Knuckle_", "FingerPad_", "HandClaw_"}) do move(prefix .. i) end
 		end
-		sphere(model, side .. "ShoulderBridge", Vector3.new(6.5, 4.7, 4.9), origin * CFrame.new(sign * 5.6, 22.4, 0), BODY)
+		sphere(model, side .. "ShoulderBridge", Vector3.new(3.3, 3.5, 4.0), origin * CFrame.new(sign * 3.9, 23.1, 0), BODY)
 	end
 	local upperChest = model:FindFirstChild("UpperRibcage") :: BasePart
-	upperChest.Size = Vector3.new(13.3, 6.2, 6.6)
+	upperChest.Size = Vector3.new(11.3, 6.2, 6.6)
 	for _, item in ipairs(model:GetDescendants()) do
 		if item:IsA("BasePart") and item.Material ~= Enum.Material.Neon then
 			item.Material = Enum.Material.SmoothPlastic
