@@ -271,6 +271,27 @@ end
 
 -- Approved animated-feature concept: large readable masses and embedded features.
 -- Stage 1 only; keep the other evolution stages unchanged until reviewed.
+local function roundedBox(parent: Instance, name: string, size: Vector3, cf: CFrame, color: Color3, radius: number)
+	-- Exact rounded-box envelope: flat cores, tangent cylindrical edges,
+	-- spherical corners. No ellipsoid bulges through the flat faces.
+	local a, b, c = size.X / 2 - radius, size.Y / 2 - radius, size.Z / 2 - radius
+	assert(math.min(a, b, c) > 0, "Rounded box radius exceeds half-size")
+	part(parent, name .. "CoreX", Vector3.new(size.X, 2*b, 2*c), cf, color)
+	part(parent, name .. "CoreY", Vector3.new(2*a, size.Y, 2*c), cf, color)
+	part(parent, name .. "CoreZ", Vector3.new(2*a, 2*b, size.Z), cf, color)
+	for _, s in ipairs({-1, 1}) do
+		for _, t in ipairs({-1, 1}) do
+			local suffix = tostring(s) .. "_" .. tostring(t)
+			part(parent, name .. "EdgeX" .. suffix, Vector3.new(2*a, 2*radius, 2*radius), cf * CFrame.new(0, s*b, t*c), color, Enum.PartType.Cylinder)
+			part(parent, name .. "EdgeY" .. suffix, Vector3.new(2*b, 2*radius, 2*radius), cf * CFrame.new(s*a, 0, t*c) * CFrame.Angles(0, 0, math.pi/2), color, Enum.PartType.Cylinder)
+			part(parent, name .. "EdgeZ" .. suffix, Vector3.new(2*c, 2*radius, 2*radius), cf * CFrame.new(s*a, t*b, 0) * CFrame.Angles(0, math.pi/2, 0), color, Enum.PartType.Cylinder)
+			for _, u in ipairs({-1, 1}) do
+				part(parent, name .. "Corner" .. suffix .. "_" .. tostring(u), Vector3.new(2*radius, 2*radius, 2*radius), cf * CFrame.new(s*a, t*b, u*c), color, Enum.PartType.Ball)
+			end
+		end
+	end
+end
+
 local function buildStylizedHead(model: Model, origin: CFrame)
 	local function mass(name: string, size: Vector3, pos: Vector3, color: Color3): Part
 		return sphere(model, name, size, origin * CFrame.new(pos), color)
@@ -278,11 +299,9 @@ local function buildStylizedHead(model: Model, origin: CFrame)
 	mass("Neck", Vector3.new(5.0, 5.0, 4.6), Vector3.new(0, 25.0, 0.1), BODY_DARK)
 	mass("Cranium", Vector3.new(5.6, 3.7, 5.4), Vector3.new(0, 27.3, -0.8), BODY)
 	mass("SnoutBridge", Vector3.new(4.6, 2.1, 4.7), Vector3.new(0, 27.0, -2.7), BODY)
-	mass("UpperMuzzle", Vector3.new(4.25, 1.15, 3.8), Vector3.new(0, 26.55, -4.2), BODY)
-	part(model, "MuzzlePlanes", Vector3.new(3.65, 1.0, 3.2), origin * CFrame.new(0, 26.55, -4.2), BODY)
+	roundedBox(model, "UpperMuzzle", Vector3.new(4.05, 1.2, 3.6), origin * CFrame.new(0, 26.55, -4.2), BODY, 0.28)
 	mass("LowerJawRear", Vector3.new(4.7, 2.4, 3.6), Vector3.new(0, 25.4, -1.8), BODY_DARK)
-	mass("LowerJawFront", Vector3.new(4.15, 1.15, 4.5), Vector3.new(0, 25.3, -3.65), BODY_DARK)
-	part(model, "MandiblePlanes", Vector3.new(3.55, 1.05, 3.7), origin * CFrame.new(0, 25.3, -3.65), BODY_DARK)
+	roundedBox(model, "LowerJawFront", Vector3.new(3.9, 1.15, 4.25), origin * CFrame.new(0, 25.3, -3.65), BODY_DARK, 0.25)
 	for _, sign in ipairs({-1, 1}) do
 		local side = sign < 0 and "Left" or "Right"
 		mass(side .. "CheekMass", Vector3.new(2.2, 2.4, 2.7), Vector3.new(sign * 1.85, 26.3, -1.8), BODY)
@@ -297,7 +316,7 @@ local function buildStylizedHead(model: Model, origin: CFrame)
 		sphere(model, side .. "EyeHighlight", Vector3.new(0.10, 0.10, 0.06), eyeFrame * CFrame.new(-0.10, 0.14, -0.39), Color3.fromRGB(255, 242, 185))
 		local brow = mass(side .. "BrowRidge", Vector3.new(1.5, 0.65, 2.0), Vector3.new(sign * 1.95, 27.95, -3.2), BODY_DARK)
 		brow.CFrame *= CFrame.Angles(math.rad(-7), sign * math.rad(5), 0)
-		mass(side .. "Nostril", Vector3.new(0.26, 0.18, 0.12), Vector3.new(sign * 1.25, 26.7, -5.82), BODY_DARK)
+		mass(side .. "Nostril", Vector3.new(0.26, 0.18, 0.12), Vector3.new(sign * 1.25, 26.7, -6.0), BODY_DARK)
 	end
 end
 
@@ -322,6 +341,24 @@ local function applyStylizedMasses(model: Model, origin: CFrame)
 		local palm = model:FindFirstChild(side .. "PalmMass") :: BasePart
 		palm.Size = Vector3.new(4.3, 3.5, 3.8)
 	end
+	-- Move complete arms together; never separate the wrist, fingers or claws.
+	local armNames = {"ShoulderJoint", "UpperArm", "ElbowJoint", "Forearm", "WristJoint", "PalmMass", "Deltoid", "BicepsMass", "ForearmMass", "ForearmFlexor"}
+	for _, sign in ipairs({-1, 1}) do
+		local side = sign < 0 and "Left" or "Right"
+		local offset = origin:VectorToWorldSpace(Vector3.new(sign * 3.8, 0, 0))
+		local function move(name: string)
+			local item = model:FindFirstChild(side .. name)
+			assert(item and item:IsA("BasePart"), "Missing arm part: " .. side .. name)
+			item.CFrame += offset
+		end
+		for _, name in ipairs(armNames) do move(name) end
+		for i = 1, 3 do
+			for _, prefix in ipairs({"Finger_", "Knuckle_", "FingerPad_", "HandClaw_"}) do move(prefix .. i) end
+		end
+		sphere(model, side .. "ShoulderBridge", Vector3.new(6.5, 4.7, 4.9), origin * CFrame.new(sign * 5.6, 22.4, 0), BODY)
+	end
+	local upperChest = model:FindFirstChild("UpperRibcage") :: BasePart
+	upperChest.Size = Vector3.new(13.3, 6.2, 6.6)
 	for _, item in ipairs(model:GetDescendants()) do
 		if item:IsA("BasePart") and item.Material ~= Enum.Material.Neon then
 			item.Material = Enum.Material.SmoothPlastic
