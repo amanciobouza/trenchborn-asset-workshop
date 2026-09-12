@@ -261,7 +261,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	-- Reuse the workshop's existing Guardian/Sovereign audio assets, with heavier tuning.
 	local audioPresets={
 		Step={113663232024295,0.38,0.95},RunStep={113663232024295,0.52,1.0},
-		Land={113663232024295,0.7,0.8},Punch={140192907374090,0.9,1.0},Slam={97522871949213,0.65,1.0},
+		Land={113663232024295,0.7,0.8},Whoosh={140192907374090,0.9,1.0},Punch={97522871949213,0.5,1.15},Slam={97522871949213,0.65,1.0},
 		Finisher={71814605717939,0.7,1.0},Hit={9116684884,0.3,0.7},HeavyHit={9116684884,0.55,0.52},
 		Discharge={1040136448,1.25,1.0},
 		Defeat={9116684884,0.75,0.42},
@@ -283,14 +283,14 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		local definition=audioPresets[kind]
 		if not owner or not definition then return end
 		local sound=makeSound(definition[1],source,definition[2],definition[3]*audioRandom:NextNumber(0.96,1.04),false)
-		if sound and (kind=="Punch" or kind=="Slam" or kind=="Finisher") then
+		if sound and (kind=="Whoosh" or kind=="Punch" or kind=="Slam" or kind=="Finisher") then
 			sound.RollOffMinDistance=45*scale
 		end
 		if sound and kind=="Discharge" then
 			local bass=Instance.new("EqualizerSoundEffect")
 			bass.LowGain=8;bass.MidGain=-2;bass.HighGain=-4;bass.Parent=sound
 		end
-		if sound and kind~="FocusFire" and kind~="Discharge" and kind~="Punch" and kind~="Slam" and kind~="Finisher" then
+		if sound and kind~="FocusFire" and kind~="Discharge" and kind~="Whoosh" and kind~="Punch" and kind~="Slam" and kind~="Finisher" then
 			local eq=Instance.new("EqualizerSoundEffect");eq.LowGain=3;eq.MidGain=-3;eq.HighGain=-12;eq.Parent=sound
 			game:GetService("Debris"):AddItem(sound,(kind=="Step" or kind=="RunStep") and 1.2 or 2.4)
 		end
@@ -919,12 +919,14 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		end
 		local attackPose, attackWeight, attackName, attackIndex, attackCrouch = combo:Sample(os.clock())
 		for _, event in ipairs(combo:DrainEvents()) do
-			if event.Kind=="TearSound" then
+			if event.Kind=="Whoosh" then
+				feedback("Whoosh",event.Index==1 and bones.LeftHand or bones.RightHand,true)
+			elseif event.Kind=="TearSound" then
 				feedback("Finisher",bones.Torso,true)
 			else
 				if combat then combat.Handle(event.Kind,event.Index,event.FinisherUntil) end
 				if event.Kind=="Hit" then
-					if event.Index<4 then
+					if event.Index<4 and model:GetAttribute("LastAttackResult")=="Hit" then
 						local source=event.Index==1 and bones.LeftHand or event.Index==2 and bones.RightHand or bones.Torso
 						feedback(event.Index==3 and "Slam" or "Punch",source,true)
 					end
