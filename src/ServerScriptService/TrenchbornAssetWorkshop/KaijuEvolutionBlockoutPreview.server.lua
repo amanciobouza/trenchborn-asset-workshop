@@ -95,7 +95,7 @@ local function equip(player, character)
 	local weld = Instance.new("WeldConstraint")
 	weld.Part0, weld.Part1, weld.Parent = root, collider, collider
 
-	humanoid.WalkSpeed = 5
+	humanoid.WalkSpeed = 7
 	humanoid.AutoRotate = true
 	humanoid.CameraOffset = Vector3.new(0, 12, 0)
 	humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
