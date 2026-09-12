@@ -171,12 +171,13 @@ local function buildDorsals(parent: Instance, origin: CFrame, sx: number, sy: nu
 		{position = Vector3.new(0, 18.8, 3.7), scale = 1.30, lift = 0.0},
 		{position = Vector3.new(0, 15.5, 3.5), scale = 1.20, lift = 0.0},
 		{position = Vector3.new(0, 12.8, 4.5), scale = 1.00, lift = 0.0},
-		{position = Vector3.new(0, 10.3, 7.2), scale = 0.82, lift = 2.8},
-		{position = Vector3.new(0, 8.7, 10.0), scale = 0.68, lift = 2.6},
-		{position = Vector3.new(0, 7.3, 12.9), scale = 0.55, lift = 2.25},
-		{position = Vector3.new(0, 6.25, 15.4), scale = 0.43, lift = 1.9},
-		{position = Vector3.new(0, 5.55, 17.5), scale = 0.33, lift = 1.55},
-		{position = Vector3.new(0, 5.1, 19.0), scale = 0.24, lift = 1.25},
+		{position = Vector3.new(0, 11.8, 5.8), scale = 1.05, lift = 2.9},
+		{position = Vector3.new(0, 10.5, 7.8), scale = 0.95, lift = 2.9},
+		{position = Vector3.new(0, 9.1, 10.3), scale = 0.78, lift = 2.65},
+		{position = Vector3.new(0, 7.8, 12.9), scale = 0.62, lift = 2.3},
+		{position = Vector3.new(0, 6.8, 15.2), scale = 0.48, lift = 1.95},
+		{position = Vector3.new(0, 6.0, 17.2), scale = 0.36, lift = 1.6},
+		{position = Vector3.new(0, 5.4, 18.8), scale = 0.26, lift = 1.3},
 	}
 	for i, location in ipairs(locations) do
 		local pos = location.position
@@ -233,6 +234,12 @@ local function buildStage(parent: Instance, stage: Stage, index: number, origin:
 		cylinderBetween(model, "BellyBand_" .. band, Vector3.new(-halfWidth, y, -2.45), Vector3.new(halfWidth, y, -2.45), 0.62, origin, sx, sy, sz, BELLY)
 	end
 
+	-- Godzilla-like dorsal mass: the torso, pelvis, and tail root form one
+	-- continuous heavy volume instead of a feline S-curve.
+	sphere(model, "DorsalLumbarMass", scaled(Vector3.new(6.8, 7.2, 6.4), sx, sy, sz), frame(origin, Vector3.new(0, 18.0, 2.15), sx, sy, sz), BODY_DARK)
+	sphere(model, "SacralMass", scaled(Vector3.new(7.4, 6.3, 7.2), sx, sy, sz), frame(origin, Vector3.new(0, 15.0, 3.15), sx, sy, sz), BODY_DARK)
+	sphere(model, "TailRootMass", scaled(Vector3.new(6.4, 5.6, 8.0), sx, sy, sz), frame(origin, Vector3.new(0, 13.1, 5.1), sx, sy, sz) * CFrame.Angles(math.rad(-15), 0, 0), BODY_DARK)
+
 	buildHead(model, origin, sx, sy, sz, stage.armor)
 	buildArm(model, "Left", -1, origin, sx, sy, sz, stage.armor)
 	buildArm(model, "Right", 1, origin, sx, sy, sz, stage.armor)
@@ -263,7 +270,7 @@ local function buildStage(parent: Instance, stage: Stage, index: number, origin:
 		Vector3.new(0, 5.5, 18.2), Vector3.new(0, 5.0, 19.7),
 	}
 	for i = 1, #tailPoints - 1 do
-		cylinderBetween(model, string.format("TailSegment_%02d", i), tailPoints[i], tailPoints[i + 1], 5.1 - i * 0.5, origin, sx, sy, sz, BODY_DARK)
+		cylinderBetween(model, string.format("TailSegment_%02d", i), tailPoints[i], tailPoints[i + 1], 6.1 - i * 0.55, origin, sx, sy, sz, BODY_DARK)
 	end
 	buildDorsals(model, origin, sx, sy, sz, stage.armor, stage.energy)
 
