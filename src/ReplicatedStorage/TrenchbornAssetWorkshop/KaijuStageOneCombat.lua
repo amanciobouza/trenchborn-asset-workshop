@@ -91,7 +91,7 @@ function Combat.BuildRange(player, ground, character)
 		local floor=workspace:Raycast(cf.Position+Vector3.new(0,40,0),Vector3.new(0,-100,0),params)
 		if floor then cf=CFrame.new(cf.Position.X,floor.Position.Y,cf.Position.Z)*ground.Rotation end
 		local model=Instance.new("Model")
-		model.Name="Testgebaeude_"..i
+		model.Name="PracticeBuilding_"..i
 		model.Parent=range
 		local height=5+i*2
 		local body=part(model,"Building",Vector3.new(8,height,7),cf*CFrame.new(0,height/2,0),Color3.fromRGB(159,146,120))
@@ -112,7 +112,7 @@ function Combat.BuildRange(player, ground, character)
 		local title=Instance.new("TextLabel")
 		title.Size=UDim2.fromScale(1,0.65)
 		title.BackgroundTransparency=1
-		title.Text="Testgebäude"
+		title.Text="Practice Building"
 		title.TextScaled=true
 		title.TextColor3=Color3.new(1,1,1)
 		title.Parent=gui
