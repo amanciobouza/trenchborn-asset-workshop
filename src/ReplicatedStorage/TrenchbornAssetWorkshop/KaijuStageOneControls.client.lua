@@ -1,6 +1,7 @@
 local Players = game:GetService("Players")
 local CAS = game:GetService("ContextActionService")
 local UIS = game:GetService("UserInputService")
+local RunService=game:GetService("RunService")
 local player = Players.LocalPlayer
 local action = "KaijuStageOneAttack"
 local jumpAction="KaijuStageOneJump"
@@ -11,12 +12,26 @@ CAS:BindActionAtPriority(jumpAction,function(_,state)
 		local character=player.Character
 		local model=character and character:FindFirstChild("Stage_1_Primal_Beast")
 		local remote=model and model:FindFirstChild("RequestJump")
-		if remote then lastJump=os.clock();remote:FireServer() end
+		local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+		if remote and humanoid then lastJump=os.clock();remote:FireServer(humanoid.MoveDirection) end
 	end
 	return Enum.ContextActionResult.Sink
 end,true,3000,Enum.KeyCode.Space,Enum.KeyCode.ButtonA)
 CAS:SetTitle(jumpAction,"Jump")
 CAS:SetPosition(jumpAction,UDim2.new(1,-65,1,-100))
+local lastSteer=0
+local steering=RunService.Heartbeat:Connect(function()
+	if os.clock()-lastSteer<0.08 then return end
+	lastSteer=os.clock()
+	if UIS:GetFocusedTextBox() then return end
+	local character=player.Character
+	local model=character and character:FindFirstChild("Stage_1_Primal_Beast")
+	local phase=model and model:GetAttribute("JumpPhase")
+	if phase~="Air" and phase~="Windup" then return end
+	local humanoid=character:FindFirstChildOfClass("Humanoid")
+	local remote=model:FindFirstChild("SteerJump")
+	if remote and humanoid then remote:FireServer(humanoid.MoveDirection) end
+end)
 local lastRequest = -math.huge
 local function attack()
 	if UIS:GetFocusedTextBox() or os.clock()-lastRequest < 0.12 then return end
@@ -81,6 +96,7 @@ task.spawn(function()
 	end
 end)
 script.Destroying:Connect(function()
+	steering:Disconnect()
 	alive=false
 	characterConnection:Disconnect()
 	if availabilityConnection then availabilityConnection:Disconnect() end
