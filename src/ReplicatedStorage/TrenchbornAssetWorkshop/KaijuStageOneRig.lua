@@ -1,4 +1,4 @@
--- Phase 6: articulated Stage 1 with a restrained, server-visible idle preview.
+-- Phase 6: articulated Stage 1 with a restless, powerful idle preview.
 -- The anchored root is intentional; locomotion/gameplay are a later integration.
 local RunService = game:GetService("RunService")
 local Rig = {}
@@ -55,7 +55,12 @@ function Rig.Attach(model)
 		bone(side .. "Hock", get(side .. "HockJoint").Position, side .. "Shin")
 		bone(side .. "Foot", get(side .. "AnkleJoint").Position, side .. "Hock")
 	end
-	for i = 1, 7 do
+	local tailCount = 0
+	while model:FindFirstChild(string.format("TailSegment_%02d", tailCount + 1)) do
+		tailCount = tailCount + 1
+	end
+	assert(tailCount >= 7, "Incomplete tail")
+	for i = 1, tailCount do
 		local segment = get(string.format("TailSegment_%02d", i))
 		bone("Tail" .. i, segment.Position - segment.CFrame.RightVector * segment.Size.X/2,
 			i == 1 and "Pelvis" or "Tail" .. (i-1))
@@ -70,6 +75,7 @@ function Rig.Attach(model)
 	local pelvisNames = {PelvisCenter=true, SacralMass=true, TailRootMass=true}
 	local function starts(name, prefix) return string.sub(name, 1, #prefix) == prefix end
 	local function region(name)
+		if name == "TailTip" then return "Tail" .. tailCount end
 		if starts(name, "LowerJaw") then return "Jaw" end
 		if headNames[name] or starts(name, "UpperMuzzle") then return "Head" end
 		local tail = string.match(name, "^TailSegment_(%d+)$")
@@ -108,11 +114,11 @@ function Rig.Attach(model)
 	end
 	model.PrimaryPart = bones.Pelvis
 	model:SetAttribute("RigType", "CustomMotor6D_Stage1")
-	model:SetAttribute("RigJointCount", 24)
+	model:SetAttribute("RigJointCount", 17 + tailCount)
 	model:SetAttribute("PipelinePhase", 6)
 	model:SetAttribute("QualityGateC", "Pending")
 	model:SetAttribute("IdleEnabled", true)
-	model:SetAttribute("AnimationPreview", "Idle_01")
+	model:SetAttribute("AnimationPreview", "PowerIdle_02")
 	local elapsed, accumulator, stopped = 0, 0, false
 	local heartbeat, destroying
 	local function reset()
@@ -139,25 +145,33 @@ function Rig.Attach(model)
 		if accumulator < 1/30 then return end
 		accumulator = accumulator % (1/30)
 		local fade = math.min(elapsed/1.5, 1)
-		local breath = math.sin(elapsed * math.pi/2.4) * fade
-		local sway = math.sin(elapsed * math.pi/4.5) * fade
+		local breath = math.sin(elapsed * math.pi/1.4) * fade
+		local sway = math.sin(elapsed * math.pi/2.7) * fade
+		-- Smooth short accents: alternating shoulder tension and alert head turns.
+		local leftAccent = math.max(0, math.sin(elapsed * 0.95))^8 * fade
+		local rightAccent = math.max(0, math.sin(elapsed * 0.95 + 2.1))^8 * fade
+		local alert = math.sin(elapsed * 1.7) * math.max(0, math.sin(elapsed * 0.63))^4 * fade
 		local function pose(name, x, y, z)
 			-- C0 is used for this server preview so clients see the same pose.
 			motors[name].C0 = rest[name] * CFrame.Angles(math.rad(x), math.rad(y), math.rad(z))
 		end
-		pose("Torso", breath * 0.65, sway * 0.4, sway * 0.45)
-		pose("Head", -breath * 0.4, -sway * 0.7, -sway * 0.25)
+		pose("Torso", 1.2 * fade + breath * 1.8, sway * 1.8, sway * 1.0)
+		pose("Head", -breath * 1.1, -sway * 2.3 + alert * 4.5, -sway * 0.6)
+		pose("Jaw", math.max(0, breath) * 1.8, 0, 0)
 		for _, side in ipairs({"Left", "Right"}) do
 			local sign = side == "Left" and -1 or 1
-			pose(side .. "UpperArm", breath * 0.4, 0, -sign * breath * 0.5)
-			pose(side .. "Forearm", -breath * 0.65, 0, 0)
+			local accent = side == "Left" and leftAccent or rightAccent
+			pose(side .. "UpperArm", breath * 1.2 - accent * 2.5, sign * accent * 1.5, -sign * (breath * 1.2 + accent * 2.0))
+			pose(side .. "Forearm", -3.0 * fade - breath * 1.8 - accent * 4.0, 0, 0)
+			pose(side .. "Hand", -accent * 2.0, sign * accent * 1.5, 0)
 		end
-		for i = 1, 7 do
-			pose("Tail" .. i, 0, math.sin(elapsed * 0.85 - i * 0.35) * (0.35 + i*0.12) * fade, 0)
+		for i = 1, tailCount do
+			pose("Tail" .. i, 0, (math.sin(elapsed * 1.35 - i * 0.48) * (0.55 + i*0.14)
+				+ alert * 0.45) * fade, 0)
 		end
 	end)
 	destroying = model.Destroying:Connect(stop)
-	print(string.format("[Kaiju Rig] %d visible parts bound | 24 joints | Idle running | Set IdleEnabled=false to pause", #visuals))
+	print(string.format("[Kaiju Rig] %d visible parts bound | %d joints | Power idle running | Set IdleEnabled=false to pause", #visuals, 17 + tailCount))
 	return {Stop = stop, Motors = motors}
 end
 
