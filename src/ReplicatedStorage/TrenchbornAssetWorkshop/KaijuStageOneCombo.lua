@@ -48,8 +48,9 @@ local attacks = {
 		{2.45,{},0},
 	}},
 }
+local impactTimes = {0.44, 0.44, 0.54, 1.34}
 function Combo.new()
-	local state = {Index=0, Started=0, Ended=-math.huge, Active=false, Queued=false}
+	local state = {Index=0, Started=0, Ended=-math.huge, Active=false, Queued=false, Events={}}
 	function state:Request(now)
 		if self.Active then
 			local frames = attacks[self.Index].Frames
@@ -62,10 +63,17 @@ function Combo.new()
 		end
 		self.Index = now-self.Ended > 1.1 and 1 or self.Index%4+1
 		self.Started, self.Active, self.Queued = now, true, false
+		self.HitSent, self.GrabSent = false, false
 		return true
 	end
 	function state:Cancel()
 		self.Index, self.Active, self.Queued, self.Ended = 0, false, false, -math.huge
+		self.Events = {}
+	end
+	function state:DrainEvents()
+		local events = self.Events
+		self.Events = {}
+		return events
 	end
 	function state:Sample(now)
 		if not self.Active then return nil end
@@ -73,6 +81,15 @@ function Combo.new()
 		local frames = attack.Frames
 		local t = now-self.Started
 		local duration = frames[#frames][1]
+		-- Crossing markers (not equality checks) survives skipped animation frames.
+		if self.Index == 4 and t >= 0.62 and not self.GrabSent then
+			self.GrabSent = true
+			table.insert(self.Events, {Kind="Grab", Index=4})
+		end
+		if t >= impactTimes[self.Index] and not self.HitSent then
+			self.HitSent = true
+			table.insert(self.Events, {Kind="Hit", Index=self.Index})
+		end
 		if t >= duration then
 			self.Ended, self.Active = self.Started+duration, false
 			if self.Queued then
