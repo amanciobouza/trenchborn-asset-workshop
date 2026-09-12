@@ -178,6 +178,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	end
 	local function reset()
 		combo:Cancel()
+		if combat then combat.Cancel() end
 		model:SetAttribute("ComboStep", 0)
 		model:SetAttribute("AttackName", "")
 		for name, m in pairs(motors) do m.C0 = rest[name] end
@@ -255,7 +256,10 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		-- Keep the stance foot on the floor through the leg solver below.
 		local sinceLanding = ((cycle + STANCE/2)*2)%1
 		local compression = math.sin(math.pi*math.min(sinceLanding/0.32, 1))^2
-		if humanoid and humanoid.Health <= 0 then combo:Cancel() end
+		if humanoid and humanoid.Health <= 0 then
+			combo:Cancel()
+			if combat then combat.Cancel() end
+		end
 		local attackPose, attackWeight, attackName, attackIndex, attackCrouch = combo:Sample(os.clock())
 		for _, event in ipairs(combo:DrainEvents()) do
 			if combat then combat.Handle(event.Kind, event.Index) end
