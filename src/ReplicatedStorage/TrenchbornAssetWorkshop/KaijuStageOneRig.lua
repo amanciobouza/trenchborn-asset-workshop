@@ -1,9 +1,9 @@
 -- Phase 6: articulated Stage 1 with a restless, powerful idle preview.
--- The anchored root is intentional; locomotion/gameplay are a later integration.
+-- A movement root drives gameplay; without one this remains an anchored preview.
 local RunService = game:GetService("RunService")
 local Rig = {}
 
-function Rig.Attach(model)
+function Rig.Attach(model, movementRoot, humanoid)
 	assert(model:GetAttribute("EvolutionStage") == 1, "Stage 1 rig only")
 	assert(not model:FindFirstChild("Articulation"), "Rig already attached")
 	local function get(name)
@@ -122,6 +122,17 @@ function Rig.Attach(model)
 	model:SetAttribute("WalkCycleSeconds", 1.55)
 	model:SetAttribute("AnimationPreview", "WalkInPlace_01")
 	local rootRest = bones.Pelvis.CFrame
+	local rootJoint, rootOffset
+	if movementRoot then
+		rootOffset = movementRoot.CFrame:ToObjectSpace(rootRest)
+		rootJoint = Instance.new("Motor6D")
+		rootJoint.Name = "KaijuLocomotionRoot"
+		rootJoint.Part0, rootJoint.Part1 = movementRoot, bones.Pelvis
+		rootJoint.C0 = rootOffset
+		rootJoint.Parent = folder
+		bones.Pelvis.Anchored = false
+		model:SetAttribute("AnimationMode", "Automatic")
+	end
 	local scale = model:GetScale()
 	local legs = {}
 	for _, side in ipairs({"Left", "Right"}) do
@@ -151,10 +162,12 @@ function Rig.Attach(model)
 		motors[side .. "Foot"].C0 = rest[side .. "Foot"]
 	end
 	local elapsed, accumulator, stopped = 0, 0, false
+	local walkCycle, smoothedBob = 0, 0
 	local heartbeat, destroying
 	local function reset()
 		for name, m in pairs(motors) do m.C0 = rest[name] end
-		bones.Pelvis.CFrame = rootRest
+		if rootJoint then rootJoint.C0 = rootOffset else bones.Pelvis.CFrame = rootRest end
+		smoothedBob, walkCycle = 0, 0
 	end
 	local function stop()
 		if stopped then return end
@@ -205,17 +218,34 @@ function Rig.Attach(model)
 				+ alert * 0.45) * fade, 0)
 		end
 		local walking = model:GetAttribute("AnimationMode") == "Walk"
+		local speed = 0
+		if movementRoot then
+			local velocity = movementRoot.AssemblyLinearVelocity
+			speed = Vector3.new(velocity.X, 0, velocity.Z).Magnitude
+			walking = speed > 0.5 and humanoid.Health > 0
+				and humanoid.FloorMaterial ~= Enum.Material.Air
+		end
 		local duration = model:GetAttribute("WalkCycleSeconds")
 		if type(duration) ~= "number" or duration ~= duration then duration = 1.55 end
 		duration = math.clamp(duration, 1.1, 2.4)
-		local cycle = elapsed/duration
+		if walking then
+			-- Match the stance distance to actual travel, including slow starts.
+			local rate = movementRoot and math.min(speed, 20)/((3.5/0.62)*scale) or 1/duration
+			walkCycle = walkCycle + poseDt*rate
+		end
+		local cycle = walkCycle
 		local phase = cycle * math.pi * 2
 		local bob = walking and -0.18 * scale * (1-math.cos(phase*2)) * fade or 0
 		local blend = 1-math.exp(-poseDt/0.10)
-		bones.Pelvis.CFrame = bones.Pelvis.CFrame:Lerp(rootRest * CFrame.new(0, bob, 0), blend)
-		local actualBob = rootRest:PointToObjectSpace(bones.Pelvis.Position).Y
+		smoothedBob = smoothedBob + (bob-smoothedBob)*blend
+		if rootJoint then
+			rootJoint.C0 = rootOffset * CFrame.new(0, smoothedBob, 0)
+		else
+			bones.Pelvis.CFrame = rootRest * CFrame.new(0, smoothedBob, 0)
+		end
+		local actualBob = smoothedBob
 		if walking then
-			model:SetAttribute("AnimationPreview", "WalkInPlace_01")
+			model:SetAttribute("AnimationPreview", movementRoot and "PlayerWalk_01" or "WalkInPlace_01")
 			pose("Torso", 3.0*fade + math.cos(phase*2)*0.8*fade, math.sin(phase)*2.3*fade, math.sin(phase)*1.7*fade)
 			pose("Head", -1.8*fade, -math.sin(phase)*1.8*fade, -math.sin(phase)*0.8*fade)
 			pose("Jaw", 0, 0, 0)
