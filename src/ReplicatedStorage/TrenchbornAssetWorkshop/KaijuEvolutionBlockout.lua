@@ -52,6 +52,10 @@ local function part(parent: Instance, name: string, size: Vector3, cf: CFrame, c
 	return p
 end
 
+local function sphere(parent: Instance, name: string, size: Vector3, cf: CFrame, color: Color3): Part
+	return part(parent, name, size, cf, color, Enum.PartType.Ball)
+end
+
 local function wedge(parent: Instance, name: string, size: Vector3, cf: CFrame, color: Color3): WedgePart
 	local p = Instance.new("WedgePart")
 	p.Name = name
@@ -96,7 +100,8 @@ end
 
 local function buildFoot(parent: Instance, side: string, sign: number, origin: CFrame, sx: number, sy: number, sz: number)
 	local x = sign * 3.25
-	part(parent, side .. "FootMass", scaled(Vector3.new(3.5, 1.2, 4.2), sx, sy, sz), frame(origin, Vector3.new(x, 1.15, -0.55), sx, sy, sz), BODY_DARK)
+	sphere(parent, side .. "HeelMass", scaled(Vector3.new(3.6, 1.7, 3.6), sx, sy, sz), frame(origin, Vector3.new(x, 1.35, 0.15), sx, sy, sz), BODY_DARK)
+	sphere(parent, side .. "ForefootMass", scaled(Vector3.new(3.9, 1.35, 3.2), sx, sy, sz), frame(origin, Vector3.new(x, 1.05, -1.35), sx, sy, sz), BODY_DARK)
 	for i, lateral in ipairs({-1.05, 0, 1.05}) do
 		local toeX = x + lateral
 		cylinderBetween(parent, side .. "Toe_" .. i, Vector3.new(toeX, 0.9, -1.3), Vector3.new(toeX, 0.72, -3.0), 0.78, origin, sx, sy, sz, BODY_DARK)
@@ -112,9 +117,10 @@ local function buildArm(parent: Instance, side: string, sign: number, origin: CF
 	part(parent, side .. "ShoulderMass", scaled(Vector3.new(3.8, 3.8, 3.6), sx, sy, sz), frame(origin, shoulder + Vector3.new(0, -0.5, 0), sx, sy, sz), BODY, Enum.PartType.Ball)
 	cylinderBetween(parent, side .. "UpperArm", shoulder, elbow, 2.8, origin, sx, sy, sz, BODY)
 	cylinderBetween(parent, side .. "Forearm", elbow, wrist, 3.15, origin, sx, sy, sz, BODY)
-	part(parent, side .. "Hand", scaled(Vector3.new(2.7, 2.0, 2.8), sx, sy, sz), frame(origin, wrist + Vector3.new(0, -0.85, -0.25), sx, sy, sz), BODY_DARK)
+	sphere(parent, side .. "PalmMass", scaled(Vector3.new(2.9, 2.2, 2.7), sx, sy, sz), frame(origin, wrist + Vector3.new(0, -0.75, -0.2), sx, sy, sz), BODY_DARK)
 	for i = 1, 3 do
 		local fingerX = wrist.X + (i - 2) * 0.7
+		cylinderBetween(parent, side .. "Finger_" .. i, Vector3.new(fingerX, 11.75, -0.75), Vector3.new(fingerX, 11.25, -1.55), 0.62, origin, sx, sy, sz, BODY_DARK)
 		claw(parent, side .. "HandClaw_" .. i, Vector3.new(fingerX, 11.2, -2.0), 180, origin, sx, sy, sz)
 	end
 	if armorLevel >= 1 then
@@ -127,10 +133,14 @@ end
 
 local function buildHead(parent: Instance, origin: CFrame, sx: number, sy: number, sz: number, armorLevel: number)
 	part(parent, "Neck", scaled(Vector3.new(4.4, 4.5, 4.1), sx, sy, sz), frame(origin, Vector3.new(0, 24.4, 0.15), sx, sy, sz), BODY_DARK, Enum.PartType.Cylinder).Orientation = Vector3.new(0, 0, 90)
-	part(parent, "Skull", scaled(Vector3.new(5.7, 3.7, 4.5), sx, sy, sz), frame(origin, Vector3.new(0, 27.0, -1.0), sx, sy, sz), BODY)
+	sphere(parent, "Cranium", scaled(Vector3.new(5.6, 3.9, 4.4), sx, sy, sz), frame(origin, Vector3.new(0, 27.05, -0.65), sx, sy, sz), BODY)
+	for _, sign in ipairs({-1, 1}) do
+		sphere(parent, sign < 0 and "LeftCheekMass" or "RightCheekMass", scaled(Vector3.new(2.5, 2.25, 2.8), sx, sy, sz), frame(origin, Vector3.new(sign * 1.75, 26.25, -1.65), sx, sy, sz), BODY_DARK)
+	end
 	wedge(parent, "PredatorBrow", scaled(Vector3.new(5.9, 1.4, 3.3), sx, sy, sz), frame(origin, Vector3.new(0, 28.15, -1.25), sx, sy, sz), ARMOR)
-	wedge(parent, "Muzzle", scaled(Vector3.new(4.4, 1.65, 3.0), sx, sy, sz), frame(origin, Vector3.new(0, 26.25, -3.05), sx, sy, sz) * CFrame.Angles(0, math.rad(180), 0), BODY_DARK)
-	part(parent, "Jaw", scaled(Vector3.new(4.45, 1.05, 2.75), sx, sy, sz), frame(origin, Vector3.new(0, 25.15, -2.9), sx, sy, sz), BODY_DARK)
+	sphere(parent, "MuzzleMass", scaled(Vector3.new(4.2, 1.7, 3.0), sx, sy, sz), frame(origin, Vector3.new(0, 26.15, -2.9), sx, sy, sz), BODY_DARK)
+	wedge(parent, "NosePlane", scaled(Vector3.new(3.1, 0.75, 1.4), sx, sy, sz), frame(origin, Vector3.new(0, 26.4, -4.15), sx, sy, sz) * CFrame.Angles(0, math.rad(180), 0), ARMOR)
+	wedge(parent, "JawContour", scaled(Vector3.new(4.45, 1.05, 2.75), sx, sy, sz), frame(origin, Vector3.new(0, 25.15, -2.9), sx, sy, sz) * CFrame.Angles(0, math.rad(180), 0), BODY_DARK)
 	for _, sign in ipairs({-1, 1}) do
 		part(parent, sign < 0 and "LeftEye" or "RightEye", scaled(Vector3.new(0.6, 0.42, 0.32), sx, sy, sz), frame(origin, Vector3.new(sign * 2.0, 27.25, -3.25), sx, sy, sz), ENERGY, Enum.PartType.Ball).Material = Enum.Material.Neon
 	end
@@ -170,15 +180,23 @@ local function buildStage(parent: Instance, stage: Stage, index: number, origin:
 	local sy = stage.height
 	local sz = stage.volume / (stage.height * stage.shoulders)
 
-	part(model, "PelvisCore", scaled(Vector3.new(7.2, 4.5, 5.5), sx, sy, sz), frame(origin, Vector3.new(0, 15.8, 0.35), sx, sy, sz), BODY)
-	part(model, "AbdomenCore", scaled(Vector3.new(6.2, 4.6, 4.8), sx, sy, sz), frame(origin, Vector3.new(0, 19.0, -0.1), sx, sy, sz), BODY_DARK)
-	part(model, "ChestCore", scaled(Vector3.new(8.6, 6.4, 5.8), sx, sy, sz), frame(origin, Vector3.new(0, 22.2, -0.15), sx, sy, sz), BODY)
+	-- Organic body regions are sculpted from overlapping rounded masses. Each
+	-- volume has a clear anatomical job instead of acting as one torso block.
+	sphere(model, "PelvisCenter", scaled(Vector3.new(6.2, 4.4, 5.4), sx, sy, sz), frame(origin, Vector3.new(0, 15.7, 0.45), sx, sy, sz), BODY_DARK)
+	sphere(model, "LowerAbdomen", scaled(Vector3.new(5.6, 3.8, 4.7), sx, sy, sz), frame(origin, Vector3.new(0, 18.0, 0.0), sx, sy, sz), BODY_DARK)
+	sphere(model, "UpperAbdomen", scaled(Vector3.new(6.4, 4.2, 5.0), sx, sy, sz), frame(origin, Vector3.new(0, 20.25, -0.1), sx, sy, sz), BODY)
+	sphere(model, "LowerRibcage", scaled(Vector3.new(7.7, 4.5, 5.5), sx, sy, sz), frame(origin, Vector3.new(0, 22.0, 0.0), sx, sy, sz), BODY)
+	sphere(model, "UpperRibcage", scaled(Vector3.new(9.1, 4.8, 5.8), sx, sy, sz), frame(origin, Vector3.new(0, 23.3, 0.15), sx, sy, sz), BODY)
+	cylinderBetween(model, "ClavicleMass", Vector3.new(-4.3, 23.6, -0.45), Vector3.new(4.3, 23.6, -0.45), 2.15, origin, sx, sy, sz, BODY)
 	for _, sign in ipairs({-1, 1}) do
-		part(model, sign < 0 and "LeftPectoral" or "RightPectoral", scaled(Vector3.new(4.5, 4.2, 2.0), sx, sy, sz), frame(origin, Vector3.new(sign * 2.25, 22.0, -3.0), sx, sy, sz), BELLY, Enum.PartType.Ball)
-		part(model, sign < 0 and "LeftHipMass" or "RightHipMass", scaled(Vector3.new(4.4, 4.6, 4.7), sx, sy, sz), frame(origin, Vector3.new(sign * 2.45, 15.1, 0.2), sx, sy, sz), BODY, Enum.PartType.Ball)
+		sphere(model, sign < 0 and "LeftPectoral" or "RightPectoral", scaled(Vector3.new(4.8, 3.5, 2.2), sx, sy, sz), frame(origin, Vector3.new(sign * 2.25, 22.6, -2.65), sx, sy, sz), BELLY)
+		sphere(model, sign < 0 and "LeftFlank" or "RightFlank", scaled(Vector3.new(3.5, 4.0, 4.1), sx, sy, sz), frame(origin, Vector3.new(sign * 2.2, 19.4, 0.2), sx, sy, sz), BODY_DARK)
+		sphere(model, sign < 0 and "LeftHipMass" or "RightHipMass", scaled(Vector3.new(4.4, 4.6, 4.7), sx, sy, sz), frame(origin, Vector3.new(sign * 2.45, 15.1, 0.2), sx, sy, sz), BODY)
 	end
 	for band = 1, 4 do
-		wedge(model, "BellyBand_" .. band, scaled(Vector3.new(5.4 - band * 0.25, 0.7, 1.15), sx, sy, sz), frame(origin, Vector3.new(0, 21.3 - band * 1.1, -2.7), sx, sy, sz) * CFrame.Angles(0, math.rad(180), 0), BELLY)
+		local y = 21.15 - band * 1.0
+		local halfWidth = 2.45 - band * 0.1
+		cylinderBetween(model, "BellyBand_" .. band, Vector3.new(-halfWidth, y, -2.45), Vector3.new(halfWidth, y, -2.45), 0.62, origin, sx, sy, sz, BELLY)
 	end
 
 	buildHead(model, origin, sx, sy, sz, stage.armor)
