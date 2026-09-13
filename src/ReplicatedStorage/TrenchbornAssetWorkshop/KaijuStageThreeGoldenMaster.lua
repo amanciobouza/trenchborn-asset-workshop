@@ -67,7 +67,8 @@ local function shinPlate(model,name,cf)
  -- Both corner apexes point down the shin; never flip local Y to mirror a side.
  stone(model,name.."Core",Vector3.new(2.16,2.65,0.8),cf,"Part")
  local size=Vector3.new(0.96,3.4,0.8)
- local right=CFrame.new(1.02,-0.20,0)*CFrame.Angles(math.pi,0,0)
+ -- Roll the facet 180 degrees around its downward long axis: reverse front/back.
+ local right=CFrame.new(1.02,-0.20,0)*CFrame.Angles(math.pi,0,0)*CFrame.Angles(0,math.pi,0)
  stone(model,name.."Facet1",size,cf*right)
  -- Reflect across plate-local X. Swapping corner base axes X/Z restores a
  -- right-handed frame, with matching size swap so depth stays depth in world space.
@@ -191,7 +192,7 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending")
   model:SetAttribute("QualityGateC","Pending")
-  model:SetAttribute("GeometryRevision","S3_ConformingHipRibArmor_04")
+  model:SetAttribute("GeometryRevision","S3_OutwardShinFacets_05")
   model:SetAttribute("VisualTarget","Approved Stage 3 front/side/back concept; lateral rib armor amendment")
   model:SetAttribute("Purpose","Stage 3 geometry review; anchored candidate")
   model.Parent=parent
