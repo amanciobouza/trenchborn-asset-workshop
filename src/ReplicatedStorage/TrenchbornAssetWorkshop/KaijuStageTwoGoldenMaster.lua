@@ -162,8 +162,11 @@ function Builder.Build(parent,ground)
    }
    for i,tip in ipairs(tips) do
     newPart(model,"CornerWedgePart",side.."ForearmArmorElbowExtension_"..i,
-     Vector3.new(tip.Width,tip.Thickness,tip.Length),
-     guard*CFrame.new(tip.X,(tip.Thickness-1.5)/2,-(length+tip.Length)/2+0.25))
+     -- Local +Y (the apex) points along guard -Z, from wrist past elbow.
+     -- Swap height/depth to preserve the longitudinal length after rotation.
+     Vector3.new(tip.Width,tip.Length,tip.Thickness),
+     guard*CFrame.new(tip.X,(tip.Thickness-1.5)/2,-(length+tip.Length)/2+0.25)
+      *CFrame.Angles(-math.pi/2,0,0))
    end
   end
   local currentHeight=model.Cranium.Position.Y+model.Cranium.Size.Y/2-soles(model)
@@ -191,7 +194,7 @@ function Builder.Build(parent,ground)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending")
   model:SetAttribute("QualityGateC","Pending")
-  model:SetAttribute("GeometryRevision","S2_StormHunter_LoweredHead_10")
+  model:SetAttribute("GeometryRevision","S2_StormHunter_LongitudinalCornerTips_11")
   model:SetAttribute("VisualTarget","Storm Hunter concept approved in conversation")
   model:SetAttribute("HeightRatioToStageOne",(currentHeight*model:GetScale()-headDrop)/sourceHeight)
   model:SetAttribute("Purpose","Stage 2 geometry review; anchored, no gameplay rig")
