@@ -1,4 +1,4 @@
-# Primal Beast — portable package 1.2.0
+# Primal Beast — portable package 1.2.1
 
 ## Import into another Roblox project
 
@@ -79,3 +79,11 @@ Scaling is a build-time option: rebuild/reinstall to change it. Do not call Scal
 ## Release 1.2.0
 
 Includes build-time Scale, a narrower raised torso collider, an animation-only ground probe for slopes, and lowered resting arms with reduced hand twist. The original ApprovedRevision identifies the previously approved baseline; QualityGateC and RuntimeReview are pending for the updated runtime. Export structure and exact embedded sources were verified; Roblox Studio and target-project gameplay testing remain outstanding. Existing target-game CombatFactory, HUD and camera integrations are retained when replacing the package folder.
+
+## Release 1.2.1: procedural pose ownership
+
+The rig now exclusively owns the tagged Kaiju Motor6D joints. Server and client clear additive Animator Transform values in PreSimulation while preserving the authored C0/C1 poses. This addresses the integration failure path where avatar animation is added to the Kaiju shoulders and wrists. Disabling Animate alone does not provide this isolation. No additional wrist-angle compensation was added.
+
+KaijuStageOneJumpMotor is the always-installed pose-and-jump runtime, including with InstallInput=false and EnableRemotes=false. Its pose guard starts independently of jump remote discovery, covers replicated Kaijus, and handles late joint arrival/removal. Only TrenchbornProceduralJoint-tagged joints are affected. The rig removes its tags on Stop; the client disconnects on destruction.
+
+Replace the complete package folder and restart Play. Source/package checks passed; Stage 1 and Stage 2 still require a target-project playtest at Scale=1, InstallInput=false: idle, walk, run, attacks, respawn and unequip/re-equip. The target game must not directly overwrite Kaiju joint C0/C1. PoseOwnershipRevision=ProceduralC0_01 identifies the updated runtime.
