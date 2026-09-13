@@ -3,14 +3,14 @@ local RunService=game:GetService("RunService")
 local Players=game:GetService("Players")
 local Builder=require(script.Parent:WaitForChild("KaijuEvolutionBlockout"))
 local Rig=require(script.Parent:WaitForChild("KaijuStageOneRig"))
-local Installer={Version="1.2.3",ApprovedRevision="e835a34d4d65a8a73a895da704d2f960190e047e"}
+local Installer={Version="1.3.0",ApprovedRevision="e835a34d4d65a8a73a895da704d2f960190e047e"}
 local installations=setmetatable({}, {__mode="k"})
 local NAME="Stage_1_Primal_Beast"
 local function stamp(model)
  model:SetAttribute("PipelinePhase",7)
  model:SetAttribute("QualityGateB","ApprovedByUser")
  model:SetAttribute("QualityGateC","Pending")
- model:SetAttribute("RuntimeReview","Pending_TerrainIdleAndScale")
+ model:SetAttribute("RuntimeReview","Pending_ClientPresentation")
  model:SetAttribute("FinalInstallerVersion",Installer.Version)
  model:SetAttribute("ApprovedRevision",Installer.ApprovedRevision)
  model:SetAttribute("IntegrationReview","PendingInTargetProject")
@@ -111,7 +111,7 @@ function Installer.Install(character,options)
   humanoid.WalkSpeed=10;humanoid.AutoRotate=true
   humanoid.UseJumpPower=true;humanoid.JumpPower=0;humanoid.AutoJumpEnabled=false
   rig=Rig.Attach(model,root,humanoid,combat)
-  for _,name in ipairs({"RequestAttack","RequestJump","SetAirDirection","RequestFocus","RequestArea","SetRunning"}) do
+  for _,name in ipairs({"RequestAttack","RequestJump","SetAirDirection","RequestFocus","RequestArea","SetRunning","GetCombatFrame"}) do
    api[name]=function(...) if removed then return false end;return rig[name](...) end
   end
   if player and options.EnableRemotes~=false then

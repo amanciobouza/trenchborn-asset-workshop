@@ -1,26 +1,8 @@
--- Always-installed character runtime: procedural pose ownership and authorized jumps.
+-- Always-installed owner runtime: server-authorized jumps and landing rebound removal.
+-- Joint transforms belong exclusively to KaijuPresentationClient.
 -- No input bindings, camera or horizontal steering; required with InstallInput=false.
 local Players=game:GetService("Players")
 local RunService=game:GetService("RunService")
-local CollectionService=game:GetService("CollectionService")
-local POSE_TAG="TrenchbornProceduralJoint"
-local joints={}
-local function trackJoint(joint)
- if joint:IsA("Motor6D") then joints[joint]=true end
-end
--- Include other equipped Kaijus as well as the local character. Tags survive
--- replication/streaming; ordinary avatar joints and their Animator stay untouched.
-local jointAdded=CollectionService:GetInstanceAddedSignal(POSE_TAG):Connect(trackJoint)
-local jointRemoved=CollectionService:GetInstanceRemovedSignal(POSE_TAG):Connect(function(joint)
- joints[joint]=nil
-end)
-for _,joint in ipairs(CollectionService:GetTagged(POSE_TAG)) do trackJoint(joint) end
-local poseConnection=RunService.PreSimulation:Connect(function()
- -- Animator runs before this event. Server C0 remains the sole Kaiju pose source.
- for joint in pairs(joints) do
-  if joint.Parent then joint.Transform=CFrame.identity end
- end
-end)
 local player=Players.LocalPlayer
 local connection,contactConnection
 local alive=true
@@ -34,7 +16,12 @@ local function watch(character)
   local model,remote
   repeat
    if not alive or ticket~=generation or player.Character~=character then return end
-   model=character:FindFirstChild("Stage_3_Rift_Stalker") or character:FindFirstChild("Stage_1_Primal_Beast") or character:FindFirstChild("Stage_2_Storm_Hunter")
+   model=nil
+   for _,candidate in ipairs(character:GetChildren()) do
+    if candidate:IsA("Model") and candidate:GetAttribute("EvolutionStage") and candidate:FindFirstChild("KaijuJumpImpulse") then
+     model=candidate;break
+    end
+   end
    remote=model and model:FindFirstChild("KaijuJumpImpulse")
    if not remote then task.wait(0.03) end
   until remote or os.clock()>deadline
@@ -73,8 +60,6 @@ end
 local added=player.CharacterAdded:Connect(watch)
 if player.Character then watch(player.Character) end
 script.Destroying:Connect(function()
- poseConnection:Disconnect();jointAdded:Disconnect();jointRemoved:Disconnect()
- table.clear(joints)
  alive=false;generation=generation+1;added:Disconnect()
  if connection then connection:Disconnect() end
  if contactConnection then contactConnection:Disconnect() end

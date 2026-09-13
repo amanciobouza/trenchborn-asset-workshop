@@ -164,6 +164,7 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 		kaiju:SetAttribute("FinisherAvailable",false)
 	end
 	local scale=kaiju:GetScale()
+	kaiju:SetAttribute("KaijuAreaVisualRadius",AREA_RADIUS*scale)
 	local function release(restore)
 		if liftConnection then liftConnection:Disconnect();liftConnection=nil end
 		local target=held or reserved
@@ -188,9 +189,9 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 	local function lift(target)
 		local data=targets[target]
 		if not data then return end
-		local joints=kaiju:FindFirstChild("Articulation")
-		local left=joints and joints:FindFirstChild("LeftHand")
-		local right=joints and joints:FindFirstChild("RightHand")
+		local poseProvider=require(kaiju:FindFirstChild("KaijuPoseProvider").Value)
+		local left=poseProvider.GetCombatFrame(kaiju,"LeftHand")
+		local right=poseProvider.GetCombatFrame(kaiju,"RightHand")
 		if not left or not right then return end
 		if data.HeldBy~=holder or reserved~=target then return end
 		held=target
@@ -205,7 +206,10 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 				or os.clock()-started>2 or (root.Position-startRoot).Magnitude>6*scale then cancel();return end
 			local u=math.clamp((os.clock()-started)/0.3,0,1)
 			u=u*u*(3-2*u)
-			local grip=(left.Position+right.Position)/2
+			local leftFrame=poseProvider.GetCombatFrame(kaiju,"LeftHand")
+			local rightFrame=poseProvider.GetCombatFrame(kaiju,"RightHand")
+			if not leftFrame or not rightFrame then cancel();return end
+			local grip=(leftFrame.Position+rightFrame.Position)/2
 			local destination=CFrame.new(grip)*root.CFrame.Rotation
 			target:PivotTo(initial:Lerp(destination,u))
 		end)
@@ -240,11 +244,11 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 		if not data or data.Health<=0 or data.HeldBy or not target:IsDescendantOf(workspace) then return nil end
 		local from=root.Position+Vector3.new(0,4*scale-rootHeight,0)
 		local probes={from}
-		local joints=kaiju:FindFirstChild("Articulation")
+		local poseProvider=require(kaiju:FindFirstChild("KaijuPoseProvider").Value)
 		local sides=index==1 and {"Left"} or index==2 and {"Right"} or {"Left","Right"}
 		local preferred={}
 		for _,side in ipairs(sides) do
-			local hand=joints and joints:FindFirstChild(side.."Hand")
+			local hand=poseProvider.GetCombatFrame(kaiju,side.."Hand")
 			local palm=kaiju:FindFirstChild(side.."PalmCoreZ")
 			if hand then
 				-- Project the broad fist down to small roofs, keeping the original reach.
@@ -354,7 +358,7 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 	end
 	local function handle(kind,index,finisherUntil,from)
 		if humanoid.Health<=0 or not root:IsDescendantOf(workspace)
-			or humanoid.FloorMaterial==Enum.Material.Air then cancel();return end
+			or (humanoid.FloorMaterial==Enum.Material.Air and not ((kind=="Focus" or kind=="Area") and kaiju:GetAttribute("SpecialAttackLocked"))) then cancel();return end
 		if kind=="Grab" then
 			-- Never switch to a different building during the finisher.
 			if reserved and locked==reserved and reachable(reserved,true) then
@@ -433,60 +437,13 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 		return true -- Explicit confirmation for arm resistance; misses never trigger it.
 	end
 	local function areaImpact(origin)
-		if humanoid.Health<=0 or humanoid.FloorMaterial==Enum.Material.Air
+		if humanoid.Health<=0 or (humanoid.FloorMaterial==Enum.Material.Air and kaiju:GetAttribute("SpecialAttackLocked")~="Area")
 			or not root:IsDescendantOf(workspace) or (origin-root.Position).Magnitude>20*scale then return end
 		local victims={}
 		for target in pairs(targets) do if areaPoint(target,origin) then table.insert(victims,target) end end
 		for _,target in ipairs(victims) do handle("Area",0,target,origin) end
 		kaiju:SetAttribute("AreaHitCount",#victims)
-		local cyan=Color3.fromRGB(65,225,255)
-		local radius=AREA_RADIUS*scale
-		local diameter=radius*2
-		-- The discharge starts visibly at the large dorsal plates, then hits the ground.
-		for i=1,3 do
-			local plate=kaiju:FindFirstChild(string.format("DorsalShield_%02d",i))
-			if plate and plate:IsA("BasePart") then
-				local spark=part(workspace,"DorsalDischarge",Vector3.new(1,1,1)*(radius*0.08),CFrame.new(plate.Position),cyan)
-				spark.Shape=Enum.PartType.Ball;spark.Material=Enum.Material.Neon
-				spark.Transparency=0.3
-				spark.CanCollide=false;spark.CanTouch=false;spark.CanQuery=false;spark.CastShadow=false
-				local light=Instance.new("PointLight")
-				light.Color=cyan;light.Brightness=4;light.Range=math.min(60,radius*1.25);light.Parent=spark
-				-- Each pressure sphere reaches the attack's full diameter. Center the
-				-- expanded volume over the impact so its horizontal reach matches damage.
-				local expansion=0.45+i*0.04
-				TweenService:Create(spark,TweenInfo.new(expansion,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),
-					{Size=Vector3.new(diameter,diameter,diameter),
-						CFrame=CFrame.new(origin+Vector3.new(0,radius*0.2,0)),Transparency=0.65}):Play()
-				task.delay(expansion,function()
-					if not spark.Parent then return end
-					TweenService:Create(spark,TweenInfo.new(0.25),{Transparency=1}):Play()
-				end)
-				TweenService:Create(light,TweenInfo.new(expansion+0.25),{Brightness=0}):Play()
-				Debris:AddItem(spark,expansion+0.3)
-			end
-		end
-		local burst=part(workspace,"AreaGroundFlash",Vector3.new(3,0.25,3)*scale,CFrame.new(origin),cyan)
-		burst.Shape=Enum.PartType.Ball;burst.Material=Enum.Material.Neon
-		burst.CanCollide=false;burst.CanTouch=false;burst.CanQuery=false;burst.CastShadow=false
-		TweenService:Create(burst,TweenInfo.new(0.35),{Size=Vector3.new(diameter,0.3*scale,diameter),Transparency=1}):Play()
-		Debris:AddItem(burst,0.4)
-		for i=1,28 do
-			local angle=i*2.39996
-			local direction=Vector3.new(math.cos(angle),0,math.sin(angle))
-			local start=origin+direction*(4+i%6)*scale
-			local rock=part(workspace,"AreaDebris",Vector3.new(1.8+i%3*0.8,1.5+i%2*0.6,2.4)*scale,CFrame.new(start),Color3.fromRGB(90,95,102))
-			rock.CanCollide=false;rock.CanTouch=false;rock.CanQuery=false
-			local peak=start+(direction*(5+i%6)+Vector3.new(0,7+i%5,0))*scale
-			TweenService:Create(rock,TweenInfo.new(0.3,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),
-				{CFrame=CFrame.new(peak)*CFrame.Angles(i,0,i*0.4)}):Play()
-			task.delay(0.3,function()
-				if not rock.Parent then return end
-				TweenService:Create(rock,TweenInfo.new(0.6,Enum.EasingStyle.Quad,Enum.EasingDirection.In),
-					{CFrame=CFrame.new(peak+direction*4*scale-Vector3.new(0,11,0)*scale),Transparency=1}):Play()
-			end)
-			Debris:AddItem(rock,1)
-		end
+
 	end
 	kaiju.Destroying:Once(cancel)
 	return {Handle=handle,Cancel=cancel,PrepareFinisher=prepareFinisher,FocusAim=focusAim,SelectFocusTarget=selectFocusTarget,AreaImpact=areaImpact}

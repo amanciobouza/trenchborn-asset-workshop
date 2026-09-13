@@ -1,95 +1,68 @@
-# Primal Beast — portable package 1.2.3
+# Primal Beast — portable package 1.3.0
 
-## Import into another Roblox project
+This release moves procedural animation and Kaiju effects to client presentation. Geometry and the accepted animation definitions are retained. The earlier ApprovedRevision remains a baseline; the new runtime and target-project integration are pending playtest.
 
-1. Download `dist/KaijuStageOne.rbxmx` from this repository (GitHub **Raw / Download raw file**).
-2. Open the target place in Studio. Insert the model file into **ReplicatedStorage**, preserving folder name **TrenchbornKaijuStageOne**.
-3. Copy `examples/KaijuStageOne.server.lua` into a Script under **ServerScriptService**.
-4. Play. The example equips Stage 1 on join/respawn, in explicit movement-only preview mode.
+## Import or upgrade
 
-The package contains the current geometry, articulated rig, gait, jump, native Terrain-water swimming, attacks and sounds. It contains no Stage 2 preview, Guardian controller, workshop HUD/test targets or camera code. Seven scripts are embedded; there are no HTTP loaders or numeric `require(assetId)` dependencies. Roblox sound asset IDs still require permission to play in the target experience.
+1. Stop Play and download `dist/KaijuStageOne.rbxmx`.
+2. Replace the complete `ReplicatedStorage.TrenchbornKaijuStageOne` folder. Do not mix old rig, jump motor and new presentation modules.
+3. For a first installation, copy `examples/KaijuStageOne.server.lua` into ServerScriptService.
+4. Restart Play. The example uses PreviewOnly=true until the target game's combat adapter is supplied.
 
-## Input
+Only one stage may be equipped per character. Uninstall through its owning installer before switching stages; disable competing equip bootstraps. Package folders can coexist.
 
-`InstallInput=true` installs the optional client input script, including touch buttons. WASD/default Roblox movement; Shift run (L3/touch toggle); Space/A jump, held while swimming to rise; F/R2 or primary mouse attack; E/L2 focus; R/Y discharge. Input is removed on uninstall. All touch labels use TextScaled. Do not enable this option if the game's controller already binds these actions.
-
-The installer preserves the target project's camera settings. Configure your game's camera for this large character separately. The old workshop camera offsets are deliberately not imported.
-
-## Enable real building damage
-
-The example uses `PreviewOnly=true`: punches animate but do not damage buildings; focus has no target; area has its charging animation but no game-specific explosion/damage implementation. To enable gameplay, remove PreviewOnly and supply `CombatFactory(model, root, humanoid, rootHeight)` returning your game's adapter. No practice-building registration is installed automatically.
-
-Adapter methods use dot calls:
-
-| Method | Required behavior |
-| --- | --- |
-| Handle(kind,index,targetOrDeadline,origin) | Handle Hit, Grab, Land and Focus. Return true only on a confirmed hit; set model LastAttackResult to Hit/Miss for audio. Hit step 3 receives finisher deadline; Focus receives target and mouth origin. |
-| Cancel() | Release any held/reserved buildings; safe to repeat. |
-| PrepareFinisher() | Reserve a reachable building only if the rip-apart blow will destroy it; return boolean. |
-| SelectFocusTarget(origin) | Return a target handle or nil. |
-| FocusAim(target,origin) | Return hit position and visibility boolean. |
-| AreaImpact(origin) | Apply the area attack and its world explosion effects once. |
-| Destroy() | Optional cleanup of adapter-owned resources. |
-
-The existing `KaijuStageOneCombat.lua` in the workshop repository demonstrates the adapter implementation but is not embedded in the portable package: it only damages workshop-registered targets. Building registration, damage values, rewards and persistence remain owned by the target game.
-
-## Server and custom client integration
-
-`local model, api = Installer.Install(character, options)` after appearance/scaling finishes. Server methods: RequestAttack, RequestJump(direction?), SetAirDirection(direction), SetRunning(boolean), RequestFocus, RequestArea, Destroy. Destroy or Installer.Uninstall(character) restores avatar visibility and modified movement properties. Reinstall for each new character; a duplicate active installation is rejected.
-
-For player characters, remotes under the installed model validate owner, payload and rate: RequestAttack, RequestJump, SteerJump, SetRunning, RequestFocus, RequestArea. Set EnableRemotes=false when only a trusted server controller drives the API (incompatible with InstallInput=true). Never forward unvalidated client requests to the server API yourself.
-
-Custom input should send flat MoveDirection on jump, release running on focus loss, and leave normal Roblox movement enabled in the air. SteerJump remains accepted for compatibility but no longer overrides native movement. Swimming ascent is native client Humanoid:Move with an upward component while Jump is held. State attributes include Swimming, JumpPhase, Running, ComboStep, FocusPhase, AreaPhase and FinisherAvailable. KaijuFeedback emits camera/UI cues, but the package does not consume them or change your camera.
-
-## Rebuild and validation
-
-`python tools/build-kaiju-stage1.py` rebuilds the XML model and SHA-256 manifest using Python standard library only. Alternatively use `rojo build kaiju-stage1.project.json -o KaijuStageOne.rbxm`. XML source round-trips and package dependency isolation are checked; the artifact is not a rendered model or a Studio test result.
-
-The original Stage 1 visual/gameplay approval is recorded as a baseline. The package and its input integration still need testing in the receiving experience: import, equip, run, jump, water entry/ascent/exit, real combat adapter, defeat, respawn and uninstall. Sound permissions and the game camera must also be checked there.
-
-## Jump motor in 1.1.1
-
-The installer always installs KaijuStageOneJumpMotor for player characters, including when InstallInput=false. It receives server-authorized vertical impulses through KaijuJumpImpulse, preserves horizontal velocity, and does not bind keys or control the camera. Import the complete updated package; replacing the rig alone omits this required client. No jump windup delay or server network-ownership takeover remains. Turning and walk/run speed remain controlled by the native character controller in air. Updated movement still needs a target-project playtest.
-
-## Accepted release 1.1.4
-
-Amancio approved the jump/landing correction at source revision `e835a34d4d65a8a73a895da704d2f960190e047e`. This release packages that accepted runtime unchanged: native movement in air, no landing crouch/rebound pose, short suppression of upward physical contact rebound, terrain swimming and latest sounds. The installer records this approval as its current ApprovedRevision. Target-project integration remains separately testable.
-
-To upgrade an existing import: Stop Play, uninstall an active installation if needed, then replace the entire ReplicatedStorage.TrenchbornKaijuStageOne folder with dist/KaijuStageOne.rbxmx. Do not retain old modules or omit KaijuStageOneJumpMotor. Keep the target game's bootstrap, CombatFactory, camera and HUD. Restart Play so require caches are fresh. For a first import, use examples/KaijuStageOne.server.lua; its PreviewOnly=true is deliberately movement-only until the game's damage adapter is supplied.
-
-## Build-time scaling
-
-All builder options accept `Scale`, a finite positive multiplier of the stage's authored size. Default: `1`. Use `0.5` for half size or `2` for double size.
+## Server API
 
 ```lua
--- Evolution geometry, stages 1–5:
-Builder.BuildStage(workspace, 3, CFrame.new(0, 0, 145), {Scale = 0.5})
--- Entire lineage; spacing scales too:
-Builder.Build(workspace, CFrame.new(0, 0, 145), {Scale = 0.5})
--- Current Storm Hunter geometry:
-StormBuilder.Build(workspace, CFrame.new(0, 0, 145), {Scale = 0.5})
--- Equipped Primal Beast:
-Installer.Install(character, {Scale = 0.5, PreviewOnly = true, InstallInput = true})
+local Installer = require(game.ReplicatedStorage.TrenchbornKaijuStageOne.KaijuStageOneInstaller)
+local model, api = Installer.Install(character, {
+    Scale = 1,
+    InstallInput = false,
+    CombatFactory = function(model, root, humanoid, rootHeight)
+        return YourBuildingCombatService.Attach(model, root, humanoid, rootHeight)
+    end,
+})
+-- api.Destroy() or Installer.Uninstall(character) restores the avatar.
 ```
 
-In `KaijuEvolutionBlockoutPreview`, set number attributes `Stage1Scale` and `Stage2Scale` before Play. Missing attributes mean 1. The model records the multiplier in `BuildScale`. Collider size and rig offsets use the resulting model scale. Native avatar size, movement speed, cooldowns and game-owned damage values are not multiplied. Stage 3–5 remain geometry previews.
+Install after avatar appearance/scaling completes. Scale is a finite positive build-time multiplier: 0.5 halves the figure, 2 doubles it. Geometry, collider dimensions and cached rig dimensions follow that scale. Native avatar size, movement speeds, cooldowns and game-owned damage values do not multiply. Reinstall to change scale; do not ScaleTo an attached rig.
 
-Scaling is a build-time option: rebuild/reinstall to change it. Do not call ScaleTo on an attached rig, which caches dimensions. The 1.2.0 XML export includes this option and the terrain/idle fixes.
+Methods use dot calls: RequestAttack, RequestJump(direction?), SetAirDirection(direction), SetRunning(boolean), RequestFocus, RequestArea, GetCombatFrame(boneName), Destroy. SetAirDirection remains a compatibility no-op; native movement controls horizontal motion in air. Jump authorization changes vertical velocity without stopping movement.
 
-## Release 1.2.0
+An accepted focus or area attack stops and locks the movement root through charge, discharge and recovery. Movement input and nonlethal hit reactions cannot interrupt it. Death and uninstall still terminate it. Damage is not disabled during specials.
 
-Includes build-time Scale, a narrower raised torso collider, an animation-only ground probe for slopes, and lowered resting arms with reduced hand twist. The original ApprovedRevision identifies the previously approved baseline; QualityGateC and RuntimeReview are pending for the updated runtime. Export structure and exact embedded sources were verified; Roblox Studio and target-project gameplay testing remain outstanding. Existing target-game CombatFactory, HUD and camera integrations are retained when replacing the package folder.
+## Input and presentation
 
-## Release 1.2.1: procedural pose ownership
+InstallInput=true adds optional keyboard, controller and touch bindings: native movement, Shift/L3 run, Space/A jump, F/R2 or primary mouse attack, E/L2 focus, R/Y discharge. Hold jump while swimming to rise. Touch text uses TextScaled.
 
-The rig now exclusively owns the tagged Kaiju Motor6D joints. Server and client clear additive Animator Transform values in PreSimulation while preserving the authored C0/C1 poses. This addresses the integration failure path where avatar animation is added to the Kaiju shoulders and wrists. Disabling Animate alone does not provide this isolation. No additional wrist-angle compensation was added.
+InstallInput=false keeps the game's own controls. EnableRemotes=false suppresses input-request remotes and cannot be combined with InstallInput=true. Owner/payload/rate validation remains on enabled request remotes.
 
-KaijuStageOneJumpMotor is the always-installed pose-and-jump runtime, including with InstallInput=false and EnableRemotes=false. Its pose guard starts independently of jump remote discovery, covers replicated Kaijus, and handles late joint arrival/removal. Only TrenchbornProceduralJoint-tagged joints are affected. The rig removes its tags on Stop; the client disconnects on destruction.
+**Presentation and the authorized jump motor are installed independently of InstallInput and EnableRemotes.** Every player, including spectators, receives one shared presentation observer. The observer survives respawns and renders all streamed Kaijus. Unequip removes that Kaiju's rendering and restores the original character; the observer remains for other players.
 
-Replace the complete package folder and restart Play. Source/package checks passed; Stage 1 and Stage 2 still require a target-project playtest at Scale=1, InstallInput=false: idle, walk, run, attacks, respawn and unequip/re-equip. The target game must not directly overwrite Kaiju joint C0/C1. PoseOwnershipRevision=ProceduralC0_01 identifies the updated runtime.
+No camera controller, workshop HUD, Guardian controls or practice targets are imported. KaijuFeedback retains server combat/landing cues; footsteps and their sounds are now local presentation. Existing integrations that used server footstep cues must source those cues locally. No camera settings change.
 
-## Release 1.2.3: uninterrupted specials
+## Combat adapter
 
-An accepted focus or area attack immediately stops locomotion and locks the movement root for its full charge, discharge and recovery. Input, residual velocity, temporary FloorMaterial=Air and nonlethal hit reactions do not cancel the special. Damage still applies; death and uninstall terminate the attack and release the lock safely. Invalid/no-target requests do not lock the player.
+| Method | Responsibility |
+| --- | --- |
+| Handle(kind,index,targetOrDeadline,origin) | Handle Hit, Grab, Land and Focus; return true for confirmed hits and set LastAttackResult to Hit/Miss. |
+| Cancel() | Release held/reserved buildings; safe to repeat. |
+| PrepareFinisher() | Reserve a reachable target only if the optional rip-apart move destroys it. |
+| SelectFocusTarget(origin) | Return a target handle or nil. |
+| FocusAim(target,origin) | Return target point and visibility. |
+| AreaImpact(origin) | Apply game-owned area damage once. |
+| Destroy() | Optional adapter cleanup. |
 
-The shared server rig restores the previous anchored state, movement speed, AutoRotate and jumping state on release, without restoring old running velocity. This also works with InstallInput=false. Replace the full package and restart Play. Simulated state/lifecycle tests and export checks passed; verify holding movement and jump while starting each special, taking a heavy hit during charge, normal recovery, death and uninstall in the target experience.
+The third-hit finisher deadline keeps the existing server os.clock domain. Building registration, health, rewards, destruction and persistence remain the target game's responsibility. The workshop-only KaijuStageOneCombat adapter is not embedded.
+
+**Adapters reading animated server hand Parts must migrate to GetCombatFrame.** Server joints now remain at rest. Use `api.GetCombatFrame("LeftHand")` or, inside the adapter after rig attachment, `require(model.KaijuPoseProvider.Value).GetCombatFrame(model, "LeftHand")`. This supplies an authoritative attack frame for hit probes and building grips. The workshop adapter has been migrated.
+
+Keep already-authorized Focus/Area attacks valid during transient FloorMaterial=Air while SpecialAttackLocked is set. To use the shared local area spheres/debris, set KaijuAreaVisualRadius to the radius in world studs and remove duplicate server burst effects. Otherwise retain the game's own explosion visuals.
+
+## Included runtime and validation
+
+11 embedded scripts include geometry, installer, shared server controller, immutable skeleton builder, client presentation, shared observer/bootstrap, combo/jump timing, optional stage input and owner jump motor. Names containing StageOne are shared dependencies; the equipped figure remains Primal Beast.
+
+Run `python tools/build-kaiju-stage1.py` or `rojo build kaiju-stage1.project.json -o KaijuStageOne.rbxm`. The Python builder checks exact embedded source round-trips; the manifest records source and artifact hashes. `python tools/test-kaiju-replication.py` exercises mocked runtime contracts across all five stage numbers.
+
+See [client presentation architecture and adapter migration](KAIJU_CLIENT_PRESENTATION.md) for synchronization, distance quality levels, streaming and test scope. No Roblox Studio rendering or measured multiplayer performance result is claimed. Test import, Scale=1/InstallInput=false, spectators, slopes, jump, swimming, combat grip, specials, streaming, defeat, respawn and uninstall in the receiving experience. Sound assets need permission in that experience.

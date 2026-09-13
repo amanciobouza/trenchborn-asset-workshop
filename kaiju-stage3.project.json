@@ -28,6 +28,18 @@
     },
     "KaijuStageTwoGoldenMaster": {
       "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuStageTwoGoldenMaster.lua"
+    },
+    "KaijuPresentation": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuPresentation.lua"
+    },
+    "KaijuPresentationClient": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuPresentationClient.client.lua"
+    },
+    "KaijuPresentationBootstrap": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuPresentationBootstrap.lua"
+    },
+    "KaijuSkeleton": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuSkeleton.lua"
     }
   }
 }

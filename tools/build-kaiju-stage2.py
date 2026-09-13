@@ -6,7 +6,7 @@ from pathlib import Path
 import xml.etree.ElementTree as ET
 ROOT=Path(__file__).resolve().parents[1]
 SOURCE=ROOT/'src/ReplicatedStorage/TrenchbornAssetWorkshop'
-FILES=['KaijuStageTwoInstaller.lua','KaijuStageTwoGoldenMaster.lua','KaijuEvolutionBlockout.lua',
+FILES=['KaijuPresentation.lua','KaijuPresentationClient.client.lua','KaijuPresentationBootstrap.lua','KaijuSkeleton.lua','KaijuStageTwoInstaller.lua','KaijuStageTwoGoldenMaster.lua','KaijuEvolutionBlockout.lua',
        'KaijuStageOneRig.lua','KaijuStageOneCombo.lua','KaijuStageOneJump.lua',
        'KaijuStageTwoInput.client.lua','KaijuStageOneJumpMotor.client.lua']
 def build():
@@ -14,7 +14,7 @@ def build():
     folder=ET.SubElement(xml,'Item',{'class':'Folder','referent':'RBX0'})
     props=ET.SubElement(folder,'Properties')
     ET.SubElement(props,'string',name='Name').text='TrenchbornKaijuStageTwo'
-    installer=(SOURCE/FILES[0]).read_text(encoding='utf-8')
+    installer=(SOURCE/'KaijuStageTwoInstaller.lua').read_text(encoding='utf-8')
     version=re.search(r'Version="([^"]+)"',installer).group(1)
     revision=re.search(r'ApprovedRevision="([^"]+)"',installer).group(1)
     manifest={'package':'TrenchbornKaijuStageTwo','version':version,
