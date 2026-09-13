@@ -28,6 +28,18 @@ end
 local template = display:Clone() -- Unrigged geometry for every respawn.
 local pivotFromGround = origin:ToObjectSpace(template:GetPivot())
 stageOneRig.Attach(display)
+-- Stage 2 stays an anchored geometry review beside the approved Stage 1.
+local stormBuilder=require(packageFolder:WaitForChild("KaijuStageTwoGoldenMaster"))
+local storm=stormBuilder.Build(workshop,origin*CFrame.new(42,0,0))
+local label=Instance.new("BillboardGui")
+label.Name="StageTwoReviewLabel";label.Adornee=storm:FindFirstChild("Cranium")
+label.Size=UDim2.fromOffset(280,56);label.StudsOffsetWorldSpace=Vector3.new(0,5,0)
+label.MaxDistance=160;label.Parent=storm
+local title=Instance.new("TextLabel")
+title.Size=UDim2.fromScale(1,1);title.BackgroundTransparency=0.3
+ title.BackgroundColor3=Color3.fromRGB(25,29,38);title.TextColor3=Color3.fromRGB(240,210,70)
+title.Text="STAGE 2 · STORM HUNTER\nGEOMETRY REVIEW";title.TextScaled=true;title.Parent=label
+
 preview:SetAttribute("PipelinePhase", 6)
 preview:SetAttribute("QualityGateC", "Pending")
 preview:SetAttribute("Purpose", "Stage 1 player control review")
