@@ -79,6 +79,25 @@ local function enlargeGroup(model,prefix,frame,factors)
   end
  end
 end
+-- Place additional armor directly on an ellipsoid surface; local -Z faces out.
+local function shellFrame(mass,direction,inset)
+ local d=mass.CFrame:VectorToObjectSpace(direction.Unit)
+ local h=mass.Size/2
+ local radius=1/math.sqrt((d.X/h.X)^2+(d.Y/h.Y)^2+(d.Z/h.Z)^2)
+ local localPoint=d*radius
+ local normal=mass.CFrame:VectorToWorldSpace(Vector3.new(localPoint.X/h.X^2,localPoint.Y/h.Y^2,localPoint.Z/h.Z^2)).Unit
+ local up=Vector3.yAxis-normal*normal:Dot(Vector3.yAxis)
+ if up.Magnitude<0.01 then up=Vector3.zAxis-normal*normal:Dot(Vector3.zAxis) end
+ up=up.Unit
+ return CFrame.fromMatrix(mass.CFrame:PointToWorldSpace(localPoint)+normal*inset,normal:Cross(up).Unit,up,-normal)
+end
+local function layeredShell(model,name,mass,direction,width,height,depth)
+ local cf=shellFrame(mass,direction,depth*0.22)
+ bevelPlate(model,name,width,height,depth,cf)
+ bevelPlate(model,name.."Overlap",width*0.82,height*0.70,depth*0.62,
+  cf*CFrame.new(0,height*0.16,-depth*0.52))
+ return cf
+end
 function Builder.Build(parent,ground,options)
  local multiplier=Base.ResolveBuildScale(options)
  ground=ground or CFrame.identity
@@ -92,10 +111,10 @@ function Builder.Build(parent,ground,options)
   -- Enlarge existing armor together with its attached facets and energy seams.
   for _,side in ipairs({"Left","Right"}) do
    for _,entry in ipairs({
-    {"ShoulderArmor",side.."ShoulderJoint",Vector3.new(1.12,1.08,1.12)},
-    {"ForearmArmor",side.."ElbowJoint",Vector3.new(1.10,1.06,1.10)},
-    {"HipArmor",side.."HipJoint",Vector3.new(1.10,1.06,1.10)},
-    {"ShinArmor",side.."KneeJoint",Vector3.new(1.10,1.06,1.10)},
+    {"ShoulderArmor",side.."ShoulderJoint",Vector3.new(1.32,1.20,1.30)},
+    {"ForearmArmor",side.."ElbowJoint",Vector3.new(1.18,1.12,1.18)},
+    {"HipArmor",side.."HipJoint",Vector3.new(1.18,1.12,1.18)},
+    {"ShinArmor",side.."KneeJoint",Vector3.new(1.18,1.12,1.18)},
    }) do
     enlargeGroup(model,side..entry[1],model[entry[2]].CFrame,entry[3])
    end
@@ -122,15 +141,47 @@ function Builder.Build(parent,ground,options)
    local pec=model[side.."Pectoral"]
    local masses={pec,model[side.."Flank"],model.LowerRibcage,model.BellyShield}
    for row,vertical in ipairs({0.29,-0.02,-0.33}) do
-    local width=math.min(pec.Size.X*(row==3 and 0.74 or 0.88),math.abs(pec.Position.X)*1.65)
-    local height=pec.Size.Y*0.22
+    local width=math.min(pec.Size.X*(row==3 and 0.88 or 1.04),math.abs(pec.Position.X)*1.78)
+    local height=pec.Size.Y*0.27
     local x=pec.Position.X+sign*pec.Size.X*0.015
     local y=pec.Position.Y+pec.Size.Y*vertical
-    local frame=surfaceFrame(masses,x,y,0.12)*CFrame.Angles(0,0,sign*math.rad(8))
+    local frame=surfaceFrame(masses,x,y,0.30)*CFrame.Angles(0,0,sign*math.rad(8))
     -- Broad bevel foundations keep narrow physical gaps between rows.
-    bevelPlate(model,side.."RibArmorStage4Row"..row,width,height,0.68,frame)
-    bevelPlate(model,side.."RibArmorStage4Row"..row.."RockLayer",width*0.84,height*0.72,0.32,
-     frame*CFrame.new(sign*width*0.025,height*0.04,-0.38)*CFrame.Angles(0,0,-sign*math.rad(4)))
+    bevelPlate(model,side.."RibArmorStage4Row"..row,width,height,1.05,frame)
+    bevelPlate(model,side.."RibArmorStage4Row"..row.."RockLayer",width*0.92,height*0.80,0.58,
+     frame*CFrame.new(sign*width*0.025,height*0.04,-0.64)*CFrame.Angles(0,0,-sign*math.rad(4)))
+   end
+  end
+  for _,sign in ipairs({-1,1}) do
+   local side=sign<0 and "Left" or "Right"
+   -- Upper arm and forearm each retain their own articulated region prefix.
+   layeredShell(model,side.."ShoulderArmorStage4Rear",model[side.."Deltoid"],Vector3.new(sign,0.25,0.8),3.0,2.8,0.95)
+   layeredShell(model,side.."ShoulderArmorStage4UpperArm",model[side.."BicepsMass"],Vector3.new(sign,-0.15,0.55),2.3,2.9,0.78)
+   layeredShell(model,side.."ForearmArmorStage4Rear",model[side.."ForearmMass"],Vector3.new(sign,0.05,1),2.7,3.2,0.95)
+   layeredShell(model,side.."ForearmArmorStage4Front",model[side.."ForearmMass"],Vector3.new(sign*0.6,0,-1),2.1,2.5,0.70)
+   layeredShell(model,side.."HipArmorStage4Rear",model[side.."ThighMass"],Vector3.new(sign*0.65,0.1,1),2.7,3.1,0.82)
+   layeredShell(model,side.."ShinArmorStage4Rear",model[side.."CalfMass"],Vector3.new(sign*0.4,0.1,1),2.5,2.9,0.86)
+   -- Heel prefix maps to Foot; do not weld the boot across the ankle joint.
+   local heel=model:FindFirstChild(side.."HeelCore") or model:FindFirstChild(side.."Heel")
+   if not heel then
+    for _,part in ipairs(model:GetChildren()) do
+     if part:IsA("BasePart") and part.Name:sub(1,#side+4)==side.."Heel" then heel=part;break end
+    end
+   end
+   assert(heel,"Missing heel geometry for "..side)
+   layeredShell(model,side.."HeelArmorStage4Rear",heel,Vector3.new(0,0.30,1),2.5,1.8,0.85)
+   layeredShell(model,side.."HeelArmorStage4Outer",heel,Vector3.new(sign,0.25,0.4),1.8,1.6,0.65)
+   -- Three broad-rooted lateral rock spines on each side of the dorsal ridge.
+   -- RibArmor attaches to Torso, keeping these clear of the tail articulation.
+   for i,entry in ipairs({{0.48,0.40,3.0},{0.72,0.05,2.5},{0.62,-0.34,1.9}}) do
+    local direction=Vector3.new(sign*entry[1],entry[2],1)
+    local mass=i==3 and model.LowerRibcage or model.UpperRibcage
+    local cf=layeredShell(model,side.."RibArmorBackSpine"..i,mass,direction,1.8,2.1,0.70)
+    local axis=(cf.LookVector+Vector3.new(sign*0.40,0.40,0)).Unit
+    local up=(Vector3.yAxis-axis*axis.Y).Unit
+    local spikeFrame=CFrame.lookAt(cf.Position+axis*(entry[3]*0.32),cf.Position+axis*(entry[3]*1.32),up)
+    stone(model,side.."RibArmorBackSpine"..i.."Shard",Vector3.new(1.25,entry[3],1.45),
+     spikeFrame*CFrame.Angles(math.pi/2,0,0),"WedgePart")
    end
   end
   model:ScaleTo(previousScale*1.10*multiplier)
@@ -149,7 +200,7 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending_UserGeometryReview")
   model:SetAttribute("QualityGateC","Pending_Stage4GameplayReview")
-  model:SetAttribute("GeometryRevision","S4_SegmentedChestRockBack_01")
+  model:SetAttribute("GeometryRevision","S4_HeavyArmorLateralSpinesHeels_02")
   model:SetAttribute("VisualTarget","Approved Stage 4 front/side/back concept")
   model:SetAttribute("Purpose","Stage 4 geometry review; chest energy dressing follows Gate B")
   model.Parent=parent

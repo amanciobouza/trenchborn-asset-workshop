@@ -17,3 +17,9 @@ The workshop now equips Stage 4. Stages 1–3 remain as comparisons. Stage4Scale
 Inspect front, side and rear: chest segments should sit outside the organic chest with a continuous exposed central strip and clear row gaps; shoulders/forearms must retain hand and jaw clearance; knee/hip armor must remain fitted; the dorsal ridge must have a heavier silhouette. Check clipping during attacks and defeat before approving geometry.
 
 Validation: Lua syntax, module/selection wiring and existing five-stage simulated runtime tests. Roblox rendering, geometric fit, collisions and target fidelity still require Studio review.
+
+## Revision 02: heavier armor, lateral spines and heel protection
+
+User requested larger chest/shoulders, additional arm and leg coverage, especially behind the heels, and spines beside the dorsal ridge. Chest foundations increase from 0.68 to 1.05 normalized studs deep, with 0.58-deep overlap layers, wider rows and greater stand-off. Shoulder growth is now 32/20/30 percent over Stage 3; other existing limb groups grow 18/12/18 percent. Additional double-layer shells cover rear shoulders, upper arms, rear/front forearms, rear thighs/calves and rear/outer heels. Three rooted wedge rock spines per side flank the dorsal ridge. All additions use existing articulated prefixes; HeelArmor belongs to Foot, rear calves to Shin, and lateral spines to Torso. No new joints.
+
+Syntax checked and source part names/region mappings inspected. Fit and ground clearance of heel shells, spike silhouette, and arm/chest overlap still require Studio review. Geometry gate remains pending.
