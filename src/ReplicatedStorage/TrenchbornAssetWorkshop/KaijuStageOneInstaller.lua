@@ -3,7 +3,7 @@ local RunService=game:GetService("RunService")
 local Players=game:GetService("Players")
 local Builder=require(script.Parent:WaitForChild("KaijuEvolutionBlockout"))
 local Rig=require(script.Parent:WaitForChild("KaijuStageOneRig"))
-local Installer={Version="1.1.0",ApprovedRevision="e2e669b53806f19f62b76d68c8b4ac6065f71015"}
+local Installer={Version="1.1.1",ApprovedRevision="e2e669b53806f19f62b76d68c8b4ac6065f71015"}
 local installations=setmetatable({}, {__mode="k"})
 local NAME="Stage_1_Primal_Beast"
 local function stamp(model)
@@ -52,7 +52,7 @@ function Installer.Install(character,options)
   local leg=character:FindFirstChild("Left Leg");if leg then height=height+leg.Size.Y end
  end
  local ground=root.CFrame*CFrame.new(0,-height,0)
- local model,rig,combat,collider,inputGui
+ local model,rig,combat,collider,inputGui,motorGui
  local connections,saved={},{}
  local settings={}
  for _,key in ipairs({"WalkSpeed","AutoRotate","UseJumpPower","JumpPower","AutoJumpEnabled","BreakJointsOnDeath"}) do settings[key]=humanoid[key] end
@@ -76,6 +76,7 @@ function Installer.Install(character,options)
   if rig then rig.Stop() end
   if combat and combat.Destroy then combat.Destroy() end
   if inputGui then inputGui:Destroy() end
+  if motorGui then motorGui:Destroy() end
   if collider then collider:Destroy() end
   if model then model:Destroy() end
   for item,properties in pairs(saved) do
@@ -141,6 +142,13 @@ function Installer.Install(character,options)
    inputGui=Instance.new("ScreenGui");inputGui.Name="PrimalBeastInput";inputGui.ResetOnSpawn=true
    local input=script.Parent:WaitForChild("KaijuStageOneInput"):Clone()
    input.Parent=inputGui;inputGui.Parent=gui
+  end
+  if player then
+   local gui=assert(player:FindFirstChildOfClass("PlayerGui"),"PlayerGui not ready")
+   assert(not gui:FindFirstChild("PrimalBeastMotor"),"Jump motor already installed")
+   motorGui=Instance.new("ScreenGui");motorGui.Name="PrimalBeastMotor";motorGui.ResetOnSpawn=true
+   script.Parent:WaitForChild("KaijuStageOneJumpMotor"):Clone().Parent=motorGui
+   motorGui.Parent=gui
   end
   stamp(model)
   if player then model:SetAttribute("ControlledBy",player.UserId) end
