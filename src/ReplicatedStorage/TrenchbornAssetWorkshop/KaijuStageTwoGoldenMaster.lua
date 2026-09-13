@@ -152,12 +152,18 @@ function Builder.Build(parent,ground)
    newPart(model,"Part",side.."ForearmArmorCore",Vector3.new(3.6,1.5,length),guard)
    newPart(model,"WedgePart",side.."ForearmArmorWristTaper",Vector3.new(3.6,1.5,1.2),
     guard*CFrame.new(0,0,(length+1.2)/2-0.12)*CFrame.Angles(0,math.pi,0))
-   -- Broad root overlaps the core; the thin end extends 2.8 studs beyond the elbow.
-   -- No perpendicular elbow spike. All parts keep the ForearmArmor rig prefix.
-   local extension=2.8
-   newPart(model,"WedgePart",side.."ForearmArmorElbowExtension",
-    Vector3.new(3.6,1.5,extension),
-    guard*CFrame.new(0,0,-(length+extension)/2+0.25))
+   -- Three overlapping basalt blades share one root but break into unequal tips.
+   -- Their taper follows the dorsal-plate language while remaining longitudinal.
+   local tips={
+    {X=-1.16,Width=1.28,Length=2.20,Thickness=1.45},
+    {X=0,Width=1.28,Length=3.20,Thickness=1.65},
+    {X=1.16,Width=1.28,Length=2.65,Thickness=1.50},
+   }
+   for i,tip in ipairs(tips) do
+    newPart(model,"WedgePart",side.."ForearmArmorElbowExtension_"..i,
+     Vector3.new(tip.Width,tip.Thickness,tip.Length),
+     guard*CFrame.new(tip.X,(tip.Thickness-1.5)/2,-(length+tip.Length)/2+0.25))
+   end
   end
   local currentHeight=model.Cranium.Position.Y+model.Cranium.Size.Y/2-soles(model)
   model:ScaleTo(model:GetScale()*sourceHeight*1.12/currentHeight)
@@ -170,7 +176,7 @@ function Builder.Build(parent,ground)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending")
   model:SetAttribute("QualityGateC","Pending")
-  model:SetAttribute("GeometryRevision","S2_StormHunter_LongitudinalForearmArmor_07")
+  model:SetAttribute("GeometryRevision","S2_StormHunter_FracturedElbowCrest_08")
   model:SetAttribute("VisualTarget","Storm Hunter concept approved in conversation")
   model:SetAttribute("HeightRatioToStageOne",1.12)
   model:SetAttribute("Purpose","Stage 2 geometry review; anchored, no gameplay rig")
