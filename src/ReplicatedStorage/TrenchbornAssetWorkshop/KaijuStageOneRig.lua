@@ -149,6 +149,10 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		bones.Pelvis.Anchored = false
 		model:SetAttribute("AnimationMode", "Automatic")
 	end
+	local armorEnergy={}
+	for _,p in ipairs(visuals) do
+		if p:GetAttribute("KaijuArmorEnergy") then table.insert(armorEnergy,p) end
+	end
 	local scale = model:GetScale()
 	-- Supplemental support is animation-only: never snap or propel the character.
 	local supportParams=RaycastParams.new()
@@ -459,7 +463,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		for i=1,#area.Nodes-1 do arc(area.Nodes[i],area.Nodes[i+1]) end
 		if #area.Nodes>2 then arc(area.Nodes[#area.Nodes],area.Nodes[2]) end
 		for _,p in ipairs(visuals) do
-			if string.match(p.Name,"^DorsalEnergy_") then area.Colors[p]=p.Color end
+			if string.match(p.Name,"^DorsalEnergy_") or p:GetAttribute("KaijuArmorEnergy") then area.Colors[p]=p.Color end
 		end
 		areaReadyAt=os.clock()+4 -- Provisional workshop cooldown, starting at activation.
 		humanoid.WalkSpeed=0;humanoid.AutoRotate=false;humanoid:Move(Vector3.zero,false)
@@ -576,7 +580,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		focus.Beam=beam("Beam",focusColor)
 		focus.Core=beam("Core",Color3.fromRGB(220,255,255))
 		for _,p in ipairs(visuals) do
-			if string.match(p.Name,"^DorsalEnergy_") then focus.Colors[p]=p.Color end
+			if string.match(p.Name,"^DorsalEnergy_") or p:GetAttribute("KaijuArmorEnergy") then focus.Colors[p]=p.Color end
 		end
 		humanoid.WalkSpeed=0;humanoid.AutoRotate=false;humanoid:Move(Vector3.zero,false)
 		model:SetAttribute("FocusPhase","Charging")
@@ -867,6 +871,13 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		local previous = {}
 		for name, m in pairs(motors) do previous[name] = m.C0 end
 		local fade = math.min(elapsed/1.5, 1)
+		-- Only Stage 2 tagged veins pulse; attack color and defeat fading retain control.
+		if not humanoid or humanoid.Health>0 then
+			local pulse=0.5+0.5*math.sin(elapsed*math.pi/1.8)
+			for _,p in ipairs(armorEnergy) do
+				if p.Parent then p.Transparency=(focus or area) and 0.06 or 0.10+0.18*(1-pulse) end
+			end
+		end
 		local breath = math.sin(elapsed * math.pi/1.4) * fade
 		local sway = math.sin(elapsed * math.pi/2.7) * fade
 		-- Smooth short accents: alternating shoulder tension and alert head turns.
