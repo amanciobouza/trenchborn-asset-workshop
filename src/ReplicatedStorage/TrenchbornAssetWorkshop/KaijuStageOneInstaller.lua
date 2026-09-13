@@ -3,7 +3,7 @@ local RunService=game:GetService("RunService")
 local Players=game:GetService("Players")
 local Builder=require(script.Parent:WaitForChild("KaijuEvolutionBlockout"))
 local Rig=require(script.Parent:WaitForChild("KaijuStageOneRig"))
-local Installer={Version="1.0.0",ApprovedRevision="e2e669b53806f19f62b76d68c8b4ac6065f71015"}
+local Installer={Version="1.1.0",ApprovedRevision="e2e669b53806f19f62b76d68c8b4ac6065f71015"}
 local installations=setmetatable({}, {__mode="k"})
 local NAME="Stage_1_Primal_Beast"
 local function stamp(model)
@@ -12,6 +12,7 @@ local function stamp(model)
  model:SetAttribute("QualityGateC","ApprovedByUser")
  model:SetAttribute("FinalInstallerVersion",Installer.Version)
  model:SetAttribute("ApprovedRevision",Installer.ApprovedRevision)
+ model:SetAttribute("IntegrationReview","PendingInTargetProject")
  model:SetAttribute("WorkshopOnly",false)
 end
 local function build(parent,ground)
@@ -43,14 +44,15 @@ function Installer.Install(character,options)
  local humanoid=assert(character:FindFirstChildOfClass("Humanoid"),"Missing Humanoid")
  local root=assert(character:FindFirstChild("HumanoidRootPart"),"Missing HumanoidRootPart")
  assert(humanoid.Health>0,"Cannot equip a defeated character")
- assert(type(options.CombatFactory)=="function","CombatFactory is required: connect the game's building damage service")
+ assert(options.PreviewOnly==true or type(options.CombatFactory)=="function","Provide CombatFactory or explicitly set PreviewOnly=true")
+ assert(not options.InstallInput or options.EnableRemotes~=false,"InstallInput requires enabled remotes")
  local player=Players:GetPlayerFromCharacter(character)
  local height=humanoid.HipHeight+root.Size.Y/2
  if humanoid.RigType==Enum.HumanoidRigType.R6 then
   local leg=character:FindFirstChild("Left Leg");if leg then height=height+leg.Size.Y end
  end
  local ground=root.CFrame*CFrame.new(0,-height,0)
- local model,rig,combat,collider
+ local model,rig,combat,collider,inputGui
  local connections,saved={},{}
  local settings={}
  for _,key in ipairs({"WalkSpeed","AutoRotate","UseJumpPower","JumpPower","AutoJumpEnabled","BreakJointsOnDeath"}) do settings[key]=humanoid[key] end
@@ -73,6 +75,7 @@ function Installer.Install(character,options)
   for _,c in ipairs(connections) do c:Disconnect() end
   if rig then rig.Stop() end
   if combat and combat.Destroy then combat.Destroy() end
+  if inputGui then inputGui:Destroy() end
   if collider then collider:Destroy() end
   if model then model:Destroy() end
   for item,properties in pairs(saved) do
@@ -84,7 +87,12 @@ function Installer.Install(character,options)
  end
  local ok,err=pcall(function()
   model=build(character,ground)
-  combat=options.CombatFactory(model,root,humanoid,height)
+  if options.PreviewOnly then
+   combat={Handle=function() model:SetAttribute("LastAttackResult","Miss");return false end,
+    Cancel=function() end,PrepareFinisher=function() return false end,
+    FocusAim=function() return nil,false end,SelectFocusTarget=function() return nil end,AreaImpact=function() end}
+  else combat=options.CombatFactory(model,root,humanoid,height) end
+  model:SetAttribute("PreviewOnly",options.PreviewOnly==true)
   assert(type(combat)=="table","CombatFactory must return an adapter")
   for _,name in ipairs({"Handle","Cancel","PrepareFinisher","FocusAim","SelectFocusTarget","AreaImpact"}) do
    assert(type(combat[name])=="function","Missing combat method: "..name)
@@ -126,6 +134,13 @@ function Installer.Install(character,options)
      api[definition[1]](value)
     end))
    end
+  end
+  if options.InstallInput and player then
+   local gui=assert(player:FindFirstChildOfClass("PlayerGui"),"PlayerGui not ready")
+   assert(not gui:FindFirstChild("PrimalBeastInput"),"Primal Beast input already installed")
+   inputGui=Instance.new("ScreenGui");inputGui.Name="PrimalBeastInput";inputGui.ResetOnSpawn=true
+   local input=script.Parent:WaitForChild("KaijuStageOneInput"):Clone()
+   input.Parent=inputGui;inputGui.Parent=gui
   end
   stamp(model)
   if player then model:SetAttribute("ControlledBy",player.UserId) end
