@@ -93,8 +93,41 @@ local function bevelPlate(model,name,width,height,depth,cf)
   stone(model,name.."EdgeLeft"..i,leftSize,frame*left)
  end
 end
-local function shinPlate(model,name,cf)
- facePlate(model,name,3.0,3.4,0.8,cf)
+-- Keep the full armor foundation, then grow overlapping basalt layers and
+-- unequal splinters from it, matching the shoulder/forearm construction.
+local function wildPlate(model,name,width,height,depth,cf,sign)
+ bevelPlate(model,name,width,height,depth,cf)
+ for layer=1,2 do
+  local offset=layer==1 and 0.20 or -0.22
+  local roll=layer==1 and -9 or 7
+  bevelPlate(model,name.."RockLayer"..layer,width*(layer==1 and 0.96 or 0.82),
+   height*0.60,depth*0.64,
+   cf*CFrame.new(sign*width*(layer==1 and 0.03 or -0.06),height*offset,-depth*0.46)
+    *CFrame.Angles(0,0,math.rad(sign*roll)))
+ end
+ -- Canonical right-side roots are embedded in the foundation. Local +Y
+ -- runs along each splinter; -Z remains the visible stone surface.
+ local tips={
+  {X=0.23,Y=0.25,DX=0.85,DY=0.40,Length=width*0.40,Width=height*0.38},
+  {X=0.25,Y=-0.08,DX=0.95,DY=-0.32,Length=width*0.55,Width=height*0.44},
+  {X=-0.08,Y=-0.35,DX=0.30,DY=-1.0,Length=height*0.34,Width=width*0.42},
+ }
+ for i,tip in ipairs(tips) do
+  local axis=Vector3.new(tip.DX,tip.DY,0).Unit
+  local across=axis:Cross(Vector3.zAxis)
+  local root=Vector3.new(width*tip.X,height*tip.Y,-depth*0.08)
+  local size=Vector3.new(tip.Width,tip.Length,depth*0.90)
+  local localCF=CFrame.fromMatrix(root+axis*(tip.Length*0.30),
+   across,axis,Vector3.zAxis)
+  if sign<0 then
+   local function mirror(v) return Vector3.new(-v.X,v.Y,v.Z) end
+   localCF=CFrame.fromMatrix(mirror(localCF.Position),
+    -mirror(localCF.ZVector),mirror(localCF.UpVector),-mirror(localCF.RightVector))
+   size=Vector3.new(size.Z,size.Y,size.X)
+  end
+  local p=stone(model,name.."RockPoint"..i,size,cf*localCF)
+  p.Color=Color3.fromRGB(63,67,70)
+ end
 end
 function Builder.Build(parent,ground,options)
  local multiplier=Base.ResolveBuildScale(options)
@@ -176,8 +209,8 @@ function Builder.Build(parent,ground,options)
     x=pec.Position.X+sign*pec.Size.X*(i==1 and 0.29 or 0.24)
     y=pec.Position.Y-pec.Size.Y*(i==1 and 0.23 or 0.38)
     local ribFrame=surfaceFrame({pec,flank,ribs,belly},x,y,0.08)
-    bevelPlate(model,side.."RibArmor_"..i,1.85*1.15,0.90*1.15,0.58,
-     ribFrame*CFrame.Angles(0,0,sign*math.rad(6)))
+    wildPlate(model,side.."RibArmor_"..i,1.85*1.15,0.90*1.15,0.58,
+     ribFrame*CFrame.Angles(0,0,sign*math.rad(6)),sign)
    end
    local thigh=model:FindFirstChild(side.."ThighMass")
    local quad=model:FindFirstChild(side.."OuterQuadriceps")
@@ -185,7 +218,7 @@ function Builder.Build(parent,ground,options)
    x=thigh.Position.X+sign*thigh.Size.X*0.28
    y=thigh.Position.Y+thigh.Size.Y*0.27
    local hipFrame=surfaceFrame({thigh,quad,hip},x,y,0.09)
-   bevelPlate(model,side.."HipArmor",2.05,2.5,0.70,hipFrame)
+   wildPlate(model,side.."HipArmor",2.05,2.5,0.70,hipFrame,sign)
    local knee=model:FindFirstChild(side.."KneeJoint")
    local hock=model:FindFirstChild(side.."HockJoint")
    local calf=model:FindFirstChild(side.."CalfMass")
@@ -197,7 +230,7 @@ function Builder.Build(parent,ground,options)
    forward=(forward-up*forward:Dot(up)).Unit
    local right=forward:Cross(up).Unit
    local shin=CFrame.fromMatrix(Vector3.new(center.X,center.Y,z-0.22),right,up,-forward)
-   shinPlate(model,side.."ShinArmor",shin)
+   wildPlate(model,side.."ShinArmor",3.0,3.4,0.8,shin,sign)
   end
   -- Relative authored size: 12% above Stage 2, then the user-controlled multiplier.
   model:ScaleTo(stageTwoScale*1.12*multiplier)
@@ -211,7 +244,7 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending")
   model:SetAttribute("QualityGateC","Pending")
-  model:SetAttribute("GeometryRevision","S3_ChestSizeAndJoinedHipBevels_10")
+  model:SetAttribute("GeometryRevision","S3_WildLayeredChestHipKnee_11")
   model:SetAttribute("VisualTarget","Approved Stage 3 front/side/back concept; lateral rib armor amendment")
   model:SetAttribute("Purpose","Stage 3 geometry review; anchored candidate")
   model.Parent=parent
