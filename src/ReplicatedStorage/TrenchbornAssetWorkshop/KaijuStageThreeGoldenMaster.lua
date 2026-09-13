@@ -45,6 +45,19 @@ local function facePlate(model,name,width,height,depth,cf)
     *CFrame.Angles(0,0,edge<0 and math.pi or 0))
  end
 end
+local function shinPlate(model,name,cf)
+ -- Both corner apexes point down the shin; never flip local Y to mirror a side.
+ stone(model,name.."Core",Vector3.new(2.16,2.65,0.8),cf,"Part")
+ local size=Vector3.new(0.96,3.4,0.8)
+ local right=CFrame.new(1.02,-0.20,0)*CFrame.Angles(math.pi,0,0)
+ stone(model,name.."Facet1",size,cf*right)
+ -- Reflect across plate-local X. Swapping corner base axes X/Z restores a
+ -- right-handed frame, with matching size swap so depth stays depth in world space.
+ local function mirror(v) return Vector3.new(-v.X,v.Y,v.Z) end
+ local left=CFrame.fromMatrix(mirror(right.Position),
+  mirror(right.ZVector),mirror(right.UpVector),mirror(right.RightVector))
+ stone(model,name.."Facet-1",Vector3.new(size.Z,size.Y,size.X),cf*left)
+end
 function Builder.Build(parent,ground,options)
  local multiplier=Base.ResolveBuildScale(options)
  ground=ground or CFrame.identity
@@ -147,7 +160,7 @@ function Builder.Build(parent,ground,options)
    forward=(forward-up*forward:Dot(up)).Unit
    local right=forward:Cross(up).Unit
    local shin=CFrame.fromMatrix(Vector3.new(center.X,center.Y,z-0.22),right,up,-forward)
-   facePlate(model,side.."ShinArmor",3.0,3.4,0.8,shin)
+   shinPlate(model,side.."ShinArmor",shin)
   end
   -- Relative authored size: 12% above Stage 2, then the user-controlled multiplier.
   model:ScaleTo(stageTwoScale*1.12*multiplier)
@@ -161,7 +174,7 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending")
   model:SetAttribute("QualityGateC","Pending")
-  model:SetAttribute("GeometryRevision","S3_SurfaceMountedArmor_02")
+  model:SetAttribute("GeometryRevision","S3_MirroredDownwardShinFacets_03")
   model:SetAttribute("VisualTarget","Approved Stage 3 front/side/back concept; lateral rib armor amendment")
   model:SetAttribute("Purpose","Stage 3 geometry review; anchored candidate")
   model.Parent=parent
