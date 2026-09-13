@@ -108,6 +108,41 @@ function Builder.Build(parent,ground,options)
   model=StageThree.Build(staging,CFrame.identity)
   local previousScale=model:GetScale()
   model:ScaleTo(1);model.Name=NAME
+  -- Widen the complete face together so sockets, pupils, jaw and armor
+  -- remain aligned. Preserve its height and the established predator profile.
+  local headFrame=CFrame.new(model.Cranium.Position)
+  for _,prefix in ipairs({"Cranium","SnoutBridge","FrontalBridge","UpperMuzzle","LowerJaw",
+   "LeftCheekMass","RightCheekMass","LeftOrbitalSupport","RightOrbitalSupport",
+   "LeftBrowRidge","RightBrowRidge","LeftEye","RightEye","LeftPupil","RightPupil",
+   "LeftNostril","RightNostril","LeftHeadArmor","RightHeadArmor"}) do
+   enlargeGroup(model,prefix,headFrame,Vector3.new(1.06,1,1))
+  end
+  local neck=model.Neck
+  neck.Size=Vector3.new(neck.Size.X*1.22,neck.Size.Y,neck.Size.Z*1.20)
+  local nape=model:FindFirstChild("NapeFlow")
+  if nape then nape.Size=Vector3.new(nape.Size.X*1.24,nape.Size.Y*1.06,nape.Size.Z*1.20) end
+  local neckMasses={neck,model.UpperRibcage,model.Cranium}
+  if nape then table.insert(neckMasses,nape) end
+  -- Two low overlapping nape segments bridge toward the dorsal crest.
+  -- RibArmor follows Torso, while the rear-skull plates follow Head.
+  for row,offset in ipairs({0.18,-0.12}) do
+   local height=neck.Size.Y*0.34
+   local cf=surfaceFrame(neckMasses,0,neck.Position.Y+neck.Size.Y*offset,0.22,true)
+   bevelPlate(model,"LeftRibArmorStage4Nape"..row,neck.Size.X*(row==1 and 0.86 or 0.98),height,0.95,cf)
+  end
+  for _,sign in ipairs({-1,1}) do
+   local side=sign<0 and "Left" or "Right"
+   local skull=model.Cranium
+   local rearFrame=surfaceFrame(neckMasses,sign*skull.Size.X*0.34,
+    skull.Position.Y,0.24,true)*CFrame.Angles(0,sign*math.rad(12),0)
+   bevelPlate(model,side.."HeadArmorStage4RearSkull",skull.Size.X*0.38,skull.Size.Y*0.52,0.82,rearFrame)
+   local browCore=model[side.."HeadArmorBrowCore"]
+   -- Grow upward from the brow's lower edge to keep the eye opening clear.
+   local browBase=browCore.CFrame*CFrame.new(0,-browCore.Size.Y/2,0)
+   enlargeGroup(model,side.."HeadArmorBrow",browBase,Vector3.new(1.12,1.30,1.08))
+   layeredShell(model,"LowerJawStage4Angle"..side,model.LowerJawRear,
+    Vector3.new(sign,-0.10,0.35),1.65,1.35,0.58)
+  end
   -- Enlarge existing armor together with its attached facets and energy seams.
   for _,side in ipairs({"Left","Right"}) do
    for _,entry in ipairs({
@@ -214,7 +249,7 @@ function Builder.Build(parent,ground,options)
    -- Native WedgePart tapers toward local -Z. Aim that axis away from the
    -- body, embedding the broad +Z base in the shell rather than the thin tip.
    local backMasses={}
-   for _,massName in ipairs({"Neck","UpperRibcage","LowerRibcage","DorsalLumbarMass",
+   for _,massName in ipairs({"Neck","NapeFlow","UpperRibcage","LowerRibcage","DorsalLumbarMass",
     "SacralMass","TailRootMass","LeftFlank","RightFlank"}) do
     local body=model:FindFirstChild(massName)
     if body then table.insert(backMasses,body) end
@@ -277,7 +312,7 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending_UserGeometryReview")
   model:SetAttribute("QualityGateC","Pending_Stage4GameplayReview")
-  model:SetAttribute("GeometryRevision","S4_SideSpinesAfterEveryDorsal_08")
+  model:SetAttribute("GeometryRevision","S4_ReinforcedNapeAndHead_09")
   model:SetAttribute("VisualTarget","Approved Stage 4 front/side/back concept")
   model:SetAttribute("Purpose","Stage 4 geometry review; chest energy dressing follows Gate B")
   model.Parent=parent
