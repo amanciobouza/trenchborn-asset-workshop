@@ -213,35 +213,51 @@ function Builder.Build(parent,ground,options)
    layeredShell(model,side.."HeelArmorStage4Outer",heel,Vector3.new(sign,0.25,0.4),1.8,1.6,0.65)
    -- Native WedgePart tapers toward local -Z. Aim that axis away from the
    -- body, embedding the broad +Z base in the shell rather than the thin tip.
-   local spineRows={
-    {Mass="UpperRibcage",X=0.32,Y=0.40,Length=3.0,Region=side.."RibArmor",Width=1.8},
-    {Mass="UpperRibcage",X=0.38,Y=0.05,Length=2.5,Region=side.."RibArmor",Width=1.8},
-    {Mass="LowerRibcage",X=0.36,Y=-0.34,Length=1.9,Region=side.."RibArmor",Width=1.8},
-    {Mass="SacralMass",X=0.36,Y=0.05,Length=1.65,Region="PelvisArmor"..side,Width=1.55},
-    {Mass="TailRootMass",X=0.34,Y=0.15,Length=1.35,Region="TailBaseArmor"..side,Width=1.30},
-   }
-   -- Sample the outer envelope of overlapping back masses, not just the
-   -- selected root: lumbar/sacral/tail bulges can otherwise swallow the shard.
    local backMasses={}
-   for _,massName in ipairs({"UpperRibcage","LowerRibcage","DorsalLumbarMass",
+   for _,massName in ipairs({"Neck","UpperRibcage","LowerRibcage","DorsalLumbarMass",
     "SacralMass","TailRootMass","LeftFlank","RightFlank"}) do
     local body=model:FindFirstChild(massName)
     if body then table.insert(backMasses,body) end
    end
-   for i,entry in ipairs(spineRows) do
-    local direction=Vector3.new(sign*entry.X,entry.Y,1)
-    local mass=assert(model:FindFirstChild(entry.Mass),"Missing spine root "..entry.Mass)
-    local name=entry.Region.."BackSpine"..i
-    local sample=shellFrame(mass,direction,0).Position
-    local cf=surfaceFrame(backMasses,sample.X,sample.Y,0.70*0.22,true)
-    bevelPlate(model,name,entry.Width,entry.Width*1.17,0.70,cf)
-    bevelPlate(model,name.."Overlap",entry.Width*0.82,entry.Width*1.17*0.70,0.70*0.62,
-     cf*CFrame.new(0,entry.Width*1.17*0.16,-0.70*0.52))
+   -- One mirrored pair per dorsal plate; DorsalRock indices inherit the
+   -- same Torso/Tail bone as that plate in KaijuSkeleton.
+   for i=1,11 do
+    local plate=assert(model:FindFirstChild(string.format("DorsalShield_%02d",i)),"Missing dorsal plate "..i)
+    local width=math.clamp(plate.Size.Y*0.55,0.32,1.8)
+    local length=math.clamp(plate.Size.Y*0.78,0.42,3.0)
+    local depth=math.min(0.70,width*0.40)
+    local cf
+    if i<=3 then
+     -- Place the pair just below each major plate along the back surface.
+     local x=sign*(plate.Size.X/2+0.55)
+     local y=plate.Position.Y-plate.Size.Y*0.38
+     cf=surfaceFrame(backMasses,x,y,depth*0.22,true)
+    else
+     local segment=assert(model:FindFirstChild(string.format("TailSegment_%02d",i-2)),"Missing dorsal tail segment "..i)
+     local along=segment.CFrame.RightVector
+     local nextPart=model:FindFirstChild(string.format("TailSegment_%02d",i-1)) or model.TailTip
+     if along:Dot(nextPart.Position-segment.Position)<0 then along=-along end
+     local top=(Vector3.yAxis-along*along.Y).Unit
+     local sideAxis=(Vector3.xAxis-along*along.X).Unit
+     local normal=(top+sideAxis*sign*0.78).Unit
+     -- Tail bodies are cylinders, whose length is local X. Seat at the
+     -- cross-section toward the trailing end, immediately after its plate.
+     local localNormal=segment.CFrame:VectorToObjectSpace(normal)
+     local radius=1/math.sqrt((localNormal.Y/(segment.Size.Y/2))^2
+      +(localNormal.Z/(segment.Size.Z/2))^2)
+     local point=segment.Position+along*(segment.Size.X*0.28)+normal*(radius+depth*0.22)
+     local up=(along-normal*normal:Dot(along)).Unit
+     cf=CFrame.fromMatrix(point,normal:Cross(up).Unit,up,-normal)
+    end
+    local name=string.format("DorsalRock_%02d_SideSpine_%s",i,side)
+    bevelPlate(model,name,width,width*1.17,depth,cf)
+    bevelPlate(model,name.."Overlap",width*0.82,width*1.17*0.70,depth*0.62,
+     cf*CFrame.new(0,width*1.17*0.16,-depth*0.52))
     local axis=(cf.LookVector+Vector3.new(sign*0.40,0.40,0)).Unit
     local up=(Vector3.yAxis-axis*axis.Y).Unit
-    local center=cf.Position+axis*(entry.Length/2-0.18)
-    local spikeFrame=CFrame.lookAt(center,center+axis,up)
-    stone(model,name.."Shard",Vector3.new(1.25,1.45,entry.Length),spikeFrame,"WedgePart")
+    local center=cf.Position+axis*(length/2-depth*0.25)
+    stone(model,name.."Shard",Vector3.new(width*0.69,width*0.81,length),
+     CFrame.lookAt(center,center+axis,up),"WedgePart")
    end
   end
   model:ScaleTo(previousScale*1.10*multiplier)
@@ -254,13 +270,14 @@ function Builder.Build(parent,ground,options)
   model:PivotTo(ground*model:GetPivot())
   for _,key in ipairs({"ApprovedGeometryCommit","ApprovedRevision","DressingRevision","DressingReview",
    "FinalInstallerVersion","RuntimeReview","IntegrationReview","HeightRatioToStageOne"}) do model:SetAttribute(key,nil) end
+  model:SetAttribute("LateralSpinePairCount",11)
   model:SetAttribute("EvolutionStage",4)
   model:SetAttribute("BuildScale",multiplier)
   model:SetAttribute("PipelinePhase",4)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending_UserGeometryReview")
   model:SetAttribute("QualityGateC","Pending_Stage4GameplayReview")
-  model:SetAttribute("GeometryRevision","S4_WideChestToBellyArmor_07")
+  model:SetAttribute("GeometryRevision","S4_SideSpinesAfterEveryDorsal_08")
   model:SetAttribute("VisualTarget","Approved Stage 4 front/side/back concept")
   model:SetAttribute("Purpose","Stage 4 geometry review; chest energy dressing follows Gate B")
   model.Parent=parent
