@@ -52,24 +52,6 @@ local function surfaceFrame(parts,x,y,inset)
  local right=normal:Cross(up).Unit
  return CFrame.fromMatrix(Vector3.new(x,y,z)+normal*inset,right,up,-normal)
 end
-local function facePlate(model,name,width,height,depth,cf)
- -- Preserve the full core and the world-space bounds of both edge facets.
- stone(model,name.."Core",Vector3.new(width*0.72,height*0.78,depth),cf,"Part")
- -- Native corner apex is (+X,+Y,-Z), above a rectangular -Y base.
- -- Keep Y along the plate: the triangular silhouette tapers toward the top.
- -- Put the apex at the INNER/BACK corner, so the sloping faces face outward
- -- and the full-height flat side overlaps the core instead of forming a wing.
- local size=Vector3.new(width*0.32,height,depth)
- local right=CFrame.fromMatrix(Vector3.new(width*0.34,-height*0.06,0),
-  -Vector3.xAxis,Vector3.yAxis,-Vector3.zAxis)
- stone(model,name.."Facet1",size,cf*right)
- local function mirror(v) return Vector3.new(-v.X,v.Y,v.Z) end
- -- A reflection alone is not a rotation. The native shape's symmetry swaps
- -- X with NEGATIVE Z (not positive Z); this preserves its (+,+,-) apex.
- local left=CFrame.fromMatrix(mirror(right.Position),
-  -mirror(right.ZVector),mirror(right.UpVector),-mirror(right.RightVector))
- stone(model,name.."Facet-1",Vector3.new(size.Z,size.Y,size.X),cf*left)
-end
 -- Chest and hip edges use the rectangular -Y face as their buried attachment face.
 -- Two corner wedges per side meet at one outer midpoint, forming a bevel
 -- instead of a horizontal shelf. The original width/height/depth envelope stays.
@@ -195,11 +177,26 @@ function Builder.Build(parent,ground,options)
    stone(model,side.."HeadArmorBrowBevel",Vector3.new(1.65,0.40,0.65),
     browCF*CFrame.new(0,0,-1.02),"WedgePart")
    local cheek=model:FindFirstChild(side.."CheekMass")
-   local x=cheek.Position.X+sign*cheek.Size.X*0.18
-   local y=cheek.Position.Y+0.15
-   local z=frontSurface({cheek,model.Cranium},x,y)
-   facePlate(model,side.."HeadArmorCheek",1.15,1.95,0.5,
-    CFrame.new(x,y,z-0.13)*CFrame.Angles(0,sign*math.rad(-12),0))
+   -- Follow the SIDE of the cheek ellipsoid, not its front face next to the mouth.
+   -- Broad, low scales overlap from beneath the eye toward the rear jaw.
+   local half=cheek.Size/2
+   for layer=1,2 do
+    local ly=cheek.Size.Y*(layer==1 and 0.13 or 0.08)
+    local lz=cheek.Size.Z*(layer==1 and -0.13 or 0.25)
+    local lx=sign*half.X*math.sqrt(1-(ly/half.Y)^2-(lz/half.Z)^2)
+    local point=cheek.CFrame:PointToWorldSpace(Vector3.new(lx,ly,lz))
+    local normal=cheek.CFrame:VectorToWorldSpace(
+     Vector3.new(lx/half.X^2,ly/half.Y^2,lz/half.Z^2)).Unit
+    local up=Vector3.yAxis-normal*normal:Dot(Vector3.yAxis)
+    up=up.Unit
+    local right=normal:Cross(up).Unit
+    local depth=cheek.Size.X*0.28
+    local cf=CFrame.fromMatrix(point+normal*(depth*0.12),right,up,-normal)
+    bevelPlate(model,side.."HeadArmorCheek_"..layer,
+     cheek.Size.Z*(layer==1 and 0.60 or 0.42),
+     cheek.Size.Y*(layer==1 and 0.40 or 0.28),depth,cf)
+   end
+   local x,y,z
    -- Follow the OUTSIDE of the pale pectoral/flank envelope, not the hidden rib core.
    local pec=model:FindFirstChild(side.."Pectoral")
    local flank=model:FindFirstChild(side.."Flank")
@@ -244,7 +241,7 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending")
   model:SetAttribute("QualityGateC","Pending")
-  model:SetAttribute("GeometryRevision","S3_WildLayeredChestHipKnee_11")
+  model:SetAttribute("GeometryRevision","S3_SideFittedCheekArmor_12")
   model:SetAttribute("VisualTarget","Approved Stage 3 front/side/back concept; lateral rib armor amendment")
   model:SetAttribute("Purpose","Stage 3 geometry review; anchored candidate")
   model.Parent=parent
