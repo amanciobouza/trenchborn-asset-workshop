@@ -802,19 +802,34 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				game:GetService("Debris"):AddItem(dust,0.75)
 			end
 		end
-		local dark=smooth(t/1.15)
-		local eyesDark=smooth((t-2.0)/0.8)
+		-- Ground impact is at 1.8s, settling completes at 2.6s.
+		-- Keep failing energy visible on the ground; eyes are the last to extinguish.
+		local function remainingEnergy(isEye)
+			local start=isEye and 4.0 or 3.0
+			local envelope=1-smooth((t-start)/0.8)
+			local phase=isEye and 0.85 or 0
+			local signal=0.5+0.27*math.sin(t*19+phase)
+				+0.15*math.sin(t*37+phase)+0.08*math.sin(t*11)
+			local flicker=0.16+0.84*smooth(signal)
+			local onset=smooth(t/0.3)
+			return envelope*(1-onset+onset*flicker),envelope<=0
+		end
+		local bodyEnergy,bodyOff=remainingEnergy(false)
+		local eyeEnergy,eyesOff=remainingEnergy(true)
 		for _,glow in ipairs(defeat.Glow) do
-			local fade=glow.Eye and eyesDark or dark
-			glow.Part.Color=glow.Color:Lerp(Color3.fromRGB(25,32,40),fade)
-			if fade>=1 then glow.Part.Material=Enum.Material.SmoothPlastic end
+			local energy=glow.Eye and eyeEnergy or bodyEnergy
+			glow.Part.Color=Color3.fromRGB(25,32,40):Lerp(glow.Color,energy)
+			if (glow.Eye and eyesOff) or (not glow.Eye and bodyOff) then
+				glow.Part.Material=Enum.Material.SmoothPlastic
+			end
 		end
 		for _,light in ipairs(defeat.Lights) do
-			light.Part.Brightness=light.Brightness*(1-(light.Eye and eyesDark or dark))
+			light.Part.Brightness=light.Brightness*(light.Eye and eyeEnergy or bodyEnergy)
 		end
 		damageFlash.FillTransparency=1-0.6*math.max(0,1-t/0.4)
 		model:SetAttribute("ReactionState",t<0.7 and "Buckling" or t<2.9 and "Falling" or "Defeated")
-		if t>=2.9 then defeat.Settled=true end
+		-- Continue updates until the final eye flicker has fully faded.
+		if t>=4.8 then defeat.Settled=true end
 	end
 	if humanoid and movementRoot then
 		humanoid.BreakJointsOnDeath=false
