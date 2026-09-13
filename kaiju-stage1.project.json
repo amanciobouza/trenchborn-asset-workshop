@@ -17,8 +17,8 @@
     "KaijuStageOneJump": {
       "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuStageOneJump.lua"
     },
-    "KaijuStageOneCombat": {
-      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuStageOneCombat.lua"
+    "KaijuStageOneInput": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuStageOneInput.client.lua"
     }
   }
 }
