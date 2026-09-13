@@ -29,8 +29,8 @@ end
 local stormBuilder=require(packageFolder:WaitForChild("KaijuStageTwoGoldenMaster"))
 local stormOrigin=origin*CFrame.new(42,0,0)
 local storm=stormBuilder.Build(workshop,stormOrigin)
-local template=display:Clone() -- Clone before adding the display-only label or rig.
-local pivotFromGround=origin:ToObjectSpace(template:GetPivot())
+local template=storm:Clone() -- Clone before adding the display-only label or rig.
+local pivotFromGround=stormOrigin:ToObjectSpace(template:GetPivot())
 stageOneRig.Attach(display)
 display:SetAttribute("AnimationMode","Idle")
 local label=Instance.new("BillboardGui")
@@ -50,8 +50,8 @@ local function equip(player, character)
 	local humanoid = character:WaitForChild("Humanoid", 15)
 	local root = character:WaitForChild("HumanoidRootPart", 15)
 	if not humanoid or not root or player.Character ~= character then return end
-	if character:GetAttribute("KaijuStageOneEquipped") then return end
-	character:SetAttribute("KaijuStageOneEquipped", true)
+	if character:GetAttribute("KaijuStageTwoEquipped") then return end
+	character:SetAttribute("KaijuStageTwoEquipped", true)
 	-- Finish avatar scaling before calculating the ground-to-root offset.
 	local deadline = os.clock() + 10
 	while not player:HasAppearanceLoaded() and os.clock() < deadline do
@@ -63,7 +63,7 @@ local function equip(player, character)
 	-- Retain Roblox's controller for keyboard, controller, touch, gravity and
 	-- respawning. Only its visible avatar is replaced.
 	local kaiju = template:Clone()
-	kaiju.Name = "Stage_1_Primal_Beast"
+	kaiju.Name = "Stage_2_Storm_Hunter"
 	local function hideAvatar(item)
 		if item:IsDescendantOf(kaiju) then return end
 		if item:IsA("BasePart") then
@@ -193,7 +193,7 @@ local function equip(player, character)
 	humanoid.AutoJumpEnabled = false
 	player.CameraMinZoomDistance = 42
 	player.CameraMaxZoomDistance = 110
-	if display and display.Parent then display:Destroy() end
+	if storm and storm.Parent then storm:Destroy() end
 
 	character.Destroying:Once(function()
 		if reactionTestConnection then reactionTestConnection:Disconnect() end
@@ -229,7 +229,7 @@ end
 Players.PlayerAdded:Connect(connectPlayer)
 Players.PlayerRemoving:Connect(combatModule.RemoveRange)
 for _, player in ipairs(Players:GetPlayers()) do connectPlayer(player) end
-workshop:SetAttribute("CurrentAsset", "Kaiju Stage 1 - Primal Beast")
+workshop:SetAttribute("CurrentAsset", "Kaiju Stage 2 - Storm Hunter")
 workshop:SetAttribute("CurrentPhase", 6)
 workshop:SetAttribute("QualityStatus", "Stage2_MovementPreview_GeometryPending")
-print("[Kaiju] Play: control Stage 1 with Roblox movement. Guardian controls retired.")
+print("[Kaiju] Play: control Stage 2 with Roblox movement. Guardian controls retired.")
