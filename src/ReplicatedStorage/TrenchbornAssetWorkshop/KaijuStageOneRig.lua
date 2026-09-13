@@ -1,6 +1,8 @@
 -- Phase 6: articulated Stage 1 with a restless, powerful idle preview.
 -- A movement root drives gameplay; without one this remains an anchored preview.
 local RunService = game:GetService("RunService")
+local CollectionService = game:GetService("CollectionService")
+local POSE_TAG = "TrenchbornProceduralJoint"
 local Combo = require(script.Parent:WaitForChild("KaijuStageOneCombo"))
 local Jump = require(script.Parent:WaitForChild("KaijuStageOneJump"))
 local Rig = {}
@@ -351,7 +353,8 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			game:GetService("Debris"):AddItem(dust,0.4)
 		end
 	end
-	local heartbeat, destroying, healthConnection
+	local heartbeat, destroying, healthConnection, poseConnection
+	local ownedJoints = {}
 	local combo = Combo.new(combat and combat.PrepareFinisher)
 	local jump = Jump.new()
 	local swimState=Enum.HumanoidStateType.Swimming
@@ -691,6 +694,11 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		if heartbeat then heartbeat:Disconnect() end
 		if destroying then destroying:Disconnect() end
 		if healthConnection then healthConnection:Disconnect() end
+		if poseConnection then poseConnection:Disconnect() end
+		for _, joint in ipairs(ownedJoints) do
+			joint.Transform = CFrame.identity
+			CollectionService:RemoveTag(joint, POSE_TAG)
+		end
 		reset()
 		if humanoid then humanoid:SetStateEnabled(swimState,swimEnabled) end
 		damageFlash:Destroy()
@@ -871,6 +879,21 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			end
 		end)
 	end
+	-- C0 contains the complete procedural pose. Animator.Transform would multiply
+	-- an unrelated avatar pose onto it, even if the Animate script was disabled.
+	-- Transform is not replicated, so the always-installed client guards it too.
+	for _, joint in pairs(motors) do table.insert(ownedJoints, joint) end
+	if rootJoint then table.insert(ownedJoints, rootJoint) end
+	for _, joint in ipairs(ownedJoints) do
+		joint.Transform = CFrame.identity
+		CollectionService:AddTag(joint, POSE_TAG)
+	end
+	model:SetAttribute("PoseOwnershipRevision", "ProceduralC0_01")
+	poseConnection = RunService.PreSimulation:Connect(function()
+		for _, joint in ipairs(ownedJoints) do
+			if joint.Parent then joint.Transform = CFrame.identity end
+		end
+	end)
 	local wasEnabled = true
 	heartbeat = RunService.Heartbeat:Connect(function(dt)
 		if not model:IsDescendantOf(workspace) then stop(); return end
