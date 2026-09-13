@@ -171,17 +171,25 @@ function Builder.Build(parent,ground,options)
    assert(heel,"Missing heel geometry for "..side)
    layeredShell(model,side.."HeelArmorStage4Rear",heel,Vector3.new(0,0.30,1),2.5,1.8,0.85)
    layeredShell(model,side.."HeelArmorStage4Outer",heel,Vector3.new(sign,0.25,0.4),1.8,1.6,0.65)
-   -- Three broad-rooted lateral rock spines on each side of the dorsal ridge.
-   -- RibArmor attaches to Torso, keeping these clear of the tail articulation.
-   for i,entry in ipairs({{0.48,0.40,3.0},{0.72,0.05,2.5},{0.62,-0.34,1.9}}) do
-    local direction=Vector3.new(sign*entry[1],entry[2],1)
-    local mass=i==3 and model.LowerRibcage or model.UpperRibcage
-    local cf=layeredShell(model,side.."RibArmorBackSpine"..i,mass,direction,1.8,2.1,0.70)
+   -- Native WedgePart tapers toward local -Z. Aim that axis away from the
+   -- body, embedding the broad +Z base in the shell rather than the thin tip.
+   local spineRows={
+    {Mass="UpperRibcage",X=0.48,Y=0.40,Length=3.0,Region=side.."RibArmor",Width=1.8},
+    {Mass="UpperRibcage",X=0.72,Y=0.05,Length=2.5,Region=side.."RibArmor",Width=1.8},
+    {Mass="LowerRibcage",X=0.62,Y=-0.34,Length=1.9,Region=side.."RibArmor",Width=1.8},
+    {Mass="SacralMass",X=0.70,Y=0.05,Length=1.65,Region="PelvisArmor"..side,Width=1.55},
+    {Mass="TailRootMass",X=0.65,Y=0.15,Length=1.35,Region="TailBaseArmor"..side,Width=1.30},
+   }
+   for i,entry in ipairs(spineRows) do
+    local direction=Vector3.new(sign*entry.X,entry.Y,1)
+    local mass=assert(model:FindFirstChild(entry.Mass),"Missing spine root "..entry.Mass)
+    local name=entry.Region.."BackSpine"..i
+    local cf=layeredShell(model,name,mass,direction,entry.Width,entry.Width*1.17,0.70)
     local axis=(cf.LookVector+Vector3.new(sign*0.40,0.40,0)).Unit
     local up=(Vector3.yAxis-axis*axis.Y).Unit
-    local spikeFrame=CFrame.lookAt(cf.Position+axis*(entry[3]*0.32),cf.Position+axis*(entry[3]*1.32),up)
-    stone(model,side.."RibArmorBackSpine"..i.."Shard",Vector3.new(1.25,entry[3],1.45),
-     spikeFrame*CFrame.Angles(math.pi/2,0,0),"WedgePart")
+    local center=cf.Position+axis*(entry.Length/2-0.18)
+    local spikeFrame=CFrame.lookAt(center,center+axis,up)
+    stone(model,name.."Shard",Vector3.new(1.25,1.45,entry.Length),spikeFrame,"WedgePart")
    end
   end
   model:ScaleTo(previousScale*1.10*multiplier)
@@ -200,7 +208,7 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending_UserGeometryReview")
   model:SetAttribute("QualityGateC","Pending_Stage4GameplayReview")
-  model:SetAttribute("GeometryRevision","S4_HeavyArmorLateralSpinesHeels_02")
+  model:SetAttribute("GeometryRevision","S4_OutwardSpinesToTailRoot_03")
   model:SetAttribute("VisualTarget","Approved Stage 4 front/side/back concept")
   model:SetAttribute("Purpose","Stage 4 geometry review; chest energy dressing follows Gate B")
   model.Parent=parent

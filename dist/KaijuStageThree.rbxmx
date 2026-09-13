@@ -1618,7 +1618,8 @@ function Skeleton.Build(model,movementRoot)
 	local pelvisNames = {PelvisCenter=true, SacralMass=true, TailRootMass=true}
 	local function starts(name, prefix) return string.sub(name, 1, #prefix) == prefix end
 	local function region(name)
-		if name == "TailRootMass" then return "TailBase" end
+		if name == "TailRootMass" or starts(name,"TailBaseArmor") then return "TailBase" end
+		if starts(name,"PelvisArmor") then return "Pelvis" end
 		if name == "TailTip" then return "Tail" .. tailCount end
 		if starts(name, "LowerJaw") then return "Jaw" end
 		if headNames[name] or starts(name, "UpperMuzzle") then return "Head" end

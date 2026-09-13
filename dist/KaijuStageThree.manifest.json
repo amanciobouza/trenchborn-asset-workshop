@@ -6,7 +6,7 @@
     "KaijuPresentation.lua": "09ed0840d3b663c3e92a77529fc5ed02a7c93f6687c720f236d37b63ab473220",
     "KaijuPresentationClient.client.lua": "cd44509fdd98ccaecac1903b792d96c1949280d34a324f4c2eb3f617c9949897",
     "KaijuPresentationBootstrap.lua": "0d91ccd5470da47008efbe08b0b8be3f39d7e4ca96703235f4291dd6d90dbf94",
-    "KaijuSkeleton.lua": "3fdc4996d1c5649cd7ec834131bf72a946497a31653bd2c83a82fc573bfe0cc3",
+    "KaijuSkeleton.lua": "b1d9a6e1f21ca5b316f19a75ae7068b5bd0fdfd68fd6c521376eca4367856226",
     "KaijuStageThreeInstaller.lua": "d1d39abfe1649ba41af293c462398bccb62737d9c7a3166449deae564095b343",
     "KaijuStageThreeGoldenMaster.lua": "9a7d2d3c401329c8739feea895f94ff679ccfd2d01d5d6b5057bc20d81331170",
     "KaijuStageTwoGoldenMaster.lua": "d26ec007799be683490721e7510422dbec28451c56dea2d07fd62f56a8e99a0a",
@@ -17,5 +17,5 @@
     "KaijuStageThreeInput.client.lua": "8dc249dbe8ecb71f498695bba954cc6bca23b449fffbba6999ab9612228d4ec2",
     "KaijuStageOneJumpMotor.client.lua": "b62fe5ff337059321e9fe7bf58aa2dcd32832749779f04f04b93c04a1fe4584c"
   },
-  "artifactSha256": "48487e0d6231250fcee65c663888c084d958b58c9176c3d867a57748b7b06aaf"
+  "artifactSha256": "962eea06d75f8d9aa0a7e1e7043b097f22ae4284f46137bb17d13f690672f1c6"
 }

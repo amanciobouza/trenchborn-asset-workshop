@@ -23,3 +23,9 @@ Validation: Lua syntax, module/selection wiring and existing five-stage simulate
 User requested larger chest/shoulders, additional arm and leg coverage, especially behind the heels, and spines beside the dorsal ridge. Chest foundations increase from 0.68 to 1.05 normalized studs deep, with 0.58-deep overlap layers, wider rows and greater stand-off. Shoulder growth is now 32/20/30 percent over Stage 3; other existing limb groups grow 18/12/18 percent. Additional double-layer shells cover rear shoulders, upper arms, rear/front forearms, rear thighs/calves and rear/outer heels. Three rooted wedge rock spines per side flank the dorsal ridge. All additions use existing articulated prefixes; HeelArmor belongs to Foot, rear calves to Shin, and lateral spines to Torso. No new joints.
 
 Syntax checked and source part names/region mappings inspected. Fit and ground clearance of heel shells, spike silhouette, and arm/chest overlap still require Studio review. Geometry gate remains pending.
+
+## Revision 03: outward spines through the tail root
+
+The wedge's thin -Z edge now points along the outward direction; its broad +Z base is embedded 0.18 normalized studs into the shell. Removed the previous 90-degree axis rotation and assigned length to local Z. Each side now has five spines, tapering from 3.0 to 1.35 studs. The two additional pairs sit on SacralMass and TailRootMass. PelvisArmor maps to Pelvis and TailBaseArmor to TailBase, so no rigid spine crosses the torso/pelvis/tail joint.
+
+Syntax and the broad-base/thin-tip projections checked; final silhouette and motion still need Studio review.
