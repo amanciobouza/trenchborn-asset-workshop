@@ -917,7 +917,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 					movementRoot:ApplyImpulse(Vector3.new(0,rise-velocity.Y,0)*movementRoot.AssemblyMass)
 				end
 			elseif jumpEvent=="Land" then
-				landingBlend=1
+				landingBlend=0;smoothedBob=0
 				local velocity=movementRoot.AssemblyLinearVelocity
 				movementRoot:ApplyImpulse(Vector3.new(0,-math.max(0,velocity.Y),0)*movementRoot.AssemblyMass)
 				restoreJump() -- Give ground controls back at contact, not after the pose.
