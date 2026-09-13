@@ -203,33 +203,62 @@ function Builder.Build(parent,ground,options)
     end
    end
   end
-  -- Short surface seams near the armor roots; no large luminous panels.
-  -- Names keep the armor prefix so seams follow the same articulated region.
-  local function seam(surface,name,points)
+  -- Branching mineral fissures: dark edges frame a narrow luminous core.
+  -- Ends dip into existing stone, interrupting the glow between armor layers.
+  local function seam(surface,name,points,width)
    for i=1,#points-1 do
     local a=surface.CFrame:PointToWorldSpace(points[i])
     local b=surface.CFrame:PointToWorldSpace(points[i+1])
-    local p=newPart(model,"Part",name..i,Vector3.new(0.065,0.025,(b-a).Magnitude+0.025),
-     CFrame.lookAt((a+b)/2,b,surface.CFrame.UpVector))
+    local cf=CFrame.lookAt((a+b)/2,b,surface.CFrame.UpVector)
+    local span=(b-a).Magnitude+0.025
+    local rim=newPart(model,"Part",name.."Edge_"..i,Vector3.new(width+0.10,0.025,span),cf)
+    rim.Color=Color3.fromRGB(29,32,35)
+    local p=newPart(model,"Part",name.."Core_"..i,Vector3.new(width,0.028,span),
+     cf+surface.CFrame.UpVector*0.018)
     p.Material=Enum.Material.Neon
-    p.Color=Color3.fromRGB(193,153,28)
-    p.Transparency=0.22
+    p.Color=Color3.fromRGB(220,175,32)
+    p.Transparency=0.12
     p.CastShadow=false
+    p:SetAttribute("KaijuArmorEnergy",true)
    end
   end
   for _,side in ipairs({"Left","Right"}) do
    local sign=side=="Left" and -1 or 1
-   local shoulder=model:FindFirstChild(side.."ShoulderArmor_1Core")
-   local y=shoulder.Size.Y/2+0.018
-   seam(shoulder,side.."ShoulderArmorEnergySeam_",{
-    Vector3.new(-sign*0.95,y,-0.65),Vector3.new(-sign*0.72,y,-0.25),
-    Vector3.new(-sign*0.88,y,0.05),Vector3.new(-sign*0.55,y,0.42)})
+   for layer=1,3 do
+    local shoulder=model:FindFirstChild(side.."ShoulderArmor_"..layer.."Core")
+    local y=shoulder.Size.Y/2+0.012
+    local w,d=shoulder.Size.X,shoulder.Size.Z
+    local prefix=side.."ShoulderArmorEnergy_"..layer.."_"
+    seam(shoulder,prefix.."Main_",{
+     Vector3.new(-sign*w*0.42,y-0.08,-d*0.34),
+     Vector3.new(-sign*w*0.16,y,-d*0.18),
+     Vector3.new(sign*w*0.03,y,d*0.02),
+     Vector3.new(sign*w*0.23,y,d*0.15),
+     Vector3.new(sign*w*0.43,y-0.08,d*0.32)},0.18)
+    seam(shoulder,prefix.."Branch_",{
+     Vector3.new(sign*w*0.03,y,d*0.02),
+     Vector3.new(-sign*w*0.02,y,d*0.24),
+     Vector3.new(sign*w*0.12,y-0.07,d*0.44)},0.095)
+   end
    local arm=model:FindFirstChild(side.."ForearmArmorCore")
-   y=arm.Size.Y/2+0.018
-   local z=-arm.Size.Z*0.25
-   seam(arm,side.."ForearmArmorEnergySeam_",{
-    Vector3.new(sign*0.72,y,z+0.65),Vector3.new(sign*0.48,y,z+0.3),
-    Vector3.new(sign*0.62,y,z),Vector3.new(sign*0.35,y,z-0.25)})
+   local y=arm.Size.Y/2+0.012
+   local length=arm.Size.Z
+   local prefix=side.."ForearmArmorEnergy_"
+   seam(arm,prefix.."Main_",{
+    Vector3.new(sign*0.30,y-0.09,-length*0.46),
+    Vector3.new(sign*0.14,y,-length*0.29),
+    Vector3.new(sign*0.48,y,-length*0.10),
+    Vector3.new(sign*0.12,y,length*0.08),
+    Vector3.new(sign*0.30,y,length*0.24),
+    Vector3.new(sign*0.08,y-0.08,length*0.43)},0.22)
+   seam(arm,prefix.."UpperBranch_",{
+    Vector3.new(sign*0.48,y,-length*0.10),
+    Vector3.new(sign*0.77,y,-length*0.17),
+    Vector3.new(sign*1.00,y-0.08,-length*0.26)},0.11)
+   seam(arm,prefix.."LowerBranch_",{
+    Vector3.new(sign*0.12,y,length*0.08),
+    Vector3.new(-sign*0.34,y,length*0.15),
+    Vector3.new(-sign*0.85,y-0.08,length*0.10)},0.095)
   end
   local currentHeight=model.Cranium.Position.Y+model.Cranium.Size.Y/2-soles(model)
   model:ScaleTo(model:GetScale()*sourceHeight*1.12/currentHeight)
@@ -260,7 +289,7 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","ApprovedByUser")
   model:SetAttribute("ApprovedGeometryCommit","26ad62cf8b663b1dd5c1900a09f5e2b93dc58cd2")
-  model:SetAttribute("DressingRevision","S2_BasaltFacets_SubtleEnergySeams_01")
+  model:SetAttribute("DressingRevision","S2_BranchingEnergyVeins_02")
   model:SetAttribute("DressingReview","Pending")
   model:SetAttribute("QualityGateC","Pending")
   model:SetAttribute("GeometryRevision","S2_StormHunter_TaperedArmorContours_14")
