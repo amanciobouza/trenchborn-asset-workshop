@@ -25,14 +25,14 @@ end
 if soleBottom<math.huge then
 	display:PivotTo(display:GetPivot()+Vector3.new(0,origin.Position.Y-soleBottom,0))
 end
-stageOneRig.Attach(display)
-display:SetAttribute("AnimationMode","Idle")
 -- Keep Stage 1 as a stationary comparison; equip Stage 2 on every respawn.
 local stormBuilder=require(packageFolder:WaitForChild("KaijuStageTwoGoldenMaster"))
 local stormOrigin=origin*CFrame.new(42,0,0)
 local storm=stormBuilder.Build(workshop,stormOrigin)
-local template=storm:Clone() -- Clone before adding the display-only label or rig.
-local pivotFromGround=stormOrigin:ToObjectSpace(template:GetPivot())
+local template=display:Clone() -- Clone before adding the display-only label or rig.
+local pivotFromGround=origin:ToObjectSpace(template:GetPivot())
+stageOneRig.Attach(display)
+display:SetAttribute("AnimationMode","Idle")
 local label=Instance.new("BillboardGui")
 label.Name="StageTwoReviewLabel";label.Adornee=storm:FindFirstChild("Cranium")
 label.Size=UDim2.fromOffset(280,56);label.StudsOffsetWorldSpace=Vector3.new(0,5,0)
@@ -50,8 +50,8 @@ local function equip(player, character)
 	local humanoid = character:WaitForChild("Humanoid", 15)
 	local root = character:WaitForChild("HumanoidRootPart", 15)
 	if not humanoid or not root or player.Character ~= character then return end
-	if character:GetAttribute("KaijuStageTwoEquipped") then return end
-	character:SetAttribute("KaijuStageTwoEquipped", true)
+	if character:GetAttribute("KaijuStageOneEquipped") then return end
+	character:SetAttribute("KaijuStageOneEquipped", true)
 	-- Finish avatar scaling before calculating the ground-to-root offset.
 	local deadline = os.clock() + 10
 	while not player:HasAppearanceLoaded() and os.clock() < deadline do
@@ -63,7 +63,7 @@ local function equip(player, character)
 	-- Retain Roblox's controller for keyboard, controller, touch, gravity and
 	-- respawning. Only its visible avatar is replaced.
 	local kaiju = template:Clone()
-	kaiju.Name = "Stage_2_Storm_Hunter"
+	kaiju.Name = "Stage_1_Primal_Beast"
 	local function hideAvatar(item)
 		if item:IsDescendantOf(kaiju) then return end
 		if item:IsA("BasePart") then
@@ -193,7 +193,7 @@ local function equip(player, character)
 	humanoid.AutoJumpEnabled = false
 	player.CameraMinZoomDistance = 42
 	player.CameraMaxZoomDistance = 110
-	if storm and storm.Parent then storm:Destroy() end
+	if display and display.Parent then display:Destroy() end
 
 	character.Destroying:Once(function()
 		if reactionTestConnection then reactionTestConnection:Disconnect() end
@@ -219,6 +219,7 @@ local function connectPlayer(player)
 			container.ResetOnSpawn = false
 			local controls = packageFolder:WaitForChild("KaijuStageOneControls"):Clone()
 			controls.Parent = container
+			packageFolder:WaitForChild("KaijuStageOneJumpMotor"):Clone().Parent=container
 			container.Parent = gui
 		end
 	end)
@@ -228,7 +229,7 @@ end
 Players.PlayerAdded:Connect(connectPlayer)
 Players.PlayerRemoving:Connect(combatModule.RemoveRange)
 for _, player in ipairs(Players:GetPlayers()) do connectPlayer(player) end
-workshop:SetAttribute("CurrentAsset", "Kaiju Stage 2 - Storm Hunter")
+workshop:SetAttribute("CurrentAsset", "Kaiju Stage 1 - Primal Beast")
 workshop:SetAttribute("CurrentPhase", 6)
 workshop:SetAttribute("QualityStatus", "Stage2_MovementPreview_GeometryPending")
-print("[Kaiju] Play: control Stage 2 with Roblox movement. Guardian controls retired.")
+print("[Kaiju] Play: control Stage 1 with Roblox movement. Guardian controls retired.")
