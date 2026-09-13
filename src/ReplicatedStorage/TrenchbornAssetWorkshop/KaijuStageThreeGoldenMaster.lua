@@ -19,6 +19,32 @@ local function stone(model,name,size,cf,class)
  p.TopSurface=Enum.SurfaceType.Smooth;p.BottomSurface=Enum.SurfaceType.Smooth
  p.Parent=model;return p
 end
+-- Find the visible front of overlapping ellipsoid body masses at an X/Y sample.
+-- Solving in each mass's local frame also handles tilted calves and cheeks.
+local function frontSurface(parts,x,y)
+ local front=math.huge
+ for _,p in ipairs(parts) do
+  local o=p.CFrame:PointToObjectSpace(Vector3.new(x,y,0))
+  local d=p.CFrame:VectorToObjectSpace(Vector3.zAxis)
+  local h=p.Size/2
+  local a=(d.X/h.X)^2+(d.Y/h.Y)^2+(d.Z/h.Z)^2
+  local b=2*(o.X*d.X/h.X^2+o.Y*d.Y/h.Y^2+o.Z*d.Z/h.Z^2)
+  local c=(o.X/h.X)^2+(o.Y/h.Y)^2+(o.Z/h.Z)^2-1
+  local disc=b*b-4*a*c
+  if disc>=0 then front=math.min(front,(-b-math.sqrt(disc))/(2*a)) end
+ end
+ assert(front<math.huge,"Armor surface sample missed its body mass")
+ return front
+end
+local function facePlate(model,name,width,height,depth,cf)
+ -- The broad face points toward local -Z, with tapered side edges.
+ stone(model,name.."Core",Vector3.new(width*0.72,height*0.78,depth),cf,"Part")
+ for _,edge in ipairs({-1,1}) do
+  stone(model,name.."Facet"..edge,Vector3.new(width*0.32,height,depth),
+   cf*CFrame.new(edge*width*0.34,-height*0.06,0)
+    *CFrame.Angles(0,0,edge<0 and math.pi or 0))
+ end
+end
 function Builder.Build(parent,ground,options)
  local multiplier=Base.ResolveBuildScale(options)
  ground=ground or CFrame.identity
@@ -79,33 +105,49 @@ function Builder.Build(parent,ground,options)
   for _,sign in ipairs({-1,1}) do
    local side=sign<0 and "Left" or "Right"
    local brow=model:FindFirstChild(side.."BrowRidge")
-   stone(model,side.."HeadArmorBrow",Vector3.new(1.7,0.65,1.9),
-    brow.CFrame*CFrame.new(0,0.30,0.05))
+   -- Cap the actual brow top; use one common basis instead of inheriting mirrored roll.
+   local browCF=CFrame.new(brow.Position+Vector3.new(0,brow.Size.Y/2+0.10,-0.08))
+   stone(model,side.."HeadArmorBrowCore",Vector3.new(1.65,0.40,1.55),browCF,"Part")
+   stone(model,side.."HeadArmorBrowBevel",Vector3.new(1.65,0.40,0.65),
+    browCF*CFrame.new(0,0,-1.02),"WedgePart")
    local cheek=model:FindFirstChild(side.."CheekMass")
-   stone(model,side.."HeadArmorCheek",Vector3.new(0.65,1.9,2.1),
-    cheek.CFrame*CFrame.new(sign*cheek.Size.X*0.37,0.10,0.20)
-     *CFrame.Angles(0,sign*math.rad(12),0))
-   -- Small lateral rib plates introduce the chest progression without covering its center.
+   local x=cheek.Position.X+sign*cheek.Size.X*0.18
+   local y=cheek.Position.Y+0.15
+   local z=frontSurface({cheek,model.Cranium},x,y)
+   facePlate(model,side.."HeadArmorCheek",1.15,1.95,0.5,
+    CFrame.new(x,y,z-0.13)*CFrame.Angles(0,sign*math.rad(-12),0))
+   -- Follow the OUTSIDE of the pale pectoral/flank envelope, not the hidden rib core.
+   local pec=model:FindFirstChild(side.."Pectoral")
+   local flank=model:FindFirstChild(side.."Flank")
    local ribs=model:FindFirstChild("LowerRibcage")
+   local belly=model:FindFirstChild("BellyShield")
    for i=1,2 do
-    stone(model,side.."RibArmor_"..i,Vector3.new(1.65,0.8,2.8-i*0.25),
-     ribs.CFrame*CFrame.new(sign*ribs.Size.X*0.40,0.7-(i-1)*1.15,-ribs.Size.Z*0.24)
-      *CFrame.Angles(math.rad(10),sign*math.rad(25),sign*math.rad(12)),"WedgePart")
+    x=pec.Position.X+sign*pec.Size.X*(i==1 and 0.29 or 0.24)
+    y=pec.Position.Y-pec.Size.Y*(i==1 and 0.23 or 0.38)
+    z=frontSurface({pec,flank,ribs,belly},x,y)
+    facePlate(model,side.."RibArmor_"..i,1.85,0.90,0.58,
+     CFrame.new(x,y,z-0.16)*CFrame.Angles(0,0,sign*math.rad(10)))
    end
+   local thigh=model:FindFirstChild(side.."ThighMass")
+   local quad=model:FindFirstChild(side.."OuterQuadriceps")
    local hip=model:FindFirstChild(side.."HipJoint")
-   stone(model,side.."HipArmor",Vector3.new(1.0,2.65,2.6),
-    hip.CFrame*CFrame.new(sign*hip.Size.X*0.43,0.4,-0.2)
-     *CFrame.Angles(0,sign*math.rad(10),0))
+   x=thigh.Position.X+sign*thigh.Size.X*0.28
+   y=thigh.Position.Y+thigh.Size.Y*0.27
+   z=frontSurface({thigh,quad,hip},x,y)
+   facePlate(model,side.."HipArmor",2.05,2.5,0.70,
+    CFrame.new(x,y,z-0.18)*CFrame.Angles(0,sign*math.rad(-10),sign*math.rad(-8)))
    local knee=model:FindFirstChild(side.."KneeJoint")
    local hock=model:FindFirstChild(side.."HockJoint")
-   local shin=CFrame.lookAt(knee.Position:Lerp(hock.Position,0.35),hock.Position)*CFrame.Angles(math.pi/2,0,0)
-   stone(model,side.."ShinArmorCore",Vector3.new(2.8,2.8,0.85),
-    shin*CFrame.new(0,0,-knee.Size.Z*0.40),"Part")
-   for _,edge in ipairs({-1,1}) do
-    stone(model,side.."ShinArmorFacet"..edge,Vector3.new(1.25,3.2,1.1),
-     shin*CFrame.new(edge*0.95,-0.2,-knee.Size.Z*0.38)
-      *CFrame.Angles(0,edge*math.rad(15),0))
-   end
+   local calf=model:FindFirstChild(side.."CalfMass")
+   local center=knee.Position:Lerp(hock.Position,0.35)
+   z=frontSurface({knee,calf},center.X,center.Y)
+   -- Build an explicit forward-facing basis: local -Z follows projected body front.
+   local up=(knee.Position-hock.Position).Unit
+   local forward=Vector3.new(0,0,-1)
+   forward=(forward-up*forward:Dot(up)).Unit
+   local right=forward:Cross(up).Unit
+   local shin=CFrame.fromMatrix(Vector3.new(center.X,center.Y,z-0.22),right,up,-forward)
+   facePlate(model,side.."ShinArmor",3.0,3.4,0.8,shin)
   end
   -- Relative authored size: 12% above Stage 2, then the user-controlled multiplier.
   model:ScaleTo(stageTwoScale*1.12*multiplier)
@@ -119,7 +161,7 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending")
   model:SetAttribute("QualityGateC","Pending")
-  model:SetAttribute("GeometryRevision","S3_RockyDorsalLineage_01")
+  model:SetAttribute("GeometryRevision","S3_SurfaceMountedArmor_02")
   model:SetAttribute("VisualTarget","Approved Stage 3 front/side/back concept; lateral rib armor amendment")
   model:SetAttribute("Purpose","Stage 3 geometry review; anchored candidate")
   model.Parent=parent
