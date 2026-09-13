@@ -131,7 +131,7 @@ function Builder.Build(parent,ground,options)
     end
    end
   end
-  -- Replace the small lateral rib plates with three broad chest segments per side.
+  -- Replace the small lateral rib plates with four broad chest-to-belly segments per side.
   -- Keep the inherited back/flank routes; no central reactor or skull crown.
   for _,p in ipairs(model:GetChildren()) do
    if p.Name:match("^LeftRibArmor_%d") or p.Name:match("^RightRibArmor_%d") then p:Destroy() end
@@ -139,14 +139,25 @@ function Builder.Build(parent,ground,options)
   for _,sign in ipairs({-1,1}) do
    local side=sign<0 and "Left" or "Right"
    local pec=model[side.."Pectoral"]
-   local masses={pec,model[side.."Flank"],model.LowerRibcage,model.BellyShield}
-   for row,vertical in ipairs({0.29,-0.02,-0.33}) do
-    local width=math.min(pec.Size.X*(row==3 and 0.88 or 1.04),math.abs(pec.Position.X)*1.78)
-    local height=pec.Size.Y*0.27
-    local x=pec.Position.X+sign*pec.Size.X*0.015
-    local y=pec.Position.Y+pec.Size.Y*vertical
-    local frame=surfaceFrame(masses,x,y,0.30)*CFrame.Angles(0,0,sign*math.rad(8))
-    -- Broad bevel foundations keep narrow physical gaps between rows.
+   local masses={pec,model[side.."Flank"],model.UpperRibcage,model.LowerRibcage,model.BellyShield}
+   local shoulder=model[side.."ShoulderJoint"]
+   -- Broaden toward the shoulder while retaining the central seam. Four
+   -- descending tiers taper onto the belly and remain in the RibArmor region.
+   local innerEdge=0.18
+   local outerEdge=math.abs(shoulder.Position.X)-shoulder.Size.X*0.06
+   local tiers={
+    {Y=0.29,Width=1.00},
+    {Y=-0.08,Width=0.98},
+    {Y=-0.45,Width=0.90},
+    {Y=-0.82,Width=0.78},
+   }
+   for row,tier in ipairs(tiers) do
+    local width=(outerEdge-innerEdge)*tier.Width
+    local height=pec.Size.Y*0.34
+    local x=sign*(innerEdge+width/2)
+    local y=pec.Position.Y+pec.Size.Y*tier.Y
+    local frame=surfaceFrame(masses,x,y,0.30)*CFrame.Angles(0,0,sign*math.rad(5))
+    -- Keep shallow gaps between broad tiers as the armor descends to the belly.
     bevelPlate(model,side.."RibArmorStage4Row"..row,width,height,1.05,frame)
     bevelPlate(model,side.."RibArmorStage4Row"..row.."RockLayer",width*0.92,height*0.80,0.58,
      frame*CFrame.new(sign*width*0.025,height*0.04,-0.64)*CFrame.Angles(0,0,-sign*math.rad(4)))
@@ -249,7 +260,7 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending_UserGeometryReview")
   model:SetAttribute("QualityGateC","Pending_Stage4GameplayReview")
-  model:SetAttribute("GeometryRevision","S4_SlightlyWiderBackSpines_06")
+  model:SetAttribute("GeometryRevision","S4_WideChestToBellyArmor_07")
   model:SetAttribute("VisualTarget","Approved Stage 4 front/side/back concept")
   model:SetAttribute("Purpose","Stage 4 geometry review; chest energy dressing follows Gate B")
   model.Parent=parent
