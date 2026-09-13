@@ -125,16 +125,17 @@ function Builder.Build(parent,ground,options)
       cf*CFrame.new(edge*(width+bevel)/2,0,0)*CFrame.Angles(0,-edge*math.pi/2,0))
     end
    end
-   -- Wedge thickness tapers sideways to a broad pointed rim, not an upright horn.
-   -- Local +Z (the high edge) faces inward on both shoulders.
+   -- Corner-wedge apexes run laterally out from buried, broad shoulder roots.
+   -- Y is tip length before rotation; the final +Y axis points outward.
+   local pointRotation=CFrame.Angles(0,-sign*math.pi/2,0)*CFrame.Angles(-math.pi/2,0,0)
    local wing=shoulder.CFrame*CFrame.new(sign*(rx+0.45),ry*0.56,-0.1)
-    *CFrame.Angles(0,-sign*math.pi/2,0)
-   newPart(model,"WedgePart",side.."ShoulderArmorLateralPoint",
-    Vector3.new(4.5,1.35,3.5),wing)
-   newPart(model,"WedgePart",side.."ShoulderArmorRearFacet",
-    Vector3.new(2.0,0.85,2.8),
+    *pointRotation
+   newPart(model,"CornerWedgePart",side.."ShoulderArmorLateralPoint",
+    Vector3.new(4.5,3.5,1.35),wing)
+   newPart(model,"CornerWedgePart",side.."ShoulderArmorRearFacet",
+    Vector3.new(2.0,2.8,0.85),
     shoulder.CFrame*CFrame.new(sign*(rx+0.2),ry*0.56+0.45,1.45)
-     *CFrame.Angles(0,-sign*math.pi/2,0))
+     *pointRotation)
    -- The armor follows wrist -> elbow and continues beyond it along the same axis.
    local elbow=model:FindFirstChild(side.."ElbowJoint").Position
    local wrist=model:FindFirstChild(side.."WristJoint").Position
@@ -199,7 +200,7 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending")
   model:SetAttribute("QualityGateC","Pending")
-  model:SetAttribute("GeometryRevision","S2_StormHunter_LongitudinalCornerTips_11")
+  model:SetAttribute("GeometryRevision","S2_StormHunter_CornerShoulderTips_12")
   model:SetAttribute("VisualTarget","Storm Hunter concept approved in conversation")
   model:SetAttribute("HeightRatioToStageOne",(currentHeight*model:GetScale()-headDrop*buildScale)/sourceHeight)
   model:SetAttribute("Purpose","Stage 2 geometry review; anchored, no gameplay rig")
