@@ -30,13 +30,14 @@ end
 if soleBottom<math.huge then
 	display:PivotTo(display:GetPivot()+Vector3.new(0,origin.Position.Y-soleBottom,0))
 end
--- Keep Stage 1 as a stationary comparison; equip Stage 2 on every respawn.
+-- Keep Stages 1 and 2 as stationary comparisons; equip Stage 3 on respawn.
 local stormBuilder=require(packageFolder:WaitForChild("KaijuStageTwoGoldenMaster"))
 local stormOrigin=origin*CFrame.new(42,0,0)
 local storm=stormBuilder.Build(workshop,stormOrigin,stageTwoOptions)
--- Gate B candidate: Stage 3 stays anchored while Stage 2 remains the player.
+-- Early playable geometry review requested by the user; Gate B remains pending.
 local stageThreeBuilder=require(packageFolder:WaitForChild("KaijuStageThreeGoldenMaster"))
-local stageThree=stageThreeBuilder.Build(workshop,origin*CFrame.new(-48,0,0),
+local stageThreeOrigin=origin*CFrame.new(-48,0,0)
+local stageThree=stageThreeBuilder.Build(workshop,stageThreeOrigin,
  {Scale=script:GetAttribute("Stage3Scale")})
 local stageThreeLabel=Instance.new("BillboardGui")
 stageThreeLabel.Name="StageThreeReviewLabel";stageThreeLabel.Adornee=stageThree:FindFirstChild("Cranium")
@@ -49,8 +50,13 @@ stageThreeTitle.BackgroundColor3=Color3.fromRGB(25,29,38)
 stageThreeTitle.TextColor3=Color3.fromRGB(240,210,70)
 stageThreeTitle.Text="STAGE 3 · GEOMETRY REVIEW";stageThreeTitle.TextScaled=true
 stageThreeTitle.Parent=stageThreeLabel
-local template=storm:Clone() -- Clone before adding the display-only label or rig.
-local pivotFromGround=stormOrigin:ToObjectSpace(template:GetPivot())
+local template=stageThree:Clone()
+template:FindFirstChild("StageThreeReviewLabel"):Destroy()
+local pivotFromGround=stageThreeOrigin:ToObjectSpace(template:GetPivot())
+stageOneRig.Attach(storm)
+storm:SetAttribute("AnimationMode","Idle")
+storm:SetAttribute("QualityGateB","ApprovedByUser")
+storm:SetAttribute("QualityGateC","ApprovedByUser")
 stageOneRig.Attach(display)
 display:SetAttribute("AnimationMode","Idle")
 local label=Instance.new("BillboardGui")
@@ -60,7 +66,7 @@ label.MaxDistance=160;label.Parent=storm
 local title=Instance.new("TextLabel")
 title.Size=UDim2.fromScale(1,1);title.BackgroundTransparency=0.3
  title.BackgroundColor3=Color3.fromRGB(25,29,38);title.TextColor3=Color3.fromRGB(240,210,70)
-title.Text="STAGE 2 · STORM HUNTER\nGEOMETRY REVIEW";title.TextScaled=true;title.Parent=label
+title.Text="STAGE 2 · STORM HUNTER";title.TextScaled=true;title.Parent=label
 
 preview:SetAttribute("PipelinePhase", 6)
 preview:SetAttribute("QualityGateC", "Pending")
@@ -70,8 +76,8 @@ local function equip(player, character)
 	local humanoid = character:WaitForChild("Humanoid", 15)
 	local root = character:WaitForChild("HumanoidRootPart", 15)
 	if not humanoid or not root or player.Character ~= character then return end
-	if character:GetAttribute("KaijuStageTwoEquipped") then return end
-	character:SetAttribute("KaijuStageTwoEquipped", true)
+	if character:GetAttribute("KaijuStageThreeEquipped") then return end
+	character:SetAttribute("KaijuStageThreeEquipped", true)
 	-- Finish avatar scaling before calculating the ground-to-root offset.
 	local deadline = os.clock() + 10
 	while not player:HasAppearanceLoaded() and os.clock() < deadline do
@@ -83,7 +89,7 @@ local function equip(player, character)
 	-- Retain Roblox's controller for keyboard, controller, touch, gravity and
 	-- respawning. Only its visible avatar is replaced.
 	local kaiju = template:Clone()
-	kaiju.Name = "Stage_2_Storm_Hunter"
+	kaiju.Name = "Stage_3_Rift_Stalker"
 	local function hideAvatar(item)
 		if item:IsDescendantOf(kaiju) then return end
 		if item:IsA("BasePart") then
@@ -189,7 +195,7 @@ local function equip(player, character)
 	end)
 	kaiju:SetAttribute("GeometryAmendmentReview", "Pending")
 	kaiju:SetAttribute("QualityGateB","Pending")
-	kaiju:SetAttribute("GameplayReview","Stage 1 motions reused for Stage 2 preview")
+	kaiju:SetAttribute("GameplayReview","Shared motions reused for Stage 3 geometry preview")
 	kaiju:SetAttribute("ControlledBy", player.UserId)
 
 	-- Torso collision prevents the upper body passing through walls.
@@ -213,7 +219,7 @@ local function equip(player, character)
 	humanoid.AutoJumpEnabled = false
 	player.CameraMinZoomDistance = 42
 	player.CameraMaxZoomDistance = 110
-	if storm and storm.Parent then storm:Destroy() end
+	if stageThree and stageThree.Parent then stageThree:Destroy() end
 
 	character.Destroying:Once(function()
 		if reactionTestConnection then reactionTestConnection:Disconnect() end
@@ -249,7 +255,7 @@ end
 Players.PlayerAdded:Connect(connectPlayer)
 Players.PlayerRemoving:Connect(combatModule.RemoveRange)
 for _, player in ipairs(Players:GetPlayers()) do connectPlayer(player) end
-workshop:SetAttribute("CurrentAsset", "Kaiju Stage 2 - Storm Hunter")
+workshop:SetAttribute("CurrentAsset", "Kaiju Stage 3 - Rift Stalker")
 workshop:SetAttribute("CurrentPhase", 6)
-workshop:SetAttribute("QualityStatus", "Stage2_MovementPreview_GeometryPending")
-print("[Kaiju] Play: control Stage 2 with Roblox movement. Guardian controls retired.")
+workshop:SetAttribute("QualityStatus", "Stage3_MovementPreview_GeometryPending")
+print("[Kaiju] Play: control Stage 3 with Roblox movement. Guardian controls retired.")
