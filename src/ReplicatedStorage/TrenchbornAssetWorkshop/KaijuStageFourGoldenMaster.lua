@@ -161,6 +161,35 @@ function Builder.Build(parent,ground,options)
    layeredShell(model,side.."ForearmArmorStage4Front",model[side.."ForearmMass"],Vector3.new(sign*0.6,0,-1),2.1,2.5,0.70)
    layeredShell(model,side.."HipArmorStage4Rear",model[side.."ThighMass"],Vector3.new(sign*0.65,0.1,1),2.7,3.1,0.82)
    layeredShell(model,side.."ShinArmorStage4Rear",model[side.."CalfMass"],Vector3.new(sign*0.4,0.1,1),2.5,2.9,0.86)
+   -- Broad hip lames sit on the visible thigh/hip envelope, not inside
+   -- the overlapping quadriceps. Both rows follow the Thigh region.
+   local thigh=model[side.."ThighMass"]
+   local hip=model[side.."HipJoint"]
+   local quad=model:FindFirstChild(side.."OuterQuadriceps")
+   local hipMasses={thigh,hip}
+   if quad then table.insert(hipMasses,quad) end
+   for row,vertical in ipairs({0.24,-0.04}) do
+    local width=thigh.Size.X*(row==1 and 0.80 or 0.68)
+    local height=thigh.Size.Y*0.30
+    local cf=surfaceFrame(hipMasses,thigh.Position.X+sign*thigh.Size.X*0.22,
+     thigh.Position.Y+thigh.Size.Y*vertical,0.26)
+     *CFrame.Angles(0,0,sign*math.rad(row==1 and 12 or 7))
+    local name=side.."HipArmorStage4Lame"..row
+    bevelPlate(model,name,width,height,1.05,cf)
+    bevelPlate(model,name.."RaisedFace",width*0.78,height*0.72,0.62,
+     cf*CFrame.new(0,height*0.08,-0.66))
+   end
+   -- A distinct angular kneecap reads above the shin armor. Keep its
+   -- height within the knee mass and all parts on the Shin region.
+   local knee=model[side.."KneeJoint"]
+   local kneeFrame=surfaceFrame({knee,model[side.."CalfMass"],thigh},
+    knee.Position.X,knee.Position.Y,0.28)
+   local kneeWidth=knee.Size.X*0.94
+   local kneeHeight=knee.Size.Y*0.72
+   local kneeName=side.."ShinArmorStage4Kneecap"
+   bevelPlate(model,kneeName,kneeWidth,kneeHeight,1.12,kneeFrame)
+   bevelPlate(model,kneeName.."RaisedFace",kneeWidth*0.72,kneeHeight*0.78,0.72,
+    kneeFrame*CFrame.new(0,kneeHeight*0.06,-0.76))
    -- Heel prefix maps to Foot; do not weld the boot across the ankle joint.
    local heel=model:FindFirstChild(side.."HeelCore") or model:FindFirstChild(side.."Heel")
    if not heel then
@@ -220,7 +249,7 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending_UserGeometryReview")
   model:SetAttribute("QualityGateC","Pending_Stage4GameplayReview")
-  model:SetAttribute("GeometryRevision","S4_SurfaceSeatedSpinesNearCrest_04")
+  model:SetAttribute("GeometryRevision","S4_ArmoredHipsAndKneecaps_05")
   model:SetAttribute("VisualTarget","Approved Stage 4 front/side/back concept")
   model:SetAttribute("Purpose","Stage 4 geometry review; chest energy dressing follows Gate B")
   model.Parent=parent
