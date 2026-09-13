@@ -5,7 +5,7 @@ local Players=game:GetService("Players")
 local Builder=require(script.Parent:WaitForChild("KaijuEvolutionBlockout"))
 local StageTwo=require(script.Parent:WaitForChild("KaijuStageTwoGoldenMaster"))
 local Rig=require(script.Parent:WaitForChild("KaijuStageOneRig"))
-local Installer={Version="1.0.0",ApprovedRevision="803c8ae4789f87b1a20ba6fa5433ecfda5e49675"}
+local Installer={Version="1.0.1",ApprovedRevision="803c8ae4789f87b1a20ba6fa5433ecfda5e49675"}
 local installations=setmetatable({}, {__mode="k"})
 local NAME="Stage_2_Storm_Hunter"
 local function stamp(model)
@@ -1269,6 +1269,8 @@ return Builder
 </ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX4"><Properties><string name="Name">KaijuStageOneRig</string><ProtectedString name="Source">-- Phase 6: articulated Stage 1 with a restless, powerful idle preview.
 -- A movement root drives gameplay; without one this remains an anchored preview.
 local RunService = game:GetService("RunService")
+local CollectionService = game:GetService("CollectionService")
+local POSE_TAG = "TrenchbornProceduralJoint"
 local Combo = require(script.Parent:WaitForChild("KaijuStageOneCombo"))
 local Jump = require(script.Parent:WaitForChild("KaijuStageOneJump"))
 local Rig = {}
@@ -1282,7 +1284,7 @@ local AREA_TIMING={Curl=2.2,Discharge=2.8,Recovery=3.2,Finish=4.6}
 
 function Rig.Attach(model, movementRoot, humanoid, combat)
 	local stage=model:GetAttribute("EvolutionStage")
-	assert(stage==1 or stage==2,"Unsupported Kaiju stage")
+	assert(stage==1 or stage==2 or stage==3,"Unsupported Kaiju stage")
 	assert(not model:FindFirstChild("Articulation"), "Rig already attached")
 	local function get(name)
 		local p = model:FindFirstChild(name)
@@ -1361,19 +1363,20 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		if headNames[name] or starts(name, "UpperMuzzle") then return "Head" end
 		local tail = string.match(name, "^TailSegment_(%d+)$")
 		if tail then return "Tail" .. tonumber(tail) end
-		local plate = tonumber(string.match(name, "^DorsalShield_(%d+)") or string.match(name, "^DorsalEnergy_(%d+)"))
+		local plate = tonumber(string.match(name, "^DorsalShield_(%d+)") or string.match(name, "^DorsalEnergy_(%d+)") or string.match(name, "^DorsalRock_(%d+)"))
 		if plate then return plate &lt;= 3 and "Torso" or "Tail" .. (plate-2) end
 		if pelvisNames[name] then return "Pelvis" end
 		for _, side in ipairs({"Left", "Right"}) do
 			if starts(name, side) then
 				local suffix = string.sub(name, #side+1)
-				if headFeatures[suffix] then return "Head" end
+				if headFeatures[suffix] or starts(suffix,"HeadArmor") then return "Head" end
+				if starts(suffix,"RibArmor") then return "Torso" end
 				if armUpper[suffix] or starts(suffix,"ShoulderArmor") then return side .. "UpperArm" end
 				if armLower[suffix] or starts(suffix,"ForearmArmor") then return side .. "Forearm" end
 				if suffix == "WristJoint" or starts(suffix, "Palm") or starts(suffix, "Finger")
 					or starts(suffix, "Knuckle") or starts(suffix, "Hand") or starts(suffix, "Thumb") then return side .. "Hand" end
-				if thighs[suffix] then return side .. "Thigh" end
-				if shins[suffix] then return side .. "Shin" end
+				if thighs[suffix] or starts(suffix,"HipArmor") then return side .. "Thigh" end
+				if shins[suffix] or starts(suffix,"ShinArmor") then return side .. "Shin" end
 				if suffix == "HockJoint" or suffix == "Metatarsal" then return side .. "Hock" end
 				if suffix == "AnkleJoint" or suffix == "InstepFlow" or starts(suffix, "Heel") or starts(suffix, "Forefoot")
 					or starts(suffix, "Toe") or starts(suffix, "FrontClaw") or suffix == "RearClaw" then return side .. "Foot" end
@@ -1618,7 +1621,8 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			game:GetService("Debris"):AddItem(dust,0.4)
 		end
 	end
-	local heartbeat, destroying, healthConnection
+	local heartbeat, destroying, healthConnection, poseConnection
+	local ownedJoints = {}
 	local combo = Combo.new(combat and combat.PrepareFinisher)
 	local jump = Jump.new()
 	local swimState=Enum.HumanoidStateType.Swimming
@@ -1958,6 +1962,11 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		if heartbeat then heartbeat:Disconnect() end
 		if destroying then destroying:Disconnect() end
 		if healthConnection then healthConnection:Disconnect() end
+		if poseConnection then poseConnection:Disconnect() end
+		for _, joint in ipairs(ownedJoints) do
+			joint.Transform = CFrame.identity
+			CollectionService:RemoveTag(joint, POSE_TAG)
+		end
 		reset()
 		if humanoid then humanoid:SetStateEnabled(swimState,swimEnabled) end
 		damageFlash:Destroy()
@@ -2138,6 +2147,21 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			end
 		end)
 	end
+	-- C0 contains the complete procedural pose. Animator.Transform would multiply
+	-- an unrelated avatar pose onto it, even if the Animate script was disabled.
+	-- Transform is not replicated, so the always-installed client guards it too.
+	for _, joint in pairs(motors) do table.insert(ownedJoints, joint) end
+	if rootJoint then table.insert(ownedJoints, rootJoint) end
+	for _, joint in ipairs(ownedJoints) do
+		joint.Transform = CFrame.identity
+		CollectionService:AddTag(joint, POSE_TAG)
+	end
+	model:SetAttribute("PoseOwnershipRevision", "ProceduralC0_01")
+	poseConnection = RunService.PreSimulation:Connect(function()
+		for _, joint in ipairs(ownedJoints) do
+			if joint.Parent then joint.Transform = CFrame.identity end
+		end
+	end)
 	local wasEnabled = true
 	heartbeat = RunService.Heartbeat:Connect(function(dt)
 		if not model:IsDescendantOf(workspace) then stop(); return end
@@ -3074,8 +3098,29 @@ local function stop()
  for _,name in ipairs(names) do CAS:UnbindAction(name) end
 end
 script.Destroying:Connect(stop)
-</ProtectedString></Properties></Item><Item class="LocalScript" referent="RBX8"><Properties><string name="Name">KaijuStageOneJumpMotor</string><ProtectedString name="Source">-- Server-authorized vertical impulse only. No input bindings, camera or horizontal steering.
+</ProtectedString></Properties></Item><Item class="LocalScript" referent="RBX8"><Properties><string name="Name">KaijuStageOneJumpMotor</string><ProtectedString name="Source">-- Always-installed character runtime: procedural pose ownership and authorized jumps.
+-- No input bindings, camera or horizontal steering; required with InstallInput=false.
 local Players=game:GetService("Players")
+local RunService=game:GetService("RunService")
+local CollectionService=game:GetService("CollectionService")
+local POSE_TAG="TrenchbornProceduralJoint"
+local joints={}
+local function trackJoint(joint)
+ if joint:IsA("Motor6D") then joints[joint]=true end
+end
+-- Include other equipped Kaijus as well as the local character. Tags survive
+-- replication/streaming; ordinary avatar joints and their Animator stay untouched.
+local jointAdded=CollectionService:GetInstanceAddedSignal(POSE_TAG):Connect(trackJoint)
+local jointRemoved=CollectionService:GetInstanceRemovedSignal(POSE_TAG):Connect(function(joint)
+ joints[joint]=nil
+end)
+for _,joint in ipairs(CollectionService:GetTagged(POSE_TAG)) do trackJoint(joint) end
+local poseConnection=RunService.PreSimulation:Connect(function()
+ -- Animator runs before this event. Server C0 remains the sole Kaiju pose source.
+ for joint in pairs(joints) do
+  if joint.Parent then joint.Transform=CFrame.identity end
+ end
+end)
 local player=Players.LocalPlayer
 local connection,contactConnection
 local alive=true
@@ -3089,7 +3134,7 @@ local function watch(character)
   local model,remote
   repeat
    if not alive or ticket~=generation or player.Character~=character then return end
-   model=character:FindFirstChild("Stage_1_Primal_Beast") or character:FindFirstChild("Stage_2_Storm_Hunter")
+   model=character:FindFirstChild("Stage_3_Rift_Stalker") or character:FindFirstChild("Stage_1_Primal_Beast") or character:FindFirstChild("Stage_2_Storm_Hunter")
    remote=model and model:FindFirstChild("KaijuJumpImpulse")
    if not remote then task.wait(0.03) end
   until remote or os.clock()&gt;deadline
@@ -3128,6 +3173,8 @@ end
 local added=player.CharacterAdded:Connect(watch)
 if player.Character then watch(player.Character) end
 script.Destroying:Connect(function()
+ poseConnection:Disconnect();jointAdded:Disconnect();jointRemoved:Disconnect()
+ table.clear(joints)
  alive=false;generation=generation+1;added:Disconnect()
  if connection then connection:Disconnect() end
  if contactConnection then contactConnection:Disconnect() end
