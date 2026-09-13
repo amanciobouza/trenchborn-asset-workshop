@@ -104,25 +104,25 @@ function Builder.Build(parent,ground,options)
     local theta=math.rad(angle)
     local normal=Vector3.new(sign*math.sin(theta)/rx,math.cos(theta)/ry,0).Unit
     local tangent=Vector3.new(normal.Y,-normal.X,0)
-    local center=Vector3.new(sign*rx*math.sin(theta),ry*math.cos(theta),({-0.1,-0.4,0.1})[layer])
+    local center=Vector3.new(sign*rx*math.sin(theta),ry*math.cos(theta),({-0.15,-0.5,0.35})[layer])
     local cf=shoulder.CFrame*CFrame.fromMatrix(center,tangent,normal,Vector3.zAxis)
     local width=({3.3,3.6,2.6})[layer]
-    local depth=({4.6,4.9,3.9})[layer]
-    local thickness,bevel=({0.75,0.95,0.7})[layer],0.24
+    local depth=({2.8,3.5,2.4})[layer]
+    local thickness,bevel=({0.75,0.95,0.7})[layer],({0.85,1.0,0.7})[layer]
     local name=side.."ShoulderArmor_"..layer
     -- The mineral root stays beneath its cap and enters the shoulder directly.
     -- No skin-coloured solids or rounded flesh appear between armor facets.
     newPart(model,"Part",name.."Root",Vector3.new(width*0.9,1.15,depth*0.9),
      cf*CFrame.new(0,-0.65,0))
     newPart(model,"Part",name.."Core",Vector3.new(width,thickness,depth),cf)
-    -- Wedge high edges meet the core; low edges form a bevel rather than a spike.
-    newPart(model,"WedgePart",name.."FrontBevel",Vector3.new(width,thickness,bevel),
-     cf*CFrame.new(0,0,-(depth+bevel)/2))
-    newPart(model,"WedgePart",name.."BackBevel",Vector3.new(width,thickness,bevel),
-     cf*CFrame.new(0,0,(depth+bevel)/2)*CFrame.Angles(0,math.pi,0))
+    -- Longer corner bevels replace the full-width square front/back ends.
+    newPart(model,"CornerWedgePart",name.."FrontBevel",Vector3.new(width,bevel,thickness),
+     cf*CFrame.new(0,0,-(depth+bevel)/2+0.12)*CFrame.Angles(-math.pi/2,0,0))
+    newPart(model,"CornerWedgePart",name.."BackBevel",Vector3.new(width,bevel,thickness),
+     cf*CFrame.new(0,0,(depth+bevel)/2-0.12)*CFrame.Angles(math.pi/2,0,0))
     for _,edge in ipairs({-1,1}) do
-     newPart(model,"WedgePart",name.."SideBevel"..edge,Vector3.new(depth,thickness,bevel),
-      cf*CFrame.new(edge*(width+bevel)/2,0,0)*CFrame.Angles(0,-edge*math.pi/2,0))
+     newPart(model,"WedgePart",name.."SideBevel"..edge,Vector3.new(depth,thickness,0.24),
+      cf*CFrame.new(edge*(width+0.24)/2,0,0)*CFrame.Angles(0,-edge*math.pi/2,0))
     end
    end
    -- Corner-wedge apexes run laterally out from buried, broad shoulder roots.
@@ -152,10 +152,23 @@ function Builder.Build(parent,ground,options)
    local length=(finish-start).Magnitude
    local guard=CFrame.lookAt((start+finish)/2,(start+finish)/2+axis,outward)
    -- Local Z is longitudinal, local Y is armor thickness on the outside of the arm.
-   newPart(model,"Part",side.."ForearmArmorRoot",Vector3.new(3.35,1.6,length*0.94),
+   newPart(model,"Part",side.."ForearmArmorRoot",Vector3.new(2.0,1.6,length*0.94),
     guard*CFrame.new(0,-0.6,0))
-   newPart(model,"Part",side.."ForearmArmorCore",Vector3.new(3.6,1.5,length),guard)
-   newPart(model,"WedgePart",side.."ForearmArmorWristTaper",Vector3.new(3.6,1.5,1.2),
+   newPart(model,"Part",side.."ForearmArmorCore",Vector3.new(2.15,1.5,length),guard)
+   -- Flat triangular side facets widen toward the elbow, narrow toward the wrist.
+   -- Local X becomes thickness, Y becomes lateral width, +Z faces the elbow.
+   for _,edge in ipairs({-1,1}) do
+    local flankLength=length*(edge<0 and 0.94 or 0.82)
+    newPart(model,"WedgePart",side.."ForearmArmorSideFacet"..edge,
+     Vector3.new(1.35,0.8,flankLength),
+     guard*CFrame.new(edge*1.45,-0.075,-(length-flankLength)/2)
+      *CFrame.Angles(0,math.pi,0)*CFrame.Angles(0,0,edge*math.pi/2))
+   end
+   -- Broad elbow bridge joins the three existing tips without widening the wrist.
+   newPart(model,"Part",side.."ForearmArmorElbowBridge",
+    Vector3.new(3.55,1.4,length*0.20),
+    guard*CFrame.new(0,-0.05,-length*0.40))
+   newPart(model,"WedgePart",side.."ForearmArmorWristTaper",Vector3.new(2.15,1.5,1.2),
     guard*CFrame.new(0,0,(length+1.2)/2-0.12)*CFrame.Angles(0,math.pi,0))
    -- Corner wedges taper across both the width and length of each basalt tip.
    -- Unequal lengths and thicknesses break the rectangular side silhouette.
@@ -203,7 +216,7 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending")
   model:SetAttribute("QualityGateC","Pending")
-  model:SetAttribute("GeometryRevision","S2_StormHunter_LeftShoulderSweep_13")
+  model:SetAttribute("GeometryRevision","S2_StormHunter_TaperedArmorContours_14")
   model:SetAttribute("VisualTarget","Storm Hunter concept approved in conversation")
   model:SetAttribute("HeightRatioToStageOne",(currentHeight*model:GetScale()-headDrop*buildScale)/sourceHeight)
   model:SetAttribute("Purpose","Stage 2 geometry review; anchored, no gameplay rig")
