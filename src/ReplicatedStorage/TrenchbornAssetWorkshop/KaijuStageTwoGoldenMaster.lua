@@ -168,6 +168,20 @@ function Builder.Build(parent,ground)
   end
   local currentHeight=model.Cranium.Position.Y+model.Cranium.Size.Y/2-soles(model)
   model:ScaleTo(model:GetScale()*sourceHeight*1.12/currentHeight)
+  -- Lower the complete face after sizing the body so the torso does not grow.
+  local headDrop=1.25*model:GetScale()
+  for _,p in ipairs(model:GetChildren()) do
+   if p:IsA("BasePart") then
+    if isHead(p.Name) then
+     p.CFrame=p.CFrame+Vector3.new(0,-headDrop,0)
+    elseif p.Name=="Neck" or p.Name=="ThroatShield" then
+     -- Shorten from the top; preserve the existing overlap with the chest.
+     local reduction=math.min(headDrop,p.Size.Y*0.30)
+     p.Size=Vector3.new(p.Size.X,p.Size.Y-reduction,p.Size.Z)
+     p.CFrame=p.CFrame+Vector3.new(0,-reduction/2,0)
+    end
+   end
+  end
   model:PivotTo(model:GetPivot()+Vector3.new(0,-soles(model),0))
   model:PivotTo(ground*model:GetPivot())
   -- Clear inherited Stage 1 approvals: only the new visual target has approval.
@@ -177,9 +191,9 @@ function Builder.Build(parent,ground)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending")
   model:SetAttribute("QualityGateC","Pending")
-  model:SetAttribute("GeometryRevision","S2_StormHunter_CornerWedgeElbowCrest_09")
+  model:SetAttribute("GeometryRevision","S2_StormHunter_LoweredHead_10")
   model:SetAttribute("VisualTarget","Storm Hunter concept approved in conversation")
-  model:SetAttribute("HeightRatioToStageOne",1.12)
+  model:SetAttribute("HeightRatioToStageOne",(currentHeight*model:GetScale()-headDrop)/sourceHeight)
   model:SetAttribute("Purpose","Stage 2 geometry review; anchored, no gameplay rig")
   model.Parent=parent
  end)
