@@ -96,18 +96,18 @@ function Builder.Build(parent,ground)
    local side=sign<0 and "Left" or "Right"
    local shoulder=model:FindFirstChild(side.."Deltoid")
    local forearm=model:FindFirstChild(side.."ForearmMass")
-   -- Thin bevelled shingles follow the deltoid surface from crown to outer arm.
+   -- Broad, uneven basalt facets form a football-pad silhouette above the deltoid.
    -- Local Y is plate thickness; broad X/Z faces overlap along the shoulder arc.
    local rx,ry=shoulder.Size.X/2,shoulder.Size.Y/2
-   for layer,angle in ipairs({20,52,84,112}) do
+   for layer,angle in ipairs({12,43,76}) do
     local theta=math.rad(angle)
     local normal=Vector3.new(sign*math.sin(theta)/rx,math.cos(theta)/ry,0).Unit
     local tangent=Vector3.new(normal.Y,-normal.X,0)
-    local center=Vector3.new(sign*rx*math.sin(theta),ry*math.cos(theta),-0.3)
+    local center=Vector3.new(sign*rx*math.sin(theta),ry*math.cos(theta),({-0.1,-0.4,0.1})[layer])
     local cf=shoulder.CFrame*CFrame.fromMatrix(center,tangent,normal,Vector3.zAxis)
-    local width=layer==4 and 2.45 or 2.85
-    local depth=layer==4 and 3.5 or 4.2
-    local thickness,bevel=0.48,0.35
+    local width=({3.3,3.6,2.6})[layer]
+    local depth=({4.6,4.9,3.9})[layer]
+    local thickness,bevel=({0.75,0.95,0.7})[layer],0.24
     local name=side.."ShoulderArmor_"..layer
     newPart(model,"Part",name.."Core",Vector3.new(width,thickness,depth),cf)
     -- Wedge high edges meet the core; low edges form a bevel rather than a spike.
@@ -120,6 +120,16 @@ function Builder.Build(parent,ground)
       cf*CFrame.new(edge*(width+bevel)/2,0,0)*CFrame.Angles(0,-edge*math.pi/2,0))
     end
    end
+   -- Wedge thickness tapers sideways to a broad pointed rim, not an upright horn.
+   -- Local +Z (the high edge) faces inward on both shoulders.
+   local wing=shoulder.CFrame*CFrame.new(sign*(rx+0.45),ry*0.56,-0.1)
+    *CFrame.Angles(0,-sign*math.pi/2,0)
+   newPart(model,"WedgePart",side.."ShoulderArmorLateralPoint",
+    Vector3.new(4.5,1.35,3.5),wing)
+   newPart(model,"WedgePart",side.."ShoulderArmorRearFacet",
+    Vector3.new(2.0,0.85,2.8),
+    shoulder.CFrame*CFrame.new(sign*(rx+0.2),ry*0.56+0.45,1.45)
+     *CFrame.Angles(0,-sign*math.pi/2,0))
    local guard=forearm.CFrame*CFrame.new(sign*forearm.Size.X*0.43,0,-forearm.Size.Z*0.18)
    newPart(model,"Part",side.."ForearmArmorCore",Vector3.new(1.5,3.5,3.6),guard)
    newPart(model,"WedgePart",side.."ForearmArmorTaper",Vector3.new(1.6,2.3,3.6),guard*CFrame.new(0,-1.8,0)*CFrame.Angles(0,0,math.pi))
@@ -135,7 +145,7 @@ function Builder.Build(parent,ground)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending")
   model:SetAttribute("QualityGateC","Pending")
-  model:SetAttribute("GeometryRevision","S2_StormHunter_ShoulderShell_03")
+  model:SetAttribute("GeometryRevision","S2_StormHunter_FacetedShoulderWings_04")
   model:SetAttribute("VisualTarget","Storm Hunter concept approved in conversation")
   model:SetAttribute("HeightRatioToStageOne",1.12)
   model:SetAttribute("Purpose","Stage 2 geometry review; anchored, no gameplay rig")
