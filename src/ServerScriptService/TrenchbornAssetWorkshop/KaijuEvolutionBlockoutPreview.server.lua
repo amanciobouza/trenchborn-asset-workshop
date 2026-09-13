@@ -25,12 +25,14 @@ end
 if soleBottom<math.huge then
 	display:PivotTo(display:GetPivot()+Vector3.new(0,origin.Position.Y-soleBottom,0))
 end
-local template = display:Clone() -- Unrigged geometry for every respawn.
-local pivotFromGround = origin:ToObjectSpace(template:GetPivot())
 stageOneRig.Attach(display)
--- Stage 2 stays an anchored geometry review beside the approved Stage 1.
+display:SetAttribute("AnimationMode","Idle")
+-- Keep Stage 1 as a stationary comparison; equip Stage 2 on every respawn.
 local stormBuilder=require(packageFolder:WaitForChild("KaijuStageTwoGoldenMaster"))
-local storm=stormBuilder.Build(workshop,origin*CFrame.new(42,0,0))
+local stormOrigin=origin*CFrame.new(42,0,0)
+local storm=stormBuilder.Build(workshop,stormOrigin)
+local template=storm:Clone() -- Clone before adding the display-only label or rig.
+local pivotFromGround=stormOrigin:ToObjectSpace(template:GetPivot())
 local label=Instance.new("BillboardGui")
 label.Name="StageTwoReviewLabel";label.Adornee=storm:FindFirstChild("Cranium")
 label.Size=UDim2.fromOffset(280,56);label.StudsOffsetWorldSpace=Vector3.new(0,5,0)
@@ -42,14 +44,14 @@ title.Text="STAGE 2 · STORM HUNTER\nGEOMETRY REVIEW";title.TextScaled=true;titl
 
 preview:SetAttribute("PipelinePhase", 6)
 preview:SetAttribute("QualityGateC", "Pending")
-preview:SetAttribute("Purpose", "Stage 1 player control review")
+preview:SetAttribute("Purpose", "Stage 1 stationary comparison")
 
 local function equip(player, character)
 	local humanoid = character:WaitForChild("Humanoid", 15)
 	local root = character:WaitForChild("HumanoidRootPart", 15)
 	if not humanoid or not root or player.Character ~= character then return end
-	if character:GetAttribute("KaijuStageOneEquipped") then return end
-	character:SetAttribute("KaijuStageOneEquipped", true)
+	if character:GetAttribute("KaijuStageTwoEquipped") then return end
+	character:SetAttribute("KaijuStageTwoEquipped", true)
 	-- Finish avatar scaling before calculating the ground-to-root offset.
 	local deadline = os.clock() + 10
 	while not player:HasAppearanceLoaded() and os.clock() < deadline do
@@ -61,7 +63,7 @@ local function equip(player, character)
 	-- Retain Roblox's controller for keyboard, controller, touch, gravity and
 	-- respawning. Only its visible avatar is replaced.
 	local kaiju = template:Clone()
-	kaiju.Name = "Stage_1_Primal_Beast"
+	kaiju.Name = "Stage_2_Storm_Hunter"
 	local function hideAvatar(item)
 		if item:IsDescendantOf(kaiju) then return end
 		if item:IsA("BasePart") then
@@ -165,7 +167,9 @@ local function equip(player, character)
 		lastAttackRequest = now
 		rig.RequestAttack()
 	end)
-	kaiju:SetAttribute("GeometryAmendmentReview", "ApprovedByUser")
+	kaiju:SetAttribute("GeometryAmendmentReview", "Pending")
+	kaiju:SetAttribute("QualityGateB","Pending")
+	kaiju:SetAttribute("GameplayReview","Stage 1 motions reused for Stage 2 preview")
 	kaiju:SetAttribute("ControlledBy", player.UserId)
 
 	-- Torso collision prevents the upper body passing through walls.
@@ -189,7 +193,7 @@ local function equip(player, character)
 	humanoid.AutoJumpEnabled = false
 	player.CameraMinZoomDistance = 42
 	player.CameraMaxZoomDistance = 110
-	if display and display.Parent then display:Destroy() end
+	if storm and storm.Parent then storm:Destroy() end
 
 	character.Destroying:Once(function()
 		if reactionTestConnection then reactionTestConnection:Disconnect() end
@@ -224,7 +228,7 @@ end
 Players.PlayerAdded:Connect(connectPlayer)
 Players.PlayerRemoving:Connect(combatModule.RemoveRange)
 for _, player in ipairs(Players:GetPlayers()) do connectPlayer(player) end
-workshop:SetAttribute("CurrentAsset", "Kaiju Stage 1 - Primal Beast")
+workshop:SetAttribute("CurrentAsset", "Kaiju Stage 2 - Storm Hunter")
 workshop:SetAttribute("CurrentPhase", 6)
-workshop:SetAttribute("QualityStatus", "Phase6_Stage1PlayerControlReview")
-print("[Kaiju] Play: control Stage 1 with Roblox movement. Guardian controls retired.")
+workshop:SetAttribute("QualityStatus", "Stage2_MovementPreview_GeometryPending")
+print("[Kaiju] Play: control Stage 2 with Roblox movement. Guardian controls retired.")
