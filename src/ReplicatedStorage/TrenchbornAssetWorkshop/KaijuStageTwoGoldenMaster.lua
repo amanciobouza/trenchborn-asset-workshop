@@ -187,6 +187,50 @@ function Builder.Build(parent,ground,options)
       *CFrame.Angles(-math.pi/2,0,0))
    end
   end
+  -- Phase 5 dressing: preserve every approved solid and its transform.
+  for _,p in ipairs(model:GetChildren()) do
+   if p:IsA("BasePart") and p.Name:find("Armor",1,true) then
+    p.Material=Enum.Material.Basalt
+    p.Reflectance=0
+    if p.Name:find("Root",1,true) then
+     p.Color=Color3.fromRGB(38,42,47)
+    elseif p.Name:find("Bevel",1,true) or p.Name:find("Facet",1,true) then
+     p.Color=Color3.fromRGB(76,78,77)
+    elseif p.Name:find("Point",1,true) or p.Name:find("Extension",1,true) then
+     p.Color=Color3.fromRGB(63,67,70)
+    else
+     p.Color=Color3.fromRGB(53,58,62)
+    end
+   end
+  end
+  -- Short surface seams near the armor roots; no large luminous panels.
+  -- Names keep the armor prefix so seams follow the same articulated region.
+  local function seam(surface,name,points)
+   for i=1,#points-1 do
+    local a=surface.CFrame:PointToWorldSpace(points[i])
+    local b=surface.CFrame:PointToWorldSpace(points[i+1])
+    local p=newPart(model,"Part",name..i,Vector3.new(0.065,0.025,(b-a).Magnitude+0.025),
+     CFrame.lookAt((a+b)/2,b,surface.CFrame.UpVector))
+    p.Material=Enum.Material.Neon
+    p.Color=Color3.fromRGB(193,153,28)
+    p.Transparency=0.22
+    p.CastShadow=false
+   end
+  end
+  for _,side in ipairs({"Left","Right"}) do
+   local sign=side=="Left" and -1 or 1
+   local shoulder=model:FindFirstChild(side.."ShoulderArmor_1Core")
+   local y=shoulder.Size.Y/2+0.018
+   seam(shoulder,side.."ShoulderArmorEnergySeam_",{
+    Vector3.new(-sign*0.95,y,-0.65),Vector3.new(-sign*0.72,y,-0.25),
+    Vector3.new(-sign*0.88,y,0.05),Vector3.new(-sign*0.55,y,0.42)})
+   local arm=model:FindFirstChild(side.."ForearmArmorCore")
+   y=arm.Size.Y/2+0.018
+   local z=-arm.Size.Z*0.25
+   seam(arm,side.."ForearmArmorEnergySeam_",{
+    Vector3.new(sign*0.72,y,z+0.65),Vector3.new(sign*0.48,y,z+0.3),
+    Vector3.new(sign*0.62,y,z),Vector3.new(sign*0.35,y,z-0.25)})
+  end
   local currentHeight=model.Cranium.Position.Y+model.Cranium.Size.Y/2-soles(model)
   model:ScaleTo(model:GetScale()*sourceHeight*1.12/currentHeight)
   -- Lower the complete face after sizing the body so the torso does not grow.
@@ -209,17 +253,20 @@ function Builder.Build(parent,ground,options)
   model:PivotTo(model:GetPivot()+Vector3.new(0,-soles(model),0))
   model:SetAttribute("BuildScale",buildScale)
   model:PivotTo(ground*model:GetPivot())
-  -- Clear inherited Stage 1 approvals: only the new visual target has approval.
+  -- Replace inherited Stage 1 metadata with the approved Stage 2 geometry baseline.
   for _,name in ipairs({"ApprovedGeometryCommit","DressingRevision","DressingReview","GeometryAmendmentReview"}) do model:SetAttribute(name,nil) end
   model:SetAttribute("EvolutionStage",2)
-  model:SetAttribute("PipelinePhase",4)
+  model:SetAttribute("PipelinePhase",5)
   model:SetAttribute("QualityGateA","ApprovedByUser")
-  model:SetAttribute("QualityGateB","Pending")
+  model:SetAttribute("QualityGateB","ApprovedByUser")
+  model:SetAttribute("ApprovedGeometryCommit","26ad62cf8b663b1dd5c1900a09f5e2b93dc58cd2")
+  model:SetAttribute("DressingRevision","S2_BasaltFacets_SubtleEnergySeams_01")
+  model:SetAttribute("DressingReview","Pending")
   model:SetAttribute("QualityGateC","Pending")
   model:SetAttribute("GeometryRevision","S2_StormHunter_TaperedArmorContours_14")
   model:SetAttribute("VisualTarget","Storm Hunter concept approved in conversation")
   model:SetAttribute("HeightRatioToStageOne",(currentHeight*model:GetScale()-headDrop*buildScale)/sourceHeight)
-  model:SetAttribute("Purpose","Stage 2 geometry review; anchored, no gameplay rig")
+  model:SetAttribute("Purpose","Stage 2 dressing review; geometry approved")
   model.Parent=parent
  end)
  staging:Destroy()
