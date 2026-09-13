@@ -567,29 +567,16 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		model:SetAttribute("FocusPhase","Charging")
 		return true
 	end
-	local savedSpeed, savedOwner, savedAutoRotate, airDirection
-	local airSpeed=WALK_SPEED
 	local landingBlend=1
 	local bufferedJumpUntil=0
 	local bufferedDirection=Vector3.zero
 	local JUMP_HEIGHT=14
-	local ownsPhysics=false
-	local function restoreJump()
-		if humanoid and savedSpeed then humanoid.WalkSpeed=runRequested and RUN_SPEED or WALK_SPEED end
-		savedSpeed=nil
-		if humanoid and savedAutoRotate~=nil then humanoid.AutoRotate=savedAutoRotate end
-		savedAutoRotate=nil
-		if ownsPhysics and movementRoot and movementRoot:IsDescendantOf(workspace) then
-			if savedOwner and savedOwner.Parent then movementRoot:SetNetworkOwner(savedOwner)
-			else movementRoot:SetNetworkOwnershipAuto() end
-		end
-		ownsPhysics=false
+	local jumpImpulse
+	if owner then
+		jumpImpulse=Instance.new("RemoteEvent");jumpImpulse.Name="KaijuJumpImpulse";jumpImpulse.Parent=model
 	end
-	local function setAirDirection(direction)
-		if jump.Phase~="Air" and jump.Phase~="Windup" then return end
-		local flat=Vector3.new(direction.X,0,direction.Z)
-		airDirection=flat.Magnitude>0.05 and flat.Unit or Vector3.zero
-	end
+	local function restoreJump() end -- Jump never takes movement or network ownership.
+	local function setAirDirection(direction) end -- Compatibility: native client movement owns direction.
 	local function requestJump(direction)
 		if stopped or isStaggered() or focus or area or not humanoid or humanoid.Health<=0 or not movementRoot
 			or model:GetAttribute("IdleEnabled")==false then return false end
@@ -604,12 +591,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		bufferedJumpUntil=0
 		combo:Cancel()
 		if combat then combat.Cancel() end
-		savedSpeed=humanoid.WalkSpeed
-		airSpeed=runRequested and RUN_SPEED or WALK_SPEED
-		airDirection=Vector3.zero
-		if direction then setAirDirection(direction) end
-		-- Anticipation is a pose, not a brake on movement.
-		humanoid.WalkSpeed=airSpeed
+
 		return true
 	end
 	local lastRoofAssist=-math.huge
@@ -925,20 +907,15 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			jumpPose,jumpEvent=jump:Update(os.clock(),humanoid.FloorMaterial~=Enum.Material.Air,movementRoot.AssemblyLinearVelocity.Y)
 			if jumpEvent=="Takeoff" then
 				feedback("JumpWhoosh",bones.Pelvis,true)
-				-- Direction comes only from movement input; neutral jumps are vertical.
-				-- Steering changes travel, while the body keeps its takeoff heading.
-				savedAutoRotate=humanoid.AutoRotate
-				humanoid.AutoRotate=false
-				savedOwner=movementRoot:GetNetworkOwner()
-				movementRoot:SetNetworkOwner(nil)
-				ownsPhysics=true
-				humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
-				local velocity=movementRoot.AssemblyLinearVelocity
 				local rise=math.sqrt(2*workspace.Gravity*JUMP_HEIGHT*scale)
-				local horizontal=Vector3.new(velocity.X,0,velocity.Z)
-				if airDirection.Magnitude==0 then horizontal=Vector3.zero
-				elseif horizontal.Magnitude>airSpeed then horizontal=horizontal.Unit*airSpeed end
-				movementRoot:ApplyImpulse((horizontal+Vector3.new(0,rise,0)-velocity)*movementRoot.AssemblyMass)
+				if jumpImpulse then
+					-- Authorize only vertical takeoff on the owning client. Keep its live X/Z velocity.
+					jumpImpulse:FireClient(owner,rise)
+				else
+					humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
+					local velocity=movementRoot.AssemblyLinearVelocity
+					movementRoot:ApplyImpulse(Vector3.new(0,rise-velocity.Y,0)*movementRoot.AssemblyMass)
+				end
 			elseif jumpEvent=="Land" then
 				landingBlend=1
 				local velocity=movementRoot.AssemblyLinearVelocity
@@ -948,18 +925,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				runFootfall("Left",2.2);runFootfall("Right",2.2)
 				if combat then combat.Handle("Land",0) end
 			elseif jumpEvent=="Restore" then restoreJump() end
-			if jump.Phase=="Air" then
-				-- Keep takeoff speed. Ease corrections and braking instead of snapping
-				-- between full travel and zero when a direction key changes.
-				local velocity=movementRoot.AssemblyLinearVelocity
-				local horizontal=Vector3.new(velocity.X,0,velocity.Z)
-				local target=airDirection*airSpeed
-				local response=1-math.exp(-poseDt/0.16)
-				local nextHorizontal=horizontal:Lerp(target,response)
-				humanoid.WalkSpeed=nextHorizontal.Magnitude
-				humanoid:Move(nextHorizontal.Magnitude>0.01 and nextHorizontal.Unit or Vector3.zero,false)
-				movementRoot:ApplyImpulse((nextHorizontal-horizontal)*movementRoot.AssemblyMass)
-			elseif jump.Phase=="Landing" then
+			if jump.Phase=="Landing" then
 				-- The heavy compression remains visual; movement and turning are free.
 				if bufferedJumpUntil>=os.clock() then requestJump(bufferedDirection) end
 			end
@@ -981,7 +947,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		if swimming or (jumpPose and not landing) or isStaggered() then walking=false end
 		if focus then walking=false;humanoid:Move(Vector3.zero,false) end
 		if area then walking=false;humanoid:Move(Vector3.zero,false) end
-		local groundControl=not swimming and (jump.Phase=="Idle" or jump.Phase=="Landing" or jump.Phase=="Windup")
+		local groundControl=not swimming and (jump.Phase=="Idle" or jump.Phase=="Landing" or jump.Phase=="Windup" or jump.Phase=="Air")
 		local runAllowed=not isStaggered() and not focus and not area and groundControl
 			and humanoid and humanoid.Health>0
 		if humanoid and not focus and not area and groundControl and humanoid.Health>0 then
