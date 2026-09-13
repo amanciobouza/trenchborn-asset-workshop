@@ -9,6 +9,13 @@ local function newPart(model,class,name,size,cf)
  p.TopSurface=Enum.SurfaceType.Smooth;p.BottomSurface=Enum.SurfaceType.Smooth;p.Parent=model
  return p
 end
+local function growth(model,name,size,cf,skin,stone,blend)
+ local p=newPart(model,"Part",name,size,cf)
+ local mesh=Instance.new("SpecialMesh");mesh.MeshType=Enum.MeshType.Sphere;mesh.Parent=p
+ p.Color=skin:Lerp(stone,blend)
+ p.Material=blend<0.4 and Enum.Material.Rubber or Enum.Material.Basalt
+ return p
+end
 local function isHead(name)
  if name=="Cranium" or name=="SnoutBridge" or name=="FrontalBridge" or name=="LowerJawRear" then return true end
  if name:match("^UpperMuzzle") or name:match("^LowerJawFront") then return true end
@@ -109,6 +116,11 @@ function Builder.Build(parent,ground)
     local depth=({4.6,4.9,3.9})[layer]
     local thickness,bevel=({0.75,0.95,0.7})[layer],0.24
     local name=side.."ShoulderArmor_"..layer
+    -- Buried roots and low skin lips conceal the manufactured-looking lower seam.
+    growth(model,name.."Root",Vector3.new(width*1.15,1.45,depth*1.06),
+     cf*CFrame.new(0,-0.55,0),shoulder.Color,Color3.fromRGB(68,67,64),0.55)
+    growth(model,name.."SkinLip",Vector3.new(width*1.1,0.65,1.15),
+     cf*CFrame.new(0,-0.18,-depth*0.46),shoulder.Color,Color3.fromRGB(68,67,64),0.22)
     newPart(model,"Part",name.."Core",Vector3.new(width,thickness,depth),cf)
     -- Wedge high edges meet the core; low edges form a bevel rather than a spike.
     newPart(model,"WedgePart",name.."FrontBevel",Vector3.new(width,thickness,bevel),
@@ -131,8 +143,27 @@ function Builder.Build(parent,ground)
     shoulder.CFrame*CFrame.new(sign*(rx+0.2),ry*0.56+0.45,1.45)
      *CFrame.Angles(0,-sign*math.pi/2,0))
    local guard=forearm.CFrame*CFrame.new(sign*forearm.Size.X*0.43,0,-forearm.Size.Z*0.18)
+   growth(model,side.."ForearmArmorRoot",Vector3.new(2.4,4.9,4.2),
+    guard*CFrame.new(-sign*0.55,0,0),forearm.Color,Color3.fromRGB(68,67,64),0.55)
+   growth(model,side.."ForearmArmorSkinLip",Vector3.new(1.25,3.7,1.3),
+    guard*CFrame.new(-sign*0.35,-0.2,-1.6),forearm.Color,Color3.fromRGB(68,67,64),0.2)
    newPart(model,"Part",side.."ForearmArmorCore",Vector3.new(1.5,3.5,3.6),guard)
    newPart(model,"WedgePart",side.."ForearmArmorTaper",Vector3.new(1.6,2.3,3.6),guard*CFrame.new(0,-1.8,0)*CFrame.Angles(0,0,math.pi))
+   -- The extra elbow projects behind the joint, perpendicular to the forearm.
+   -- Prefix keeps the root, transition and spike bound to the forearm bone.
+   local elbow=model:FindFirstChild(side.."ElbowJoint").Position
+   local wrist=model:FindFirstChild(side.."WristJoint").Position
+   local axis=(wrist-elbow).Unit
+   local rear=Vector3.zAxis-axis*axis:Dot(Vector3.zAxis)
+   local outward=(rear.Unit+Vector3.new(sign*0.18,0,0)).Unit
+   local base=elbow+outward*0.95
+   local frame=CFrame.lookAt(base,base+outward,axis)
+   growth(model,side.."ForearmArmorElbowRoot",Vector3.new(2.7,2.6,3.1),
+    frame,forearm.Color,Color3.fromRGB(68,67,64),0.65)
+   growth(model,side.."ForearmArmorElbowSkin",Vector3.new(3.0,2.4,1.5),
+    frame*CFrame.new(0,0,0.8),forearm.Color,Color3.fromRGB(68,67,64),0.18)
+   newPart(model,"WedgePart",side.."ForearmArmorElbowPoint",
+    Vector3.new(0.85,1.8,3.4),frame*CFrame.new(0,0.9,-1.6))
   end
   local currentHeight=model.Cranium.Position.Y+model.Cranium.Size.Y/2-soles(model)
   model:ScaleTo(model:GetScale()*sourceHeight*1.12/currentHeight)
@@ -145,7 +176,7 @@ function Builder.Build(parent,ground)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending")
   model:SetAttribute("QualityGateC","Pending")
-  model:SetAttribute("GeometryRevision","S2_StormHunter_FacetedShoulderWings_04")
+  model:SetAttribute("GeometryRevision","S2_StormHunter_GrownArmor_ElbowSpurs_05")
   model:SetAttribute("VisualTarget","Storm Hunter concept approved in conversation")
   model:SetAttribute("HeightRatioToStageOne",1.12)
   model:SetAttribute("Purpose","Stage 2 geometry review; anchored, no gameplay rig")
