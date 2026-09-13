@@ -4,7 +4,7 @@ local Players=game:GetService("Players")
 local Builder=require(script.Parent:WaitForChild("KaijuEvolutionBlockout"))
 local StageTwo=require(script.Parent:WaitForChild("KaijuStageTwoGoldenMaster"))
 local Rig=require(script.Parent:WaitForChild("KaijuStageOneRig"))
-local Installer={Version="1.0.1",ApprovedRevision="803c8ae4789f87b1a20ba6fa5433ecfda5e49675"}
+local Installer={Version="1.0.2",ApprovedRevision="803c8ae4789f87b1a20ba6fa5433ecfda5e49675"}
 local installations=setmetatable({}, {__mode="k"})
 local NAME="Stage_2_Storm_Hunter"
 local function stamp(model)
