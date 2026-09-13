@@ -216,13 +216,64 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 		end
 		return point,delta.Magnitude
 	end
-	local function selectTarget()
-		local best,distance=nil,math.huge
-		for target in pairs(targets) do
-			local _,d=reachable(target)
-			if d and d<distance then best,distance=target,d end
+	local function meleePoint(target,index)
+		local data=targets[target]
+		if not data or data.Health<=0 or data.HeldBy or not target:IsDescendantOf(workspace) then return nil end
+		local from=root.Position+Vector3.new(0,4*scale-rootHeight,0)
+		local probes={from}
+		local joints=kaiju:FindFirstChild("Articulation")
+		local sides=index==1 and {"Left"} or index==2 and {"Right"} or {"Left","Right"}
+		local preferred={}
+		for _,side in ipairs(sides) do
+			local hand=joints and joints:FindFirstChild(side.."Hand")
+			local palm=kaiju:FindFirstChild(side.."PalmCoreZ")
+			if hand then
+				-- Project the broad fist down to small roofs, keeping the original reach.
+				local localHand=root.CFrame:PointToObjectSpace(hand.Position)
+				local width=palm and math.max(palm.Size.X,palm.Size.Z)/2 or 1.5*scale
+				width=math.clamp(width,0.5*scale,2.5*scale)
+				for _,offset in ipairs({0,-width,width}) do
+					local probe=root.CFrame:PointToWorldSpace(Vector3.new(
+						math.clamp(localHand.X+offset,-10*scale,10*scale),
+						4*scale-rootHeight,math.clamp(localHand.Z,-13*scale,-1*scale)))
+					table.insert(probes,probe)
+					if offset==0 then table.insert(preferred,probe) end
+				end
+			end
 		end
-		return best
+		local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Exclude
+		params.FilterDescendantsInstances={kaiju.Parent}
+		local best,bestScore=nil,math.huge
+		for _,surface in ipairs({data.Body,data.Roof}) do
+			for _,probe in ipairs(probes) do
+				local p=surface.CFrame:PointToObjectSpace(probe)
+				local half=surface.Size/2
+				local point=surface.CFrame:PointToWorldSpace(Vector3.new(
+					math.clamp(p.X,-half.X,half.X),math.clamp(p.Y,-half.Y,half.Y),math.clamp(p.Z,-half.Z,half.Z)))
+				local relative=root.CFrame:PointToObjectSpace(point)
+				local delta=point-from
+				if relative.Z<0 and math.abs(relative.X)<=10*scale and delta.Magnitude<=13*scale then
+					local hit=delta.Magnitude>0.05 and workspace:Raycast(from,delta.Unit*(delta.Magnitude+0.15),params)
+					if delta.Magnitude<=0.05 or (hit and hit.Instance:IsDescendantOf(target)) then
+						local contact=hit and hit.Position or point
+						local handDistance=math.huge
+						for _,center in ipairs(preferred) do handDistance=math.min(handDistance,(contact-center).Magnitude) end
+						if #preferred==0 then handDistance=delta.Magnitude end
+						local score=handDistance+delta.Magnitude*0.25
+						if score<bestScore then best,bestScore=contact,score end
+					end
+				end
+			end
+		end
+		return best,bestScore
+	end
+	local function selectTarget(index)
+		local best,point,distance=nil,nil,math.huge
+		for target in pairs(targets) do
+			local p,d=meleePoint(target,index)
+			if p and d<distance then best,point,distance=target,p,d end
+		end
+		return best,point
 	end
 	local function prepareFinisher()
 		if not candidate or os.clock()>candidateExpires or humanoid.Health<=0
@@ -307,11 +358,11 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 			point,visible=focusAim(target,from)
 			if not visible then point=nil end
 		elseif landing then target,point=landingTarget()
-		elseif index==4 then target=locked else target=selectTarget() end
+		elseif index==4 then target=locked else target,point=selectTarget(index) end
 		locked=nil
 		local data=target and targets[target]
 		local lifted=index==4 and held==target and data and data.HeldBy==holder
-		if not landing and not focus and not area then
+		if not landing and not focus and not area and index==4 then
 			if lifted then point=data.Body.Position else point=target and reachable(target) end
 		end
 		if not point then cancel();kaiju:SetAttribute("LastAttackResult","Miss");return end
