@@ -4,7 +4,7 @@ local RunService=game:GetService("RunService")
 local Players=game:GetService("Players")
 local Builder=require(script.Parent:WaitForChild("KaijuEvolutionBlockout"))
 local Rig=require(script.Parent:WaitForChild("KaijuStageOneRig"))
-local Installer={Version="1.1.0",ApprovedRevision="e2e669b53806f19f62b76d68c8b4ac6065f71015"}
+local Installer={Version="1.1.1",ApprovedRevision="e2e669b53806f19f62b76d68c8b4ac6065f71015"}
 local installations=setmetatable({}, {__mode="k"})
 local NAME="Stage_1_Primal_Beast"
 local function stamp(model)
@@ -53,7 +53,7 @@ function Installer.Install(character,options)
   local leg=character:FindFirstChild("Left Leg");if leg then height=height+leg.Size.Y end
  end
  local ground=root.CFrame*CFrame.new(0,-height,0)
- local model,rig,combat,collider,inputGui
+ local model,rig,combat,collider,inputGui,motorGui
  local connections,saved={},{}
  local settings={}
  for _,key in ipairs({"WalkSpeed","AutoRotate","UseJumpPower","JumpPower","AutoJumpEnabled","BreakJointsOnDeath"}) do settings[key]=humanoid[key] end
@@ -77,6 +77,7 @@ function Installer.Install(character,options)
   if rig then rig.Stop() end
   if combat and combat.Destroy then combat.Destroy() end
   if inputGui then inputGui:Destroy() end
+  if motorGui then motorGui:Destroy() end
   if collider then collider:Destroy() end
   if model then model:Destroy() end
   for item,properties in pairs(saved) do
@@ -142,6 +143,13 @@ function Installer.Install(character,options)
    inputGui=Instance.new("ScreenGui");inputGui.Name="PrimalBeastInput";inputGui.ResetOnSpawn=true
    local input=script.Parent:WaitForChild("KaijuStageOneInput"):Clone()
    input.Parent=inputGui;inputGui.Parent=gui
+  end
+  if player then
+   local gui=assert(player:FindFirstChildOfClass("PlayerGui"),"PlayerGui not ready")
+   assert(not gui:FindFirstChild("PrimalBeastMotor"),"Jump motor already installed")
+   motorGui=Instance.new("ScreenGui");motorGui.Name="PrimalBeastMotor";motorGui.ResetOnSpawn=true
+   script.Parent:WaitForChild("KaijuStageOneJumpMotor"):Clone().Parent=motorGui
+   motorGui.Parent=gui
   end
   stamp(model)
   if player then model:SetAttribute("ControlledBy",player.UserId) end
@@ -1519,29 +1527,16 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		model:SetAttribute("FocusPhase","Charging")
 		return true
 	end
-	local savedSpeed, savedOwner, savedAutoRotate, airDirection
-	local airSpeed=WALK_SPEED
 	local landingBlend=1
 	local bufferedJumpUntil=0
 	local bufferedDirection=Vector3.zero
 	local JUMP_HEIGHT=14
-	local ownsPhysics=false
-	local function restoreJump()
-		if humanoid and savedSpeed then humanoid.WalkSpeed=runRequested and RUN_SPEED or WALK_SPEED end
-		savedSpeed=nil
-		if humanoid and savedAutoRotate~=nil then humanoid.AutoRotate=savedAutoRotate end
-		savedAutoRotate=nil
-		if ownsPhysics and movementRoot and movementRoot:IsDescendantOf(workspace) then
-			if savedOwner and savedOwner.Parent then movementRoot:SetNetworkOwner(savedOwner)
-			else movementRoot:SetNetworkOwnershipAuto() end
-		end
-		ownsPhysics=false
+	local jumpImpulse
+	if owner then
+		jumpImpulse=Instance.new("RemoteEvent");jumpImpulse.Name="KaijuJumpImpulse";jumpImpulse.Parent=model
 	end
-	local function setAirDirection(direction)
-		if jump.Phase~="Air" and jump.Phase~="Windup" then return end
-		local flat=Vector3.new(direction.X,0,direction.Z)
-		airDirection=flat.Magnitude&gt;0.05 and flat.Unit or Vector3.zero
-	end
+	local function restoreJump() end -- Jump never takes movement or network ownership.
+	local function setAirDirection(direction) end -- Compatibility: native client movement owns direction.
 	local function requestJump(direction)
 		if stopped or isStaggered() or focus or area or not humanoid or humanoid.Health&lt;=0 or not movementRoot
 			or model:GetAttribute("IdleEnabled")==false then return false end
@@ -1556,12 +1551,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		bufferedJumpUntil=0
 		combo:Cancel()
 		if combat then combat.Cancel() end
-		savedSpeed=humanoid.WalkSpeed
-		airSpeed=runRequested and RUN_SPEED or WALK_SPEED
-		airDirection=Vector3.zero
-		if direction then setAirDirection(direction) end
-		-- Anticipation is a pose, not a brake on movement.
-		humanoid.WalkSpeed=airSpeed
+
 		return true
 	end
 	local lastRoofAssist=-math.huge
@@ -1877,20 +1867,15 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			jumpPose,jumpEvent=jump:Update(os.clock(),humanoid.FloorMaterial~=Enum.Material.Air,movementRoot.AssemblyLinearVelocity.Y)
 			if jumpEvent=="Takeoff" then
 				feedback("JumpWhoosh",bones.Pelvis,true)
-				-- Direction comes only from movement input; neutral jumps are vertical.
-				-- Steering changes travel, while the body keeps its takeoff heading.
-				savedAutoRotate=humanoid.AutoRotate
-				humanoid.AutoRotate=false
-				savedOwner=movementRoot:GetNetworkOwner()
-				movementRoot:SetNetworkOwner(nil)
-				ownsPhysics=true
-				humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
-				local velocity=movementRoot.AssemblyLinearVelocity
 				local rise=math.sqrt(2*workspace.Gravity*JUMP_HEIGHT*scale)
-				local horizontal=Vector3.new(velocity.X,0,velocity.Z)
-				if airDirection.Magnitude==0 then horizontal=Vector3.zero
-				elseif horizontal.Magnitude&gt;airSpeed then horizontal=horizontal.Unit*airSpeed end
-				movementRoot:ApplyImpulse((horizontal+Vector3.new(0,rise,0)-velocity)*movementRoot.AssemblyMass)
+				if jumpImpulse then
+					-- Authorize only vertical takeoff on the owning client. Keep its live X/Z velocity.
+					jumpImpulse:FireClient(owner,rise)
+				else
+					humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
+					local velocity=movementRoot.AssemblyLinearVelocity
+					movementRoot:ApplyImpulse(Vector3.new(0,rise-velocity.Y,0)*movementRoot.AssemblyMass)
+				end
 			elseif jumpEvent=="Land" then
 				landingBlend=1
 				local velocity=movementRoot.AssemblyLinearVelocity
@@ -1900,18 +1885,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				runFootfall("Left",2.2);runFootfall("Right",2.2)
 				if combat then combat.Handle("Land",0) end
 			elseif jumpEvent=="Restore" then restoreJump() end
-			if jump.Phase=="Air" then
-				-- Keep takeoff speed. Ease corrections and braking instead of snapping
-				-- between full travel and zero when a direction key changes.
-				local velocity=movementRoot.AssemblyLinearVelocity
-				local horizontal=Vector3.new(velocity.X,0,velocity.Z)
-				local target=airDirection*airSpeed
-				local response=1-math.exp(-poseDt/0.16)
-				local nextHorizontal=horizontal:Lerp(target,response)
-				humanoid.WalkSpeed=nextHorizontal.Magnitude
-				humanoid:Move(nextHorizontal.Magnitude&gt;0.01 and nextHorizontal.Unit or Vector3.zero,false)
-				movementRoot:ApplyImpulse((nextHorizontal-horizontal)*movementRoot.AssemblyMass)
-			elseif jump.Phase=="Landing" then
+			if jump.Phase=="Landing" then
 				-- The heavy compression remains visual; movement and turning are free.
 				if bufferedJumpUntil&gt;=os.clock() then requestJump(bufferedDirection) end
 			end
@@ -1933,7 +1907,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		if swimming or (jumpPose and not landing) or isStaggered() then walking=false end
 		if focus then walking=false;humanoid:Move(Vector3.zero,false) end
 		if area then walking=false;humanoid:Move(Vector3.zero,false) end
-		local groundControl=not swimming and (jump.Phase=="Idle" or jump.Phase=="Landing" or jump.Phase=="Windup")
+		local groundControl=not swimming and (jump.Phase=="Idle" or jump.Phase=="Landing" or jump.Phase=="Windup" or jump.Phase=="Air")
 		local runAllowed=not isStaggered() and not focus and not area and groundControl
 			and humanoid and humanoid.Health&gt;0
 		if humanoid and not focus and not area and groundControl and humanoid.Health&gt;0 then
@@ -2604,7 +2578,7 @@ return Combo
 </ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX5"><Properties><string name="Name">KaijuStageOneJump</string><ProtectedString name="Source">-- Jump timing is server-owned. Cooldown starts with activation.
 local Jump = {}
 local COYOTE_TIME=0.12
-local WINDUP=0.08 -- Brief anticipation, then immediate takeoff.
+local WINDUP=0 -- Brief anticipation, then immediate takeoff.
 local function smooth(t) t=math.max(0,math.min(1,t));return t*t*(3-2*t) end
 function Jump.new()
 	local s={Phase="Idle",Started=0,ReadyAt=0,LeftGround=false,Lead="Right",LastGrounded=-math.huge}
@@ -2749,4 +2723,41 @@ local function stop()
  for _,name in ipairs(names) do CAS:UnbindAction(name) end
 end
 script.Destroying:Connect(stop)
+</ProtectedString></Properties></Item><Item class="LocalScript" referent="RBX7"><Properties><string name="Name">KaijuStageOneJumpMotor</string><ProtectedString name="Source">-- Server-authorized vertical impulse only. No input bindings, camera or horizontal steering.
+local Players=game:GetService("Players")
+local player=Players.LocalPlayer
+local connection
+local alive=true
+local generation=0
+local function watch(character)
+ generation=generation+1;local ticket=generation
+ if connection then connection:Disconnect();connection=nil end
+ task.spawn(function()
+  local deadline=os.clock()+30
+  local model,remote
+  repeat
+   if not alive or ticket~=generation or player.Character~=character then return end
+   model=character:FindFirstChild("Stage_1_Primal_Beast") or character:FindFirstChild("Stage_2_Storm_Hunter")
+   remote=model and model:FindFirstChild("KaijuJumpImpulse")
+   if not remote then task.wait(0.03) end
+  until remote or os.clock()&gt;deadline
+  if not remote or not alive or ticket~=generation then return end
+  connection=remote.OnClientEvent:Connect(function(rise)
+   if not alive or player.Character~=character or not model.Parent then return end
+   local h=character:FindFirstChildOfClass("Humanoid")
+   local root=character:FindFirstChild("HumanoidRootPart")
+   if not h or h.Health&lt;=0 or not root or root.Anchored or h:GetState()==Enum.HumanoidStateType.Swimming then return end
+   if type(rise)~="number" or rise~=rise or rise&lt;=0 or rise&gt;500 then return end
+   local velocity=root.AssemblyLinearVelocity
+   h:ChangeState(Enum.HumanoidStateType.Freefall)
+   root.AssemblyLinearVelocity=Vector3.new(velocity.X,rise,velocity.Z)
+  end)
+ end)
+end
+local added=player.CharacterAdded:Connect(watch)
+if player.Character then watch(player.Character) end
+script.Destroying:Connect(function()
+ alive=false;generation=generation+1;added:Disconnect()
+ if connection then connection:Disconnect() end
+end)
 </ProtectedString></Properties></Item></Item></roblox>
