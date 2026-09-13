@@ -8,8 +8,13 @@ local combatModule = require(packageFolder:WaitForChild("KaijuStageOneCombat"))
 
 -- The retired bootstrap no longer creates Guardian models or controls.
 for _, child in ipairs(workshop:GetChildren()) do child:Destroy() end
+-- Set these Script number attributes before Play; omitted values default to 1.
+local stageOneOptions={Scale=script:GetAttribute("Stage1Scale")}
+local stageTwoOptions={Scale=script:GetAttribute("Stage2Scale")}
+blockout.ResolveBuildScale(stageOneOptions)
+blockout.ResolveBuildScale(stageTwoOptions)
 local origin = CFrame.new(0, 0, 145)
-local preview = blockout.BuildStage(workshop, 1, origin)
+local preview = blockout.BuildStage(workshop, 1, origin, stageOneOptions)
 local display = preview:FindFirstChild("Stage_1_Primal_Beast")
 assert(display and display:IsA("Model"), "Stage 1 model missing")
 -- Place the unrigged geometry by its soles once. Never adjust the live rig
@@ -28,7 +33,7 @@ end
 -- Keep Stage 1 as a stationary comparison; equip Stage 2 on every respawn.
 local stormBuilder=require(packageFolder:WaitForChild("KaijuStageTwoGoldenMaster"))
 local stormOrigin=origin*CFrame.new(42,0,0)
-local storm=stormBuilder.Build(workshop,stormOrigin)
+local storm=stormBuilder.Build(workshop,stormOrigin,stageTwoOptions)
 local template=storm:Clone() -- Clone before adding the display-only label or rig.
 local pivotFromGround=stormOrigin:ToObjectSpace(template:GetPivot())
 stageOneRig.Attach(display)
