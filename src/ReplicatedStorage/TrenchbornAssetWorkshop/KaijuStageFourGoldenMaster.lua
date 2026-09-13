@@ -203,11 +203,11 @@ function Builder.Build(parent,ground,options)
    -- Native WedgePart tapers toward local -Z. Aim that axis away from the
    -- body, embedding the broad +Z base in the shell rather than the thin tip.
    local spineRows={
-    {Mass="UpperRibcage",X=0.28,Y=0.40,Length=3.0,Region=side.."RibArmor",Width=1.8},
-    {Mass="UpperRibcage",X=0.34,Y=0.05,Length=2.5,Region=side.."RibArmor",Width=1.8},
-    {Mass="LowerRibcage",X=0.32,Y=-0.34,Length=1.9,Region=side.."RibArmor",Width=1.8},
-    {Mass="SacralMass",X=0.32,Y=0.05,Length=1.65,Region="PelvisArmor"..side,Width=1.55},
-    {Mass="TailRootMass",X=0.30,Y=0.15,Length=1.35,Region="TailBaseArmor"..side,Width=1.30},
+    {Mass="UpperRibcage",X=0.32,Y=0.40,Length=3.0,Region=side.."RibArmor",Width=1.8},
+    {Mass="UpperRibcage",X=0.38,Y=0.05,Length=2.5,Region=side.."RibArmor",Width=1.8},
+    {Mass="LowerRibcage",X=0.36,Y=-0.34,Length=1.9,Region=side.."RibArmor",Width=1.8},
+    {Mass="SacralMass",X=0.36,Y=0.05,Length=1.65,Region="PelvisArmor"..side,Width=1.55},
+    {Mass="TailRootMass",X=0.34,Y=0.15,Length=1.35,Region="TailBaseArmor"..side,Width=1.30},
    }
    -- Sample the outer envelope of overlapping back masses, not just the
    -- selected root: lumbar/sacral/tail bulges can otherwise swallow the shard.
@@ -249,7 +249,7 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending_UserGeometryReview")
   model:SetAttribute("QualityGateC","Pending_Stage4GameplayReview")
-  model:SetAttribute("GeometryRevision","S4_ArmoredHipsAndKneecaps_05")
+  model:SetAttribute("GeometryRevision","S4_SlightlyWiderBackSpines_06")
   model:SetAttribute("VisualTarget","Approved Stage 4 front/side/back concept")
   model:SetAttribute("Purpose","Stage 4 geometry review; chest energy dressing follows Gate B")
   model.Parent=parent
