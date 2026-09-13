@@ -157,6 +157,12 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		if p:GetAttribute("KaijuArmorEnergy") then table.insert(armorEnergy,p) end
 	end
 	local scale = model:GetScale()
+	-- Stage 3 focus visual mass; gameplay reach/damage and pulse travel stay unchanged.
+	local focusCoreWidth = stage>=3 and 1.30 or 0.45
+	local focusOuterWidth = stage>=3 and 3.10 or 1.15
+	local focusPulseScale = stage>=3 and 1.90 or 1
+	local focusImpactScale = stage>=3 and 1.80 or 1
+	local focusChargeScale = stage>=3 and 1.25 or 1
 	-- Supplemental support is animation-only: never snap or propel the character.
 	local supportParams=RaycastParams.new()
 	supportParams.FilterType=Enum.RaycastFilterType.Exclude
@@ -539,10 +545,10 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		focus.EmitPulse=function(from,to)
 			if (to-from).Magnitude<0.01 then return end
 			local pulse=effect("BeamPulse",Enum.PartType.Ball,Color3.fromRGB(230,255,255))
-			pulse.CFrame=CFrame.lookAt(from,to);pulse.Size=Vector3.new(1,1,1)*1.65*scale
+			pulse.CFrame=CFrame.lookAt(from,to);pulse.Size=Vector3.new(1,1,1)*1.65*scale*focusPulseScale
 			pulse.Transparency=0.15
-			local left=Instance.new("Attachment");left.Position=Vector3.new(-0.65*scale,0,0);left.Parent=pulse
-			local right=Instance.new("Attachment");right.Position=Vector3.new(0.65*scale,0,0);right.Parent=pulse
+			local left=Instance.new("Attachment");left.Position=Vector3.new(-0.65*scale*focusPulseScale,0,0);left.Parent=pulse
+			local right=Instance.new("Attachment");right.Position=Vector3.new(0.65*scale*focusPulseScale,0,0);right.Parent=pulse
 			local trail=Instance.new("Trail");trail.Name="OutwardEnergyWake"
 			trail.Attachment0=left;trail.Attachment1=right;trail.FaceCamera=true
 			trail.Lifetime=0.2;trail.MinLength=0.01;trail.LightEmission=1
@@ -1322,19 +1328,19 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				local onset=math.clamp((tailCount-index)/(tailCount-1),0,1)*1.5
 				p.Color=color:Lerp(focusColor,math.clamp((t-onset)/0.3,0,1)*fadeOut)
 			end
-			local orbSize=(0.15+charge*0.85)*(1+0.08*math.sin(t*28)*charge)*scale*fadeOut
+			local orbSize=(0.15+charge*0.85)*(1+0.08*math.sin(t*28)*charge)*scale*fadeOut*focusChargeScale
 			focus.Orb.Size=Vector3.new(orbSize,orbSize,orbSize)
 			focus.Orb.Transparency=0.15
 			for _,beam in ipairs({focus.Beam,focus.Core}) do
 				beam.Enabled=t>=2 and delta.Magnitude>0.01
 				beam.Transparency=NumberSequence.new(0.12+0.88*(1-fadeOut))
 				if t>=2 and delta.Magnitude>0.01 then
-					local width=math.max(0.05,(beam==focus.Core and 0.45 or 1.15)*(1+0.25*kick+0.08*math.sin(t*25))*scale*fadeOut)
+					local width=math.max(0.05,(beam==focus.Core and focusCoreWidth or focusOuterWidth)*(1+0.25*kick+0.08*math.sin(t*25))*scale*fadeOut)
 					beam.Width0=width;beam.Width1=width
 				end
 			end
 			focus.Impact.Transparency=firing and visible and 0.25 or 1
-			focus.Impact.Size=Vector3.new(2,2,2)*scale*(1+0.12*math.sin(t*40))
+			focus.Impact.Size=Vector3.new(2,2,2)*scale*focusImpactScale*(1+0.12*math.sin(t*40))
 			focus.Impact.CFrame=CFrame.new(point)
 			-- Intake and travelling pulses follow the moving palate, never a cached world point.
 			local mouthCF=upperLip.CFrame*palateOffset
