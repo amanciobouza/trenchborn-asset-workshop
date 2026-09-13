@@ -1,4 +1,4 @@
-# Primal Beast — portable package 1.1.1
+# Primal Beast — portable package 1.1.4
 
 ## Import into another Roblox project
 
@@ -45,8 +45,14 @@ Custom input should send flat MoveDirection on jump, release running on focus lo
 
 `python tools/build-kaiju-stage1.py` rebuilds the XML model and SHA-256 manifest using Python standard library only. Alternatively use `rojo build kaiju-stage1.project.json -o KaijuStageOne.rbxm`. XML source round-trips and package dependency isolation are checked; the artifact is not a rendered model or a Studio test result.
 
-The original Stage 1 visual/gameplay approval is recorded as a baseline. This 1.1.1 packaging and its input integration still need testing in the receiving experience: import, equip, run, jump, water entry/ascent/exit, real combat adapter, defeat, respawn and uninstall. Sound permissions and the game camera must also be checked there.
+The original Stage 1 visual/gameplay approval is recorded as a baseline. The package and its input integration still need testing in the receiving experience: import, equip, run, jump, water entry/ascent/exit, real combat adapter, defeat, respawn and uninstall. Sound permissions and the game camera must also be checked there.
 
 ## Jump motor in 1.1.1
 
 The installer always installs KaijuStageOneJumpMotor for player characters, including when InstallInput=false. It receives server-authorized vertical impulses through KaijuJumpImpulse, preserves horizontal velocity, and does not bind keys or control the camera. Import the complete updated package; replacing the rig alone omits this required client. No jump windup delay or server network-ownership takeover remains. Turning and walk/run speed remain controlled by the native character controller in air. Updated movement still needs a target-project playtest.
+
+## Accepted release 1.1.4
+
+Amancio approved the jump/landing correction at source revision `e835a34d4d65a8a73a895da704d2f960190e047e`. This release packages that accepted runtime unchanged: native movement in air, no landing crouch/rebound pose, short suppression of upward physical contact rebound, terrain swimming and latest sounds. The installer records this approval as its current ApprovedRevision. Target-project integration remains separately testable.
+
+To upgrade an existing import: Stop Play, uninstall an active installation if needed, then replace the entire ReplicatedStorage.TrenchbornKaijuStageOne folder with dist/KaijuStageOne.rbxmx. Do not retain old modules or omit KaijuStageOneJumpMotor. Keep the target game's bootstrap, CombatFactory, camera and HUD. Restart Play so require caches are fresh. For a first import, use examples/KaijuStageOne.server.lua; its PreviewOnly=true is deliberately movement-only until the game's damage adapter is supplied.
