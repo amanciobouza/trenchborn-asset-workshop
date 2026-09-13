@@ -53,17 +53,21 @@ local function surfaceFrame(parts,x,y,inset)
  return CFrame.fromMatrix(Vector3.new(x,y,z)+normal*inset,right,up,-normal)
 end
 local function facePlate(model,name,width,height,depth,cf)
- -- Restore the full original core and corner bounds; only their orientation changes.
+ -- Preserve the full core and the world-space bounds of both edge facets.
  stone(model,name.."Core",Vector3.new(width*0.72,height*0.78,depth),cf,"Part")
- -- Corner local +Y is the raised vertex: face it OUTWARD (-Z of the plate),
- -- not up the leg. Swap dimensions with the axes to keep the original footprint.
- local size=Vector3.new(width*0.32,depth,height)
+ -- Native corner apex is (+X,+Y,-Z), above a rectangular -Y base.
+ -- Keep Y along the plate: the triangular silhouette tapers toward the top.
+ -- Put the apex at the INNER/BACK corner, so the sloping faces face outward
+ -- and the full-height flat side overlaps the core instead of forming a wing.
+ local size=Vector3.new(width*0.32,height,depth)
  local right=CFrame.fromMatrix(Vector3.new(width*0.34,-height*0.06,0),
-  Vector3.xAxis,Vector3.new(0,0,-1),Vector3.yAxis)
+  -Vector3.xAxis,Vector3.yAxis,-Vector3.zAxis)
  stone(model,name.."Facet1",size,cf*right)
  local function mirror(v) return Vector3.new(-v.X,v.Y,v.Z) end
+ -- A reflection alone is not a rotation. The native shape's symmetry swaps
+ -- X with NEGATIVE Z (not positive Z); this preserves its (+,+,-) apex.
  local left=CFrame.fromMatrix(mirror(right.Position),
-  mirror(right.ZVector),mirror(right.UpVector),mirror(right.RightVector))
+  -mirror(right.ZVector),mirror(right.UpVector),-mirror(right.RightVector))
  stone(model,name.."Facet-1",Vector3.new(size.Z,size.Y,size.X),cf*left)
 end
 local function shinPlate(model,name,cf)
@@ -184,7 +188,7 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending")
   model:SetAttribute("QualityGateC","Pending")
-  model:SetAttribute("GeometryRevision","S3_FullSizeOutwardCornerArmor_07")
+  model:SetAttribute("GeometryRevision","S3_TaperedMirroredCornerArmor_08")
   model:SetAttribute("VisualTarget","Approved Stage 3 front/side/back concept; lateral rib armor amendment")
   model:SetAttribute("Purpose","Stage 3 geometry review; anchored candidate")
   model.Parent=parent
