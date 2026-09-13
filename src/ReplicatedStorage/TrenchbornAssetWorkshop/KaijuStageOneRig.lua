@@ -716,7 +716,8 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			fallen(side.."Shin",-14*kneel*(1-fall),0,0)
 			fallen(side.."Hock",6*kneel*(1-fall),0,0)
 			fallen(side.."Foot",-8*fall,0,0)
-			fallen(side.."UpperArm",185*fall,0,sign*30*fall)
+			-- Same final orientation as +185 degrees, reached via the opposite arc.
+			fallen(side.."UpperArm",-175*fall,0,sign*30*fall)
 			fallen(side.."Forearm",0,0,0)
 			fallen(side.."Hand",0,0,0)
 		end
