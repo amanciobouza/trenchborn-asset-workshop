@@ -1,0 +1,24 @@
+{
+  "name": "TrenchbornKaijuStageOne",
+  "tree": {
+    "$className": "Folder",
+    "KaijuStageOneInstaller": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuStageOneInstaller.lua"
+    },
+    "KaijuEvolutionBlockout": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuEvolutionBlockout.lua"
+    },
+    "KaijuStageOneRig": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuStageOneRig.lua"
+    },
+    "KaijuStageOneCombo": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuStageOneCombo.lua"
+    },
+    "KaijuStageOneJump": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuStageOneJump.lua"
+    },
+    "KaijuStageOneCombat": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuStageOneCombat.lua"
+    }
+  }
+}

@@ -2,6 +2,10 @@
 
 Synchronized Roblox Studio workspace for specification-driven Trenchborn asset development and automated quality gates.
 
+## Kaiju Stage 1 — final installer
+
+`KaijuStageOneInstaller` packages the user-approved Stage 1 runtime. Build the isolated asset with `rojo build kaiju-stage1.project.json -o KaijuStageOne.rbxm`. It requires the main game's building combat adapter and does not install camera logic, HUD or practice targets. See [installation, input API and adapter contract](docs/KAIJU_STAGE_1_RELEASE.md).
+
 ## Marshal-II Roadblock final installer
 
 `MarshalRoadblockInstaller` is the Phase 7 production API. It installs the approved model, dressing, fleet rig, gameplay, animations, combat VFX, and spatial sound pass. It does not install the workshop HUD, test buttons, or test targets.
