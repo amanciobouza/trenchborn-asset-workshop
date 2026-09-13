@@ -53,21 +53,18 @@ local function surfaceFrame(parts,x,y,inset)
  return CFrame.fromMatrix(Vector3.new(x,y,z)+normal*inset,right,up,-normal)
 end
 local function facePlate(model,name,width,height,depth,cf)
- -- A short upper core leaves the lower silhouette to two triangular facets.
- stone(model,name.."Core",Vector3.new(width*0.68,height*0.26,depth),
-  cf*CFrame.new(0,height*0.32,0),"Part")
- for _,edge in ipairs({-1,1}) do
-  -- Wedge local X = depth, Y = half-width, Z = vertical.
-  -- The high edge is at the top; the low edge meets the center at the bottom.
-  local frame=CFrame.fromMatrix(Vector3.new(edge*width*0.245,-height*0.08,0),
-   Vector3.new(0,0,edge),Vector3.new(edge,0,0),Vector3.yAxis)
-  stone(model,name.."Taper"..edge,Vector3.new(depth,width*0.51,height*0.82),
-   cf*frame,"WedgePart")
-  -- Small corner facets break the upper corners without filling the tapered end.
-  local corner=CFrame.fromMatrix(Vector3.new(edge*width*0.34,height*0.31,0),
-   Vector3.new(edge,0,0),Vector3.new(0,0,-1),Vector3.new(0,edge,0))
-  stone(model,name.."Facet"..edge,Vector3.new(width*0.32,depth,height*0.24),cf*corner)
- end
+ -- Restore the full original core and corner bounds; only their orientation changes.
+ stone(model,name.."Core",Vector3.new(width*0.72,height*0.78,depth),cf,"Part")
+ -- Corner local +Y is the raised vertex: face it OUTWARD (-Z of the plate),
+ -- not up the leg. Swap dimensions with the axes to keep the original footprint.
+ local size=Vector3.new(width*0.32,depth,height)
+ local right=CFrame.fromMatrix(Vector3.new(width*0.34,-height*0.06,0),
+  Vector3.xAxis,Vector3.new(0,0,-1),Vector3.yAxis)
+ stone(model,name.."Facet1",size,cf*right)
+ local function mirror(v) return Vector3.new(-v.X,v.Y,v.Z) end
+ local left=CFrame.fromMatrix(mirror(right.Position),
+  mirror(right.ZVector),mirror(right.UpVector),mirror(right.RightVector))
+ stone(model,name.."Facet-1",Vector3.new(size.Z,size.Y,size.X),cf*left)
 end
 local function shinPlate(model,name,cf)
  facePlate(model,name,3.0,3.4,0.8,cf)
@@ -152,7 +149,7 @@ function Builder.Build(parent,ground,options)
     x=pec.Position.X+sign*pec.Size.X*(i==1 and 0.29 or 0.24)
     y=pec.Position.Y-pec.Size.Y*(i==1 and 0.23 or 0.38)
     local ribFrame=surfaceFrame({pec,flank,ribs,belly},x,y,0.08)
-    facePlate(model,side.."RibArmor_"..i,1.85,0.90,0.46,
+    facePlate(model,side.."RibArmor_"..i,1.85,0.90,0.58,
      ribFrame*CFrame.Angles(0,0,sign*math.rad(6)))
    end
    local thigh=model:FindFirstChild(side.."ThighMass")
@@ -161,7 +158,7 @@ function Builder.Build(parent,ground,options)
    x=thigh.Position.X+sign*thigh.Size.X*0.28
    y=thigh.Position.Y+thigh.Size.Y*0.27
    local hipFrame=surfaceFrame({thigh,quad,hip},x,y,0.09)
-   facePlate(model,side.."HipArmor",2.05,2.5,0.52,hipFrame)
+   facePlate(model,side.."HipArmor",2.05,2.5,0.70,hipFrame)
    local knee=model:FindFirstChild(side.."KneeJoint")
    local hock=model:FindFirstChild(side.."HockJoint")
    local calf=model:FindFirstChild(side.."CalfMass")
@@ -187,7 +184,7 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending")
   model:SetAttribute("QualityGateC","Pending")
-  model:SetAttribute("GeometryRevision","S3_TaperedShieldSilhouettes_06")
+  model:SetAttribute("GeometryRevision","S3_FullSizeOutwardCornerArmor_07")
   model:SetAttribute("VisualTarget","Approved Stage 3 front/side/back concept; lateral rib armor amendment")
   model:SetAttribute("Purpose","Stage 3 geometry review; anchored candidate")
   model.Parent=parent
