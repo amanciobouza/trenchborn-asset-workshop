@@ -1,4 +1,4 @@
-# Primal Beast — portable package 1.1.4
+# Primal Beast — portable package 1.2.0
 
 ## Import into another Roblox project
 
@@ -57,7 +57,7 @@ Amancio approved the jump/landing correction at source revision `e835a34d4d65a8a
 
 To upgrade an existing import: Stop Play, uninstall an active installation if needed, then replace the entire ReplicatedStorage.TrenchbornKaijuStageOne folder with dist/KaijuStageOne.rbxmx. Do not retain old modules or omit KaijuStageOneJumpMotor. Keep the target game's bootstrap, CombatFactory, camera and HUD. Restart Play so require caches are fresh. For a first import, use examples/KaijuStageOne.server.lua; its PreviewOnly=true is deliberately movement-only until the game's damage adapter is supplied.
 
-## Build-time scaling (repository source)
+## Build-time scaling
 
 All builder options accept `Scale`, a finite positive multiplier of the stage's authored size. Default: `1`. Use `0.5` for half size or `2` for double size.
 
@@ -74,4 +74,8 @@ Installer.Install(character, {Scale = 0.5, PreviewOnly = true, InstallInput = tr
 
 In `KaijuEvolutionBlockoutPreview`, set number attributes `Stage1Scale` and `Stage2Scale` before Play. Missing attributes mean 1. The model records the multiplier in `BuildScale`. Collider size and rig offsets use the resulting model scale. Native avatar size, movement speed, cooldowns and game-owned damage values are not multiplied. Stage 3–5 remain geometry previews.
 
-Scaling is a build-time option: rebuild/reinstall to change it. Do not call ScaleTo on an attached rig, which caches dimensions. The existing 1.1.4 XML export must be rebuilt from these sources to include this option and the subsequent terrain/idle fixes; it has not been regenerated in this change.
+Scaling is a build-time option: rebuild/reinstall to change it. Do not call ScaleTo on an attached rig, which caches dimensions. The 1.2.0 XML export includes this option and the terrain/idle fixes.
+
+## Release 1.2.0
+
+Includes build-time Scale, a narrower raised torso collider, an animation-only ground probe for slopes, and lowered resting arms with reduced hand twist. The original ApprovedRevision identifies the previously approved baseline; QualityGateC and RuntimeReview are pending for the updated runtime. Export structure and exact embedded sources were verified; Roblox Studio and target-project gameplay testing remain outstanding. Existing target-game CombatFactory, HUD and camera integrations are retained when replacing the package folder.
