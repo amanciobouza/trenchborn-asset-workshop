@@ -1,12 +1,12 @@
 -- Jump timing is server-owned. Cooldown starts with activation.
 local Jump = {}
-local WINDUP=0.16 -- Brief anticipation, then immediate takeoff.
+local WINDUP=0.08 -- Brief anticipation, then immediate takeoff.
 local function smooth(t) t=math.max(0,math.min(1,t));return t*t*(3-2*t) end
 function Jump.new()
 	local s={Phase="Idle",Started=0,ReadyAt=0,LeftGround=false,Lead="Right"}
 	function s:Request(now,grounded)
-		if self.Phase~="Idle" or not grounded or now<self.ReadyAt then return false end
-		self.Phase,self.Started,self.ReadyAt="Windup",now,now+1.2
+		if (self.Phase~="Idle" and self.Phase~="Landing") or not grounded or now<self.ReadyAt then return false end
+		self.Phase,self.Started,self.ReadyAt="Windup",now,now+0.25
 		self.LeftGround=false
 		self.Lead=self.Lead=="Left" and "Right" or "Left"
 		return true
