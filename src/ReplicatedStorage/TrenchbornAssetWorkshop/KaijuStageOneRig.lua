@@ -263,7 +263,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		Step={113663232024295,0.6,0.62},RunStep={113663232024295,0.7,0.69},
 		Land={113663232024295,1.0,0.68},Whoosh={140192907374090,0.9,1.0},JumpWhoosh={140192907374090,0.28,1.2},Punch={97522871949213,0.5,1.15},Slam={97522871949213,0.65,1.0},
 		Finisher={71814605717939,0.7,1.0},Hit={9116684884,0.3,0.7},HeavyHit={9116684884,0.55,0.52},
-		Discharge={1040136448,1.25,1.0},
+		Discharge={1040136448,2.0,1.0},
 		Defeat={9116684884,0.75,0.42},
 	}
 	local audioRandom=Random.new()
@@ -289,7 +289,8 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		end
 		if sound and kind=="Discharge" then
 			local bass=Instance.new("EqualizerSoundEffect")
-			bass.LowGain=8;bass.MidGain=-2;bass.HighGain=-4;bass.Parent=sound
+			bass.LowGain=8;bass.MidGain=1;bass.HighGain=-1;bass.Parent=sound
+			sound.RollOffMinDistance=45*scale
 		end
 		if sound and kind~="FocusFire" and kind~="Discharge" and kind~="JumpWhoosh" and kind~="Whoosh" and kind~="Punch" and kind~="Slam" and kind~="Finisher" then
 			local eq=Instance.new("EqualizerSoundEffect");local step=kind=="Step" or kind=="RunStep"
@@ -499,8 +500,9 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		local mouth=Instance.new("Attachment")
 		mouth.Name="FocusMouth";mouth.CFrame=offset;mouth.Parent=upper
 		focus.Mouth=mouth
-		focus.ChargeSound=makeSound(1336756135,mouth,0.12,0.82,false)
-		if focus.ChargeSound then game:GetService("TweenService"):Create(focus.ChargeSound,TweenInfo.new(1.8),{Volume=0.42,PlaybackSpeed=1.1}):Play() end
+		focus.ChargeSound=makeSound(1336756135,mouth,0.28,0.82,false)
+		if focus.ChargeSound then focus.ChargeSound.RollOffMinDistance=40*scale end
+		if focus.ChargeSound then game:GetService("TweenService"):Create(focus.ChargeSound,TweenInfo.new(1.8),{Volume=0.85,PlaybackSpeed=1.1}):Play() end
 		focus.Orb.CFrame=upper.CFrame*offset
 		focus.Orb.Anchored=false;focus.Orb.Massless=true
 		local weld=Instance.new("Weld")
@@ -1233,7 +1235,8 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			if firing and not focus.SoundFired then
 				focus.SoundFired=true
 				if focus.ChargeSound then focus.ChargeSound:Destroy() end
-				focus.BeamSound=makeSound(139620337204036,focus.Mouth,0.4,1.0,true)
+				focus.BeamSound=makeSound(139620337204036,focus.Mouth,0.85,1.0,true)
+				if focus.BeamSound then focus.BeamSound.RollOffMinDistance=45*scale end
 				if feedbackRemote then feedbackRemote:FireClient(owner,"FocusFire") end
 			elseif t>=4.5 and focus.BeamSound then
 				focus.BeamSound:Destroy();focus.BeamSound=nil
