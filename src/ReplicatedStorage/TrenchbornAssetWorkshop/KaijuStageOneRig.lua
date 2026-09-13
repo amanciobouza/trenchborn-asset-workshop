@@ -4,8 +4,8 @@ local RunService = game:GetService("RunService")
 local Combo = require(script.Parent:WaitForChild("KaijuStageOneCombo"))
 local Jump = require(script.Parent:WaitForChild("KaijuStageOneJump"))
 local Rig = {}
-local STRIDE = 10.0
-local STANCE = 0.65 -- Longer swing; both feet still support the body during 30% of the cycle.
+local STRIDE = 12.0
+local STANCE = 0.62 -- Longer swing; both feet still support the body during 24% of the cycle.
 local RUN_SPEED = 16
 local WALK_SPEED = 10
 local RUN_STRIDE, RUN_STANCE = 11, 0.48
@@ -260,7 +260,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	end
 	-- Reuse the workshop's existing Guardian/Sovereign audio assets, with heavier tuning.
 	local audioPresets={
-		Step={113663232024295,0.38,0.95},RunStep={113663232024295,0.52,1.0},
+		Step={113663232024295,0.6,0.62},RunStep={113663232024295,0.7,0.69},
 		Land={113663232024295,1.0,0.68},Whoosh={140192907374090,0.9,1.0},JumpWhoosh={140192907374090,0.28,1.2},Punch={97522871949213,0.5,1.15},Slam={97522871949213,0.65,1.0},
 		Finisher={71814605717939,0.7,1.0},Hit={9116684884,0.3,0.7},HeavyHit={9116684884,0.55,0.52},
 		Discharge={1040136448,1.25,1.0},
@@ -292,8 +292,13 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			bass.LowGain=8;bass.MidGain=-2;bass.HighGain=-4;bass.Parent=sound
 		end
 		if sound and kind~="FocusFire" and kind~="Discharge" and kind~="JumpWhoosh" and kind~="Whoosh" and kind~="Punch" and kind~="Slam" and kind~="Finisher" then
-			local eq=Instance.new("EqualizerSoundEffect");eq.LowGain=kind=="Land" and 6 or 3;eq.MidGain=-3;eq.HighGain=-12;eq.Parent=sound
-			game:GetService("Debris"):AddItem(sound,(kind=="Step" or kind=="RunStep") and 1.2 or 2.4)
+			local eq=Instance.new("EqualizerSoundEffect");local step=kind=="Step" or kind=="RunStep"
+			eq.LowGain=step and 9 or kind=="Land" and 6 or 3;eq.MidGain=step and -10 or -3;eq.HighGain=step and -22 or -12;eq.Parent=sound
+			if step then
+				local volume=sound.Volume;sound.Volume=0
+				game:GetService("TweenService"):Create(sound,TweenInfo.new(0.06),{Volume=volume}):Play()
+			end
+			game:GetService("Debris"):AddItem(sound,(kind=="Step" or kind=="RunStep") and 1.6 or 2.4)
 		end
 		if not soundOnly then feedbackRemote:FireClient(owner,kind=="Slam" and "Punch" or kind) end
 	end
@@ -327,6 +332,9 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	local heartbeat, destroying, healthConnection
 	local combo = Combo.new(combat and combat.PrepareFinisher)
 	local jump = Jump.new()
+	local swimState=Enum.HumanoidStateType.Swimming
+	local swimEnabled=humanoid and humanoid:GetStateEnabled(swimState)
+	if humanoid then humanoid:SetStateEnabled(swimState,true) end
 	local hitReaction,defeat=nil,nil
 	local strikeResistance=nil
 	local hitSide=1
@@ -582,6 +590,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	local function requestJump(direction)
 		if stopped or isStaggered() or focus or area or not humanoid or humanoid.Health<=0 or not movementRoot
 			or model:GetAttribute("IdleEnabled")==false then return false end
+		if humanoid:GetState()==swimState then return false end
 		local now=os.clock()
 		if jump.Phase=="Air" then
 			-- A fresh press just before contact carries into the next jump, never auto-repeat.
@@ -678,6 +687,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		if destroying then destroying:Disconnect() end
 		if healthConnection then healthConnection:Disconnect() end
 		reset()
+		if humanoid then humanoid:SetStateEnabled(swimState,swimEnabled) end
 		damageFlash:Destroy()
 	end
 	local function smooth(value)
@@ -896,8 +906,18 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			areaRecover=areaRecover*areaRecover*(3-2*areaRecover)
 		end
 		if humanoid and humanoid.Health<=0 then jump:Cancel();restoreJump() end
+		local swimming=humanoid and humanoid.Health>0 and humanoid:GetState()==swimState
+		model:SetAttribute("Swimming",swimming==true)
+		if swimming then
+			if jump.Phase~="Idle" then jump:Cancel();restoreJump() end
+			if focus then endFocus() end
+			if area then endArea() end
+			combo:Cancel();strikeResistance=nil;bufferedJumpUntil=0
+			if combat then combat.Cancel() end
+			humanoid.WalkSpeed=12
+		end
 		local jumpPose,jumpEvent
-		if movementRoot and humanoid then
+		if movementRoot and humanoid and not swimming then
 			assistRoofLanding(poseDt)
 			jumpPose,jumpEvent=jump:Update(os.clock(),humanoid.FloorMaterial~=Enum.Material.Air,movementRoot.AssemblyLinearVelocity.Y)
 			if jumpEvent=="Takeoff" then
@@ -955,10 +975,10 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			landingBlend=math.min(landingBlend,1-math.clamp((os.clock()-jump.Started)/0.24,0,1))
 		end
 		if landing then landingWeight=landingBlend end
-		if (jumpPose and not landing) or isStaggered() then walking=false end
+		if swimming or (jumpPose and not landing) or isStaggered() then walking=false end
 		if focus then walking=false;humanoid:Move(Vector3.zero,false) end
 		if area then walking=false;humanoid:Move(Vector3.zero,false) end
-		local groundControl=jump.Phase=="Idle" or jump.Phase=="Landing" or jump.Phase=="Windup"
+		local groundControl=not swimming and (jump.Phase=="Idle" or jump.Phase=="Landing" or jump.Phase=="Windup")
 		local runAllowed=not isStaggered() and not focus and not area and groundControl
 			and humanoid and humanoid.Health>0
 		if humanoid and not focus and not area and groundControl and humanoid.Health>0 then
@@ -1017,7 +1037,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				end
 			end
 		end
-		local special=jumpPose or focus or area or attackPose or isStaggered()
+		local special=swimming or jumpPose or focus or area or attackPose or isStaggered()
 		local mode=area and "Area" or focus and "Focus" or jumpPose and "Jump" or attackPose and "Attack" or running and "Run" or walking and "Walk" or "Idle"
 		if mode~=previousMode then transitionLeft=0.22;previousMode=mode end
 		transitionLeft=math.max(0,transitionLeft-poseDt)
@@ -1036,6 +1056,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		-- Lower the pelvis as well as the torso; IK bends the legs while the
 		-- planted feet retain their floor height. Recovery uses the same smoothing.
 		bob = bob - (attackCrouch or 0)*scale
+		if swimming then bob=0 end
 		if jumpPose then bob=bob*(1-landingWeight)-jumpPose.Crouch*scale*landingWeight end
 		if focus then
 			local kick=focusTime>=2 and math.exp(-(focusTime-2)*9) or 0
@@ -1062,10 +1083,10 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		end
 		local actualBob = smoothedBob
 		if walking then
-			model:SetAttribute("AnimationPreview", running and "HeavyRun_01" or "HeavyWalk_04_ShoulderFollowThrough")
+			model:SetAttribute("AnimationPreview", running and "HeavyRun_01" or "HeavyWalk_05_LongWeightedStride")
 			local weightShift = math.sin(gaitPhase - 0.35)*fade
 			-- Forward is local -Z: negative X pitch brings the upper body forward.
-			pose("Torso", (-11.0-23*runBlend - compression*(1.6+runBlend))*fade, weightShift*(5.5+2*runBlend), weightShift*3.8)
+			pose("Torso", (-16.0-18*runBlend - compression*(1.6+runBlend))*fade, weightShift*(5.5+2*runBlend), weightShift*4.8)
 			-- The neck partly counters the lean to keep the gaze ahead. Head motion
 			-- follows the weight transfer with a delay instead of locking to the torso.
 			local headFollow = math.sin(gaitPhase - 0.80)*fade
@@ -1086,8 +1107,8 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 					travel = stride/2-stride*smooth
 					-- Spend more of the swing lifting the heavy leg, then settle firmly.
 					-- Both ends and the apex have zero vertical velocity.
-					local liftPhase=swing<0.6 and swing/0.6 or (1-swing)/0.4
-					lift = (2.2+0.6*runBlend)*liftPhase*liftPhase*(3-2*liftPhase)
+					local liftPhase=swing<0.52 and swing/0.52 or (1-swing)/0.48
+					lift = (2.6+0.2*runBlend)*liftPhase*liftPhase*(3-2*liftPhase)
 					-- After toe-off, finish the push behind the hips before recovering forward.
 					local rearKick=math.sin(math.pi*math.min(swing/0.36,1))^2*runBlend
 					travel=travel+2.4*rearKick
@@ -1124,15 +1145,15 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				local sign=side=="Left" and -1 or 1
 				local armPhase=(cycle+offset+stance/2)*math.pi*2
 				local swing=math.sin(armPhase-0.3)*fade
-				local elbowFollow=math.sin(armPhase-0.85)*fade
-				local wristFollow=math.sin(armPhase-1.25)*fade
+				local elbowFollow=math.sin(armPhase-1.05)*fade
+				local wristFollow=math.sin(armPhase-1.45)*fade
 				local shoulderRoll=math.cos(armPhase-0.3)*fade
 				-- Shoulder leads; the bent elbow and heavy hand follow with separate delays.
 				-- A small outward arc keeps the hands clear of the thighs.
 				pose(side .. "UpperArm",(8+20*runBlend)*fade-swing*(17+25*runBlend),sign*shoulderRoll*4,
 					-sign*(5*fade+3*shoulderRoll))
 				-- Flex behind the forward shoulder swing, then open as the arm returns.
-				pose(side .. "Forearm",(26+12*runBlend)*fade-elbowFollow*(20+5*runBlend),0,sign*elbowFollow*3)
+				pose(side .. "Forearm",(26+12*runBlend)*fade-elbowFollow*(12+13*runBlend),0,sign*elbowFollow*3)
 				pose(side .. "Hand",-6*fade+wristFollow*6,sign*wristFollow*3,0)
 			end
 			for i = 1, tailCount do
@@ -1364,6 +1385,25 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			end
 		end
 		-- Preserve the intended chest/head aim while the hips turn underneath.
+		if swimming then
+			model:SetAttribute("AnimationPreview","Swim_01")
+			local stroke=elapsed*2.4
+			local moving=humanoid.MoveDirection.Magnitude>0.05 and 1 or 0.35
+			pose("Torso",-52,0,math.sin(stroke)*3*moving)
+			pose("Head",38,math.sin(stroke-0.4)*2,0)
+			for _,side in ipairs({"Left","Right"}) do
+				local sign=side=="Left" and -1 or 1
+				local wave=math.sin(stroke+(sign<0 and 0 or math.pi))*moving
+				pose(side.."UpperArm",60+wave*24,sign*12,-sign*16)
+				pose(side.."Forearm",28-wave*14,0,0)
+				pose(side.."Hand",-8,0,0)
+				pose(side.."Thigh",-18+wave*12,0,0)
+				pose(side.."Shin",24-wave*8,0,0)
+				pose(side.."Hock",-8,0,0);pose(side.."Foot",-16,0,0)
+			end
+			for i=1,tailCount do pose("Tail"..i,i==1 and -18 or 0,math.sin(stroke-i*0.4)*(2+i*0.12)*moving,0) end
+		end
+
 		local torso=motors.Torso.C0
 		motors.Torso.C0=CFrame.new(torso.Position)*pelvisTurn:Inverse()*torso.Rotation
 		-- Blend mode changes and step accents rather than snapping joint poses.
