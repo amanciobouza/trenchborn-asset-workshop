@@ -6,13 +6,13 @@ import xml.etree.ElementTree as ET
 ROOT=Path(__file__).resolve().parents[1]
 SOURCE=ROOT/'src/ReplicatedStorage/TrenchbornAssetWorkshop'
 FILES=['KaijuStageOneInstaller.lua','KaijuEvolutionBlockout.lua','KaijuStageOneRig.lua',
-       'KaijuStageOneCombo.lua','KaijuStageOneJump.lua','KaijuStageOneInput.client.lua']
+       'KaijuStageOneCombo.lua','KaijuStageOneJump.lua','KaijuStageOneInput.client.lua','KaijuStageOneJumpMotor.client.lua']
 def build():
     xml=ET.Element('roblox',version='4')
     folder=ET.SubElement(xml,'Item',{'class':'Folder','referent':'RBX0'})
     properties=ET.SubElement(folder,'Properties')
     ET.SubElement(properties,'string',name='Name').text='TrenchbornKaijuStageOne'
-    manifest={'package':'TrenchbornKaijuStageOne','version':'1.1.0','files':{}}
+    manifest={'package':'TrenchbornKaijuStageOne','version':'1.1.1','files':{}}
     for index,filename in enumerate(FILES,1):
         source=(SOURCE/filename).read_text(encoding='utf-8')
         client=filename.endswith('.client.lua')
