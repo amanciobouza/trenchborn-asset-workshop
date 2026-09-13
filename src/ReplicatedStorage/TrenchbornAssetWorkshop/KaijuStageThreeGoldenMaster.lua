@@ -318,7 +318,7 @@ function Builder.Build(parent,ground,options)
    glow.Material=Enum.Material.Neon;glow.Color=Color3.fromRGB(220,175,32)
    glow.Transparency=0.18;glow.CastShadow=false;glow:SetAttribute("KaijuArmorEnergy",true)
   end
-  local function route(name,masses,directions,grow)
+  local function route(name,masses,directions,grow,buryEnds)
    local points,normals={},{}
    for i=1,#directions-1 do
     for j=0,3 do
@@ -327,6 +327,10 @@ function Builder.Build(parent,ground,options)
       table.insert(points,point+normal*0.025);table.insert(normals,normal)
      end
     end
+   end
+   if buryEnds then
+    points[1]=points[1]-normals[1]*0.14
+    points[#points]=points[#points]-normals[#points]*0.14
    end
    for i=1,#points-1 do
     vein(name.."Path"..i,points[i],points[i+1],normals[i]+normals[i+1],0.085)
@@ -359,9 +363,26 @@ function Builder.Build(parent,ground,options)
     {outward-upperAxis*2.2,outward, outward+upperAxis*2.5},true)
    route(side.."ForearmArmorGrowth",{model[side.."ForearmMass"],model[side.."ElbowJoint"]},
     {outward-lowerAxis*2.5,outward, outward+lowerAxis*0.8},false)
-   route(side.."RibArmorGrowth",{model.UpperRibcage,model.LowerRibcage,model[side.."Flank"],model[side.."Pectoral"]},
-    {Vector3.new(sign*0.15,0.3,1),Vector3.new(sign*0.8,0.25,0.6),
-     Vector3.new(sign,0.05,0),Vector3.new(sign*0.9,-0.15,-0.65),Vector3.new(sign*0.65,-0.35,-1)},false)
+   local torsoMasses={model.UpperRibcage,model.LowerRibcage,model[side.."Flank"],model[side.."Pectoral"]}
+   -- The flank-to-chest route remains; the back is separate, broken mineral growth.
+   route(side.."RibArmorGrowth",torsoMasses,
+    {Vector3.new(sign,0.05,-0.05),Vector3.new(sign*0.9,-0.15,-0.65),
+     Vector3.new(sign*0.65,-0.35,-1)},false)
+   local root,fragment,branch
+   if sign<0 then
+    root={Vector3.new(-0.04,0.48,1),Vector3.new(-0.29,0.37,1),Vector3.new(-0.50,0.46,0.9)}
+    fragment={Vector3.new(-0.68,0.05,0.8),Vector3.new(-0.90,-0.06,0.6)}
+    branch={root[2],Vector3.new(-0.34,0.23,1)}
+   else
+    root={Vector3.new(0.05,0.14,1),Vector3.new(0.24,0.04,1),Vector3.new(0.39,0.15,0.95)}
+    fragment={Vector3.new(0.55,0.42,0.86),Vector3.new(0.68,0.31,0.76),Vector3.new(0.84,0.35,0.65)}
+    branch={root[2],Vector3.new(0.17,-0.10,1)}
+   end
+   -- Deliberately unequal lengths/heights, with gaps between the spine and flanks.
+   -- Ends sink below the surface instead of terminating as luminous cut wires.
+   route(side.."RibArmorBackRoot",torsoMasses,root,false,true)
+   route(side.."RibArmorBackFragment",torsoMasses,fragment,false,true)
+   route(side.."RibArmorBackBranch",torsoMasses,branch,false,true)
    route(side.."HipArmorGrowth",{model[side.."ThighMass"],model[side.."OuterQuadriceps"],model[side.."HipJoint"]},
     {Vector3.new(sign*0.8,1,-0.5),Vector3.new(sign*0.7,0,-1),Vector3.new(sign*0.35,-2,-0.8)},false)
    route(side.."ShinArmorGrowth",{model[side.."CalfMass"],model[side.."KneeJoint"]},
@@ -382,7 +403,7 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("GeometryRevision","S3_ArticulatedArmorGrowth_13")
   model:SetAttribute("VisualTarget","Approved Stage 3 front/side/back concept; lateral rib armor amendment")
   model:SetAttribute("RuntimeReview","Pending_GrowthTransitions")
-  model:SetAttribute("DressingRevision","S3_ConnectedFissures_02")
+  model:SetAttribute("DressingRevision","S3_BrokenBackFissures_03")
   model:SetAttribute("DressingReview","Pending")
   model:SetAttribute("Purpose","Stage 3 material and energy dressing review")
   model.Parent=parent
