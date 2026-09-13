@@ -1,4 +1,4 @@
--- Stage 3 geometry candidate; Gate A approved, Gate B pending.
+-- Stage 3: geometry and movement approved; Phase 5 dressing review.
 local StageTwo=require(script.Parent:WaitForChild("KaijuStageTwoGoldenMaster"))
 local Base=require(script.Parent:WaitForChild("KaijuEvolutionBlockout"))
 local Builder={}
@@ -229,6 +229,56 @@ function Builder.Build(parent,ground,options)
    local shin=CFrame.fromMatrix(Vector3.new(center.X,center.Y,z-0.22),right,up,-forward)
    wildPlate(model,side.."ShinArmor",3.0,3.4,0.8,shin,sign)
   end
+  -- Phase 5: dress the approved solids without changing their size or pose.
+  local armorParts={}
+  for _,p in ipairs(model:GetChildren()) do
+   if p:IsA("BasePart") and (p.Name:match("^[LR]%a+HeadArmor")
+    or p.Name:match("^[LR]%a+RibArmor") or p.Name:match("^[LR]%a+HipArmor")
+    or p.Name:match("^[LR]%a+ShinArmor") or p.Name:match("^DorsalRock_")) then
+    table.insert(armorParts,p)
+    p.Material=Enum.Material.Basalt;p.Reflectance=0
+    if p.Name:find("Edge",1,true) or p.Name:find("Bevel",1,true) then
+     p.Color=Color3.fromRGB(76,78,77)
+    elseif p.Name:find("Point",1,true) then
+     p.Color=Color3.fromRGB(63,67,70)
+    elseif p.Name:find("RockLayer",1,true) or p.Name:match("^DorsalRock_") then
+     p.Color=Color3.fromRGB(62,67,71)
+    else
+     p.Color=Color3.fromRGB(45,51,57)
+    end
+   end
+  end
+  -- Short recessed-looking fissures on lateral armor only; no chest-center core.
+  -- Keep the existing region prefix so every seam follows its own animated bone.
+  for _,p in ipairs(armorParts) do
+   if p.Name:match("RockLayer1Core$") then
+    local w,h,d=p.Size.X,p.Size.Y,p.Size.Z
+    local sign=p.Name:sub(1,4)=="Left" and -1 or 1
+    local z=-d/2-0.018
+    local points={
+     Vector3.new(-sign*w*0.39,h*0.21,z+0.055),
+     Vector3.new(-sign*w*0.08,h*0.04,z),
+     Vector3.new(sign*w*0.32,-h*0.18,z+0.055),
+     Vector3.new(sign*w*0.02,-h*0.32,z+0.045),
+    }
+    for segment,ends in ipairs({{1,2},{2,3},{2,4}}) do
+     local a=p.CFrame:PointToWorldSpace(points[ends[1]])
+     local b=p.CFrame:PointToWorldSpace(points[ends[2]])
+     local normal=p.CFrame.LookVector
+     local cf=CFrame.lookAt((a+b)/2,b,normal)
+     local length=(b-a).Magnitude+0.02
+     local width=segment==3 and 0.045 or 0.065
+     local prefix=p.Name.."Fissure"..segment
+     local rim=stone(model,prefix.."Rim",Vector3.new(width+0.07,0.024,length),cf,"Part")
+     rim.Color=Color3.fromRGB(26,30,35)
+     local glow=stone(model,prefix.."Energy",Vector3.new(width,0.028,length),
+      cf+normal*0.015,"Part")
+     glow.Material=Enum.Material.Neon;glow.Color=Color3.fromRGB(220,175,32)
+     glow.Transparency=0.18;glow.CastShadow=false
+     glow:SetAttribute("KaijuArmorEnergy",true)
+    end
+   end
+  end
   -- Relative authored size: 12% above Stage 2, then the user-controlled multiplier.
   model:ScaleTo(stageTwoScale*1.12*multiplier)
   model:PivotTo(model:GetPivot()+Vector3.new(0,-soleY(model),0))
@@ -237,13 +287,16 @@ function Builder.Build(parent,ground,options)
    "FinalInstallerVersion","RuntimeReview","IntegrationReview","HeightRatioToStageOne"}) do model:SetAttribute(key,nil) end
   model:SetAttribute("EvolutionStage",3)
   model:SetAttribute("BuildScale",multiplier)
-  model:SetAttribute("PipelinePhase",4)
+  model:SetAttribute("PipelinePhase",5)
   model:SetAttribute("QualityGateA","ApprovedByUser")
-  model:SetAttribute("QualityGateB","Pending")
-  model:SetAttribute("QualityGateC","Pending")
+  model:SetAttribute("QualityGateB","ApprovedByUser")
+  model:SetAttribute("QualityGateC","ApprovedByUser")
   model:SetAttribute("GeometryRevision","S3_SideFittedCheekArmor_12")
   model:SetAttribute("VisualTarget","Approved Stage 3 front/side/back concept; lateral rib armor amendment")
-  model:SetAttribute("Purpose","Stage 3 geometry review; anchored candidate")
+  model:SetAttribute("RuntimeReview","ApprovedByUser")
+  model:SetAttribute("DressingRevision","S3_BasaltFissures_01")
+  model:SetAttribute("DressingReview","Pending")
+  model:SetAttribute("Purpose","Stage 3 material and energy dressing review")
   model.Parent=parent
  end)
  staging:Destroy()
