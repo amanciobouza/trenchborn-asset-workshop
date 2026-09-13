@@ -13,7 +13,7 @@ local function watch(character)
   local model,remote
   repeat
    if not alive or ticket~=generation or player.Character~=character then return end
-   model=character:FindFirstChild("Stage_1_Primal_Beast") or character:FindFirstChild("Stage_2_Storm_Hunter")
+   model=character:FindFirstChild("Stage_3_Rift_Stalker") or character:FindFirstChild("Stage_1_Primal_Beast") or character:FindFirstChild("Stage_2_Storm_Hunter")
    remote=model and model:FindFirstChild("KaijuJumpImpulse")
    if not remote then task.wait(0.03) end
   until remote or os.clock()>deadline
