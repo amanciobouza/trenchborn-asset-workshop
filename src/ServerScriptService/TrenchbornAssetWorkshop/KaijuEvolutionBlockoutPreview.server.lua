@@ -34,6 +34,21 @@ end
 local stormBuilder=require(packageFolder:WaitForChild("KaijuStageTwoGoldenMaster"))
 local stormOrigin=origin*CFrame.new(42,0,0)
 local storm=stormBuilder.Build(workshop,stormOrigin,stageTwoOptions)
+-- Gate B candidate: Stage 3 stays anchored while Stage 2 remains the player.
+local stageThreeBuilder=require(packageFolder:WaitForChild("KaijuStageThreeGoldenMaster"))
+local stageThree=stageThreeBuilder.Build(workshop,origin*CFrame.new(-48,0,0),
+ {Scale=script:GetAttribute("Stage3Scale")})
+local stageThreeLabel=Instance.new("BillboardGui")
+stageThreeLabel.Name="StageThreeReviewLabel";stageThreeLabel.Adornee=stageThree:FindFirstChild("Cranium")
+stageThreeLabel.Size=UDim2.fromOffset(300,56)
+stageThreeLabel.StudsOffsetWorldSpace=Vector3.new(0,5,0)
+stageThreeLabel.MaxDistance=200;stageThreeLabel.Parent=stageThree
+local stageThreeTitle=Instance.new("TextLabel")
+stageThreeTitle.Size=UDim2.fromScale(1,1);stageThreeTitle.BackgroundTransparency=0.3
+stageThreeTitle.BackgroundColor3=Color3.fromRGB(25,29,38)
+stageThreeTitle.TextColor3=Color3.fromRGB(240,210,70)
+stageThreeTitle.Text="STAGE 3 · GEOMETRY REVIEW";stageThreeTitle.TextScaled=true
+stageThreeTitle.Parent=stageThreeLabel
 local template=storm:Clone() -- Clone before adding the display-only label or rig.
 local pivotFromGround=stormOrigin:ToObjectSpace(template:GetPivot())
 stageOneRig.Attach(display)
