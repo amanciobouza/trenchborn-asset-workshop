@@ -56,3 +56,22 @@ The installer always installs KaijuStageOneJumpMotor for player characters, incl
 Amancio approved the jump/landing correction at source revision `e835a34d4d65a8a73a895da704d2f960190e047e`. This release packages that accepted runtime unchanged: native movement in air, no landing crouch/rebound pose, short suppression of upward physical contact rebound, terrain swimming and latest sounds. The installer records this approval as its current ApprovedRevision. Target-project integration remains separately testable.
 
 To upgrade an existing import: Stop Play, uninstall an active installation if needed, then replace the entire ReplicatedStorage.TrenchbornKaijuStageOne folder with dist/KaijuStageOne.rbxmx. Do not retain old modules or omit KaijuStageOneJumpMotor. Keep the target game's bootstrap, CombatFactory, camera and HUD. Restart Play so require caches are fresh. For a first import, use examples/KaijuStageOne.server.lua; its PreviewOnly=true is deliberately movement-only until the game's damage adapter is supplied.
+
+## Build-time scaling (repository source)
+
+All builder options accept `Scale`, a finite positive multiplier of the stage's authored size. Default: `1`. Use `0.5` for half size or `2` for double size.
+
+```lua
+-- Evolution geometry, stages 1–5:
+Builder.BuildStage(workspace, 3, CFrame.new(0, 0, 145), {Scale = 0.5})
+-- Entire lineage; spacing scales too:
+Builder.Build(workspace, CFrame.new(0, 0, 145), {Scale = 0.5})
+-- Current Storm Hunter geometry:
+StormBuilder.Build(workspace, CFrame.new(0, 0, 145), {Scale = 0.5})
+-- Equipped Primal Beast:
+Installer.Install(character, {Scale = 0.5, PreviewOnly = true, InstallInput = true})
+```
+
+In `KaijuEvolutionBlockoutPreview`, set number attributes `Stage1Scale` and `Stage2Scale` before Play. Missing attributes mean 1. The model records the multiplier in `BuildScale`. Collider size and rig offsets use the resulting model scale. Native avatar size, movement speed, cooldowns and game-owned damage values are not multiplied. Stage 3–5 remain geometry previews.
+
+Scaling is a build-time option: rebuild/reinstall to change it. Do not call ScaleTo on an attached rig, which caches dimensions. The existing 1.1.4 XML export must be rebuilt from these sources to include this option and the subsequent terrain/idle fixes; it has not been regenerated in this change.
