@@ -150,6 +150,21 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		model:SetAttribute("AnimationMode", "Automatic")
 	end
 	local scale = model:GetScale()
+	-- Supplemental support is animation-only: never snap or propel the character.
+	local supportParams=RaycastParams.new()
+	supportParams.FilterType=Enum.RaycastFilterType.Exclude
+	supportParams.FilterDescendantsInstances={movementRoot and movementRoot.Parent or model}
+	supportParams.RespectCanCollide=true
+	local function hasWalkSupport()
+		if not movementRoot or not humanoid then return false end
+		local state=humanoid:GetState()
+		if state==Enum.HumanoidStateType.Swimming or state==Enum.HumanoidStateType.Climbing
+			or state==Enum.HumanoidStateType.Jumping then return false end
+		if humanoid.FloorMaterial~=Enum.Material.Air then return true end
+		local reach=humanoid.HipHeight+movementRoot.Size.Y/2+0.65
+		local hit=workspace:Raycast(movementRoot.Position,Vector3.new(0,-reach,0),supportParams)
+		return hit~=nil and hit.Normal.Y>=math.cos(math.rad(math.min(humanoid.MaxSlopeAngle,60)))
+	end
 	local function rotateBetween(a,b)
 		local x,y=a.Unit,b.Unit
 		local dot=math.clamp(x:Dot(y),-1,1)
@@ -868,9 +883,11 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		for _, side in ipairs({"Left", "Right"}) do
 			local sign = side == "Left" and -1 or 1
 			local accent = side == "Left" and leftAccent or rightAccent
-			pose(side .. "UpperArm", breath * 1.2 - accent * 2.5, sign * accent * 1.5, -sign * (breath * 1.2 + accent * 2.0))
-			pose(side .. "Forearm", -3.0 * fade - breath * 1.8 - accent * 4.0, 0, 0)
-			pose(side .. "Hand", -accent * 2.0, sign * accent * 1.5, 0)
+			pose(side .. "UpperArm", breath * 0.8 - accent, 0, -sign * (8 * fade - breath * 0.6))
+			pose(side .. "Forearm", -breath * 0.7, 0, 0)
+			-- Reduce the baked-in paw twist around the actual elbow-to-wrist axis.
+			motors[side.."Hand"].C0=rest[side.."Hand"]
+				*CFrame.fromAxisAngle(rest[side.."Hand"].Position.Unit,math.rad(sign*20*fade))
 		end
 		for i = 1, tailCount do
 			pose("Tail" .. i, 0, (math.sin(elapsed * 1.35 - i * 0.48) * (0.55 + i*0.14)
@@ -936,7 +953,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			local velocity = movementRoot.AssemblyLinearVelocity
 			speed = Vector3.new(velocity.X, 0, velocity.Z).Magnitude
 			walking = speed > 0.5 and humanoid.Health > 0
-				and humanoid.FloorMaterial ~= Enum.Material.Air
+				and hasWalkSupport()
 		end
 		local landing=jump.Phase=="Landing"
 		local landingWeight=1
