@@ -70,10 +70,10 @@ local function facePlate(model,name,width,height,depth,cf)
   -mirror(right.ZVector),mirror(right.UpVector),-mirror(right.RightVector))
  stone(model,name.."Facet-1",Vector3.new(size.Z,size.Y,size.X),cf*left)
 end
--- Rib edges use the rectangular -Y face as their buried attachment face.
+-- Chest and hip edges use the rectangular -Y face as their buried attachment face.
 -- Two corner wedges per side meet at one outer midpoint, forming a bevel
 -- instead of a horizontal shelf. The original width/height/depth envelope stays.
-local function ribPlate(model,name,width,height,depth,cf)
+local function bevelPlate(model,name,width,height,depth,cf)
  local frame=cf*CFrame.new(0,-height*0.06,0)
  stone(model,name.."Core",Vector3.new(width*0.72,height,depth),frame,"Part")
  local function reflected(cf0,size,axis)
@@ -176,7 +176,7 @@ function Builder.Build(parent,ground,options)
     x=pec.Position.X+sign*pec.Size.X*(i==1 and 0.29 or 0.24)
     y=pec.Position.Y-pec.Size.Y*(i==1 and 0.23 or 0.38)
     local ribFrame=surfaceFrame({pec,flank,ribs,belly},x,y,0.08)
-    ribPlate(model,side.."RibArmor_"..i,1.85,0.90,0.58,
+    bevelPlate(model,side.."RibArmor_"..i,1.85*1.15,0.90*1.15,0.58,
      ribFrame*CFrame.Angles(0,0,sign*math.rad(6)))
    end
    local thigh=model:FindFirstChild(side.."ThighMass")
@@ -185,7 +185,7 @@ function Builder.Build(parent,ground,options)
    x=thigh.Position.X+sign*thigh.Size.X*0.28
    y=thigh.Position.Y+thigh.Size.Y*0.27
    local hipFrame=surfaceFrame({thigh,quad,hip},x,y,0.09)
-   facePlate(model,side.."HipArmor",2.05,2.5,0.70,hipFrame)
+   bevelPlate(model,side.."HipArmor",2.05,2.5,0.70,hipFrame)
    local knee=model:FindFirstChild(side.."KneeJoint")
    local hock=model:FindFirstChild(side.."HockJoint")
    local calf=model:FindFirstChild(side.."CalfMass")
@@ -211,7 +211,7 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending")
   model:SetAttribute("QualityGateC","Pending")
-  model:SetAttribute("GeometryRevision","S3_JoinedChestBevels_09")
+  model:SetAttribute("GeometryRevision","S3_ChestSizeAndJoinedHipBevels_10")
   model:SetAttribute("VisualTarget","Approved Stage 3 front/side/back concept; lateral rib armor amendment")
   model:SetAttribute("Purpose","Stage 3 geometry review; anchored candidate")
   model.Parent=parent
