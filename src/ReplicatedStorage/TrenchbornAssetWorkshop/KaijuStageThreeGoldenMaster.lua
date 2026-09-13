@@ -53,29 +53,24 @@ local function surfaceFrame(parts,x,y,inset)
  return CFrame.fromMatrix(Vector3.new(x,y,z)+normal*inset,right,up,-normal)
 end
 local function facePlate(model,name,width,height,depth,cf)
- -- Downward-tapering facets mirrored in the plate plane; broad face stays forward.
- stone(model,name.."Core",Vector3.new(width*0.72,height*0.78,depth),cf,"Part")
- local size=Vector3.new(width*0.32,height,depth)
- local right=CFrame.new(width*0.34,-height*0.06,0)*CFrame.Angles(math.pi,0,0)
- stone(model,name.."Facet1",size,cf*right)
- local function mirror(v) return Vector3.new(-v.X,v.Y,v.Z) end
- local left=CFrame.fromMatrix(mirror(right.Position),
-  mirror(right.ZVector),mirror(right.UpVector),mirror(right.RightVector))
- stone(model,name.."Facet-1",Vector3.new(size.Z,size.Y,size.X),cf*left)
+ -- A short upper core leaves the lower silhouette to two triangular facets.
+ stone(model,name.."Core",Vector3.new(width*0.68,height*0.26,depth),
+  cf*CFrame.new(0,height*0.32,0),"Part")
+ for _,edge in ipairs({-1,1}) do
+  -- Wedge local X = depth, Y = half-width, Z = vertical.
+  -- The high edge is at the top; the low edge meets the center at the bottom.
+  local frame=CFrame.fromMatrix(Vector3.new(edge*width*0.245,-height*0.08,0),
+   Vector3.new(0,0,edge),Vector3.new(edge,0,0),Vector3.yAxis)
+  stone(model,name.."Taper"..edge,Vector3.new(depth,width*0.51,height*0.82),
+   cf*frame,"WedgePart")
+  -- Small corner facets break the upper corners without filling the tapered end.
+  local corner=CFrame.fromMatrix(Vector3.new(edge*width*0.34,height*0.31,0),
+   Vector3.new(edge,0,0),Vector3.new(0,0,-1),Vector3.new(0,edge,0))
+  stone(model,name.."Facet"..edge,Vector3.new(width*0.32,depth,height*0.24),cf*corner)
+ end
 end
 local function shinPlate(model,name,cf)
- -- Both corner apexes point down the shin; never flip local Y to mirror a side.
- stone(model,name.."Core",Vector3.new(2.16,2.65,0.8),cf,"Part")
- local size=Vector3.new(0.96,3.4,0.8)
- -- Roll the facet 180 degrees around its downward long axis: reverse front/back.
- local right=CFrame.new(1.02,-0.20,0)*CFrame.Angles(math.pi,0,0)*CFrame.Angles(0,math.pi,0)
- stone(model,name.."Facet1",size,cf*right)
- -- Reflect across plate-local X. Swapping corner base axes X/Z restores a
- -- right-handed frame, with matching size swap so depth stays depth in world space.
- local function mirror(v) return Vector3.new(-v.X,v.Y,v.Z) end
- local left=CFrame.fromMatrix(mirror(right.Position),
-  mirror(right.ZVector),mirror(right.UpVector),mirror(right.RightVector))
- stone(model,name.."Facet-1",Vector3.new(size.Z,size.Y,size.X),cf*left)
+ facePlate(model,name,3.0,3.4,0.8,cf)
 end
 function Builder.Build(parent,ground,options)
  local multiplier=Base.ResolveBuildScale(options)
@@ -192,7 +187,7 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending")
   model:SetAttribute("QualityGateC","Pending")
-  model:SetAttribute("GeometryRevision","S3_OutwardShinFacets_05")
+  model:SetAttribute("GeometryRevision","S3_TaperedShieldSilhouettes_06")
   model:SetAttribute("VisualTarget","Approved Stage 3 front/side/back concept; lateral rib armor amendment")
   model:SetAttribute("Purpose","Stage 3 geometry review; anchored candidate")
   model.Parent=parent
