@@ -8,12 +8,16 @@ local jumpAction="KaijuStageOneJump"
 local focusAction="KaijuStageOneFocus"
 local areaAction="KaijuStageOneArea"
 local runAction="KaijuStageOneRun"
+local function controlledKaiju(character)
+	if not character then return nil end
+	return character:FindFirstChild("Stage_2_Storm_Hunter") or character:FindFirstChild("Stage_1_Primal_Beast")
+end
 local runHeld=false
 local function setRun(enabled)
 	runHeld=enabled
 	CAS:SetTitle(runAction,enabled and "Walk" or "Run")
 	local character=player.Character
-	local model=character and character:FindFirstChild("Stage_1_Primal_Beast")
+	local model=controlledKaiju(character)
 	local remote=model and model:FindFirstChild("SetRunning")
 	if remote then remote:FireServer(enabled) end
 end
@@ -36,7 +40,7 @@ CAS:BindAction(areaAction,function(_,state)
 	if UIS:GetFocusedTextBox() then return Enum.ContextActionResult.Pass end
 	if state==Enum.UserInputState.Begin and os.clock()-lastArea>=0.2 then
 		local character=player.Character
-		local model=character and character:FindFirstChild("Stage_1_Primal_Beast")
+		local model=controlledKaiju(character)
 		local remote=model and model:FindFirstChild("RequestArea")
 		if remote then lastArea=os.clock();remote:FireServer() end
 	end
@@ -49,7 +53,7 @@ CAS:BindAction(focusAction,function(_,state)
 	if UIS:GetFocusedTextBox() then return Enum.ContextActionResult.Pass end
 	if state==Enum.UserInputState.Begin and os.clock()-lastFocus>=0.2 then
 		local character=player.Character
-		local model=character and character:FindFirstChild("Stage_1_Primal_Beast")
+		local model=controlledKaiju(character)
 		local remote=model and model:FindFirstChild("RequestFocus")
 		if remote then lastFocus=os.clock();remote:FireServer() end
 	end
@@ -69,7 +73,7 @@ CAS:BindActionAtPriority(jumpAction,function(_,state)
 	if UIS:GetFocusedTextBox() then return Enum.ContextActionResult.Pass end
 	if state==Enum.UserInputState.Begin and os.clock()-lastJump>=0.15 then
 		local character=player.Character
-		local model=character and character:FindFirstChild("Stage_1_Primal_Beast")
+		local model=controlledKaiju(character)
 		local remote=model and model:FindFirstChild("RequestJump")
 		local humanoid=character and character:FindFirstChildOfClass("Humanoid")
 		if remote and humanoid then lastJump=os.clock();remote:FireServer(humanoid.MoveDirection) end
@@ -82,7 +86,7 @@ CAS:SetPosition(jumpAction,UDim2.new(1,-65,1,-100))
 local swimBinding="KaijuSwimInput_"..player.UserId
 RunService:BindToRenderStep(swimBinding,Enum.RenderPriority.Input.Value+1,function()
 	local c=player.Character;local h=c and c:FindFirstChildOfClass("Humanoid")
-	if not h or not c:FindFirstChild("Stage_1_Primal_Beast") or h:GetState()~=Enum.HumanoidStateType.Swimming then swimUp=false;return end
+	if not h or not controlledKaiju(c) or h:GetState()~=Enum.HumanoidStateType.Swimming then swimUp=false;return end
 	if UIS:GetFocusedTextBox() then swimUp=false;return end
 	if swimUp then
 		local d=h.MoveDirection
@@ -95,7 +99,7 @@ local steering=RunService.Heartbeat:Connect(function()
 	if os.clock()-lastSteer<0.08 then return end
 	lastSteer=os.clock()
 	local character=player.Character
-	local model=character and character:FindFirstChild("Stage_1_Primal_Beast")
+	local model=controlledKaiju(character)
 	local phase=model and model:GetAttribute("JumpPhase")
 	if phase~="Air" and phase~="Windup" then return end
 	local humanoid=character:FindFirstChildOfClass("Humanoid")
@@ -108,7 +112,7 @@ local lastRequest = -math.huge
 local function attack()
 	if UIS:GetFocusedTextBox() or os.clock()-lastRequest < 0.12 then return end
 	local character = player.Character
-	local model = character and character:FindFirstChild("Stage_1_Primal_Beast")
+	local model = controlledKaiju(character)
 	local remote = model and model:FindFirstChild("RequestAttack")
 	if remote and remote:IsA("RemoteEvent") then
 		lastRequest = os.clock()
@@ -148,7 +152,7 @@ if RunService:IsStudio() then
 		button.TextColor3=Color3.new(1,1,1);button.Parent=reactionPanel
 		button.Activated:Connect(function()
 			local character=player.Character
-			local model=character and character:FindFirstChild("Stage_1_Primal_Beast")
+			local model=controlledKaiju(character)
 			local remote=model and model:FindFirstChild("TestReaction")
 			if remote then remote:FireServer(command) end
 		end)
@@ -203,7 +207,11 @@ local function watchCharacter(character)
 	prompt.Visible=false
 	CAS:SetTitle(action,"Attack")
 	task.spawn(function()
-		local model=character:WaitForChild("Stage_1_Primal_Beast",20)
+		local deadline=os.clock()+20
+		local model=controlledKaiju(character)
+		while not model and alive and player.Character==character and os.clock()<deadline do
+			task.wait(0.05);model=controlledKaiju(character)
+		end
 		if not alive or not model or player.Character~=character then return end
 		feedbackModel=model
 		local remote=model:WaitForChild("KaijuFeedback",10)
