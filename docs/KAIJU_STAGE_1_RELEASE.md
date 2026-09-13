@@ -1,5 +1,8 @@
 # Stage 1 Primal Beast — 1.0.0
 
+> This is the historical 1.0.0 release record. For the current 1.1.0 portable package, optional input and preview mode, use [the portable integration guide](KAIJU_STAGE_1_PORTABLE.md). The current package excludes the workshop combat adapter.
+
+
 Phase 7 installer for the Stage 1 model and runtime accepted by Amancio in this conversation. Quality Gate C: **Approved by user**. Approved gameplay revision: `e2e669b53806f19f62b76d68c8b4ac6065f71015`.
 
 ## Installation
