@@ -152,15 +152,16 @@ function Builder.Build(parent,ground)
    newPart(model,"Part",side.."ForearmArmorCore",Vector3.new(3.6,1.5,length),guard)
    newPart(model,"WedgePart",side.."ForearmArmorWristTaper",Vector3.new(3.6,1.5,1.2),
     guard*CFrame.new(0,0,(length+1.2)/2-0.12)*CFrame.Angles(0,math.pi,0))
-   -- Three overlapping basalt blades share one root but break into unequal tips.
-   -- Their taper follows the dorsal-plate language while remaining longitudinal.
+   -- Corner wedges taper across both the width and length of each basalt tip.
+   -- Unequal lengths and thicknesses break the rectangular side silhouette.
+   -- Keep their bases overlapping the core and their long axes beyond the elbow.
    local tips={
-    {X=-1.16,Width=1.28,Length=2.20,Thickness=1.45},
-    {X=0,Width=1.28,Length=3.20,Thickness=1.65},
-    {X=1.16,Width=1.28,Length=2.65,Thickness=1.50},
+    {X=-1.10,Width=1.50,Length=2.20,Thickness=1.35},
+    {X=0,Width=1.50,Length=3.20,Thickness=1.85},
+    {X=1.10,Width=1.50,Length=2.65,Thickness=1.50},
    }
    for i,tip in ipairs(tips) do
-    newPart(model,"WedgePart",side.."ForearmArmorElbowExtension_"..i,
+    newPart(model,"CornerWedgePart",side.."ForearmArmorElbowExtension_"..i,
      Vector3.new(tip.Width,tip.Thickness,tip.Length),
      guard*CFrame.new(tip.X,(tip.Thickness-1.5)/2,-(length+tip.Length)/2+0.25))
    end
@@ -176,7 +177,7 @@ function Builder.Build(parent,ground)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending")
   model:SetAttribute("QualityGateC","Pending")
-  model:SetAttribute("GeometryRevision","S2_StormHunter_FracturedElbowCrest_08")
+  model:SetAttribute("GeometryRevision","S2_StormHunter_CornerWedgeElbowCrest_09")
   model:SetAttribute("VisualTarget","Storm Hunter concept approved in conversation")
   model:SetAttribute("HeightRatioToStageOne",1.12)
   model:SetAttribute("Purpose","Stage 2 geometry review; anchored, no gameplay rig")
