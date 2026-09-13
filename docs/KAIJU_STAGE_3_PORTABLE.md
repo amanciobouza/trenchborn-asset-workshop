@@ -1,4 +1,4 @@
-# Rift Stalker — portable package 1.0.0
+# Rift Stalker — portable package 1.0.1
 
 Stage 3 geometry, dressing and workshop gameplay were approved by Amancio. The approved runtime baseline is `8a88c8ab7fe9e36ce6b7c6ea3f9c911942513456`. Import integration in a different project remains to be tested.
 
@@ -77,3 +77,9 @@ Includes the approved cheek armor, layered chest/hip/knee basalt, growing upper-
 The always-installed client clears additive Animator transforms on tagged Kaiju joints, including when InstallInput=false or EnableRemotes=false. This preserves the authored pose in a target character with an existing animation controller. Import the complete folder, including KaijuStageOneJumpMotor. The target game's scripts must not overwrite Kaiju C0/C1 directly.
 
 The package stamps the approved workshop gates after attaching the shared rig. IntegrationReview remains PendingInTargetProject: import/equip, Scale=1 and InstallInput=false, combat adapter, respawn and uninstall still need testing in the receiving game. Package verification does not run Roblox physics or rendering.
+
+## Release 1.0.1: uninterrupted specials
+
+An accepted focus or area attack immediately stops locomotion and locks the movement root for its full charge, discharge and recovery. Input, residual velocity, temporary FloorMaterial=Air and nonlethal hit reactions do not cancel the special. Damage still applies; death and uninstall terminate the attack and release the lock safely. Invalid/no-target requests do not lock the player.
+
+The shared server rig restores the previous anchored state, movement speed, AutoRotate and jumping state on release, without restoring old running velocity. This also works with InstallInput=false. Replace the full package and restart Play. Simulated state/lifecycle tests and export checks passed; verify holding movement and jump while starting each special, taking a heavy hit during charge, normal recovery, death and uninstall in the target experience.
