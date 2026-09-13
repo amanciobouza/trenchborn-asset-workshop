@@ -1,6 +1,7 @@
 """Build the portable Studio model using only Python's standard library."""
 import hashlib
 import json
+import re
 from pathlib import Path
 import xml.etree.ElementTree as ET
 ROOT=Path(__file__).resolve().parents[1]
@@ -12,7 +13,9 @@ def build():
     folder=ET.SubElement(xml,'Item',{'class':'Folder','referent':'RBX0'})
     properties=ET.SubElement(folder,'Properties')
     ET.SubElement(properties,'string',name='Name').text='TrenchbornKaijuStageOne'
-    manifest={'package':'TrenchbornKaijuStageOne','version':'1.2.0','files':{}}
+    installer=(SOURCE/FILES[0]).read_text(encoding='utf-8')
+    version=re.search(r'Version="([^"]+)"',installer).group(1)
+    manifest={'package':'TrenchbornKaijuStageOne','version':version,'files':{}}
     for index,filename in enumerate(FILES,1):
         source=(SOURCE/filename).read_text(encoding='utf-8')
         client=filename.endswith('.client.lua')
