@@ -599,11 +599,53 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		humanoid.WalkSpeed=airSpeed
 		return true
 	end
+	local lastRoofAssist=-math.huge
+	local function assistRoofLanding(dt)
+		if not movementRoot or not humanoid or humanoid.Health<=0 or focus or area or isStaggered()
+			or jump.Phase=="Windup" or humanoid.FloorMaterial~=Enum.Material.Air then return end
+		local velocity=movementRoot.AssemblyLinearVelocity
+		if velocity.Y>=-1 or os.clock()-lastRoofAssist<0.35 then return end
+		local height=humanoid.HipHeight+movementRoot.Size.Y/2
+		if humanoid.RigType==Enum.HumanoidRigType.R6 then
+			local leg=model.Parent:FindFirstChild("Left Leg")
+			if leg then height=height+leg.Size.Y end
+		end
+		local foot=movementRoot.Position-Vector3.new(0,height,0)
+		local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Exclude
+		params.FilterDescendantsInstances={model.Parent};params.RespectCanCollide=true
+		local down=Vector3.new(0,-(0.35*scale+math.min(-velocity.Y*dt,0.6*scale)),0)
+		local origin=foot+Vector3.new(0,0.15*scale,0)
+		if workspace:Raycast(origin,down,params) then return end -- Already above support.
+		local horizontal=Vector3.new(velocity.X,0,velocity.Z)
+		if horizontal.Magnitude<0.5 then return end
+		local forward=horizontal.Unit
+		local right=Vector3.new(-forward.Z,0,forward.X)
+		for _,direction in ipairs({forward,(forward+right).Unit,(forward-right).Unit,right,-right}) do
+			local offset=direction*(1.0*scale)
+			local hit=workspace:Raycast(origin+offset,down,params)
+			if hit and hit.Normal.Y>0.95 and hit.Position.Y<=foot.Y+0.05*scale then
+				-- Require room along the small horizontal correction at feet and torso.
+				local blocked=false
+				for _,y in ipairs({0.3,3,10,20}) do
+					if workspace:Raycast(foot+Vector3.new(0,y*scale,0),offset,params) then blocked=true;break end
+				end
+				if not blocked then
+					movementRoot.CFrame=movementRoot.CFrame+offset
+					lastRoofAssist=os.clock()
+					return
+				end
+			end
+		end
+	end
 	local function requestAttack()
-		if stopped or isStaggered() or focus or area or jump.Phase~="Idle" or not humanoid or humanoid.Health <= 0
+		if stopped or isStaggered() or focus or area or (jump.Phase~="Idle" and jump.Phase~="Landing") or not humanoid or humanoid.Health <= 0
 			or humanoid.FloorMaterial == Enum.Material.Air
 			or model:GetAttribute("IdleEnabled") == false then return false end
-		return combo:Request(os.clock())
+		local accepted=combo:Request(os.clock())
+		if accepted and jump.Phase=="Landing" then
+			jump:Cancel();restoreJump() -- Attack can blend out of landing recovery.
+		end
+		return accepted
 	end
 	local function reset()
 		hitReaction=nil;damageFlash.FillTransparency=1
@@ -854,6 +896,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		if humanoid and humanoid.Health<=0 then jump:Cancel();restoreJump() end
 		local jumpPose,jumpEvent
 		if movementRoot and humanoid then
+			assistRoofLanding(poseDt)
 			jumpPose,jumpEvent=jump:Update(os.clock(),humanoid.FloorMaterial~=Enum.Material.Air,movementRoot.AssemblyLinearVelocity.Y)
 			if jumpEvent=="Takeoff" then
 				feedback("JumpWhoosh",bones.Pelvis,true)
@@ -915,7 +958,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		if area then walking=false;humanoid:Move(Vector3.zero,false) end
 		local groundControl=jump.Phase=="Idle" or jump.Phase=="Landing" or jump.Phase=="Windup"
 		local runAllowed=not isStaggered() and not focus and not area and groundControl
-			and humanoid and humanoid.Health>0 and (model:GetAttribute("ComboStep") or 0)==0
+			and humanoid and humanoid.Health>0
 		if humanoid and not focus and not area and groundControl and humanoid.Health>0 then
 			humanoid.WalkSpeed=isStaggered() and 0 or runRequested and runAllowed and RUN_SPEED or WALK_SPEED
 		end
