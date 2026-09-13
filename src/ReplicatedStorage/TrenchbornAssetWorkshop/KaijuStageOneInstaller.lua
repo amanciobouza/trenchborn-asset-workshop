@@ -3,13 +3,14 @@ local RunService=game:GetService("RunService")
 local Players=game:GetService("Players")
 local Builder=require(script.Parent:WaitForChild("KaijuEvolutionBlockout"))
 local Rig=require(script.Parent:WaitForChild("KaijuStageOneRig"))
-local Installer={Version="1.1.4",ApprovedRevision="e835a34d4d65a8a73a895da704d2f960190e047e"}
+local Installer={Version="1.2.0",ApprovedRevision="e835a34d4d65a8a73a895da704d2f960190e047e"}
 local installations=setmetatable({}, {__mode="k"})
 local NAME="Stage_1_Primal_Beast"
 local function stamp(model)
  model:SetAttribute("PipelinePhase",7)
  model:SetAttribute("QualityGateB","ApprovedByUser")
- model:SetAttribute("QualityGateC","ApprovedByUser")
+ model:SetAttribute("QualityGateC","Pending")
+ model:SetAttribute("RuntimeReview","Pending_TerrainIdleAndScale")
  model:SetAttribute("FinalInstallerVersion",Installer.Version)
  model:SetAttribute("ApprovedRevision",Installer.ApprovedRevision)
  model:SetAttribute("IntegrationReview","PendingInTargetProject")
