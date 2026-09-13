@@ -1,6 +1,6 @@
 # Kaiju client presentation
 
-The shared runtime supports the five evolution stage numbers. The three existing portable installers ship the same runtime: Primal Beast 1.3.0, Storm Hunter 1.1.0 and Rift Stalker 1.1.0. Stages 4–5 still have no standalone installer in this workshop.
+The shared runtime supports the five evolution stage numbers. The three existing portable installers ship the same runtime: Primal Beast 1.3.1, Storm Hunter 1.1.1 and Rift Stalker 1.1.1. Stages 4–5 still have no standalone installer in this workshop.
 
 ## Responsibility split
 
@@ -54,3 +54,7 @@ Building destruction effects remain owned by the target game. The workshop's dor
 The three Python package builders verify embedded sources and artifact hashes. Roblox Studio playtests and performance measurements remain pending; no frame-rate or bandwidth improvement is claimed as measured.
 
 Compare the previous and new builds in a two-client session, including a spectator and InstallInput=false. Check streaming out/in during charge, shared attack timing, mouth source, tearing grip, death flicker, respawn and uninstall. On the weaker PC, compare MicroProfiler frame spikes, server script time, network receive and initial model load separately. Rig replication was a candidate cause of the reported hitching, not a confirmed diagnosis.
+
+## Partial replication startup fix
+
+The observer now waits for every required bone, rest-frame attribute, joint endpoint, movement-root connection and visual part before attaching. Receiving the tag or Articulation folder alone is insufficient. It continues waiting after 30 seconds, with a throttled diagnostic naming the missing dependency, until the rig arrives or is removed. This prevents the reported missing LeftThigh startup error without starting a partially initialized renderer. Replace the complete package, including KaijuSkeleton and KaijuPresentationClient. Mocked delayed-bone, delayed-attribute and delayed-joint-reference regressions pass for all five stage numbers; target-project visual verification remains pending, including the reported model offset.

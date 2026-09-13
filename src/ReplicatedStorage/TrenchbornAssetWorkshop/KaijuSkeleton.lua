@@ -143,6 +143,8 @@ function Skeleton.Build(model,movementRoot)
 		model:SetAttribute("AnimationMode", "Automatic")
 	end
 
+ model:SetAttribute("KaijuRigTailCount",tailCount)
+ model:SetAttribute("KaijuRigVisualCount",#visuals)
  model.ModelStreamingMode=Enum.ModelStreamingMode.Atomic
  for _,m in pairs(motors) do m:SetAttribute("ClientPresentation",true) end
  if rootJoint then rootJoint:SetAttribute("ClientPresentation",true) end

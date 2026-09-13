@@ -184,6 +184,24 @@ for stage=1,5 do
   end}
  side="server";api=Controller.Attach(m,root,h,adapter)
  local initial={};for name,motor in pairs(api.Motors) do initial[name]=motor.C0 end
+ -- Reproduce the reported partial replication: thigh arrives after the model/tag.
+ local articulation=m:FindFirstChild("Articulation")
+ local thigh=articulation:FindFirstChild("LeftThigh")
+ thigh.Parent=nil
+ assert(not Presentation.IsReady(m,root),"Partial skeleton must wait")
+ side="client"
+ local ok=pcall(Presentation.Attach,m,root,h)
+ assert(not ok and not m:FindFirstChild("LocalKaijuEffects"),"Incomplete attach must create no effects")
+ thigh.Parent=articulation
+ local restFrame=thigh:GetAttribute("RigRestFrame")
+ thigh:SetAttribute("RigRestFrame",nil)
+ assert(not Presentation.IsReady(m,root),"Wait for rest attributes")
+ thigh:SetAttribute("RigRestFrame",restFrame)
+ local rootJoint=articulation:FindFirstChild("KaijuLocomotionRoot")
+ rootJoint.Part0=nil
+ assert(not Presentation.IsReady(m,root),"Wait for joint references")
+ rootJoint.Part0=root
+ assert(Presentation.IsReady(m,root),"Complete rig becomes ready without a new tag")
  side="client";local view=Presentation.Attach(m,root,h)
  local function sync() view.Apply(http:JSONDecode(m:GetAttribute("KaijuPresentationState"))) end
  local function tick(dt)

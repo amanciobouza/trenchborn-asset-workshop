@@ -14,8 +14,49 @@ local RUN_STRIDE, RUN_STANCE = 11, 0.48
 local CYCLE_SECONDS = 1.9
 local AREA_TIMING={Curl=2.2,Discharge=2.8,Recovery=3.2,Finish=4.6}
 
+-- Replication can deliver the model/tag before its skeleton descendants.
+-- Check without creating effects or connections, so incomplete arrivals are retryable.
+function Rig.IsReady(model, movementRoot)
+ local folder=model:FindFirstChild("Articulation")
+ local tailCount=model:GetAttribute("KaijuRigTailCount")
+ local visualCount=model:GetAttribute("KaijuRigVisualCount")
+ if not folder or not tailCount or not visualCount then return false,"rig metadata" end
+ local names={"Pelvis","Torso","Head","Jaw","TailBase"}
+ for _,side in ipairs({"Left","Right"}) do
+  for _,region in ipairs({"UpperArm","Forearm","Hand","Thigh","Shin","Hock","Foot"}) do
+   table.insert(names,side..region)
+  end
+ end
+ for i=1,tailCount do table.insert(names,"Tail"..i) end
+ for _,name in ipairs(names) do
+  local bone=folder:FindFirstChild(name)
+  if not bone or not bone:IsA("BasePart") or not bone:GetAttribute("RigRestFrame") then return false,name end
+  if name~="Pelvis" then
+   local joint=folder:FindFirstChild(name.."Joint",true)
+   if not joint or not joint.Part0 or joint.Part1~=bone then return false,name.."Joint" end
+  end
+ end
+ if model:GetAttribute("KaijuHasMovementRoot") then
+  local joint=folder:FindFirstChild("KaijuLocomotionRoot")
+  if not movementRoot or not joint or joint.Part0~=movementRoot or joint.Part1~=folder:FindFirstChild("Pelvis") then
+   return false,"KaijuLocomotionRoot"
+  end
+ end
+ local count=0
+ for _,part in ipairs(model:GetChildren()) do
+  if part:IsA("BasePart") then
+   if not part:GetAttribute("RigRegion") or not part:GetAttribute("RigLocalFrame") then return false,part.Name end
+   count=count+1
+  end
+ end
+ if count<visualCount then return false,"visual parts" end
+ return true
+end
+
 function Rig.Attach(model, movementRoot, humanoid, options)
  assert(RunService:IsClient(),"Presentation is client-only")
+ local ready,missing=Rig.IsReady(model,movementRoot)
+ assert(ready,"Incomplete replicated rig: "..tostring(missing))
  options=options or {}
  -- Status attributes belong to the server; retained pose annotations stay local.
  local function presentationAttribute() end

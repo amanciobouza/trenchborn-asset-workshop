@@ -16,7 +16,8 @@ local function track(model)
  if active[model] or pending[model] then return end
  local ticket={};pending[model]=ticket
  task.spawn(function()
-  local deadline=os.clock()+30
+  local warnAt=os.clock()+30
+  local missing="model references"
   repeat
    if not alive or pending[model]~=ticket or not CollectionService:HasTag(model,TAG) then return end
    local renderer=model:FindFirstChild("KaijuRenderer")
@@ -27,7 +28,11 @@ local function track(model)
     and (not model:GetAttribute("KaijuHasMovementRoot") or root.Value)
     and (not model:GetAttribute("KaijuHasHumanoid") or human.Value)
     and model:GetAttribute("KaijuPresentationState") then
-    local ok,view=pcall(function() return require(renderer.Value).Attach(model,root.Value,human.Value) end)
+    local implementation=require(renderer.Value)
+    local ready
+    ready,missing=implementation.IsReady(model,root.Value)
+    if ready then
+    local ok,view=pcall(function() return implementation.Attach(model,root.Value,human.Value) end)
     if not ok then
      warn("[Kaiju presentation] "..model.Name..": "..tostring(view))
      pending[model]=nil;return
@@ -41,11 +46,14 @@ local function track(model)
     local connection=model:GetAttributeChangedSignal("KaijuPresentationState"):Connect(sync)
     active[model]={View=view,Connection=connection,Root=root.Value};pending[model]=nil
     sync();return
+    end
+   end
+   if os.clock()>=warnAt then
+    warn("[Kaiju presentation] Waiting for "..model.Name..": "..tostring(missing))
+    warnAt=os.clock()+30
    end
    task.wait(0.1)
-  until os.clock()>deadline
-  pending[model]=nil
-  if alive and model:IsDescendantOf(workspace) then warn("[Kaiju presentation] Incomplete streamed rig: "..model.Name) end
+  until not alive
  end)
 end
 local added=CollectionService:GetInstanceAddedSignal(TAG):Connect(track)

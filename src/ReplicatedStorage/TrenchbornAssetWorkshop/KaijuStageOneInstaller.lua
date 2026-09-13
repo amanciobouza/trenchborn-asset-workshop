@@ -3,7 +3,7 @@ local RunService=game:GetService("RunService")
 local Players=game:GetService("Players")
 local Builder=require(script.Parent:WaitForChild("KaijuEvolutionBlockout"))
 local Rig=require(script.Parent:WaitForChild("KaijuStageOneRig"))
-local Installer={Version="1.3.0",ApprovedRevision="e835a34d4d65a8a73a895da704d2f960190e047e"}
+local Installer={Version="1.3.1",ApprovedRevision="e835a34d4d65a8a73a895da704d2f960190e047e"}
 local installations=setmetatable({}, {__mode="k"})
 local NAME="Stage_1_Primal_Beast"
 local function stamp(model)
