@@ -1,0 +1,13 @@
+{
+  "package": "TrenchbornKaijuStageOne",
+  "version": "1.1.0",
+  "files": {
+    "KaijuStageOneInstaller.lua": "1de645bf2a2b4ac248569cf6e0d66b74cd8fb7760d58941e8a63fbdbefe98d7f",
+    "KaijuEvolutionBlockout.lua": "683ccdea6d56b280b9afefb1f9385cfa6df355712a1bb6c0fd482347795cfc87",
+    "KaijuStageOneRig.lua": "415e00e932c8299b0ad133c7398a2849b7c9fd6ea7f3f58c1decddd2f8d2ed97",
+    "KaijuStageOneCombo.lua": "51ffe1478daa7ccaf379b4f7ab8555357d1988077d5a94559c49ef5dbd283a9c",
+    "KaijuStageOneJump.lua": "f8ffde3ec48a0ba9ef67dcc8be4100bed9f7e78ca079f06ec86231053c0176b4",
+    "KaijuStageOneInput.client.lua": "d98ee6bba3a9f08aead6a836709bfe0d75e0033fd247338d062d0da7008c03ed"
+  },
+  "artifactSha256": "97edb13d7ceea0591a5c85d4c281e104c7edba386d7670c19c78b56c45b27583"
+}
