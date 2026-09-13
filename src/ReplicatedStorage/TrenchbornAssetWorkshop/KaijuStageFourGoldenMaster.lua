@@ -14,8 +14,8 @@ local function stone(model,name,size,cf,class)
 end
 -- Find the visible front of overlapping ellipsoid body masses at an X/Y sample.
 -- Solving in each mass's local frame also handles tilted calves and cheeks.
-local function frontSurface(parts,x,y)
- local front=math.huge
+local function frontSurface(parts,x,y,rear)
+ local front=rear and -math.huge or math.huge
  local surfaceNormal
  for _,p in ipairs(parts) do
   local o=p.CFrame:PointToObjectSpace(Vector3.new(x,y,0))
@@ -26,8 +26,8 @@ local function frontSurface(parts,x,y)
   local c=(o.X/h.X)^2+(o.Y/h.Y)^2+(o.Z/h.Z)^2-1
   local disc=b*b-4*a*c
   if disc>=0 then
-   local hit=(-b-math.sqrt(disc))/(2*a)
-   if hit<front then
+   local hit=(-b+(rear and 1 or -1)*math.sqrt(disc))/(2*a)
+   if (rear and hit>front) or (not rear and hit<front) then
     front=hit
     local point=o+d*hit
     surfaceNormal=p.CFrame:VectorToWorldSpace(
@@ -35,11 +35,11 @@ local function frontSurface(parts,x,y)
    end
   end
  end
- assert(front<math.huge,"Armor surface sample missed its body mass")
+ assert(math.abs(front)<math.huge,"Armor surface sample missed its body mass")
  return front,surfaceNormal
 end
-local function surfaceFrame(parts,x,y,inset)
- local z,normal=frontSurface(parts,x,y)
+local function surfaceFrame(parts,x,y,inset,rear)
+ local z,normal=frontSurface(parts,x,y,rear)
  local up=Vector3.yAxis-normal*normal:Dot(Vector3.yAxis)
  up=up.Unit
  local right=normal:Cross(up).Unit
@@ -174,17 +174,29 @@ function Builder.Build(parent,ground,options)
    -- Native WedgePart tapers toward local -Z. Aim that axis away from the
    -- body, embedding the broad +Z base in the shell rather than the thin tip.
    local spineRows={
-    {Mass="UpperRibcage",X=0.48,Y=0.40,Length=3.0,Region=side.."RibArmor",Width=1.8},
-    {Mass="UpperRibcage",X=0.72,Y=0.05,Length=2.5,Region=side.."RibArmor",Width=1.8},
-    {Mass="LowerRibcage",X=0.62,Y=-0.34,Length=1.9,Region=side.."RibArmor",Width=1.8},
-    {Mass="SacralMass",X=0.70,Y=0.05,Length=1.65,Region="PelvisArmor"..side,Width=1.55},
-    {Mass="TailRootMass",X=0.65,Y=0.15,Length=1.35,Region="TailBaseArmor"..side,Width=1.30},
+    {Mass="UpperRibcage",X=0.28,Y=0.40,Length=3.0,Region=side.."RibArmor",Width=1.8},
+    {Mass="UpperRibcage",X=0.34,Y=0.05,Length=2.5,Region=side.."RibArmor",Width=1.8},
+    {Mass="LowerRibcage",X=0.32,Y=-0.34,Length=1.9,Region=side.."RibArmor",Width=1.8},
+    {Mass="SacralMass",X=0.32,Y=0.05,Length=1.65,Region="PelvisArmor"..side,Width=1.55},
+    {Mass="TailRootMass",X=0.30,Y=0.15,Length=1.35,Region="TailBaseArmor"..side,Width=1.30},
    }
+   -- Sample the outer envelope of overlapping back masses, not just the
+   -- selected root: lumbar/sacral/tail bulges can otherwise swallow the shard.
+   local backMasses={}
+   for _,massName in ipairs({"UpperRibcage","LowerRibcage","DorsalLumbarMass",
+    "SacralMass","TailRootMass","LeftFlank","RightFlank"}) do
+    local body=model:FindFirstChild(massName)
+    if body then table.insert(backMasses,body) end
+   end
    for i,entry in ipairs(spineRows) do
     local direction=Vector3.new(sign*entry.X,entry.Y,1)
     local mass=assert(model:FindFirstChild(entry.Mass),"Missing spine root "..entry.Mass)
     local name=entry.Region.."BackSpine"..i
-    local cf=layeredShell(model,name,mass,direction,entry.Width,entry.Width*1.17,0.70)
+    local sample=shellFrame(mass,direction,0).Position
+    local cf=surfaceFrame(backMasses,sample.X,sample.Y,0.70*0.22,true)
+    bevelPlate(model,name,entry.Width,entry.Width*1.17,0.70,cf)
+    bevelPlate(model,name.."Overlap",entry.Width*0.82,entry.Width*1.17*0.70,0.70*0.62,
+     cf*CFrame.new(0,entry.Width*1.17*0.16,-0.70*0.52))
     local axis=(cf.LookVector+Vector3.new(sign*0.40,0.40,0)).Unit
     local up=(Vector3.yAxis-axis*axis.Y).Unit
     local center=cf.Position+axis*(entry.Length/2-0.18)
@@ -208,7 +220,7 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending_UserGeometryReview")
   model:SetAttribute("QualityGateC","Pending_Stage4GameplayReview")
-  model:SetAttribute("GeometryRevision","S4_OutwardSpinesToTailRoot_03")
+  model:SetAttribute("GeometryRevision","S4_SurfaceSeatedSpinesNearCrest_04")
   model:SetAttribute("VisualTarget","Approved Stage 4 front/side/back concept")
   model:SetAttribute("Purpose","Stage 4 geometry review; chest energy dressing follows Gate B")
   model.Parent=parent
