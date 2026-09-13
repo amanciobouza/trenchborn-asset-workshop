@@ -57,8 +57,15 @@ CAS:BindAction(focusAction,function(_,state)
 end,true,Enum.KeyCode.E,Enum.KeyCode.ButtonL2)
 CAS:SetTitle(focusAction,"Focus")
 CAS:SetPosition(focusAction,UDim2.new(1,-240,1,-180))
+local swimUp=false
 local lastJump=-math.huge
 CAS:BindActionAtPriority(jumpAction,function(_,state)
+	if state==Enum.UserInputState.End or state==Enum.UserInputState.Cancel then swimUp=false end
+	local c=player.Character;local h=c and c:FindFirstChildOfClass("Humanoid")
+	if h and h:GetState()==Enum.HumanoidStateType.Swimming then
+		swimUp=state==Enum.UserInputState.Begin and not UIS:GetFocusedTextBox()
+		return Enum.ContextActionResult.Sink
+	end
 	if UIS:GetFocusedTextBox() then return Enum.ContextActionResult.Pass end
 	if state==Enum.UserInputState.Begin and os.clock()-lastJump>=0.15 then
 		local character=player.Character
@@ -71,6 +78,18 @@ CAS:BindActionAtPriority(jumpAction,function(_,state)
 end,true,3000,Enum.KeyCode.Space,Enum.KeyCode.ButtonA)
 CAS:SetTitle(jumpAction,"Jump")
 CAS:SetPosition(jumpAction,UDim2.new(1,-65,1,-100))
+-- After Roblox input, preserve horizontal swimming and add ascent while Jump is held.
+local swimBinding="KaijuSwimInput_"..player.UserId
+RunService:BindToRenderStep(swimBinding,Enum.RenderPriority.Input.Value+1,function()
+	local c=player.Character;local h=c and c:FindFirstChildOfClass("Humanoid")
+	if not h or not c:FindFirstChild("Stage_1_Primal_Beast") or h:GetState()~=Enum.HumanoidStateType.Swimming then swimUp=false;return end
+	if UIS:GetFocusedTextBox() then swimUp=false;return end
+	if swimUp then
+		local d=h.MoveDirection
+		h:Move(Vector3.new(d.X,0.75,d.Z),false)
+	end
+end)
+local swimFocus=UIS.WindowFocusReleased:Connect(function() swimUp=false end)
 local lastSteer=0
 local steering=RunService.Heartbeat:Connect(function()
 	if os.clock()-lastSteer<0.08 then return end
@@ -231,6 +250,7 @@ task.spawn(function()
 	end
 end)
 script.Destroying:Connect(function()
+	RunService:UnbindFromRenderStep(swimBinding);swimFocus:Disconnect()
 	if feedbackConnection then feedbackConnection:Disconnect() end
 	RunService:UnbindFromRenderStep(cameraBefore);RunService:UnbindFromRenderStep(cameraAfter)
 	clearCameraOffset()
