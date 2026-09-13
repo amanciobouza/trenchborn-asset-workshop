@@ -70,6 +70,29 @@ local function facePlate(model,name,width,height,depth,cf)
   -mirror(right.ZVector),mirror(right.UpVector),-mirror(right.RightVector))
  stone(model,name.."Facet-1",Vector3.new(size.Z,size.Y,size.X),cf*left)
 end
+-- Rib edges use the rectangular -Y face as their buried attachment face.
+-- Two corner wedges per side meet at one outer midpoint, forming a bevel
+-- instead of a horizontal shelf. The original width/height/depth envelope stays.
+local function ribPlate(model,name,width,height,depth,cf)
+ local frame=cf*CFrame.new(0,-height*0.06,0)
+ stone(model,name.."Core",Vector3.new(width*0.72,height,depth),frame,"Part")
+ local function reflected(cf0,size,axis)
+  local function reflect(v) return v-axis*(2*v:Dot(axis)) end
+  -- Native apex (+X,+Y,-Z) is invariant under (X,Z) -> (-Z,-X).
+  return CFrame.fromMatrix(reflect(cf0.Position),
+   -reflect(cf0.ZVector),reflect(cf0.UpVector),-reflect(cf0.RightVector)),
+   Vector3.new(size.Z,size.Y,size.X)
+ end
+ local upperSize=Vector3.new(height/2,width*0.15,depth)
+ local upper=CFrame.fromMatrix(Vector3.new(width*0.425,height/4,0),
+  -Vector3.yAxis,Vector3.xAxis,Vector3.zAxis)
+ local lower,lowerSize=reflected(upper,upperSize,Vector3.yAxis)
+ for i,entry in ipairs({{upper,upperSize},{lower,lowerSize}}) do
+  stone(model,name.."EdgeRight"..i,entry[2],frame*entry[1])
+  local left,leftSize=reflected(entry[1],entry[2],Vector3.xAxis)
+  stone(model,name.."EdgeLeft"..i,leftSize,frame*left)
+ end
+end
 local function shinPlate(model,name,cf)
  facePlate(model,name,3.0,3.4,0.8,cf)
 end
@@ -153,7 +176,7 @@ function Builder.Build(parent,ground,options)
     x=pec.Position.X+sign*pec.Size.X*(i==1 and 0.29 or 0.24)
     y=pec.Position.Y-pec.Size.Y*(i==1 and 0.23 or 0.38)
     local ribFrame=surfaceFrame({pec,flank,ribs,belly},x,y,0.08)
-    facePlate(model,side.."RibArmor_"..i,1.85,0.90,0.58,
+    ribPlate(model,side.."RibArmor_"..i,1.85,0.90,0.58,
      ribFrame*CFrame.Angles(0,0,sign*math.rad(6)))
    end
    local thigh=model:FindFirstChild(side.."ThighMass")
@@ -188,7 +211,7 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending")
   model:SetAttribute("QualityGateC","Pending")
-  model:SetAttribute("GeometryRevision","S3_TaperedMirroredCornerArmor_08")
+  model:SetAttribute("GeometryRevision","S3_JoinedChestBevels_09")
   model:SetAttribute("VisualTarget","Approved Stage 3 front/side/back concept; lateral rib armor amendment")
   model:SetAttribute("Purpose","Stage 3 geometry review; anchored candidate")
   model.Parent=parent
