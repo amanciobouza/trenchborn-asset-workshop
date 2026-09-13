@@ -4,7 +4,7 @@ local RunService=game:GetService("RunService")
 local Players=game:GetService("Players")
 local Builder=require(script.Parent:WaitForChild("KaijuEvolutionBlockout"))
 local Rig=require(script.Parent:WaitForChild("KaijuStageOneRig"))
-local Installer={Version="1.2.2",ApprovedRevision="e835a34d4d65a8a73a895da704d2f960190e047e"}
+local Installer={Version="1.2.3",ApprovedRevision="e835a34d4d65a8a73a895da704d2f960190e047e"}
 local installations=setmetatable({}, {__mode="k"})
 local NAME="Stage_1_Primal_Beast"
 local function stamp(model)
@@ -1352,6 +1352,41 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	end
 	local focus,focusReadyAt=nil,0
 	local area,areaReadyAt=nil,0
+	local specialLock
+	local function holdSpecial()
+		if not specialLock then return end
+		humanoid.WalkSpeed=0;humanoid.AutoRotate=false;humanoid.Jump=false
+		humanoid:Move(Vector3.zero,false)
+		movementRoot.Anchored=true;movementRoot.CFrame=specialLock.Frame
+		movementRoot.AssemblyLinearVelocity=Vector3.zero
+		movementRoot.AssemblyAngularVelocity=Vector3.zero
+	end
+	local function beginSpecial(kind)
+		assert(not specialLock,"Special attack already active")
+		specialLock={Frame=movementRoot.CFrame,Anchored=movementRoot.Anchored,
+			Speed=humanoid.WalkSpeed,Rotate=humanoid.AutoRotate,
+			JumpEnabled=humanoid:GetStateEnabled(Enum.HumanoidStateType.Jumping)}
+		humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping,false)
+		hitReaction=nil;strikeResistance=nil
+		wasWalking=false;stopAge=nil;runBlend=0;walkFeet={};lastWalkUpper={}
+		model:SetAttribute("Running",false);model:SetAttribute("ReactionState","Idle")
+		model:SetAttribute("SpecialAttackLocked",kind)
+		holdSpecial()
+	end
+	local function releaseSpecial()
+		if not specialLock then return end
+		local saved=specialLock;specialLock=nil
+		if movementRoot.Parent then
+			movementRoot.AssemblyLinearVelocity=Vector3.zero
+			movementRoot.AssemblyAngularVelocity=Vector3.zero
+			movementRoot.Anchored=saved.Anchored
+		end
+		if humanoid.Parent then
+			humanoid.WalkSpeed=saved.Speed;humanoid.AutoRotate=saved.Rotate;humanoid.Jump=false
+			humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping,saved.JumpEnabled)
+		end
+		model:SetAttribute("SpecialAttackLocked",nil)
+	end
 	local focusColor=Color3.fromRGB(65,225,255)
 	local palmRest={}
 	for _,side in ipairs({"Left","Right"}) do
@@ -1390,7 +1425,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		for p,color in pairs(area.Colors) do if p.Parent then p.Color=color end end
 		for _,a in ipairs(area.Attachments) do a:Destroy() end
 		area.Effects:Destroy()
-		humanoid.WalkSpeed=area.Speed;humanoid.AutoRotate=area.Rotate
+		releaseSpecial()
 		area=nil;model:SetAttribute("AreaPhase","Idle")
 	end
 	local function requestArea()
@@ -1451,7 +1486,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			if string.match(p.Name,"^DorsalEnergy_") or p:GetAttribute("KaijuArmorEnergy") then area.Colors[p]=p.Color end
 		end
 		areaReadyAt=os.clock()+4 -- Provisional workshop cooldown, starting at activation.
-		humanoid.WalkSpeed=0;humanoid.AutoRotate=false;humanoid:Move(Vector3.zero,false)
+		beginSpecial("Area")
 		model:SetAttribute("AreaPhase","Charging")
 		return true
 	end
@@ -1462,8 +1497,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		for part,color in pairs(focus.Colors) do if part.Parent then part.Color=color end end
 		focus.Mouth:Destroy()
 		focus.Effects:Destroy()
-		humanoid.WalkSpeed=focus.Speed
-		humanoid.AutoRotate=focus.Rotate
+		releaseSpecial()
 		focus=nil
 		focusReadyAt=os.clock()+1
 		model:SetAttribute("FocusPhase","Idle")
@@ -1567,7 +1601,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		for _,p in ipairs(visuals) do
 			if string.match(p.Name,"^DorsalEnergy_") or p:GetAttribute("KaijuArmorEnergy") then focus.Colors[p]=p.Color end
 		end
-		humanoid.WalkSpeed=0;humanoid.AutoRotate=false;humanoid:Move(Vector3.zero,false)
+		beginSpecial("Focus")
 		model:SetAttribute("FocusPhase","Charging")
 		return true
 	end
@@ -1848,7 +1882,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				end
 				model:SetAttribute("Running",false);model:SetAttribute("RunRequested",false)
 				model:SetAttribute("ComboStep",0);model:SetAttribute("AttackName","")
-			else
+			elseif not specialLock then
 				hitSide=-hitSide
 				local heavy=damage&gt;=humanoid.MaxHealth*0.18
 				hitReaction={Started=os.clock(),Heavy=heavy,Side=hitSide}
@@ -1871,6 +1905,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	end
 	model:SetAttribute("PoseOwnershipRevision", "ProceduralC0_01")
 	poseConnection = RunService.PreSimulation:Connect(function()
+		holdSpecial()
 		for _, joint in ipairs(ownedJoints) do
 			if joint.Parent then joint.Transform = CFrame.identity end
 		end
@@ -1885,7 +1920,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			end
 			return
 		end
-		if model:GetAttribute("IdleEnabled") == false then
+		if model:GetAttribute("IdleEnabled") == false and not specialLock then
 			if wasEnabled then reset() end
 			wasEnabled = false
 			elapsed, accumulator = 0, 0
@@ -1933,11 +1968,9 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				+ alert * 0.45) * fade, 0)
 		end
 		local walking = model:GetAttribute("AnimationMode") == "Walk"
-		if focus and (humanoid.Health&lt;=0 or humanoid.FloorMaterial==Enum.Material.Air
-			or os.clock()-focus.Started&gt;=4.85) then endFocus() end
+		if focus and (humanoid.Health&lt;=0 or os.clock()-focus.Started&gt;=4.85) then endFocus() end
 		local focusTime=focus and os.clock()-focus.Started
-		if area and (humanoid.Health&lt;=0 or humanoid.FloorMaterial==Enum.Material.Air
-			or (movementRoot.Position-area.StartRoot).Magnitude&gt;3*scale or os.clock()-area.Started&gt;=AREA_TIMING.Finish) then endArea() end
+		if area and (humanoid.Health&lt;=0 or os.clock()-area.Started&gt;=AREA_TIMING.Finish) then endArea() end
 		local areaTime=area and os.clock()-area.Started
 		local areaCharge,areaRecover=0,0
 		if area then
@@ -1947,7 +1980,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			areaRecover=areaRecover*areaRecover*(3-2*areaRecover)
 		end
 		if humanoid and humanoid.Health&lt;=0 then jump:Cancel();restoreJump() end
-		local swimming=humanoid and humanoid.Health&gt;0 and humanoid:GetState()==swimState
+		local swimming=not specialLock and humanoid and humanoid.Health&gt;0 and humanoid:GetState()==swimState
 		model:SetAttribute("Swimming",swimming==true)
 		if swimming then
 			if jump.Phase~="Idle" then jump:Cancel();restoreJump() end
@@ -1958,7 +1991,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			humanoid.WalkSpeed=12
 		end
 		local jumpPose,jumpEvent
-		if movementRoot and humanoid and not swimming then
+		if movementRoot and humanoid and not swimming and not specialLock then
 			assistRoofLanding(poseDt)
 			jumpPose,jumpEvent=jump:Update(os.clock(),humanoid.FloorMaterial~=Enum.Material.Air,movementRoot.AssemblyLinearVelocity.Y)
 			if jumpEvent=="Takeoff" then
