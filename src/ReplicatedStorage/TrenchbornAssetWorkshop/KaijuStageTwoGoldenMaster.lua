@@ -25,7 +25,8 @@ local function soles(model)
  end
  return y
 end
-function Builder.Build(parent,ground)
+function Builder.Build(parent,ground,options)
+ local buildScale=StageOne.ResolveBuildScale(options)
  ground=ground or CFrame.identity
  assert(not parent:FindFirstChild(NAME),"Storm Hunter already exists in this parent")
  local staging=Instance.new("Folder");staging.Name="StormHunterBuild";staging.Parent=parent
@@ -186,6 +187,10 @@ function Builder.Build(parent,ground)
    end
   end
   model:PivotTo(model:GetPivot()+Vector3.new(0,-soles(model),0))
+  -- Apply the optional build multiplier before rigging; keep the soles on ground.
+  model:ScaleTo(model:GetScale()*buildScale)
+  model:PivotTo(model:GetPivot()+Vector3.new(0,-soles(model),0))
+  model:SetAttribute("BuildScale",buildScale)
   model:PivotTo(ground*model:GetPivot())
   -- Clear inherited Stage 1 approvals: only the new visual target has approval.
   for _,name in ipairs({"ApprovedGeometryCommit","DressingRevision","DressingReview","GeometryAmendmentReview"}) do model:SetAttribute(name,nil) end
@@ -196,7 +201,7 @@ function Builder.Build(parent,ground)
   model:SetAttribute("QualityGateC","Pending")
   model:SetAttribute("GeometryRevision","S2_StormHunter_LongitudinalCornerTips_11")
   model:SetAttribute("VisualTarget","Storm Hunter concept approved in conversation")
-  model:SetAttribute("HeightRatioToStageOne",(currentHeight*model:GetScale()-headDrop)/sourceHeight)
+  model:SetAttribute("HeightRatioToStageOne",(currentHeight*model:GetScale()-headDrop*buildScale)/sourceHeight)
   model:SetAttribute("Purpose","Stage 2 geometry review; anchored, no gameplay rig")
   model.Parent=parent
  end)
