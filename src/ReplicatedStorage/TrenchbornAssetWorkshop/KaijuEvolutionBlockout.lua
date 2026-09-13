@@ -648,11 +648,22 @@ local function dressStageOne(model: Model)
 	model:SetAttribute("DressingReview", "ApprovedByUser")
 end
 
-local function buildStage(parent: Instance, stage: Stage, index: number, origin: CFrame): Model
+-- Relative to each stage's authored size; validate before replacing any collection.
+function Builder.ResolveBuildScale(options)
+	assert(options == nil or type(options) == "table", "Build options must be a table")
+	local value = options and options.Scale
+	if value == nil then return 1 end
+	assert(type(value) == "number" and value == value and value > 0 and value < math.huge,
+		"Scale must be a finite positive number")
+	return value
+end
+
+local function buildStage(parent: Instance, stage: Stage, index: number, origin: CFrame, buildScale: number): Model
 	local model = Instance.new("Model")
 	model.Name = stage.name
 	model:SetAttribute("EvolutionStage", index)
-	model:SetAttribute("TargetHeightStuds", 30 * stage.height)
+	model:SetAttribute("TargetHeightStuds", 30 * stage.height * buildScale)
+	model:SetAttribute("BuildScale", buildScale)
 	model:SetAttribute("HeightPercent", math.round(stage.height * 100))
 	model:SetAttribute("ShoulderWidthPercent", math.round(stage.shoulders * 100))
 	model:SetAttribute("VolumePercent", math.round(stage.volume * 100))
@@ -745,7 +756,7 @@ local function buildStage(parent: Instance, stage: Stage, index: number, origin:
 	-- Normalize every stage to the agreed target height. This preserves the
 	-- primitive proportions while making the 30-stud Stage 1 baseline exact.
 	local _, unscaledSize = model:GetBoundingBox()
-	local targetHeight = 30 * stage.height
+	local targetHeight = 30 * stage.height * buildScale
 	model:ScaleTo(model:GetScale() * (targetHeight / unscaledSize.Y))
 	local scaledCFrame, scaledSize = model:GetBoundingBox()
 	local bottomY = scaledCFrame.Position.Y - scaledSize.Y / 2
@@ -765,12 +776,13 @@ local function createCollection(target: Instance, purpose: string): Model
 	return collection
 end
 
-function Builder.BuildStage(target: Instance, stageIndex: number, ground: CFrame?): Model
+function Builder.BuildStage(target: Instance, stageIndex: number, ground: CFrame?, options): Model
+	local buildScale = Builder.ResolveBuildScale(options)
 	local stage = STAGES[stageIndex]
 	assert(stage, string.format("Unknown Kaiju evolution stage: %d", stageIndex))
 	local collection = createCollection(target, string.format("Stage %d silhouette and proportion review", stageIndex))
 	collection:SetAttribute("VisibleStage", stageIndex)
-	buildStage(collection, stage, stageIndex, ground or CFrame.new(0, 0, 145))
+	buildStage(collection, stage, stageIndex, ground or CFrame.new(0, 0, 145), buildScale)
 	if stageIndex == 1 then
 		collection:SetAttribute("PipelinePhase", 5)
 		collection:SetAttribute("QualityGateB", "ApprovedByUser")
@@ -779,12 +791,13 @@ function Builder.BuildStage(target: Instance, stageIndex: number, ground: CFrame
 	return collection
 end
 
-function Builder.Build(target: Instance, ground: CFrame?): Model
+function Builder.Build(target: Instance, ground: CFrame?, options): Model
+	local buildScale = Builder.ResolveBuildScale(options)
 	local collection = createCollection(target, "Five-stage silhouette and proportion review")
 	local base = ground or CFrame.new(0, 0, 145)
 	local offsets = {-68, -36, 0, 42, 96}
 	for index, stage in ipairs(STAGES) do
-		buildStage(collection, stage, index, base * CFrame.new(offsets[index], 0, 0))
+		buildStage(collection, stage, index, base * CFrame.new(offsets[index] * buildScale, 0, 0), buildScale)
 	end
 	return collection
 end
