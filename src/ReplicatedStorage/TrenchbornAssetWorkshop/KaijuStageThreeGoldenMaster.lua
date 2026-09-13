@@ -279,6 +279,94 @@ function Builder.Build(parent,ground,options)
     end
    end
   end
+  -- Connected growth remains articulated: every route keeps a region prefix.
+  -- Project each sample onto the outer envelope of masses belonging to ONE bone.
+  local function skinPoint(origin,direction,masses)
+   local ray=direction.Unit
+   local distance=-math.huge
+   local normal
+   for _,mass in ipairs(masses) do
+    local o=mass.CFrame:PointToObjectSpace(origin)
+    local v=mass.CFrame:VectorToObjectSpace(ray)
+    local h=mass.Size/2
+    local a=(v.X/h.X)^2+(v.Y/h.Y)^2+(v.Z/h.Z)^2
+    local b=2*(o.X*v.X/h.X^2+o.Y*v.Y/h.Y^2+o.Z*v.Z/h.Z^2)
+    local c=(o.X/h.X)^2+(o.Y/h.Y)^2+(o.Z/h.Z)^2-1
+    local discriminant=b*b-4*a*c
+    if discriminant>=0 then
+     local t=(-b+math.sqrt(discriminant))/(2*a)
+     if t>0 and t>distance then
+      distance=t
+      local hit=o+v*t
+      normal=mass.CFrame:VectorToWorldSpace(Vector3.new(hit.X/h.X^2,hit.Y/h.Y^2,hit.Z/h.Z^2)).Unit
+     end
+    end
+   end
+   assert(normal,"Growth route missed body envelope")
+   return origin+ray*distance,normal
+  end
+  local function vein(name,a,b,normal,width)
+   local delta=b-a
+   if delta.Magnitude<0.01 then return end
+   local up=normal-delta.Unit*normal:Dot(delta.Unit)
+   if up.Magnitude<0.001 then return end
+   local cf=CFrame.lookAt((a+b)/2,b,up.Unit)
+   local rim=stone(model,name.."Rim",Vector3.new(width+0.07,0.028,delta.Magnitude+0.025),cf,"Part")
+   rim.Color=Color3.fromRGB(29,32,35)
+   local glow=stone(model,name.."Energy",Vector3.new(width,0.032,delta.Magnitude+0.025),
+    cf+up.Unit*0.019,"Part")
+   glow.Material=Enum.Material.Neon;glow.Color=Color3.fromRGB(220,175,32)
+   glow.Transparency=0.18;glow.CastShadow=false;glow:SetAttribute("KaijuArmorEnergy",true)
+  end
+  local function route(name,masses,directions,grow)
+   local points,normals={},{}
+   for i=1,#directions-1 do
+    for j=0,3 do
+     if i==1 or j>0 then
+      local point,normal=skinPoint(masses[1].Position,directions[i]:Lerp(directions[i+1],j/3),masses)
+      table.insert(points,point+normal*0.025);table.insert(normals,normal)
+     end
+    end
+   end
+   for i=1,#points-1 do
+    vein(name.."Path"..i,points[i],points[i+1],normals[i]+normals[i+1],0.085)
+   end
+   if grow then
+    -- Buried broad roots and overlapping caps connect the shoulder to the elbow.
+    for layer,index in ipairs({2,4,6}) do
+     local normal=normals[index]
+     local up=(points[index-1]-points[index+1]).Unit
+     up=(up-normal*up:Dot(normal)).Unit
+     local cf=CFrame.fromMatrix(points[index]-normal*0.04,normal:Cross(up).Unit,up,-normal)
+     local height=(points[index-1]-points[index+1]).Magnitude*1.12
+     local width=layer==2 and 1.65 or 1.40
+     bevelPlate(model,name.."RockLayer"..layer,width,height,0.55,cf)
+     local a=cf:PointToWorldSpace(Vector3.new(-0.18,height*0.30,-0.31))
+     local b=cf:PointToWorldSpace(Vector3.new(0.12,-height*0.32,-0.31))
+     vein(name.."RockVein"..layer,a,b,normal,0.085)
+    end
+   end
+  end
+  for _,sign in ipairs({-1,1}) do
+   local side=sign<0 and "Left" or "Right"
+   local outward=Vector3.new(sign,0,0)
+   local shoulder=model[side.."ShoulderJoint"].Position
+   local elbow=model[side.."ElbowJoint"].Position
+   local wrist=model[side.."WristJoint"].Position
+   local upperAxis=(elbow-shoulder).Unit
+   local lowerAxis=(wrist-elbow).Unit
+   route(side.."ShoulderArmorGrowth",{model[side.."BicepsMass"],model[side.."Deltoid"]},
+    {outward-upperAxis*2.2,outward, outward+upperAxis*2.5},true)
+   route(side.."ForearmArmorGrowth",{model[side.."ForearmMass"],model[side.."ElbowJoint"]},
+    {outward-lowerAxis*2.5,outward, outward+lowerAxis*0.8},false)
+   route(side.."RibArmorGrowth",{model.UpperRibcage,model.LowerRibcage,model[side.."Flank"],model[side.."Pectoral"]},
+    {Vector3.new(sign*0.15,0.3,1),Vector3.new(sign*0.8,0.25,0.6),
+     Vector3.new(sign,0.05,0),Vector3.new(sign*0.9,-0.15,-0.65),Vector3.new(sign*0.65,-0.35,-1)},false)
+   route(side.."HipArmorGrowth",{model[side.."ThighMass"],model[side.."OuterQuadriceps"],model[side.."HipJoint"]},
+    {Vector3.new(sign*0.8,1,-0.5),Vector3.new(sign*0.7,0,-1),Vector3.new(sign*0.35,-2,-0.8)},false)
+   route(side.."ShinArmorGrowth",{model[side.."CalfMass"],model[side.."KneeJoint"]},
+    {Vector3.new(sign*0.35,2,-0.8),Vector3.new(sign*0.5,0.4,-1),Vector3.new(sign*0.2,-0.7,-1)},false)
+  end
   -- Relative authored size: 12% above Stage 2, then the user-controlled multiplier.
   model:ScaleTo(stageTwoScale*1.12*multiplier)
   model:PivotTo(model:GetPivot()+Vector3.new(0,-soleY(model),0))
@@ -289,12 +377,12 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("BuildScale",multiplier)
   model:SetAttribute("PipelinePhase",5)
   model:SetAttribute("QualityGateA","ApprovedByUser")
-  model:SetAttribute("QualityGateB","ApprovedByUser")
-  model:SetAttribute("QualityGateC","ApprovedByUser")
-  model:SetAttribute("GeometryRevision","S3_SideFittedCheekArmor_12")
+  model:SetAttribute("QualityGateB","Pending_GrowthTransitions")
+  model:SetAttribute("QualityGateC","Pending_GrowthTransitions")
+  model:SetAttribute("GeometryRevision","S3_ArticulatedArmorGrowth_13")
   model:SetAttribute("VisualTarget","Approved Stage 3 front/side/back concept; lateral rib armor amendment")
-  model:SetAttribute("RuntimeReview","ApprovedByUser")
-  model:SetAttribute("DressingRevision","S3_BasaltFissures_01")
+  model:SetAttribute("RuntimeReview","Pending_GrowthTransitions")
+  model:SetAttribute("DressingRevision","S3_ConnectedFissures_02")
   model:SetAttribute("DressingReview","Pending")
   model:SetAttribute("Purpose","Stage 3 material and energy dressing review")
   model.Parent=parent
