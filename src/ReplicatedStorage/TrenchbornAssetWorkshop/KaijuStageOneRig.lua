@@ -716,8 +716,8 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			fallen(side.."Shin",-14*kneel*(1-fall),0,0)
 			fallen(side.."Hock",6*kneel*(1-fall),0,0)
 			fallen(side.."Foot",-8*fall,0,0)
-			-- Same final orientation as +185 degrees, reached via the opposite arc.
-			fallen(side.."UpperArm",-175*fall,0,sign*30*fall)
+			-- Preserve the approved forward fall arc.
+			fallen(side.."UpperArm",185*fall,0,sign*30*fall)
 			fallen(side.."Forearm",0,0,0)
 			fallen(side.."Hand",0,0,0)
 		end
@@ -771,9 +771,16 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			local elbow=shoulder.Position+direction*math.sqrt(math.max(0,upperLength^2-upperDrop^2))+Vector3.new(0,upperDrop,0)
 			local lowerDrop=math.clamp(wristHeight-elbowHeight,-lowerLength+0.01*scale,lowerLength-0.01*scale)
 			local wrist=elbow+direction*math.sqrt(math.max(0,lowerLength^2-lowerDrop^2))+Vector3.new(0,lowerDrop,0)
-			local upperRotation=rotateBetween(a,shoulder:VectorToObjectSpace(elbow-shoulder.Position))
+			-- Transport the falling arm's orientation into the ground-contact pose.
+			-- Solving directly from the rest vector loses axial roll near 180 degrees
+			-- and makes the armor corkscrew inward even when joint positions are right.
+			local upperReference=CFrame.Angles(math.rad(185*fall),0,math.rad(sign*30*fall))
+			local upperTarget=shoulder:VectorToObjectSpace(elbow-shoulder.Position)
+			local upperRotation=rotateBetween(upperReference:VectorToWorldSpace(a),upperTarget)*upperReference
 			local elbowFrame=shoulder*upperRotation*rest[side.."Forearm"]
-			local foreRotation=rotateBetween(b,elbowFrame:VectorToObjectSpace(wrist-elbow))
+			local foreReference=rest[side.."Forearm"]:ToObjectSpace(motors[side.."Forearm"].C0).Rotation
+			local foreTarget=elbowFrame:VectorToObjectSpace(wrist-elbow)
+			local foreRotation=rotateBetween(foreReference:VectorToWorldSpace(b),foreTarget)*foreReference
 			local wristFrame=elbowFrame*foreRotation*rest[side.."Hand"]
 			motors[side.."UpperArm"].C0=motors[side.."UpperArm"].C0:Lerp(rest[side.."UpperArm"]*upperRotation,settle)
 			motors[side.."Forearm"].C0=motors[side.."Forearm"].C0:Lerp(rest[side.."Forearm"]*foreRotation,settle)
