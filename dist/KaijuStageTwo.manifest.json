@@ -1,16 +1,16 @@
 {
   "package": "TrenchbornKaijuStageTwo",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "approvedRevision": "803c8ae4789f87b1a20ba6fa5433ecfda5e49675",
   "files": {
-    "KaijuStageTwoInstaller.lua": "9c6d9246fad165d6d3cf6b166eecfc3d3dd47569cafa6559b7423c4b9650a988",
+    "KaijuStageTwoInstaller.lua": "26817f750f435bea1974107d9f3ff1f1a034690d84719dab1002c91dd7667ee7",
     "KaijuStageTwoGoldenMaster.lua": "d26ec007799be683490721e7510422dbec28451c56dea2d07fd62f56a8e99a0a",
     "KaijuEvolutionBlockout.lua": "4bdede7f9d298174679efc76ea63e5ab59905087ae03351eafb5b288af5a373f",
-    "KaijuStageOneRig.lua": "9f853a0e81fe2e3ac8af632426bd242c4a5d0284c4af3618a528ee0d182d49cb",
+    "KaijuStageOneRig.lua": "4cb2d74aa174960cbc38f4e317bf73d09ff6b366b87d3ffa38b1068a7ea5bc78",
     "KaijuStageOneCombo.lua": "51ffe1478daa7ccaf379b4f7ab8555357d1988077d5a94559c49ef5dbd283a9c",
     "KaijuStageOneJump.lua": "84938fbdd7e3bc64794e17d8325d0aa2bc745499f88e80c61317f744ba438b7e",
     "KaijuStageTwoInput.client.lua": "351cd3f842ed8ff0f5bbbb018ad5ef41c7b6227f67884bb86200317f3cf4a58d",
-    "KaijuStageOneJumpMotor.client.lua": "007cdaad85137758892b58e36da456b1810b7cdddc10fdbf9e1fbaa0f3fc954f"
+    "KaijuStageOneJumpMotor.client.lua": "b4adf2ff8c2950ad85abf7bf5b2ac58ab243a8d94fb9785e3f748a4317af96ab"
   },
-  "artifactSha256": "577f7e25c69beae3ed78200ea9ec6a6d6f27b8946a8ec7cc2ee46671da145b25"
+  "artifactSha256": "2d41cef5f13e2439ae83079190502df5184920ce5bdedb662d0e151605e531cc"
 }
