@@ -140,8 +140,33 @@ function Builder.Build(parent,ground,options)
    -- Grow upward from the brow's lower edge to keep the eye opening clear.
    local browBase=browCore.CFrame*CFrame.new(0,-browCore.Size.Y/2,0)
    enlargeGroup(model,side.."HeadArmorBrow",browBase,Vector3.new(1.12,1.30,1.08))
-   layeredShell(model,"LowerJawStage4Angle"..side,model.LowerJawRear,
-    Vector3.new(sign,-0.10,0.35),1.65,1.35,0.58)
+   -- The old rear-facing jaw wedge was hidden behind the cheek/neck.
+   -- Move the armor forward along the lower jaw and seat it beyond the
+   -- visible side envelope, while keeping the entire assembly on Jaw.
+   local jaw=model.LowerJawRear
+   local y=jaw.Position.Y-jaw.Size.Y*0.18
+   local z=jaw.Position.Z-jaw.Size.Z*0.24
+   local outer=-math.huge
+   for _,mass in ipairs({jaw,model[side.."CheekMass"],neck}) do
+    local o=mass.CFrame:PointToObjectSpace(Vector3.new(0,y,z))
+    local d=mass.CFrame:VectorToObjectSpace(Vector3.new(sign,0,0))
+    local h=mass.Size/2
+    local a=(d.X/h.X)^2+(d.Y/h.Y)^2+(d.Z/h.Z)^2
+    local b=2*(o.X*d.X/h.X^2+o.Y*d.Y/h.Y^2+o.Z*d.Z/h.Z^2)
+    local c=(o.X/h.X)^2+(o.Y/h.Y)^2+(o.Z/h.Z)^2-1
+    local disc=b*b-4*a*c
+    if disc>=0 then outer=math.max(outer,(-b+math.sqrt(disc))/(2*a)) end
+   end
+   assert(outer>-math.huge,"Jaw armor side sample missed body")
+   local normal=Vector3.new(sign,0,0)
+   local cf=CFrame.fromMatrix(Vector3.new(sign*(outer+0.18),y,z),
+    normal:Cross(Vector3.yAxis),Vector3.yAxis,-normal)
+   local width=jaw.Size.Z*0.82
+   local height=jaw.Size.Y*0.60
+   local name="LowerJawStage4Angle"..side
+   bevelPlate(model,name,width,height,0.88,cf)
+   bevelPlate(model,name.."RaisedFace",width*0.82,height*0.72,0.56,
+    cf*CFrame.new(0,-height*0.04,-0.57))
   end
   -- Enlarge existing armor together with its attached facets and energy seams.
   for _,side in ipairs({"Left","Right"}) do
@@ -312,7 +337,7 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending_UserGeometryReview")
   model:SetAttribute("QualityGateC","Pending_Stage4GameplayReview")
-  model:SetAttribute("GeometryRevision","S4_ReinforcedNapeAndHead_09")
+  model:SetAttribute("GeometryRevision","S4_VisibleLowerJawArmor_10")
   model:SetAttribute("VisualTarget","Approved Stage 4 front/side/back concept")
   model:SetAttribute("Purpose","Stage 4 geometry review; chest energy dressing follows Gate B")
   model.Parent=parent
