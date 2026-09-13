@@ -438,7 +438,7 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 	end
 	local function areaImpact(origin)
 		if humanoid.Health<=0 or (humanoid.FloorMaterial==Enum.Material.Air and kaiju:GetAttribute("SpecialAttackLocked")~="Area")
-			or not root:IsDescendantOf(workspace) or (origin-root.Position).Magnitude>20*scale then return end
+			or not root:IsDescendantOf(workspace) or (origin-root.Position).Magnitude>40*scale then return end
 		local victims={}
 		for target in pairs(targets) do if areaPoint(target,origin) then table.insert(victims,target) end end
 		for _,target in ipairs(victims) do handle("Area",0,target,origin) end

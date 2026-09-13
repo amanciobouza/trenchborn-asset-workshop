@@ -112,7 +112,7 @@ task={spawn=function(f) f() end,delay=function(_,f) f() end}
 local time=1000
 workspace=Instance.new("Workspace");workspace.Gravity=196.2
 function workspace:GetServerTimeNow() return time end
-function workspace:Raycast() return {Position=Vector3.zero,Normal=Vector3.yAxis,Instance=workspace} end
+function workspace:Raycast() if self.NoGround then return nil end;return {Position=self.GroundPoint or Vector3.zero,Normal=self.GroundNormal or Vector3.yAxis,Instance=workspace} end
 local function clone(v) if type(v)~="table" then return v end;local r={};for k,x in pairs(v) do r[k]=clone(x) end;return r end
 local encoded={}
 local function stringify(t)
@@ -222,7 +222,18 @@ for stage=1,5 do
  for i=1,50 do tick(0.1) end
  assert(calls.Focus==10,"Exactly ten server focus ticks")
  assert(not root.Anchored and h.AutoRotate)
- h.FloorMaterial="Ground";assert(api.RequestArea())
+ h.FloorMaterial="Ground"
+ workspace.NoGround=true
+ local accepted,reason=api.RequestArea()
+ assert(not accepted and reason=="No ground" and m:GetAttribute("AreaPhase")=="No ground")
+ assert(not root.Anchored,"Rejected area must not lock movement")
+ workspace.NoGround=false;workspace.GroundNormal=Vector3.new(0.95,0.3,0).Unit
+ accepted,reason=api.RequestArea();assert(not accepted and reason=="Too steep")
+ workspace.GroundNormal=Vector3.new(0.8,0.6,0)
+ workspace.GroundPoint=root.Position-Vector3.new(0,30,0)
+ assert(api.RequestArea(),"Slope with ground beyond old 20-stud limit accepted")
+ assert(m:GetAttribute("AreaRejectReason")==nil)
+ workspace.GroundPoint=nil;workspace.GroundNormal=nil
  for i=1,47 do tick(0.1) end
  assert(calls.Area==1 and not root.Anchored)
  root.AssemblyLinearVelocity=Vector3.zero

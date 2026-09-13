@@ -4,7 +4,7 @@ local Players=game:GetService("Players")
 local Builder=require(script.Parent:WaitForChild("KaijuEvolutionBlockout"))
 local StageThree=require(script.Parent:WaitForChild("KaijuStageThreeGoldenMaster"))
 local Rig=require(script.Parent:WaitForChild("KaijuStageOneRig"))
-local Installer={Version="1.1.1",ApprovedRevision="8a88c8ab7fe9e36ce6b7c6ea3f9c911942513456"}
+local Installer={Version="1.1.2",ApprovedRevision="8a88c8ab7fe9e36ce6b7c6ea3f9c911942513456"}
 local installations=setmetatable({}, {__mode="k"})
 local NAME="Stage_3_Rift_Stalker"
 local function stamp(model)

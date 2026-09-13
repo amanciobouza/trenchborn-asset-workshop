@@ -147,10 +147,26 @@ function Rig.Attach(model,root,humanoid,combat)
   attr("FocusPhase","Charging");publish();return true
  end
  local function requestArea()
-  if not readySpecial() or now()<areaReady or not combat or not combat.AreaImpact then return false end
+  local function reject(reason)
+   attr("AreaRejectReason",reason)
+   return false,reason
+  end
+  if not readySpecial() then return reject("Not ready") end
+  if now()<areaReady then return reject("Cooldown") end
+  if not combat or not combat.AreaImpact then return reject("No adapter") end
   local hit=workspace:Raycast(root.Position+Vector3.new(0,30*scale,0),Vector3.new(0,-70*scale,0),query)
-  if not hit or hit.Normal.Y<0.7 or (hit.Position-root.Position).Magnitude>20*scale then return false end
-  begin("Area");area={Started=now(),Point=hit.Position,Ground=CFrame.new(hit.Position)*root.CFrame.Rotation}
+  if not hit then attr("AreaPhase","No ground");return reject("No ground") end
+  if hit.Normal.Y<0.4 then attr("AreaPhase","No ground");return reject("Too steep") end
+  -- The ray ends 40 scaled studs below the root (30 above minus 70 down).
+  if (hit.Position-root.Position).Magnitude>40*scale then
+   attr("AreaPhase","No ground");return reject("Ground too far")
+  end
+  local normal=hit.Normal.Unit
+  local forward=root.CFrame.LookVector-normal*root.CFrame.LookVector:Dot(normal)
+  if forward.Magnitude<0.001 then forward=normal:Cross(root.CFrame.RightVector) end
+  local ground=CFrame.lookAt(hit.Position,hit.Position+forward.Unit,normal)
+  attr("AreaRejectReason",nil)
+  begin("Area");area={Started=now(),Point=hit.Position,Ground=ground}
   areaReady=now()+4;attr("AreaPhase","Charging");publish();return true
  end
  local function requestJump()
