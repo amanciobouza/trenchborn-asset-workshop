@@ -1,8 +1,8 @@
 {
   "package": "TrenchbornKaijuStageOne",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "files": {
-    "KaijuStageOneInstaller.lua": "f040fde74872e9a4dc7bc736c7f92f8c8f84f44c252f9a352b6d1703c179c3e6",
+    "KaijuStageOneInstaller.lua": "8d9130f9d22b7e763a356f965f5e47c325d9655d43b39ce9972ea7644728d0ca",
     "KaijuEvolutionBlockout.lua": "683ccdea6d56b280b9afefb1f9385cfa6df355712a1bb6c0fd482347795cfc87",
     "KaijuStageOneRig.lua": "24acb3da2f80d69fea0a3de49cd82897ac47889f599337a05788a088e46978b5",
     "KaijuStageOneCombo.lua": "51ffe1478daa7ccaf379b4f7ab8555357d1988077d5a94559c49ef5dbd283a9c",
@@ -10,5 +10,5 @@
     "KaijuStageOneInput.client.lua": "d98ee6bba3a9f08aead6a836709bfe0d75e0033fd247338d062d0da7008c03ed",
     "KaijuStageOneJumpMotor.client.lua": "007cdaad85137758892b58e36da456b1810b7cdddc10fdbf9e1fbaa0f3fc954f"
   },
-  "artifactSha256": "b6b5435f79dfca35d146e09e504955897f36b643795c7da944c3ba0846f7a043"
+  "artifactSha256": "05f53a1cb570e2a16138fac7b1111ea03fd5496c08c18f254f00770e5d70d83d"
 }
