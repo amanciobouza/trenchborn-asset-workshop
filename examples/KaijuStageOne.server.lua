@@ -12,6 +12,7 @@ local function equip(player,character)
  if player.Character~=character or not character.Parent or not humanoid or not root then return end
  local ok,err=pcall(function()
   Installer.Install(character,{
+   Scale=1, -- Build size: 0.5 = half, 2 = double. Set before equipping.
    PreviewOnly=true, -- Movement smoke test. No building damage or focus target.
    InstallInput=true, -- Omit if the game already supplies input/HUD.
    -- For gameplay: remove PreviewOnly and provide CombatFactory:
