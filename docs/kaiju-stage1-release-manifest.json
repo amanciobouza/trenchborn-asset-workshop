@@ -1,0 +1,27 @@
+{
+  "version": "1.0.0",
+  "qualityGateC": "ApprovedByUser",
+  "approvedRevision": "e2e669b53806f19f62b76d68c8b4ac6065f71015",
+  "sources": [
+    {
+      "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuEvolutionBlockout.lua",
+      "blobSha": "20472a93c272648fa52cc05d584cef9fb09b360b"
+    },
+    {
+      "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuStageOneCombat.lua",
+      "blobSha": "ea7fa2c093119bbfe152f59aa7e0efc66efe0551"
+    },
+    {
+      "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuStageOneCombo.lua",
+      "blobSha": "a4c52a6b9a51c4565946e2047183bc50d63322bf"
+    },
+    {
+      "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuStageOneJump.lua",
+      "blobSha": "1f2e06fa9605c35c817a2785b4a6deaa2e012f6e"
+    },
+    {
+      "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuStageOneRig.lua",
+      "blobSha": "3dfdca82b85e6b0b0b502090f9acf06a2355e3ac"
+    }
+  ]
+}
