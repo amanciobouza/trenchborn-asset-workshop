@@ -1,4 +1,4 @@
-# Primal Beast — portable package 1.1.0
+# Primal Beast — portable package 1.1.1
 
 ## Import into another Roblox project
 
@@ -7,7 +7,7 @@
 3. Copy `examples/KaijuStageOne.server.lua` into a Script under **ServerScriptService**.
 4. Play. The example equips Stage 1 on join/respawn, in explicit movement-only preview mode.
 
-The package contains the current geometry, articulated rig, gait, jump, native Terrain-water swimming, attacks and sounds. It contains no Stage 2 preview, Guardian controller, workshop HUD/test targets or camera code. Six scripts are embedded; there are no HTTP loaders or numeric `require(assetId)` dependencies. Roblox sound asset IDs still require permission to play in the target experience.
+The package contains the current geometry, articulated rig, gait, jump, native Terrain-water swimming, attacks and sounds. It contains no Stage 2 preview, Guardian controller, workshop HUD/test targets or camera code. Seven scripts are embedded; there are no HTTP loaders or numeric `require(assetId)` dependencies. Roblox sound asset IDs still require permission to play in the target experience.
 
 ## Input
 
@@ -39,10 +39,14 @@ The existing `KaijuStageOneCombat.lua` in the workshop repository demonstrates t
 
 For player characters, remotes under the installed model validate owner, payload and rate: RequestAttack, RequestJump, SteerJump, SetRunning, RequestFocus, RequestArea. Set EnableRemotes=false when only a trusted server controller drives the API (incompatible with InstallInput=true). Never forward unvalidated client requests to the server API yourself.
 
-Custom input should send flat MoveDirection on jump, send SteerJump about every 0.08 seconds during Windup/Air, and release running on focus loss. Swimming ascent is native client Humanoid:Move with an upward component while Jump is held. State attributes include Swimming, JumpPhase, Running, ComboStep, FocusPhase, AreaPhase and FinisherAvailable. KaijuFeedback emits camera/UI cues, but the package does not consume them or change your camera.
+Custom input should send flat MoveDirection on jump, release running on focus loss, and leave normal Roblox movement enabled in the air. SteerJump remains accepted for compatibility but no longer overrides native movement. Swimming ascent is native client Humanoid:Move with an upward component while Jump is held. State attributes include Swimming, JumpPhase, Running, ComboStep, FocusPhase, AreaPhase and FinisherAvailable. KaijuFeedback emits camera/UI cues, but the package does not consume them or change your camera.
 
 ## Rebuild and validation
 
 `python tools/build-kaiju-stage1.py` rebuilds the XML model and SHA-256 manifest using Python standard library only. Alternatively use `rojo build kaiju-stage1.project.json -o KaijuStageOne.rbxm`. XML source round-trips and package dependency isolation are checked; the artifact is not a rendered model or a Studio test result.
 
-The original Stage 1 visual/gameplay approval is recorded as a baseline. This 1.1.0 packaging and its input integration still need testing in the receiving experience: import, equip, run, jump, water entry/ascent/exit, real combat adapter, defeat, respawn and uninstall. Sound permissions and the game camera must also be checked there.
+The original Stage 1 visual/gameplay approval is recorded as a baseline. This 1.1.1 packaging and its input integration still need testing in the receiving experience: import, equip, run, jump, water entry/ascent/exit, real combat adapter, defeat, respawn and uninstall. Sound permissions and the game camera must also be checked there.
+
+## Jump motor in 1.1.1
+
+The installer always installs KaijuStageOneJumpMotor for player characters, including when InstallInput=false. It receives server-authorized vertical impulses through KaijuJumpImpulse, preserves horizontal velocity, and does not bind keys or control the camera. Import the complete updated package; replacing the rig alone omits this required client. No jump windup delay or server network-ownership takeover remains. Turning and walk/run speed remain controlled by the native character controller in air. Updated movement still needs a target-project playtest.
