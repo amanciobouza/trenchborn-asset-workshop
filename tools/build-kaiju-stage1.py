@@ -12,7 +12,7 @@ def build():
     folder=ET.SubElement(xml,'Item',{'class':'Folder','referent':'RBX0'})
     properties=ET.SubElement(folder,'Properties')
     ET.SubElement(properties,'string',name='Name').text='TrenchbornKaijuStageOne'
-    manifest={'package':'TrenchbornKaijuStageOne','version':'1.1.4','files':{}}
+    manifest={'package':'TrenchbornKaijuStageOne','version':'1.2.0','files':{}}
     for index,filename in enumerate(FILES,1):
         source=(SOURCE/filename).read_text(encoding='utf-8')
         client=filename.endswith('.client.lua')
