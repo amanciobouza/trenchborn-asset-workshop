@@ -328,6 +328,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	local combo = Combo.new(combat and combat.PrepareFinisher)
 	local jump = Jump.new()
 	local hitReaction,defeat=nil,nil
+	local strikeResistance=nil
 	local hitSide=1
 	local damageFlash=Instance.new("Highlight")
 	damageFlash.Name="DamageFeedback";damageFlash.Adornee=model;damageFlash.FillColor=Color3.fromRGB(255,65,45)
@@ -648,6 +649,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		return accepted
 	end
 	local function reset()
+		strikeResistance=nil
 		hitReaction=nil;damageFlash.FillTransparency=1
 		for sound in pairs(activeSounds) do sound:Destroy() end
 		soundContacts={}
@@ -993,7 +995,17 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			elseif event.Kind=="TearSound" then
 				feedback("Finisher",bones.Torso,true)
 			else
-				if combat then combat.Handle(event.Kind,event.Index,event.FinisherUntil) end
+				local confirmed=combat and combat.Handle(event.Kind,event.Index,event.FinisherUntil)
+				if event.Kind=="Hit" and event.Index<=3 and confirmed then
+					local heldPose={}
+					local sides=event.Index==1 and {"Left"} or event.Index==2 and {"Right"} or {"Left","Right"}
+					for _,side in ipairs(sides) do
+						for _,joint in ipairs({"UpperArm","Forearm","Hand"}) do
+							local name=side..joint;heldPose[name]=previous[name]
+						end
+					end
+					strikeResistance={Started=os.clock(),Index=event.Index,Pose=heldPose}
+				end
 				if event.Kind=="Hit" then
 					if event.Index<4 and model:GetAttribute("LastAttackResult")=="Hit" then
 						local source=event.Index==1 and bones.LeftHand or event.Index==2 and bones.RightHand or bones.Torso
@@ -1358,6 +1370,21 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		local enteringMotion=transitionLeft>0 and (mode=="Walk" or mode=="Run" or mode=="Attack")
 		local motionBlend=enteringMotion and 1-math.exp(-poseDt/0.14) or blend
 		for name, m in pairs(motors) do m.C0 = previous[name]:Lerp(m.C0, motionBlend) end
+		-- Arm-only contact resistance: never pause the combo clock or movement root.
+		if strikeResistance then
+			local age=os.clock()-strikeResistance.Started
+			if age>=0.24 or attackIndex~=strikeResistance.Index or jumpPose or focus or area or hitReaction then
+				strikeResistance=nil
+			else
+				local release=math.clamp((age-0.06)/0.18,0,1)
+				local blend=release*release*(3-2*release)
+				local recoil=math.sin(math.pi*release)
+				for name,heldPose in pairs(strikeResistance.Pose) do
+					local degrees=string.find(name,"Forearm",1,true) and 10 or string.find(name,"UpperArm",1,true) and 6 or 3
+					motors[name].C0=heldPose:Lerp(motors[name].C0,blend)*CFrame.Angles(math.rad(degrees*recoil),0,0)
+				end
+			end
+		end
 		if area then
 			local intensity=areaCharge*(1-areaRecover)
 			local discharge=areaTime>=AREA_TIMING.Discharge
