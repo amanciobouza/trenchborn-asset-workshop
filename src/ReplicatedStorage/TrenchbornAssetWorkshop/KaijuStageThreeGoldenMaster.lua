@@ -250,24 +250,37 @@ function Builder.Build(parent,ground,options)
   end
   -- Short recessed-looking fissures on lateral armor only; no chest-center core.
   -- Keep the existing region prefix so every seam follows its own animated bone.
+  -- Authored per-region fissures: stable across rebuilds, deliberately not mirrored.
+  local fissurePatterns={
+   RibLeft={Points={{-.39,.26,.055},{-.10,.09,0},{.12,.16,0},{.34,-.19,.055},{-.02,-.32,.045}},Edges={{1,2},{2,3},{3,4},{2,5}}},
+   RibRight={Points={{-.28,-.22,.055},{.04,-.04,0},{.26,.30,.055},{.35,-.11,.045}},Edges={{1,2},{2,3},{2,4}}},
+   HipLeft={Points={{-.30,.35,.055},{-.12,.05,0},{.27,-.29,.055},{-.31,-.11,.045}},Edges={{1,2},{2,3},{2,4}}},
+   HipRight={Points={{.33,.26,.055},{.14,.10,0},{.22,-.08,0},{-.10,-.35,.055},{-.26,.16,.045}},Edges={{1,2},{2,3},{3,4},{2,5}}},
+   ShinLeft={Points={{-.32,.32,.055},{-.07,.13,0},{-.16,-.09,0},{.19,-.35,.055},{.29,.19,.045}},Edges={{1,2},{2,3},{3,4},{2,5}}},
+   ShinRight={Points={{.29,.23,.055},{.02,-.02,0},{-.23,-.28,.055}},Edges={{1,2},{2,3}}},
+  }
   for _,p in ipairs(armorParts) do
    if p.Name:match("RockLayer1Core$") then
     local w,h,d=p.Size.X,p.Size.Y,p.Size.Z
-    local sign=p.Name:sub(1,4)=="Left" and -1 or 1
+    local side=p.Name:sub(1,4)=="Left" and "Left" or "Right"
+    local region=p.Name:find("RibArmor",1,true) and "Rib" or p.Name:find("HipArmor",1,true) and "Hip" or "Shin"
+    local pattern=fissurePatterns[region..side]
+    local secondRib=p.Name:find("RibArmor_2",1,true)~=nil
     local z=-d/2-0.018
-    local points={
-     Vector3.new(-sign*w*0.39,h*0.21,z+0.055),
-     Vector3.new(-sign*w*0.08,h*0.04,z),
-     Vector3.new(sign*w*0.32,-h*0.18,z+0.055),
-     Vector3.new(sign*w*0.02,-h*0.32,z+0.045),
-    }
-    for segment,ends in ipairs({{1,2},{2,3},{2,4}}) do
+    local points={}
+    for _,point in ipairs(pattern.Points) do
+     -- The lower chest layer gets a shorter, differently sloped continuation.
+     local x=secondRib and point[1]*0.78+0.04 or point[1]
+     local y=secondRib and -point[2]*0.72-0.03 or point[2]
+     table.insert(points,Vector3.new(w*x,h*y,z+point[3]))
+    end
+    for segment,ends in ipairs(pattern.Edges) do
      local a=p.CFrame:PointToWorldSpace(points[ends[1]])
      local b=p.CFrame:PointToWorldSpace(points[ends[2]])
      local normal=p.CFrame.LookVector
      local cf=CFrame.lookAt((a+b)/2,b,normal)
      local length=(b-a).Magnitude+0.02
-     local width=segment==3 and 0.045 or 0.065
+     local width=(segment==#pattern.Edges and #pattern.Edges>2) and 0.045 or (side=="Left" and 0.065 or 0.058)
      local prefix=p.Name.."Fissure"..segment
      local rim=stone(model,prefix.."Rim",Vector3.new(width+0.07,0.024,length),cf,"Part")
      rim.Color=Color3.fromRGB(26,30,35)
@@ -366,8 +379,8 @@ function Builder.Build(parent,ground,options)
    local torsoMasses={model.UpperRibcage,model.LowerRibcage,model[side.."Flank"],model[side.."Pectoral"]}
    -- The flank-to-chest route remains; the back is separate, broken mineral growth.
    route(side.."RibArmorGrowth",torsoMasses,
-    {Vector3.new(sign,0.05,-0.05),Vector3.new(sign*0.9,-0.15,-0.65),
-     Vector3.new(sign*0.65,-0.35,-1)},false)
+    sign<0 and {Vector3.new(-1,0.05,-0.05),Vector3.new(-0.9,-0.15,-0.65),Vector3.new(-0.65,-0.35,-1)}
+     or {Vector3.new(1,0.18,-0.12),Vector3.new(0.94,-0.03,-0.50),Vector3.new(0.78,-0.24,-0.83),Vector3.new(0.69,-0.19,-1)},false)
    local root,fragment,branch
    if sign<0 then
     root={Vector3.new(-0.04,0.48,1),Vector3.new(-0.29,0.37,1),Vector3.new(-0.50,0.46,0.9)}
@@ -384,9 +397,11 @@ function Builder.Build(parent,ground,options)
    route(side.."RibArmorBackFragment",torsoMasses,fragment,false,true)
    route(side.."RibArmorBackBranch",torsoMasses,branch,false,true)
    route(side.."HipArmorGrowth",{model[side.."ThighMass"],model[side.."OuterQuadriceps"],model[side.."HipJoint"]},
-    {Vector3.new(sign*0.8,1,-0.5),Vector3.new(sign*0.7,0,-1),Vector3.new(sign*0.35,-2,-0.8)},false)
+    sign<0 and {Vector3.new(-0.8,1,-0.5),Vector3.new(-0.7,0,-1),Vector3.new(-0.35,-2,-0.8)}
+     or {Vector3.new(0.88,0.72,-0.55),Vector3.new(0.48,0.12,-1),Vector3.new(0.62,-0.55,-1),Vector3.new(0.40,-1.70,-0.85)},false)
    route(side.."ShinArmorGrowth",{model[side.."CalfMass"],model[side.."KneeJoint"]},
-    {Vector3.new(sign*0.35,2,-0.8),Vector3.new(sign*0.5,0.4,-1),Vector3.new(sign*0.2,-0.7,-1)},false)
+    sign<0 and {Vector3.new(-0.35,2,-0.8),Vector3.new(-0.5,0.4,-1),Vector3.new(-0.2,-0.7,-1)}
+     or {Vector3.new(0.40,1.70,-0.85),Vector3.new(0.18,0.56,-1),Vector3.new(0.36,-0.38,-1)},false)
   end
   -- Relative authored size: 12% above Stage 2, then the user-controlled multiplier.
   model:ScaleTo(stageTwoScale*1.12*multiplier)
@@ -403,7 +418,7 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("GeometryRevision","S3_ArticulatedArmorGrowth_13")
   model:SetAttribute("VisualTarget","Approved Stage 3 front/side/back concept; lateral rib armor amendment")
   model:SetAttribute("RuntimeReview","Pending_GrowthTransitions")
-  model:SetAttribute("DressingRevision","S3_BrokenBackFissures_03")
+  model:SetAttribute("DressingRevision","S3_AsymmetricChestHipKneeFissures_04")
   model:SetAttribute("DressingReview","Pending")
   model:SetAttribute("Purpose","Stage 3 material and energy dressing review")
   model.Parent=parent
