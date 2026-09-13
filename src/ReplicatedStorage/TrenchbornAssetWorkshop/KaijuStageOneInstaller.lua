@@ -15,13 +15,13 @@ local function stamp(model)
  model:SetAttribute("IntegrationReview","PendingInTargetProject")
  model:SetAttribute("WorkshopOnly",false)
 end
-local function build(parent,ground)
+local function build(parent,ground,options)
  -- Isolate the legacy builder, which replaces collections inside its target.
  local staging=Instance.new("Folder")
  staging.Name="KaijuStageOneBuild";staging.Parent=parent
  local model
  local ok,err=pcall(function()
-  local collection=Builder.BuildStage(staging,1,CFrame.identity)
+  local collection=Builder.BuildStage(staging,1,CFrame.identity,options)
   model=assert(collection:FindFirstChild(NAME),"Missing Stage 1 geometry")
   local bottom=math.huge
   for _,side in ipairs({"Left","Right"}) do
@@ -39,6 +39,7 @@ end
 function Installer.Install(character,options)
  assert(RunService:IsServer(),"Install must run on the server")
  options=options or {}
+ Builder.ResolveBuildScale(options)
  assert(typeof(character)=="Instance" and character:IsA("Model") and character:IsDescendantOf(workspace),"Expected live character Model")
  assert(not installations[character] and not character:FindFirstChild(NAME),"Stage 1 already installed; uninstall first")
  local humanoid=assert(character:FindFirstChildOfClass("Humanoid"),"Missing Humanoid")
@@ -87,7 +88,7 @@ function Installer.Install(character,options)
   installations[character]=nil
  end
  local ok,err=pcall(function()
-  model=build(character,ground)
+  model=build(character,ground,options)
   if options.PreviewOnly then
    combat={Handle=function() model:SetAttribute("LastAttackResult","Miss");return false end,
     Cancel=function() end,PrepareFinisher=function() return false end,
