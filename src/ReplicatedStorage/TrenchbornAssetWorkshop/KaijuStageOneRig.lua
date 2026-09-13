@@ -283,7 +283,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	local function feedback(kind,source,soundOnly)
 		local definition=audioPresets[kind]
 		if not owner or not definition then return end
-		local sound=makeSound(definition[1],source,definition[2],definition[3]*audioRandom:NextNumber(0.96,1.04),false,kind=="Punch" and 0.06 or 0)
+		local sound=makeSound(definition[1],source,definition[2],definition[3]*audioRandom:NextNumber(0.96,1.04),false,kind=="Punch" and 0.12 or 0)
 		if sound and (kind=="Whoosh" or kind=="Punch" or kind=="Slam" or kind=="Finisher") then
 			sound.RollOffMinDistance=45*scale
 		end
