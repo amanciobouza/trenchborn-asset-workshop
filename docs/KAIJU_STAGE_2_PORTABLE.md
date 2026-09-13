@@ -1,4 +1,4 @@
-# Storm Hunter — portable package 1.0.0
+# Storm Hunter — portable package 1.0.1
 
 Stage 2 geometry, dressing and workshop gameplay were approved by Amancio. The approved runtime baseline is `803c8ae4789f87b1a20ba6fa5433ecfda5e49675`. Import integration in a different project remains to be tested.
 
@@ -69,3 +69,11 @@ Run `python tools/build-kaiju-stage2.py`, or optionally `rojo build kaiju-stage2
 The Python export checks eight scripts, local package dependencies and exact XML source round-trip. The manifest records SHA-256 for each source and the artifact. These checks do not run Roblox physics or render the model.
 
 Target-project checks: import, scale, equip, slopes, jump/landing, swimming, real damage/finisher adapter, focus and area effects, defeat, respawn and uninstall. Keep your game's existing camera and HUD integration.
+
+## Release 1.0.1: procedural pose ownership
+
+The rig now exclusively owns the tagged Kaiju Motor6D joints. Server and client clear additive Animator Transform values in PreSimulation while preserving the authored C0/C1 poses. This addresses the integration failure path where avatar animation is added to the Kaiju shoulders and wrists. Disabling Animate alone does not provide this isolation. No additional wrist-angle compensation was added.
+
+KaijuStageOneJumpMotor is the always-installed pose-and-jump runtime, including with InstallInput=false and EnableRemotes=false. Its pose guard starts independently of jump remote discovery, covers replicated Kaijus, and handles late joint arrival/removal. Only TrenchbornProceduralJoint-tagged joints are affected. The rig removes its tags on Stop; the client disconnects on destruction.
+
+Replace the complete package folder and restart Play. Source/package checks passed; Stage 1 and Stage 2 still require a target-project playtest at Scale=1, InstallInput=false: idle, walk, run, attacks, respawn and unequip/re-equip. The target game must not directly overwrite Kaiju joint C0/C1. PoseOwnershipRevision=ProceduralC0_01 identifies the updated runtime.
