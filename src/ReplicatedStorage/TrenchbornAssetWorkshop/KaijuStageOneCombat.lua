@@ -30,18 +30,37 @@ local function part(parent, name, size, cf, color)
 	p.Parent = parent
 	return p
 end
-local function chips(target, point, tear, destroyed)
+local function chips(target, point, tear, destroyed, strikeIndex, right)
 	for i=1,(destroyed and 14 or 5) do
 		local p = part(target.Parent, "ImpactDebris", Vector3.new(0.6,0.5,0.7)*(destroyed and 2 or 1),
 			CFrame.new(point), Color3.fromRGB(124,115,99))
 		p.CanCollide, p.CanTouch, p.CanQuery = false, false, false
 		local angle=i*2.4
 		local offset = Vector3.new(math.cos(angle)*4,1.5+math.sin(i)*0.5,math.sin(angle)*4)
-		if tear then offset=target:GetPivot().RightVector*(i%2==0 and 7 or -7)+Vector3.new(0,2,0) end
+		if tear then offset=target:GetPivot().RightVector*(i%2==0 and 7 or -7)+Vector3.new(0,2,0)
+		elseif strikeIndex==1 or strikeIndex==2 then
+			offset=right*(strikeIndex==1 and 1 or -1)*(4+i%3)+offset*0.3
+		elseif strikeIndex==3 then
+			offset=Vector3.new(offset.X*1.4,-1-i%3*0.4,offset.Z*1.4)
+		end
 		TweenService:Create(p,TweenInfo.new(0.45),{CFrame=CFrame.new(point+offset)*CFrame.Angles(i,0,i),Transparency=1}):Play()
 		Debris:AddItem(p,0.5)
 	end
 end
+local function contactDust(target,point,index,right,scale)
+	for i=1,4 do
+		local dust=part(target.Parent,"ContactDust",Vector3.new(0.6,0.6,0.6)*scale,CFrame.new(point),Color3.fromRGB(145,138,121))
+		dust.Shape=Enum.PartType.Ball;dust.Material=Enum.Material.SmoothPlastic
+		dust.Transparency=0.5;dust.CanCollide=false;dust.CanTouch=false;dust.CanQuery=false;dust.CastShadow=false
+		local angle=i*2.4
+		local spread=Vector3.new(math.cos(angle),0.4,math.sin(angle))
+		if index<=2 then spread=spread+right*(index==1 and 2 or -2)
+		else spread=Vector3.new(spread.X*2,-0.3,spread.Z*2) end
+		TweenService:Create(dust,TweenInfo.new(0.32),{Position=point+spread*scale,Size=Vector3.new(2,1.4,2)*scale,Transparency=1}):Play()
+		Debris:AddItem(dust,0.35)
+	end
+end
+
 local function flash(model)
 	local h=Instance.new("Highlight")
 	h.FillColor=Color3.fromRGB(255,176,80)
@@ -374,7 +393,9 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 		data.Gui.Enabled=true
 		data.Bar.Size=UDim2.fromScale(data.Health/220,1)
 		flash(target)
-		chips(target,point,index==4,data.Health==0)
+		local strikeIndex=kind=="Hit" and index<=3 and index or nil
+		chips(target,point,index==4,data.Health==0,strikeIndex,root.CFrame.RightVector)
+		if strikeIndex then contactDust(target,point,strikeIndex,root.CFrame.RightVector,scale) end
 		if index==3 and data.Health>0 and data.Health<=DAMAGE[4]
 			and type(finisherUntil)=="number" and finisherUntil>os.clock() then
 			-- Use the animation's deadline, rather than starting a second timer.
@@ -409,6 +430,7 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 				for _,p in ipairs({data.Body,data.Roof}) do p.Transparency=0;p.CanCollide=true;p.CanQuery=true end
 			end)
 		end
+		return true -- Explicit confirmation for arm resistance; misses never trigger it.
 	end
 	local function areaImpact(origin)
 		if humanoid.Health<=0 or humanoid.FloorMaterial==Enum.Material.Air
