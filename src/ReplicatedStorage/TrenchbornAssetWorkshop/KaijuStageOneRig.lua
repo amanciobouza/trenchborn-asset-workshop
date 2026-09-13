@@ -1143,18 +1143,24 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				walkFeet[side]={Travel=travel*scale*fade,Lift=lift*scale*fade,Pitch=footPitch}
 				solveLeg(side, travel*scale*fade, lift*scale*fade, actualBob,footPitch)
 				local sign=side=="Left" and -1 or 1
-				local armPhase=(cycle+offset+stance/2)*math.pi*2
-				local swing=math.sin(armPhase-0.3)*fade
-				local elbowFollow=math.sin(armPhase-1.05)*fade
-				local wristFollow=math.sin(armPhase-1.45)*fade
-				local shoulderRoll=math.cos(armPhase-0.3)*fade
-				-- Shoulder leads; the bent elbow and heavy hand follow with separate delays.
-				-- A small outward arc keeps the hands clear of the thighs.
-				pose(side .. "UpperArm",(8+20*runBlend)*fade-swing*(17+25*runBlend),sign*shoulderRoll*4,
-					-sign*(5*fade+3*shoulderRoll))
-				-- Flex behind the forward shoulder swing, then open as the arm returns.
-				pose(side .. "Forearm",(26+12*runBlend)*fade-elbowFollow*(12+13*runBlend),0,sign*elbowFollow*3)
-				pose(side .. "Hand",-6*fade+wristFollow*6,sign*wristFollow*3,0)
+				-- Use the opposite foot's actual travel, including its long planted phase.
+				local opposite=(t+0.5)%1
+				local forward
+				if opposite<stance then
+					forward=1-opposite/stance
+				else
+					local u=(opposite-stance)/(1-stance)
+					forward=u*u*(3-2*u)
+				end
+				-- Positive shoulder pitch carries the hanging arm forward.
+				-- Extend smoothly toward the forward endpoint, flex again on return.
+				local extension=forward*forward*(3-2*forward)
+				local armSwing=(2*forward-1)*fade
+				pose(side.."UpperArm",(-12+52*forward)*(1+0.35*runBlend)*fade,
+					sign*armSwing*3,-sign*6*fade)
+				pose(side.."Forearm",((50+10*runBlend)-(42+8*runBlend)*extension)*fade,
+					0,-sign*armSwing*2)
+				pose(side.."Hand",(-4+4*extension)*fade,sign*armSwing*2,0)
 			end
 			for i = 1, tailCount do
 				-- Lift mainly at the base; a delayed counter-swing travels down the tail.
