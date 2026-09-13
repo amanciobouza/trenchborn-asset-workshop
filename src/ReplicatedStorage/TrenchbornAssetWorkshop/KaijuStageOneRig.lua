@@ -14,7 +14,7 @@ local AREA_TIMING={Curl=2.2,Discharge=2.8,Recovery=3.2,Finish=4.6}
 
 function Rig.Attach(model, movementRoot, humanoid, combat)
 	local stage=model:GetAttribute("EvolutionStage")
-	assert(stage==1 or stage==2,"Unsupported Kaiju stage")
+	assert(stage==1 or stage==2 or stage==3,"Unsupported Kaiju stage")
 	assert(not model:FindFirstChild("Articulation"), "Rig already attached")
 	local function get(name)
 		local p = model:FindFirstChild(name)
@@ -93,19 +93,20 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		if headNames[name] or starts(name, "UpperMuzzle") then return "Head" end
 		local tail = string.match(name, "^TailSegment_(%d+)$")
 		if tail then return "Tail" .. tonumber(tail) end
-		local plate = tonumber(string.match(name, "^DorsalShield_(%d+)") or string.match(name, "^DorsalEnergy_(%d+)"))
+		local plate = tonumber(string.match(name, "^DorsalShield_(%d+)") or string.match(name, "^DorsalEnergy_(%d+)") or string.match(name, "^DorsalRock_(%d+)"))
 		if plate then return plate <= 3 and "Torso" or "Tail" .. (plate-2) end
 		if pelvisNames[name] then return "Pelvis" end
 		for _, side in ipairs({"Left", "Right"}) do
 			if starts(name, side) then
 				local suffix = string.sub(name, #side+1)
-				if headFeatures[suffix] then return "Head" end
+				if headFeatures[suffix] or starts(suffix,"HeadArmor") then return "Head" end
+				if starts(suffix,"RibArmor") then return "Torso" end
 				if armUpper[suffix] or starts(suffix,"ShoulderArmor") then return side .. "UpperArm" end
 				if armLower[suffix] or starts(suffix,"ForearmArmor") then return side .. "Forearm" end
 				if suffix == "WristJoint" or starts(suffix, "Palm") or starts(suffix, "Finger")
 					or starts(suffix, "Knuckle") or starts(suffix, "Hand") or starts(suffix, "Thumb") then return side .. "Hand" end
-				if thighs[suffix] then return side .. "Thigh" end
-				if shins[suffix] then return side .. "Shin" end
+				if thighs[suffix] or starts(suffix,"HipArmor") then return side .. "Thigh" end
+				if shins[suffix] or starts(suffix,"ShinArmor") then return side .. "Shin" end
 				if suffix == "HockJoint" or suffix == "Metatarsal" then return side .. "Hock" end
 				if suffix == "AnkleJoint" or suffix == "InstepFlow" or starts(suffix, "Heel") or starts(suffix, "Forefoot")
 					or starts(suffix, "Toe") or starts(suffix, "FrontClaw") or suffix == "RearClaw" then return side .. "Foot" end
