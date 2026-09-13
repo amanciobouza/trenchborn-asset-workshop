@@ -1,7 +1,7 @@
 -- Jump timing is server-owned. Cooldown starts with activation.
 local Jump = {}
 local COYOTE_TIME=0.12
-local WINDUP=0.08 -- Brief anticipation, then immediate takeoff.
+local WINDUP=0 -- Brief anticipation, then immediate takeoff.
 local function smooth(t) t=math.max(0,math.min(1,t));return t*t*(3-2*t) end
 function Jump.new()
 	local s={Phase="Idle",Started=0,ReadyAt=0,LeftGround=false,Lead="Right",LastGrounded=-math.huge}
