@@ -30,7 +30,7 @@ end
 if soleBottom<math.huge then
 	display:PivotTo(display:GetPivot()+Vector3.new(0,origin.Position.Y-soleBottom,0))
 end
--- Keep Stages 1 and 2 as stationary comparisons; equip Stage 3 on respawn.
+-- Keep Stages 1–3 as stationary comparisons; equip Stage 4 on respawn.
 local stormBuilder=require(packageFolder:WaitForChild("KaijuStageTwoGoldenMaster"))
 local stormOrigin=origin*CFrame.new(42,0,0)
 local storm=stormBuilder.Build(workshop,stormOrigin,stageTwoOptions)
@@ -50,9 +50,16 @@ stageThreeTitle.BackgroundColor3=Color3.fromRGB(25,29,38)
 stageThreeTitle.TextColor3=Color3.fromRGB(240,210,70)
 stageThreeTitle.Text="STAGE 3 · GEOMETRY REVIEW";stageThreeTitle.TextScaled=true
 stageThreeTitle.Parent=stageThreeLabel
-local template=stageThree:Clone()
-template:FindFirstChild("StageThreeReviewLabel"):Destroy()
-local pivotFromGround=stageThreeOrigin:ToObjectSpace(template:GetPivot())
+-- Stage 3 stays as the comparison; Stage 4 is the playable geometry candidate.
+local stageFourBuilder=require(packageFolder:WaitForChild("KaijuStageFourGoldenMaster"))
+local stageFourOrigin=origin*CFrame.new(-96,0,0)
+local stageFour=stageFourBuilder.Build(workshop,stageFourOrigin,{Scale=script:GetAttribute("Stage4Scale")})
+local template=stageFour:Clone()
+local pivotFromGround=stageFourOrigin:ToObjectSpace(template:GetPivot())
+stageFour:Destroy()
+stageOneRig.Attach(stageThree)
+stageThree:SetAttribute("AnimationMode","Idle")
+stageThreeTitle.Text="STAGE 3 · COMPARISON"
 stageOneRig.Attach(storm)
 storm:SetAttribute("AnimationMode","Idle")
 storm:SetAttribute("QualityGateB","ApprovedByUser")
@@ -76,8 +83,8 @@ local function equip(player, character)
 	local humanoid = character:WaitForChild("Humanoid", 15)
 	local root = character:WaitForChild("HumanoidRootPart", 15)
 	if not humanoid or not root or player.Character ~= character then return end
-	if character:GetAttribute("KaijuStageThreeEquipped") then return end
-	character:SetAttribute("KaijuStageThreeEquipped", true)
+	if character:GetAttribute("KaijuStageFourEquipped") then return end
+	character:SetAttribute("KaijuStageFourEquipped", true)
 	-- Finish avatar scaling before calculating the ground-to-root offset.
 	local deadline = os.clock() + 10
 	while not player:HasAppearanceLoaded() and os.clock() < deadline do
@@ -89,7 +96,7 @@ local function equip(player, character)
 	-- Retain Roblox's controller for keyboard, controller, touch, gravity and
 	-- respawning. Only its visible avatar is replaced.
 	local kaiju = template:Clone()
-	kaiju.Name = "Stage_3_Rift_Stalker"
+	kaiju.Name = "Stage_4_Geometry_Review"
 	local function hideAvatar(item)
 		if item:IsDescendantOf(kaiju) then return end
 		if item:IsA("BasePart") then
@@ -122,6 +129,10 @@ local function equip(player, character)
 	combatModule.BuildRange(player, ground, character)
 	local combat = combatModule.Attach(kaiju, root, humanoid, height)
 	local rig = stageOneRig.Attach(kaiju, root, humanoid, combat)
+ -- Attaching the shared runtime does not approve the new geometry or dressing.
+ kaiju:SetAttribute("PipelinePhase",4)
+ kaiju:SetAttribute("QualityGateB","Pending_UserGeometryReview")
+ kaiju:SetAttribute("QualityGateC","Pending_Stage4GameplayReview")
 	local reactionTestConnection
 	if game:GetService("RunService"):IsStudio() then
 		local testRemote=Instance.new("RemoteEvent");testRemote.Name="TestReaction";testRemote.Parent=kaiju
@@ -219,7 +230,6 @@ local function equip(player, character)
 	humanoid.AutoJumpEnabled = false
 	player.CameraMinZoomDistance = 42
 	player.CameraMaxZoomDistance = 110
-	if stageThree and stageThree.Parent then stageThree:Destroy() end
 
 	character.Destroying:Once(function()
 		if reactionTestConnection then reactionTestConnection:Disconnect() end
@@ -256,6 +266,6 @@ Players.PlayerAdded:Connect(connectPlayer)
 Players.PlayerRemoving:Connect(combatModule.RemoveRange)
 for _, player in ipairs(Players:GetPlayers()) do connectPlayer(player) end
 workshop:SetAttribute("CurrentAsset", "Kaiju Stage 3 - Rift Stalker")
-workshop:SetAttribute("CurrentPhase", 6)
-workshop:SetAttribute("QualityStatus", "Stage3_MovementPreview_GeometryPending")
-print("[Kaiju] Play: control Stage 3 with Roblox movement. Guardian controls retired.")
+workshop:SetAttribute("CurrentPhase", 4)
+workshop:SetAttribute("QualityStatus", "Stage4_MovementPreview_GeometryPending")
+print("[Kaiju] Play: control Stage 4 with Roblox movement. Guardian controls retired.")

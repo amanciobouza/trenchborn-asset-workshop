@@ -10,7 +10,7 @@ local areaAction="KaijuStageOneArea"
 local runAction="KaijuStageOneRun"
 local function controlledKaiju(character)
 	if not character then return nil end
-	return character:FindFirstChild("Stage_3_Rift_Stalker") or character:FindFirstChild("Stage_2_Storm_Hunter") or character:FindFirstChild("Stage_1_Primal_Beast")
+	return character:FindFirstChild("Stage_4_Geometry_Review") or character:FindFirstChild("Stage_3_Rift_Stalker") or character:FindFirstChild("Stage_2_Storm_Hunter") or character:FindFirstChild("Stage_1_Primal_Beast")
 end
 local runHeld=false
 local function setRun(enabled)

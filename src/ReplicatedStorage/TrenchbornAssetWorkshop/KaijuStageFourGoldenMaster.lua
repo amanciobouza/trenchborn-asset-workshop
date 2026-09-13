@@ -1,0 +1,161 @@
+-- Phase 4 geometry candidate; Stage 4 design approved, geometry not yet approved.
+local StageThree=require(script.Parent:WaitForChild("KaijuStageThreeGoldenMaster"))
+local Base=require(script.Parent:WaitForChild("KaijuEvolutionBlockout"))
+local Builder={}
+local NAME="Stage_4_Geometry_Review"
+-- Preserve the established, mirrored plate construction without altering Stage 3.
+local function stone(model,name,size,cf,class)
+ local p=Instance.new(class or "CornerWedgePart")
+ p.Name=name;p.Size=size;p.CFrame=cf;p.Anchored=true
+ p.CanCollide=false;p.CanTouch=false;p.CanQuery=false
+ p.Material=Enum.Material.Basalt;p.Color=Color3.fromRGB(58,63,68)
+ p.TopSurface=Enum.SurfaceType.Smooth;p.BottomSurface=Enum.SurfaceType.Smooth
+ p.Parent=model;return p
+end
+-- Find the visible front of overlapping ellipsoid body masses at an X/Y sample.
+-- Solving in each mass's local frame also handles tilted calves and cheeks.
+local function frontSurface(parts,x,y)
+ local front=math.huge
+ local surfaceNormal
+ for _,p in ipairs(parts) do
+  local o=p.CFrame:PointToObjectSpace(Vector3.new(x,y,0))
+  local d=p.CFrame:VectorToObjectSpace(Vector3.zAxis)
+  local h=p.Size/2
+  local a=(d.X/h.X)^2+(d.Y/h.Y)^2+(d.Z/h.Z)^2
+  local b=2*(o.X*d.X/h.X^2+o.Y*d.Y/h.Y^2+o.Z*d.Z/h.Z^2)
+  local c=(o.X/h.X)^2+(o.Y/h.Y)^2+(o.Z/h.Z)^2-1
+  local disc=b*b-4*a*c
+  if disc>=0 then
+   local hit=(-b-math.sqrt(disc))/(2*a)
+   if hit<front then
+    front=hit
+    local point=o+d*hit
+    surfaceNormal=p.CFrame:VectorToWorldSpace(
+     Vector3.new(point.X/h.X^2,point.Y/h.Y^2,point.Z/h.Z^2)).Unit
+   end
+  end
+ end
+ assert(front<math.huge,"Armor surface sample missed its body mass")
+ return front,surfaceNormal
+end
+local function surfaceFrame(parts,x,y,inset)
+ local z,normal=frontSurface(parts,x,y)
+ local up=Vector3.yAxis-normal*normal:Dot(Vector3.yAxis)
+ up=up.Unit
+ local right=normal:Cross(up).Unit
+ return CFrame.fromMatrix(Vector3.new(x,y,z)+normal*inset,right,up,-normal)
+end
+-- Chest and hip edges use the rectangular -Y face as their buried attachment face.
+-- Two corner wedges per side meet at one outer midpoint, forming a bevel
+-- instead of a horizontal shelf. The original width/height/depth envelope stays.
+local function bevelPlate(model,name,width,height,depth,cf)
+ local frame=cf*CFrame.new(0,-height*0.06,0)
+ stone(model,name.."Core",Vector3.new(width*0.72,height,depth),frame,"Part")
+ local function reflected(cf0,size,axis)
+  local function reflect(v) return v-axis*(2*v:Dot(axis)) end
+  -- Native apex (+X,+Y,-Z) is invariant under (X,Z) -> (-Z,-X).
+  return CFrame.fromMatrix(reflect(cf0.Position),
+   -reflect(cf0.ZVector),reflect(cf0.UpVector),-reflect(cf0.RightVector)),
+   Vector3.new(size.Z,size.Y,size.X)
+ end
+ local upperSize=Vector3.new(height/2,width*0.15,depth)
+ local upper=CFrame.fromMatrix(Vector3.new(width*0.425,height/4,0),
+  -Vector3.yAxis,Vector3.xAxis,Vector3.zAxis)
+ local lower,lowerSize=reflected(upper,upperSize,Vector3.yAxis)
+ for i,entry in ipairs({{upper,upperSize},{lower,lowerSize}}) do
+  stone(model,name.."EdgeRight"..i,entry[2],frame*entry[1])
+  local left,leftSize=reflected(entry[1],entry[2],Vector3.xAxis)
+  stone(model,name.."EdgeLeft"..i,leftSize,frame*left)
+ end
+end
+local function enlargeGroup(model,prefix,frame,factors)
+ local function stretch(v) return Vector3.new(v.X*factors.X,v.Y*factors.Y,v.Z*factors.Z) end
+ for _,p in ipairs(model:GetChildren()) do
+  if p:IsA("BasePart") and p.Name:sub(1,#prefix)==prefix then
+   local localFrame=frame:ToObjectSpace(p.CFrame)
+   p.Size=Vector3.new(p.Size.X*stretch(localFrame.RightVector).Magnitude,
+    p.Size.Y*stretch(localFrame.UpVector).Magnitude,p.Size.Z*stretch(localFrame.ZVector).Magnitude)
+   p.CFrame=frame*CFrame.new(stretch(localFrame.Position))*localFrame.Rotation
+  end
+ end
+end
+function Builder.Build(parent,ground,options)
+ local multiplier=Base.ResolveBuildScale(options)
+ ground=ground or CFrame.identity
+ assert(not parent:FindFirstChild(NAME),"Stage 4 already exists")
+ local staging=Instance.new("Folder");staging.Name="StageFourBuild";staging.Parent=parent
+ local model
+ local ok,err=pcall(function()
+  model=StageThree.Build(staging,CFrame.identity)
+  local previousScale=model:GetScale()
+  model:ScaleTo(1);model.Name=NAME
+  -- Enlarge existing armor together with its attached facets and energy seams.
+  for _,side in ipairs({"Left","Right"}) do
+   for _,entry in ipairs({
+    {"ShoulderArmor",side.."ShoulderJoint",Vector3.new(1.12,1.08,1.12)},
+    {"ForearmArmor",side.."ElbowJoint",Vector3.new(1.10,1.06,1.10)},
+    {"HipArmor",side.."HipJoint",Vector3.new(1.10,1.06,1.10)},
+    {"ShinArmor",side.."KneeJoint",Vector3.new(1.10,1.06,1.10)},
+   }) do
+    enlargeGroup(model,side..entry[1],model[entry[2]].CFrame,entry[3])
+   end
+  end
+  -- Enlarge each entire dorsal cluster in its own plate basis, including insets.
+  for i=1,11 do
+   local stem=string.format("%02d",i)
+   local plate=model:FindFirstChild("DorsalShield_"..stem)
+   if plate then
+    local frame=plate.CFrame
+    local factors=i<=3 and Vector3.new(1.18,1.22,1.16) or Vector3.new(1.10,1.12,1.08)
+    for _,kind in ipairs({"DorsalShield_","DorsalEnergy_","DorsalRock_"}) do
+     enlargeGroup(model,kind..stem,frame,factors)
+    end
+   end
+  end
+  -- Replace the small lateral rib plates with three broad chest segments per side.
+  -- Keep the inherited back/flank routes; no central reactor or skull crown.
+  for _,p in ipairs(model:GetChildren()) do
+   if p.Name:match("^LeftRibArmor_%d") or p.Name:match("^RightRibArmor_%d") then p:Destroy() end
+  end
+  for _,sign in ipairs({-1,1}) do
+   local side=sign<0 and "Left" or "Right"
+   local pec=model[side.."Pectoral"]
+   local masses={pec,model[side.."Flank"],model.LowerRibcage,model.BellyShield}
+   for row,vertical in ipairs({0.29,-0.02,-0.33}) do
+    local width=math.min(pec.Size.X*(row==3 and 0.74 or 0.88),math.abs(pec.Position.X)*1.65)
+    local height=pec.Size.Y*0.22
+    local x=pec.Position.X+sign*pec.Size.X*0.015
+    local y=pec.Position.Y+pec.Size.Y*vertical
+    local frame=surfaceFrame(masses,x,y,0.12)*CFrame.Angles(0,0,sign*math.rad(8))
+    -- Broad bevel foundations keep narrow physical gaps between rows.
+    bevelPlate(model,side.."RibArmorStage4Row"..row,width,height,0.68,frame)
+    bevelPlate(model,side.."RibArmorStage4Row"..row.."RockLayer",width*0.84,height*0.72,0.32,
+     frame*CFrame.new(sign*width*0.025,height*0.04,-0.38)*CFrame.Angles(0,0,-sign*math.rad(4)))
+   end
+  end
+  model:ScaleTo(previousScale*1.10*multiplier)
+  local bottom=math.huge
+  for _,side in ipairs({"Left","Right"}) do
+   local sole=model[side.."ForefootCoreY"]
+   bottom=math.min(bottom,sole.CFrame:PointToWorldSpace(Vector3.new(0,-sole.Size.Y/2,0)).Y)
+  end
+  model:PivotTo(model:GetPivot()+Vector3.new(0,-bottom,0))
+  model:PivotTo(ground*model:GetPivot())
+  for _,key in ipairs({"ApprovedGeometryCommit","ApprovedRevision","DressingRevision","DressingReview",
+   "FinalInstallerVersion","RuntimeReview","IntegrationReview","HeightRatioToStageOne"}) do model:SetAttribute(key,nil) end
+  model:SetAttribute("EvolutionStage",4)
+  model:SetAttribute("BuildScale",multiplier)
+  model:SetAttribute("PipelinePhase",4)
+  model:SetAttribute("QualityGateA","ApprovedByUser")
+  model:SetAttribute("QualityGateB","Pending_UserGeometryReview")
+  model:SetAttribute("QualityGateC","Pending_Stage4GameplayReview")
+  model:SetAttribute("GeometryRevision","S4_SegmentedChestRockBack_01")
+  model:SetAttribute("VisualTarget","Approved Stage 4 front/side/back concept")
+  model:SetAttribute("Purpose","Stage 4 geometry review; chest energy dressing follows Gate B")
+  model.Parent=parent
+ end)
+ staging:Destroy()
+ if not ok then if model then model:Destroy() end;error(err,0) end
+ return model
+end
+return Builder
