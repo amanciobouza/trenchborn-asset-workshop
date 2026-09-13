@@ -134,26 +134,30 @@ function Builder.Build(parent,ground)
     Vector3.new(2.0,0.85,2.8),
     shoulder.CFrame*CFrame.new(sign*(rx+0.2),ry*0.56+0.45,1.45)
      *CFrame.Angles(0,-sign*math.pi/2,0))
-   local guard=forearm.CFrame*CFrame.new(sign*forearm.Size.X*0.43,0,-forearm.Size.Z*0.18)
-   newPart(model,"Part",side.."ForearmArmorRoot",Vector3.new(1.6,3.25,3.35),
-    guard*CFrame.new(-sign*0.65,0,0))
-   newPart(model,"Part",side.."ForearmArmorCore",Vector3.new(1.5,3.5,3.6),guard)
-   newPart(model,"WedgePart",side.."ForearmArmorTaper",Vector3.new(1.6,2.3,3.6),guard*CFrame.new(0,-1.8,0)*CFrame.Angles(0,0,math.pi))
-   -- The extra elbow projects behind the joint, perpendicular to the forearm.
-   -- Prefix keeps the root, transition and spike bound to the forearm bone.
+   -- The armor follows wrist -> elbow and continues beyond it along the same axis.
    local elbow=model:FindFirstChild(side.."ElbowJoint").Position
    local wrist=model:FindFirstChild(side.."WristJoint").Position
-   local axis=(wrist-elbow).Unit
-   local rear=Vector3.zAxis-axis*axis:Dot(Vector3.zAxis)
-   local outward=(rear.Unit+Vector3.new(sign*0.18,0,0)).Unit
-   local base=elbow+outward*0.95
-   local frame=CFrame.lookAt(base,base+outward,axis)
-   -- A solid angular horn base penetrates the elbow; its exposed taper shares
-   -- exactly the same basalt material and colour as the forearm armor.
-   newPart(model,"Part",side.."ForearmArmorElbowRoot",Vector3.new(1.65,1.8,1.6),
-    frame*CFrame.new(0,0.9,0.55))
-   newPart(model,"WedgePart",side.."ForearmArmorElbowPoint",
-    Vector3.new(1.65,1.8,3.4),frame*CFrame.new(0,0.9,-1.6))
+   local delta=elbow-wrist
+   local axis=delta.Unit
+   local outward=forearm.CFrame.RightVector*sign
+   outward=(outward-axis*outward:Dot(axis)).Unit
+   local surfaceOffset=outward*(forearm.Size.X*0.43)
+   local start=wrist+axis*(delta.Magnitude*0.15)+surfaceOffset
+   local finish=elbow+axis*0.25+surfaceOffset
+   local length=(finish-start).Magnitude
+   local guard=CFrame.lookAt((start+finish)/2,(start+finish)/2+axis,outward)
+   -- Local Z is longitudinal, local Y is armor thickness on the outside of the arm.
+   newPart(model,"Part",side.."ForearmArmorRoot",Vector3.new(3.35,1.6,length*0.94),
+    guard*CFrame.new(0,-0.6,0))
+   newPart(model,"Part",side.."ForearmArmorCore",Vector3.new(3.6,1.5,length),guard)
+   newPart(model,"WedgePart",side.."ForearmArmorWristTaper",Vector3.new(3.6,1.5,1.2),
+    guard*CFrame.new(0,0,(length+1.2)/2-0.12)*CFrame.Angles(0,math.pi,0))
+   -- Broad root overlaps the core; the thin end extends 2.8 studs beyond the elbow.
+   -- No perpendicular elbow spike. All parts keep the ForearmArmor rig prefix.
+   local extension=2.8
+   newPart(model,"WedgePart",side.."ForearmArmorElbowExtension",
+    Vector3.new(3.6,1.5,extension),
+    guard*CFrame.new(0,0,-(length+extension)/2+0.25))
   end
   local currentHeight=model.Cranium.Position.Y+model.Cranium.Size.Y/2-soles(model)
   model:ScaleTo(model:GetScale()*sourceHeight*1.12/currentHeight)
@@ -166,7 +170,7 @@ function Builder.Build(parent,ground)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending")
   model:SetAttribute("QualityGateC","Pending")
-  model:SetAttribute("GeometryRevision","S2_StormHunter_MineralHornRoots_06")
+  model:SetAttribute("GeometryRevision","S2_StormHunter_LongitudinalForearmArmor_07")
   model:SetAttribute("VisualTarget","Storm Hunter concept approved in conversation")
   model:SetAttribute("HeightRatioToStageOne",1.12)
   model:SetAttribute("Purpose","Stage 2 geometry review; anchored, no gameplay rig")
