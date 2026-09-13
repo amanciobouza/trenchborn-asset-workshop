@@ -556,11 +556,14 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		return true
 	end
 	local savedSpeed, savedOwner, savedAutoRotate, airDirection
-	local AIR_SPEED=18 -- Moderate air travel, below the original speed of 30.
+	local airSpeed=WALK_SPEED
+	local landingBlend=1
+	local bufferedJumpUntil=0
+	local bufferedDirection=Vector3.zero
 	local JUMP_HEIGHT=14
 	local ownsPhysics=false
 	local function restoreJump()
-		if humanoid and savedSpeed then humanoid.WalkSpeed=savedSpeed end
+		if humanoid and savedSpeed then humanoid.WalkSpeed=runRequested and RUN_SPEED or WALK_SPEED end
 		savedSpeed=nil
 		if humanoid and savedAutoRotate~=nil then humanoid.AutoRotate=savedAutoRotate end
 		savedAutoRotate=nil
@@ -578,13 +581,22 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 	local function requestJump(direction)
 		if stopped or isStaggered() or focus or area or not humanoid or humanoid.Health<=0 or not movementRoot
 			or model:GetAttribute("IdleEnabled")==false then return false end
-		if not jump:Request(os.clock(),humanoid.FloorMaterial~=Enum.Material.Air) then return false end
+		local now=os.clock()
+		if jump.Phase=="Air" then
+			-- A fresh press just before contact carries into the next jump, never auto-repeat.
+			bufferedJumpUntil=now+0.22;bufferedDirection=direction or Vector3.zero
+			return true
+		end
+		if not jump:Request(now,humanoid.FloorMaterial~=Enum.Material.Air) then return false end
+		bufferedJumpUntil=0
 		combo:Cancel()
 		if combat then combat.Cancel() end
 		savedSpeed=humanoid.WalkSpeed
+		airSpeed=runRequested and RUN_SPEED or WALK_SPEED
 		airDirection=Vector3.zero
 		if direction then setAirDirection(direction) end
-		humanoid.WalkSpeed=0
+		-- Anticipation is a pose, not a brake on movement.
+		humanoid.WalkSpeed=airSpeed
 		return true
 	end
 	local function requestAttack()
@@ -855,30 +867,33 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 				humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
 				local velocity=movementRoot.AssemblyLinearVelocity
 				local rise=math.sqrt(2*workspace.Gravity*JUMP_HEIGHT*scale)
-				local horizontal=airDirection*AIR_SPEED
+				local horizontal=Vector3.new(velocity.X,0,velocity.Z)
+				if airDirection.Magnitude==0 then horizontal=Vector3.zero
+				elseif horizontal.Magnitude>airSpeed then horizontal=horizontal.Unit*airSpeed end
 				movementRoot:ApplyImpulse((horizontal+Vector3.new(0,rise,0)-velocity)*movementRoot.AssemblyMass)
 			elseif jumpEvent=="Land" then
+				landingBlend=1
+				local velocity=movementRoot.AssemblyLinearVelocity
+				movementRoot:ApplyImpulse(Vector3.new(0,-math.max(0,velocity.Y),0)*movementRoot.AssemblyMass)
+				restoreJump() -- Give ground controls back at contact, not after the pose.
 				feedback("Land",bones.Pelvis)
 				runFootfall("Left",2.2);runFootfall("Right",2.2)
 				if combat then combat.Handle("Land",0) end
 			elseif jumpEvent=="Restore" then restoreJump() end
 			if jump.Phase=="Air" then
-				-- Let the humanoid steer; a zero-speed Move command fights air travel.
-				humanoid.WalkSpeed=AIR_SPEED
-				humanoid:Move(airDirection,false)
-				if airDirection.Magnitude==0 then
-					-- Neutral input brakes only horizontal drift, preserving the fall.
-					local velocity=movementRoot.AssemblyLinearVelocity
-					movementRoot:ApplyImpulse(Vector3.new(-velocity.X,0,-velocity.Z)*movementRoot.AssemblyMass)
-				end
+				-- Keep takeoff speed. Ease corrections and braking instead of snapping
+				-- between full travel and zero when a direction key changes.
+				local velocity=movementRoot.AssemblyLinearVelocity
+				local horizontal=Vector3.new(velocity.X,0,velocity.Z)
+				local target=airDirection*airSpeed
+				local response=1-math.exp(-poseDt/0.16)
+				local nextHorizontal=horizontal:Lerp(target,response)
+				humanoid.WalkSpeed=nextHorizontal.Magnitude
+				humanoid:Move(nextHorizontal.Magnitude>0.01 and nextHorizontal.Unit or Vector3.zero,false)
+				movementRoot:ApplyImpulse((nextHorizontal-horizontal)*movementRoot.AssemblyMass)
 			elseif jump.Phase=="Landing" then
-				humanoid.WalkSpeed=0
-				humanoid:Move(Vector3.zero,false)
-				-- Absorb contact rebound and sliding, but allow falling if the roof breaks.
-				if humanoid.FloorMaterial~=Enum.Material.Air then
-					local velocity=movementRoot.AssemblyLinearVelocity
-					movementRoot:ApplyImpulse(Vector3.new(-velocity.X,-math.max(0,velocity.Y),-velocity.Z)*movementRoot.AssemblyMass)
-				end
+				-- The heavy compression remains visual; movement and turning are free.
+				if bufferedJumpUntil>=os.clock() then requestJump(bufferedDirection) end
 			end
 		end
 		model:SetAttribute("JumpPhase",jump.Phase)
@@ -889,12 +904,19 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			walking = speed > 0.5 and humanoid.Health > 0
 				and humanoid.FloorMaterial ~= Enum.Material.Air
 		end
-		if jumpPose or isStaggered() then walking=false end
+		local landing=jump.Phase=="Landing"
+		local landingWeight=1
+		if landing and humanoid.MoveDirection.Magnitude>0.05 then
+			landingBlend=math.min(landingBlend,1-math.clamp((os.clock()-jump.Started)/0.24,0,1))
+		end
+		if landing then landingWeight=landingBlend end
+		if (jumpPose and not landing) or isStaggered() then walking=false end
 		if focus then walking=false;humanoid:Move(Vector3.zero,false) end
 		if area then walking=false;humanoid:Move(Vector3.zero,false) end
-		local runAllowed=not isStaggered() and not focus and not area and jump.Phase=="Idle"
+		local groundControl=jump.Phase=="Idle" or jump.Phase=="Landing" or jump.Phase=="Windup"
+		local runAllowed=not isStaggered() and not focus and not area and groundControl
 			and humanoid and humanoid.Health>0 and (model:GetAttribute("ComboStep") or 0)==0
-		if humanoid and not focus and not area and jump.Phase=="Idle" and humanoid.Health>0 then
+		if humanoid and not focus and not area and groundControl and humanoid.Health>0 then
 			humanoid.WalkSpeed=isStaggered() and 0 or runRequested and runAllowed and RUN_SPEED or WALK_SPEED
 		end
 		local running=walking and runRequested and runAllowed
@@ -959,7 +981,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		-- Lower the pelvis as well as the torso; IK bends the legs while the
 		-- planted feet retain their floor height. Recovery uses the same smoothing.
 		bob = bob - (attackCrouch or 0)*scale
-		if jumpPose then bob=-jumpPose.Crouch*scale end
+		if jumpPose then bob=bob*(1-landingWeight)-jumpPose.Crouch*scale*landingWeight end
 		if focus then
 			local kick=focusTime>=2 and math.exp(-(focusTime-2)*9) or 0
 			bob=-(1.7*math.min(focusTime/0.65,1)+0.65*kick)*scale*math.clamp((4.85-focusTime)/0.35,0,1)
@@ -1096,6 +1118,10 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			end
 		end
 		if jumpPose then
+			local locomotionPose={}
+			if landing then
+				for name,motor in pairs(motors) do locomotionPose[name]=motor.C0 end
+			end
 			local asymmetry=jumpPose.Asymmetry or 0
 			local leadSign=jump.Lead=="Left" and -1 or 1
 			pose("Torso",jumpPose.Pitch,leadSign*3*asymmetry,leadSign*4*asymmetry)
@@ -1113,6 +1139,9 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			end
 			for i=1,tailCount do
 				pose("Tail"..i,math.sin(elapsed*8-i*0.45)*jumpPose.Pulse*1.5,0,0)
+			end
+			for name,original in pairs(locomotionPose) do
+				motors[name].C0=original:Lerp(motors[name].C0,landingWeight)
 			end
 		end
 		if focus then
