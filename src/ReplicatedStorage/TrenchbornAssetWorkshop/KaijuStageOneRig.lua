@@ -157,12 +157,12 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		if p:GetAttribute("KaijuArmorEnergy") then table.insert(armorEnergy,p) end
 	end
 	local scale = model:GetScale()
-	-- Stage 3 focus visual mass; gameplay reach/damage and pulse travel stay unchanged.
-	local focusCoreWidth = stage>=3 and 1.30 or 0.45
-	local focusOuterWidth = stage>=3 and 3.10 or 1.15
-	local focusPulseScale = stage>=3 and 1.90 or 1
-	local focusImpactScale = stage>=3 and 1.80 or 1
-	local focusChargeScale = stage>=3 and 1.25 or 1
+	-- Shared focus visual mass; gameplay reach/damage and pulse travel stay unchanged.
+	local focusCoreWidth = 1.30
+	local focusOuterWidth = 3.10
+	local focusPulseScale = 1.90
+	local focusImpactScale = 1.80
+	local focusChargeScale = 1.25
 	-- Supplemental support is animation-only: never snap or propel the character.
 	local supportParams=RaycastParams.new()
 	supportParams.FilterType=Enum.RaycastFilterType.Exclude
