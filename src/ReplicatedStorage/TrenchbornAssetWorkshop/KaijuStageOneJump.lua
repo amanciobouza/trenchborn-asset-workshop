@@ -32,7 +32,7 @@ function Jump.new()
 				if self.LeftGround then event="Land" end
 				self.Phase,self.Started="Landing",now;t=0
 			elseif t>6 then self:Cancel();return nil,"Restore" end
-		elseif self.Phase=="Landing" and t>=1.05 then
+		elseif self.Phase=="Landing" and (not grounded or t>=0.55) then
 			self:Cancel();return nil,"Restore"
 		end
 		if self.Phase=="Windup" then
@@ -50,14 +50,14 @@ function Jump.new()
 				LeadForward=-2.2*tuck,TrailForward=1.3*tuck,Asymmetry=asymmetry,
 				Pitch=-8,Arm=verticalSpeed>0 and 30 or 18,Elbow=18,Head=3,Pulse=0},event
 		elseif self.Phase=="Landing" then
-			-- Compress once, hold the weight, then rise slowly without an overshoot.
+			-- Shallow impact absorption: avoid a deep crouch/rebound resembling another jump.
 			local crouch
-			if t<0.10 then crouch=0.7+3.9*smooth(t/0.10)
-			elseif t<0.32 then crouch=4.6
-			else crouch=4.6*(1-smooth((t-0.32)/0.73)) end
-			local compression=crouch/4.6
-			return {Crouch=crouch,Tuck=0,Pitch=-30*compression,
-				Arm=30*compression,Elbow=30*compression,Head=12*compression,Pulse=compression},event
+			if t<0.08 then crouch=0.7+0.7*smooth(t/0.08)
+			elseif t<0.18 then crouch=1.4
+			else crouch=1.4*(1-smooth((t-0.18)/0.37)) end
+			local compression=crouch/1.4
+			return {Crouch=crouch,Tuck=0,Pitch=-12*compression,
+				Arm=16*compression,Elbow=18*compression,Head=5*compression,Pulse=compression},event
 		end
 		return nil,event
 	end
