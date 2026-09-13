@@ -5,7 +5,7 @@ local NAME="Stage_2_Storm_Hunter"
 local function newPart(model,class,name,size,cf)
  local p=Instance.new(class);p.Name=name;p.Size=size;p.CFrame=cf
  p.Anchored=true;p.CanCollide=false;p.CanTouch=false;p.CanQuery=false
- p.Material=Enum.Material.Basalt;p.Color=Color3.fromRGB(39,43,51)
+ p.Material=Enum.Material.Basalt;p.Color=Color3.fromRGB(68,67,64)
  p.TopSurface=Enum.SurfaceType.Smooth;p.BottomSurface=Enum.SurfaceType.Smooth;p.Parent=model
  return p
 end
@@ -97,13 +97,13 @@ function Builder.Build(parent,ground)
    local shoulder=model:FindFirstChild(side.."Deltoid")
    local forearm=model:FindFirstChild(side.."ForearmMass")
    -- Three interlocking facets follow each organic shoulder instead of forming a spacer.
-   local base=shoulder.CFrame*CFrame.new(sign*1.8,1.35,-0.1)*CFrame.Angles(0,0,math.rad(-sign*24))
-   newPart(model,"Part",side.."ShoulderArmorCore",Vector3.new(1.4,2.8,3.4),base)
-   newPart(model,"CornerWedgePart",side.."ShoulderArmorUpper",Vector3.new(2.2,1.7,3.6),base*CFrame.new(-sign*0.35,1.2,0)*CFrame.Angles(0,sign<0 and math.pi or 0,0))
-   newPart(model,"WedgePart",side.."ShoulderArmorFront",Vector3.new(1.6,2.3,1.8),base*CFrame.new(0,-0.3,-1.8)*CFrame.Angles(0,math.pi,0))
-   local guard=forearm.CFrame*CFrame.new(sign*1.5,0,-0.1)
-   newPart(model,"Part",side.."ForearmArmorCore",Vector3.new(1.0,2.8,2.8),guard)
-   newPart(model,"WedgePart",side.."ForearmArmorTaper",Vector3.new(1.1,2.0,2.8),guard*CFrame.new(0,-1.4,0)*CFrame.Angles(0,0,math.pi))
+   local base=shoulder.CFrame*CFrame.new(sign*shoulder.Size.X*0.40,1.45,-0.35)*CFrame.Angles(0,0,math.rad(-sign*24))
+   newPart(model,"Part",side.."ShoulderArmorCore",Vector3.new(1.9,3.5,4.5),base)
+   newPart(model,"CornerWedgePart",side.."ShoulderArmorUpper",Vector3.new(2.8,2.0,4.7),base*CFrame.new(-sign*0.45,1.45,0)*CFrame.Angles(0,sign<0 and math.pi or 0,0))
+   newPart(model,"WedgePart",side.."ShoulderArmorFront",Vector3.new(2.0,2.9,2.2),base*CFrame.new(0,-0.3,-2.15)*CFrame.Angles(0,math.pi,0))
+   local guard=forearm.CFrame*CFrame.new(sign*forearm.Size.X*0.43,0,-forearm.Size.Z*0.18)
+   newPart(model,"Part",side.."ForearmArmorCore",Vector3.new(1.5,3.5,3.6),guard)
+   newPart(model,"WedgePart",side.."ForearmArmorTaper",Vector3.new(1.6,2.3,3.6),guard*CFrame.new(0,-1.8,0)*CFrame.Angles(0,0,math.pi))
   end
   local currentHeight=model.Cranium.Position.Y+model.Cranium.Size.Y/2-soles(model)
   model:ScaleTo(model:GetScale()*sourceHeight*1.12/currentHeight)
@@ -116,7 +116,7 @@ function Builder.Build(parent,ground)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending")
   model:SetAttribute("QualityGateC","Pending")
-  model:SetAttribute("GeometryRevision","S2_StormHunter_Target_01")
+  model:SetAttribute("GeometryRevision","S2_StormHunter_VisibleArmor_02")
   model:SetAttribute("VisualTarget","Storm Hunter concept approved in conversation")
   model:SetAttribute("HeightRatioToStageOne",1.12)
   model:SetAttribute("Purpose","Stage 2 geometry review; anchored, no gameplay rig")
