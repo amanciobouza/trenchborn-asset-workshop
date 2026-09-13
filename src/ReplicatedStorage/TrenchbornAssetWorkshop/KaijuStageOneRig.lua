@@ -13,7 +13,8 @@ local CYCLE_SECONDS = 1.9
 local AREA_TIMING={Curl=2.2,Discharge=2.8,Recovery=3.2,Finish=4.6}
 
 function Rig.Attach(model, movementRoot, humanoid, combat)
-	assert(model:GetAttribute("EvolutionStage") == 1, "Stage 1 rig only")
+	local stage=model:GetAttribute("EvolutionStage")
+	assert(stage==1 or stage==2,"Unsupported Kaiju stage")
 	assert(not model:FindFirstChild("Articulation"), "Rig already attached")
 	local function get(name)
 		local p = model:FindFirstChild(name)
@@ -99,8 +100,8 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 			if starts(name, side) then
 				local suffix = string.sub(name, #side+1)
 				if headFeatures[suffix] then return "Head" end
-				if armUpper[suffix] then return side .. "UpperArm" end
-				if armLower[suffix] then return side .. "Forearm" end
+				if armUpper[suffix] or starts(suffix,"ShoulderArmor") then return side .. "UpperArm" end
+				if armLower[suffix] or starts(suffix,"ForearmArmor") then return side .. "Forearm" end
 				if suffix == "WristJoint" or starts(suffix, "Palm") or starts(suffix, "Finger")
 					or starts(suffix, "Knuckle") or starts(suffix, "Hand") or starts(suffix, "Thumb") then return side .. "Hand" end
 				if thighs[suffix] then return side .. "Thigh" end
@@ -126,7 +127,7 @@ function Rig.Attach(model, movementRoot, humanoid, combat)
 		p.Anchored = false
 	end
 	model.PrimaryPart = bones.Pelvis
-	model:SetAttribute("RigType", "CustomMotor6D_Stage1")
+	model:SetAttribute("RigType", "CustomMotor6D_Stage"..stage)
 	model:SetAttribute("FocusRigRevision", "MouthDiagnostic_01")
 	model:SetAttribute("RigJointCount", 18 + tailCount)
 	model:SetAttribute("PipelinePhase", 6)
