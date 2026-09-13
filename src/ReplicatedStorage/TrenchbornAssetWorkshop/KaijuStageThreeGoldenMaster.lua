@@ -23,6 +23,7 @@ end
 -- Solving in each mass's local frame also handles tilted calves and cheeks.
 local function frontSurface(parts,x,y)
  local front=math.huge
+ local surfaceNormal
  for _,p in ipairs(parts) do
   local o=p.CFrame:PointToObjectSpace(Vector3.new(x,y,0))
   local d=p.CFrame:VectorToObjectSpace(Vector3.zAxis)
@@ -31,19 +32,36 @@ local function frontSurface(parts,x,y)
   local b=2*(o.X*d.X/h.X^2+o.Y*d.Y/h.Y^2+o.Z*d.Z/h.Z^2)
   local c=(o.X/h.X)^2+(o.Y/h.Y)^2+(o.Z/h.Z)^2-1
   local disc=b*b-4*a*c
-  if disc>=0 then front=math.min(front,(-b-math.sqrt(disc))/(2*a)) end
+  if disc>=0 then
+   local hit=(-b-math.sqrt(disc))/(2*a)
+   if hit<front then
+    front=hit
+    local point=o+d*hit
+    surfaceNormal=p.CFrame:VectorToWorldSpace(
+     Vector3.new(point.X/h.X^2,point.Y/h.Y^2,point.Z/h.Z^2)).Unit
+   end
+  end
  end
  assert(front<math.huge,"Armor surface sample missed its body mass")
- return front
+ return front,surfaceNormal
+end
+local function surfaceFrame(parts,x,y,inset)
+ local z,normal=frontSurface(parts,x,y)
+ local up=Vector3.yAxis-normal*normal:Dot(Vector3.yAxis)
+ up=up.Unit
+ local right=normal:Cross(up).Unit
+ return CFrame.fromMatrix(Vector3.new(x,y,z)+normal*inset,right,up,-normal)
 end
 local function facePlate(model,name,width,height,depth,cf)
- -- The broad face points toward local -Z, with tapered side edges.
+ -- Downward-tapering facets mirrored in the plate plane; broad face stays forward.
  stone(model,name.."Core",Vector3.new(width*0.72,height*0.78,depth),cf,"Part")
- for _,edge in ipairs({-1,1}) do
-  stone(model,name.."Facet"..edge,Vector3.new(width*0.32,height,depth),
-   cf*CFrame.new(edge*width*0.34,-height*0.06,0)
-    *CFrame.Angles(0,0,edge<0 and math.pi or 0))
- end
+ local size=Vector3.new(width*0.32,height,depth)
+ local right=CFrame.new(width*0.34,-height*0.06,0)*CFrame.Angles(math.pi,0,0)
+ stone(model,name.."Facet1",size,cf*right)
+ local function mirror(v) return Vector3.new(-v.X,v.Y,v.Z) end
+ local left=CFrame.fromMatrix(mirror(right.Position),
+  mirror(right.ZVector),mirror(right.UpVector),mirror(right.RightVector))
+ stone(model,name.."Facet-1",Vector3.new(size.Z,size.Y,size.X),cf*left)
 end
 local function shinPlate(model,name,cf)
  -- Both corner apexes point down the shin; never flip local Y to mirror a side.
@@ -137,18 +155,17 @@ function Builder.Build(parent,ground,options)
    for i=1,2 do
     x=pec.Position.X+sign*pec.Size.X*(i==1 and 0.29 or 0.24)
     y=pec.Position.Y-pec.Size.Y*(i==1 and 0.23 or 0.38)
-    z=frontSurface({pec,flank,ribs,belly},x,y)
-    facePlate(model,side.."RibArmor_"..i,1.85,0.90,0.58,
-     CFrame.new(x,y,z-0.16)*CFrame.Angles(0,0,sign*math.rad(10)))
+    local ribFrame=surfaceFrame({pec,flank,ribs,belly},x,y,0.08)
+    facePlate(model,side.."RibArmor_"..i,1.85,0.90,0.46,
+     ribFrame*CFrame.Angles(0,0,sign*math.rad(6)))
    end
    local thigh=model:FindFirstChild(side.."ThighMass")
    local quad=model:FindFirstChild(side.."OuterQuadriceps")
    local hip=model:FindFirstChild(side.."HipJoint")
    x=thigh.Position.X+sign*thigh.Size.X*0.28
    y=thigh.Position.Y+thigh.Size.Y*0.27
-   z=frontSurface({thigh,quad,hip},x,y)
-   facePlate(model,side.."HipArmor",2.05,2.5,0.70,
-    CFrame.new(x,y,z-0.18)*CFrame.Angles(0,sign*math.rad(-10),sign*math.rad(-8)))
+   local hipFrame=surfaceFrame({thigh,quad,hip},x,y,0.09)
+   facePlate(model,side.."HipArmor",2.05,2.5,0.52,hipFrame)
    local knee=model:FindFirstChild(side.."KneeJoint")
    local hock=model:FindFirstChild(side.."HockJoint")
    local calf=model:FindFirstChild(side.."CalfMass")
@@ -174,7 +191,7 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending")
   model:SetAttribute("QualityGateC","Pending")
-  model:SetAttribute("GeometryRevision","S3_MirroredDownwardShinFacets_03")
+  model:SetAttribute("GeometryRevision","S3_ConformingHipRibArmor_04")
   model:SetAttribute("VisualTarget","Approved Stage 3 front/side/back concept; lateral rib armor amendment")
   model:SetAttribute("Purpose","Stage 3 geometry review; anchored candidate")
   model.Parent=parent
