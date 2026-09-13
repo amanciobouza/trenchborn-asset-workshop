@@ -128,6 +128,9 @@ function Builder.Build(parent,ground,options)
    -- Corner-wedge apexes run laterally out from buried, broad shoulder roots.
    -- Y is tip length before rotation; the final +Y axis points outward.
    local pointRotation=CFrame.Angles(0,-sign*math.pi/2,0)*CFrame.Angles(-math.pi/2,0,0)
+   -- Correct the left corner's fore/aft sweep without reversing its outward apex.
+   -- Local Y is the longitudinal tip axis; rolling around it preserves the root.
+   if sign<0 then pointRotation=pointRotation*CFrame.Angles(0,math.pi,0) end
    local wing=shoulder.CFrame*CFrame.new(sign*(rx+0.45),ry*0.56,-0.1)
     *pointRotation
    newPart(model,"CornerWedgePart",side.."ShoulderArmorLateralPoint",
@@ -200,7 +203,7 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("QualityGateA","ApprovedByUser")
   model:SetAttribute("QualityGateB","Pending")
   model:SetAttribute("QualityGateC","Pending")
-  model:SetAttribute("GeometryRevision","S2_StormHunter_CornerShoulderTips_12")
+  model:SetAttribute("GeometryRevision","S2_StormHunter_LeftShoulderSweep_13")
   model:SetAttribute("VisualTarget","Storm Hunter concept approved in conversation")
   model:SetAttribute("HeightRatioToStageOne",(currentHeight*model:GetScale()-headDrop*buildScale)/sourceHeight)
   model:SetAttribute("Purpose","Stage 2 geometry review; anchored, no gameplay rig")
