@@ -1,0 +1,33 @@
+{
+  "name": "TrenchbornKaijuStageThree",
+  "tree": {
+    "$className": "Folder",
+    "KaijuStageThreeInstaller": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuStageThreeInstaller.lua"
+    },
+    "KaijuStageThreeGoldenMaster": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuStageThreeGoldenMaster.lua"
+    },
+    "KaijuEvolutionBlockout": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuEvolutionBlockout.lua"
+    },
+    "KaijuStageOneRig": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuStageOneRig.lua"
+    },
+    "KaijuStageOneCombo": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuStageOneCombo.lua"
+    },
+    "KaijuStageOneJump": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuStageOneJump.lua"
+    },
+    "KaijuStageThreeInput": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuStageThreeInput.client.lua"
+    },
+    "KaijuStageOneJumpMotor": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuStageOneJumpMotor.client.lua"
+    },
+    "KaijuStageTwoGoldenMaster": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuStageTwoGoldenMaster.lua"
+    }
+  }
+}
