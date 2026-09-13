@@ -1,4 +1,4 @@
-# Primal Beast — portable package 1.2.1
+# Primal Beast — portable package 1.2.3
 
 ## Import into another Roblox project
 
@@ -87,3 +87,9 @@ The rig now exclusively owns the tagged Kaiju Motor6D joints. Server and client 
 KaijuStageOneJumpMotor is the always-installed pose-and-jump runtime, including with InstallInput=false and EnableRemotes=false. Its pose guard starts independently of jump remote discovery, covers replicated Kaijus, and handles late joint arrival/removal. Only TrenchbornProceduralJoint-tagged joints are affected. The rig removes its tags on Stop; the client disconnects on destruction.
 
 Replace the complete package folder and restart Play. Source/package checks passed; Stage 1 and Stage 2 still require a target-project playtest at Scale=1, InstallInput=false: idle, walk, run, attacks, respawn and unequip/re-equip. The target game must not directly overwrite Kaiju joint C0/C1. PoseOwnershipRevision=ProceduralC0_01 identifies the updated runtime.
+
+## Release 1.2.3: uninterrupted specials
+
+An accepted focus or area attack immediately stops locomotion and locks the movement root for its full charge, discharge and recovery. Input, residual velocity, temporary FloorMaterial=Air and nonlethal hit reactions do not cancel the special. Damage still applies; death and uninstall terminate the attack and release the lock safely. Invalid/no-target requests do not lock the player.
+
+The shared server rig restores the previous anchored state, movement speed, AutoRotate and jumping state on release, without restoring old running velocity. This also works with InstallInput=false. Replace the full package and restart Play. Simulated state/lifecycle tests and export checks passed; verify holding movement and jump while starting each special, taking a heavy hit during charge, normal recovery, death and uninstall in the target experience.
