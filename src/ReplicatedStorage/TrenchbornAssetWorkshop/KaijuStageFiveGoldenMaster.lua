@@ -68,7 +68,7 @@ function Builder.Build(parent,ground,options)
    end
   end
   assert(jawBottom<math.huge,"Missing lower jaw for chest clearance")
-  local clearance=width*0.045
+  local clearance=width*0.015
   chestY=math.min(chestY,jawBottom-clearance-outerY-width*0.03)
   model:SetAttribute("NormalizedChestJawClearance",clearance)
   local backing=G.Part(model,"Stage5ChestBacking",Vector3.new(width*0.78,width*0.77,width*0.08),
