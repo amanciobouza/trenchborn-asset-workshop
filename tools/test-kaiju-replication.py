@@ -16,7 +16,8 @@ def run(code,execute=True):
 for name in ['KaijuPresentation','KaijuPresentationClient.client','KaijuPresentationBootstrap',
              'KaijuSkeleton','KaijuStageOneRig','KaijuStageOneCombo','KaijuStageOneJump',
              'KaijuStageOneJumpMotor.client','KaijuStageOneCombat','KaijuBuildingTraversal',
-             'KaijuStageOneInstaller','KaijuStageTwoInstaller','KaijuStageThreeInstaller']:
+             'KaijuStageOneInstaller','KaijuStageTwoInstaller','KaijuStageThreeInstaller',
+             'KaijuStageFourTestInstaller','KaijuStageFourInput.client']:
     run((SRC/(name+'.lua')).read_text(),False)
 mock=r'''
 math.clamp=function(x,a,b) return math.max(a,math.min(x,b)) end
@@ -388,4 +389,79 @@ for stage=1,4 do for _,scale in ipairs({0.5,1,2}) do
  character:Destroy();building:Destroy()
 end end
 print("PASS: shared traversal setup and cleanup, stages 1–4 at scales 0.5/1/2, torso exemptions and NPC footfall rejection")
+''')
+
+# Execute the new installer against stubbed geometry/runtime dependencies.
+installer_setup=mock+r'''
+function typeof(v) return getmetatable(v)==I and "Instance" or type(v) end
+function methods:FindFirstChildOfClass(kind)
+ for _,p in ipairs(self:GetChildren()) do if p:IsA(kind) then return p end end
+end
+local oldNew=Instance.new
+Instance.new=function(kind)
+ local p=oldNew(kind);p.DescendantAdded=signal();return p
+end
+local failDressing=false
+local builds,rigStops,traversalStops=0,0,0
+addModule("KaijuEvolutionBlockout",{ResolveBuildScale=function(options) return options.Scale or 1 end})
+addModule("KaijuStageFourGoldenMaster",{Build=function(parent,ground,options)
+ builds=builds+1
+ local m=Instance.new("Model");m.Parent=parent;m.Name="Stage_4_Geometry_Review";m.Scale=options.Scale or 1
+ m:SetAttribute("EvolutionStage",4);m:SetAttribute("BuildScale",m.Scale)
+ return m
+end})
+addModule("KaijuStageFourDressing",{Apply=function(m)
+ if failDressing then error("simulated dressing failure") end
+ m:SetAttribute("Dressed",true)
+end})
+addModule("KaijuStageOneRig",{Attach=function(m)
+ assert(m:GetAttribute("Dressed"),"Dressing precedes rig attachment")
+ local api={Stop=function()rigStops=rigStops+1 end}
+ for _,name in ipairs({"RequestAttack","RequestJump","SetAirDirection","RequestFocus","RequestArea","SetRunning","GetCombatFrame"}) do api[name]=function()return true end end
+ return api
+end})
+addModule("KaijuBuildingTraversal",{Attach=function(m,root,h,height,collider)
+ assert(m:GetAttribute("EvolutionStage")==4 and collider.Parent==m.Parent and height==3)
+ return {Destroy=function()traversalStops=traversalStops+1 end}
+end})
+local function character()
+ local c=Instance.new("Model");c.Parent=workspace
+ local r=Instance.new("Part");r.Name="HumanoidRootPart";r.Parent=c;r.Anchored=false;r.Transparency=0;r.CastShadow=true
+ local h=Instance.new("Humanoid");h.Parent=c;h.Health=100;h.HipHeight=2;h.WalkSpeed=24;h.AutoRotate=true
+ return c,r,h
+end
+local function adapter()
+ return {Handle=function()end,Cancel=function()end,PrepareFinisher=function()end,
+ SelectFocusTarget=function()end,FocusAim=function()end,AreaImpact=function()end,
+ TraversalTargets=function()return {} end,StepImpact=function()end}
+end
+'''
+run(installer_setup+'\nlocal Installer=(function()\n'+(SRC/'KaijuStageFourTestInstaller.lua').read_text()+'\nend)()\n'+r'''
+local c,r,h=character()
+local m,api=Installer.Install(c,{Scale=2,CombatFactory=adapter,EnableTraversal=true})
+assert(m:GetAttribute("PipelinePhase")==6 and m:GetAttribute("TestOnly"))
+assert(m:GetAttribute("QualityGateC")=="Pending_SlopeAndMultiplayerReview")
+assert(m:GetAttribute("FinalInstallerVersion")==nil and m:GetAttribute("TestPackageVersion")=="0.1.0-test")
+assert(m:GetScale()==2 and m:GetAttribute("BuildingTraversalEnabled"))
+assert(r.Transparency==1 and h.WalkSpeed==10 and api.RequestAttack())
+assert(not pcall(Installer.Install,c,{PreviewOnly=true}),"Cannot equip twice")
+api.Destroy();api.Destroy()
+assert(r.Transparency==0 and r.CastShadow and h.WalkSpeed==24 and not r.Anchored)
+assert(not c:FindFirstChild("KaijuBodyCollider") and not c:FindFirstChild("Stage_4_Geometry_Review"))
+assert(rigStops==1 and traversalStops==1 and api.RequestAttack()==false)
+local again=Installer.Install(c,{PreviewOnly=true})
+assert(not again:GetAttribute("BuildingTraversalEnabled"))
+assert(Installer.Uninstall(c) and not Installer.Uninstall(c))
+failDressing=true
+assert(not pcall(Installer.Install,c,{PreviewOnly=true}))
+assert(not c:FindFirstChild("Stage_4_Geometry_Review") and h.WalkSpeed==24 and r.Transparency==0)
+failDressing=false
+assert(not pcall(Installer.Install,c,{CombatFactory=function()return {} end}))
+assert(not c:FindFirstChild("Stage_4_Geometry_Review") and not c:FindFirstChild("KaijuBodyCollider"))
+assert(not pcall(Installer.Install,c,{PreviewOnly=true,EnableTraversal=true}))
+assert(h.WalkSpeed==24 and r.Transparency==0 and not c:FindFirstChild("KaijuBodyCollider"))
+local finalModel=Installer.Install(c,{PreviewOnly=true})
+finalModel:Destroy()
+assert(h.WalkSpeed==24 and r.Transparency==0 and not c:FindFirstChild("KaijuBodyCollider"))
+print("PASS: Stage 4 test installer gates, dressing order, traversal wiring, duplicate equip, uninstall, reinstall and error rollback")
 ''')

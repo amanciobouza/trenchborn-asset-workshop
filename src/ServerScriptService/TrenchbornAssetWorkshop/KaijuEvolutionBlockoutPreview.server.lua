@@ -140,7 +140,7 @@ local function equip(player, character)
  kaiju:SetAttribute("QualityGateC","Pending_Stage4GameplayReview")
  kaiju:SetAttribute("FinisherReview","ApprovedByUser")
  kaiju:SetAttribute("HipTowerEscapeReview","ApprovedByUser")
- kaiju:SetAttribute("ReactionRespawnReview","Pending_UserStudioReview")
+ kaiju:SetAttribute("ReactionRespawnReview","ApprovedByUser")
  kaiju:SetAttribute("SlopeReview","Pending_UserStudioReview")
  kaiju:SetAttribute("MultiplayerReview","Pending_UserStudioReview")
 	local reactionTestConnection

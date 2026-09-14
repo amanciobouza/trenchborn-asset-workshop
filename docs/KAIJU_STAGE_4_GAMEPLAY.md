@@ -1,21 +1,21 @@
 # Stage 4 — Phase 6 gameplay review
 
-Quality Gate B: approved by user. Dressing: approved by user. Quality Gate C: pending. No final Stage 4 installer is released.
+Quality Gate B: approved by user. Dressing: approved by user. Quality Gate C: pending. No final Stage 4 installer is released. A [Phase 6 integration test package](KAIJU_STAGE_4_TEST_PACKAGE.md) is now available.
 
 | Check | Evidence / status |
 | --- | --- |
 | Finisher below the jaw, building held at chest | User confirmed |
 | Turn and walk away from hip-high tower | User confirmed |
-| Light hit and return to idle | Automated controller check passed; Studio visual review pending |
-| Heavy hit, temporary attack restriction and recovery | Automated controller check passed; Studio visual review pending |
+| Light hit and return to idle | Automated controller check passed; user confirmed in Studio |
+| Heavy hit, temporary attack restriction and recovery | Automated controller check passed; user confirmed in Studio |
 | Healing does not trigger hit reaction | Automated controller check passed |
-| Defeat cancels special attack and rejects further combat | Automated controller check passed; Studio pose review pending |
-| Respawn jump motor | Simulated character replacement passed: old impulse disconnected, new impulse active |
+| Defeat cancels special attack and rejects further combat | Automated controller check passed; user confirmed in Studio |
+| Respawn jump motor | User confirmed respawn/jump; simulated replacement also verifies old/new impulse isolation |
 | Unequip / cleanup | Automated traversal cleanup passed for Stages 1–4 at scales 0.5, 1 and 2; Studio check pending |
 | Buildings, slopes, multiplayer | Full matrix still pending; only hip-high tower escape is user-confirmed |
 | Stage 1–3 shared traversal | Automated checks passed; user Studio tests pending |
 
-## Next Studio check: reaction and respawn
+## Confirmed Studio check: reaction and respawn
 
 After pulling, restart Play with Stage 4 equipped. Use the existing Reaction test controls:
 

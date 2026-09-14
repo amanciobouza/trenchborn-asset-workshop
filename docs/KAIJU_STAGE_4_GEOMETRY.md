@@ -20,7 +20,7 @@ Rig mapping: RibArmor prefixes attach to Torso, HipArmor to Thigh, ShinArmor to 
 
 ## Phase 4: review
 
-The workshop now equips Stage 4. Stages 1–3 remain as comparisons. Stage4Scale on the preview script controls its build scale. Quality Gate A is approved; B and C remain pending. Attaching the existing runtime enables pose review without claiming completed dressing or gameplay approval. There is no portable Stage 4 installer yet.
+The workshop now equips Stage 4. Stages 1–3 remain as comparisons. Stage4Scale on the preview script controls its build scale. Quality Gate A is approved; B and C remain pending. Attaching the existing runtime enables pose review without claiming completed dressing or gameplay approval. A Phase 6 test package is now available; see KAIJU_STAGE_4_TEST_PACKAGE.md. The final installer is still pending.
 
 Inspect front, side and rear: chest segments should sit outside the organic chest with a continuous exposed central strip and clear row gaps; shoulders/forearms must retain hand and jaw clearance; knee/hip armor must remain fitted; the dorsal ridge must have a heavier silhouette. Check clipping during attacks and defeat before approving geometry.
 
