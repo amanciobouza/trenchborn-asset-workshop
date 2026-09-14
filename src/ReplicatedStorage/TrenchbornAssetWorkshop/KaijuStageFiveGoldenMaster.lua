@@ -139,6 +139,23 @@ function Builder.Build(parent,ground,options)
     end
    end
   end
+  -- Staggered cover plates bridge the seams of the shoulder-spanning back armor.
+  for _,sign in ipairs({-1,1}) do
+   for row=1,3 do
+    for col=1,2 do
+     local cx=sign*shoulderSpan*(0.12+(col-1)*0.18)
+     local cy=rib.Position.Y+rib.Size.Y*(0.31-(row-1)*0.23)
+     local hw,hh=shoulderSpan*0.105,rib.Size.Y*0.17
+     local function point(dx,dy)
+      local x,y=cx+dx,cy+dy
+      return Vector3.new(x,y,rearSurface(x,y,rib.Position.Z+rib.Size.Z/2)+width*0.045)
+     end
+     region(G.Quad(model,"Stage5BackSeamArmor_"..sign.."_"..row.."_"..col,
+      point(-hw,hh),point(hw,hh),point(hw*0.86,-hh),point(-hw*0.86,-hh),
+      row==2 and EDGE or ROCK,width*0.055),"Torso")
+    end
+   end
+  end
   for _,sign in ipairs({-1,1}) do
    local side=sign<0 and "Left" or "Right"
    local foot=model[side.."ForefootCoreY"]
@@ -146,7 +163,7 @@ function Builder.Build(parent,ground,options)
    -- Widen the whole foot, including toes, claws and existing heel armor.
    -- Keep the sole height and ankle pivot unchanged.
    for _,prefix in ipairs({"Forefoot","Heel","Toe","FrontClaw","RearClaw","InstepFlow"}) do
-    stretch(model,side..prefix,footFrame,Vector3.new(1.24,1,1.18))
+    stretch(model,side..prefix,footFrame,Vector3.new(1.42,1,1.34))
    end
    for row=1,3 do
     local w=foot.Size.X*(0.96-(row-1)*0.08)
@@ -158,6 +175,19 @@ function Builder.Build(parent,ground,options)
      point(w/2,-foot.Size.Y*0.20,-foot.Size.Z*0.18),point(-w/2,-foot.Size.Y*0.20,-foot.Size.Z*0.18),
      row==2 and EDGE or ROCK,foot.Size.Y*0.24),side.."Foot")
    end
+   -- Thick sidewalls and a toe cap turn the top plates into an armored boot.
+   -- Every lower edge stays above the existing sole plane.
+   local fw,fh,fl=foot.Size.X,foot.Size.Y,foot.Size.Z
+   for _,edge in ipairs({-1,1}) do
+    local wall=G.Part(model,side.."ForefootArmorStage5Side_"..edge,
+     Vector3.new(fw*0.16,fh*1.05,fl*0.98),
+     foot.CFrame*CFrame.new(edge*fw*0.49,fh*0.15,-fl*0.04),ROCK)
+    wall:SetAttribute("RigRegion",side.."Foot")
+   end
+   local cap=G.Part(model,side.."ForefootArmorStage5ToeCap",
+    Vector3.new(fw*1.08,fh*0.86,fl*0.18),
+    foot.CFrame*CFrame.new(0,fh*0.10,-fl*0.52),EDGE)
+   cap:SetAttribute("RigRegion",side.."Foot")
    local shoulder=model[side.."ShoulderJoint"]
    for layer=1,3 do
     local size=shoulder.Size
@@ -195,6 +225,18 @@ function Builder.Build(parent,ground,options)
    local f=i<=3 and 1.38 or 1.12+(11-i)*0.025
    for _,prefix in ipairs({"DorsalShield_","DorsalRock_","DorsalEnergy_"}) do
     stretch(model,prefix..stem,plate.CFrame,Vector3.new(1.02,f,1.20))
+   end
+   -- Both faces of every dorsal plate carry an inset armor layer. The
+   -- DorsalRock index preserves the same torso/tail articulation as its spar.
+   for _,sign in ipairs({-1,1}) do
+    local h,d=plate.Size.Y,plate.Size.Z
+    local function point(y,z)
+     return plate.CFrame:PointToWorldSpace(Vector3.new(sign*plate.Size.X*0.56,y,z))
+    end
+    local parts=G.Triangle(model,"DorsalRock_"..stem.."_Stage5Flank_"..sign,
+     point(-h*0.44,-d*0.40),point(-h*0.44,d*0.43),point(h*0.39,d*0.43),
+     ROCK,plate.Size.X*0.20)
+    for _,p in ipairs(parts) do p:SetAttribute("Stage5ArmorRole","DorsalFlank") end
    end
    -- Use the outward direction, not distance from a body centre: distance
    -- can pick an along-back corner and fold a bay into the next plate.
@@ -239,7 +281,7 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("QualityGateB","Pending_UserGeometryReview");model:SetAttribute("QualityGateC","Pending")
   model:SetAttribute("DressingReview","Pending_Phase5");model:SetAttribute("SailBayCount",10)
   model:SetAttribute("SailPresentation","StaticGeometryProxy")
-  model:SetAttribute("GeometryRevision","S5_ArmoredFeet_RisingShoulders_SweptHeadScales_04")
+  model:SetAttribute("GeometryRevision","S5_DorsalFlank_SeamArmor_HeavyFeet_05")
   model:SetAttribute("Purpose","Stage 5 static geometry review; not a playable/final asset")
   model.Parent=parent
  end)

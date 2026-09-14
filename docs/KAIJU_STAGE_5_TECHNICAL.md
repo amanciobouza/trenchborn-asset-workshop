@@ -111,3 +111,7 @@ Brust: Abstand zur Haut reduziert und Kratertiefe von 15 auf 9,5 Prozent der Bru
 ### Füsse, aufsteigende Schultern und Kopfschuppen
 
 Stufe 5 erhält um 24 Prozent breitere und 18 Prozent längere Füsse, einschliesslich Zehen, Klauen und Fersenpanzer. Drei überlappende Panzerplatten pro Fuss folgen dem Fussgelenk. Drei seitlich nach oben gezogene Schulterplatten pro Seite folgen dem Oberarm. Die Krone wird durch neun breite, scharfe Panzerzacken in drei gestaffelten Reihen ersetzt; ihre Spitzen zeigen ausdrücklich nach hinten oben. Die körpernahe Brust- und Rückenpanzerung bleibt erhalten. Studio-Sichtprüfung und Gelenkfreiheit sind offen.
+
+### Zusätzliche Rückenlagen und schwere Fusspanzer
+
+Alle elf Rückenplatten tragen links und rechts zusätzliche aufgesetzte Panzerflächen. Zwölf versetzte Deckplatten überbrücken die Fugen der oberen Rückenrüstung. Die Füsse sind gegenüber der Stufe-4-Basis nun 42 Prozent breiter und 34 Prozent länger; dicke Seitenwände und eine Zehenkappe ergänzen die überlappenden Oberplatten. Sohlenhöhe und Fussgelenk bleiben erhalten. Form, Zwischenräume und Bewegungsfreiheit müssen in Studio geprüft werden.
