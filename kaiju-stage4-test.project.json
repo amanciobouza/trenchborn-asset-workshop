@@ -49,6 +49,9 @@
     },
     "KaijuStageOneJumpMotor": {
       "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuStageOneJumpMotor.client.lua"
+    },
+    "KaijuStageOneCombat": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuStageOneCombat.lua"
     }
   }
 }

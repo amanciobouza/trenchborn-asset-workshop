@@ -6,7 +6,7 @@ from pathlib import Path
 import xml.etree.ElementTree as ET
 ROOT=Path(__file__).resolve().parents[1]
 SOURCE=ROOT/'src/ReplicatedStorage/TrenchbornAssetWorkshop'
-FILES=['KaijuStageFourGoldenMaster.lua','KaijuStageFourDressing.lua','KaijuBuildingTraversal.lua','KaijuPresentation.lua','KaijuPresentationClient.client.lua','KaijuPresentationBootstrap.lua','KaijuSkeleton.lua','KaijuStageFourTestInstaller.lua','KaijuStageThreeGoldenMaster.lua','KaijuStageTwoGoldenMaster.lua','KaijuEvolutionBlockout.lua',
+FILES=['KaijuStageOneCombat.lua','KaijuStageFourGoldenMaster.lua','KaijuStageFourDressing.lua','KaijuBuildingTraversal.lua','KaijuPresentation.lua','KaijuPresentationClient.client.lua','KaijuPresentationBootstrap.lua','KaijuSkeleton.lua','KaijuStageFourTestInstaller.lua','KaijuStageThreeGoldenMaster.lua','KaijuStageTwoGoldenMaster.lua','KaijuEvolutionBlockout.lua',
        'KaijuStageOneRig.lua','KaijuStageOneCombo.lua','KaijuStageOneJump.lua',
        'KaijuStageFourInput.client.lua','KaijuStageOneJumpMotor.client.lua']
 def build():

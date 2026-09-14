@@ -441,7 +441,7 @@ local c,r,h=character()
 local m,api=Installer.Install(c,{Scale=2,CombatFactory=adapter,EnableTraversal=true})
 assert(m:GetAttribute("PipelinePhase")==6 and m:GetAttribute("TestOnly"))
 assert(m:GetAttribute("QualityGateC")=="Pending_SlopeAndMultiplayerReview")
-assert(m:GetAttribute("FinalInstallerVersion")==nil and m:GetAttribute("TestPackageVersion")=="0.1.0-test")
+assert(m:GetAttribute("FinalInstallerVersion")==nil and m:GetAttribute("TestPackageVersion")=="0.1.1-test")
 assert(m:GetScale()==2 and m:GetAttribute("BuildingTraversalEnabled"))
 assert(r.Transparency==1 and h.WalkSpeed==10 and api.RequestAttack())
 assert(not pcall(Installer.Install,c,{PreviewOnly=true}),"Cannot equip twice")
@@ -464,4 +464,37 @@ local finalModel=Installer.Install(c,{PreviewOnly=true})
 finalModel:Destroy()
 assert(h.WalkSpeed==24 and r.Transparency==0 and not c:FindFirstChild("KaijuBodyCollider"))
 print("PASS: Stage 4 test installer gates, dressing order, traversal wiring, duplicate equip, uninstall, reinstall and error rollback")
+''')
+
+run((ROOT/"examples/KaijuStageFourTest.server.lua").read_text(),False)
+
+practice_source=(ROOT/'examples/KaijuStageFourTest.server.lua').read_text()
+factory=practice_source.split('   CombatFactory=function(kaiju,movementRoot,human,rootHeight)\n',1)[1].split('\n   end,',1)[0]
+run(mock+r'''
+local player={};local character={};local rangeOwners={}
+local kaiju={LeftKneeJoint={Position=Vector3.new(0,13,0)},LowerRibcage={Position=Vector3.new(0,25,0)}}
+local root={CFrame=CFrame.new(0,3,0)}
+local builds,removes,cancels=0,0,0
+local failBuild,failAttach=false,false
+local Combat={
+ BuildRange=function(p,ground,c,sizes)
+  assert(p==player and c==character and sizes.Knee==13 and sizes.Torso==25)
+  builds=builds+1;if failBuild then error("build failed") end
+ end,
+ RemoveRange=function(p)assert(p==player);removes=removes+1 end,
+ Attach=function()
+  if failAttach then error("attach failed") end
+  return {Cancel=function()cancels=cancels+1 end}
+ end,
+}
+local factory=function(kaiju,movementRoot,human,rootHeight)
+'''+factory+r'''
+end
+local first=factory(kaiju,root,{},3)
+local second=factory(kaiju,root,{},3)
+first.Destroy();assert(removes==0,"Old cleanup must not remove new range")
+second.Destroy();second.Destroy();assert(removes==1,"Current range removed once")
+failBuild=true;assert(not pcall(factory,kaiju,root,{},3));assert(removes==2 and rangeOwners[player]==nil)
+failBuild=false;failAttach=true;assert(not pcall(factory,kaiju,root,{},3));assert(removes==3 and rangeOwners[player]==nil)
+print("PASS: Stage 4 practice range dimensions, respawn generation ownership and factory failure cleanup")
 ''')

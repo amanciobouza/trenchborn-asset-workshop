@@ -1,4 +1,4 @@
-# Stage 4 — Phase 6 integration test package 0.1.0-test
+# Stage 4 — Phase 6 integration test package 0.1.1-test
 
 This package enables target-game integration testing with approved Stage 4 geometry and dressing. It is not a Phase 7 final installer. Quality Gate C remains pending for slopes and multiplayer. Finisher, hip-high tower escape, reaction/defeat and respawn/jump were confirmed by the user in the workshop.
 
@@ -6,10 +6,11 @@ This package enables target-game integration testing with approved Stage 4 geome
 
 1. Stop Play and disable the existing workshop preview or other character equip script in this test place.
 2. Insert `dist/KaijuStageFourTest.rbxmx` into ReplicatedStorage. The resulting folder is `TrenchbornKaijuStageFourTest`.
-3. Copy `examples/KaijuStageFourTest.server.lua` into ServerScriptService for an initial movement preview. The example equips once after appearance loading and again on respawn.
-4. The example defaults to PreviewOnly=true: it has no building damage, focus target or registered-building traversal. To test those, remove PreviewOnly, provide the game's CombatFactory and set EnableTraversal=true.
+3. Copy `examples/KaijuStageFourTest.server.lua` into ServerScriptService for a complete Studio practice session. The example equips once after appearance loading and again on respawn.
+4. Start Play. The example creates three houses and two taller targets sized from Stage 4 knee/torso height. Building traversal and the workshop combat adapter are active. Use F for combo, Space for jump, E for focus, R for area and Shift for running.
+5. Respawning restores the practice range; leaving or removing the bootstrap cleans it up. The practice bootstrap runs only in Studio.
 
-Do not mix scripts from older packages. The test package includes 16 scripts, including Stage 4 geometry/dressing, inherited geometry dependencies, shared presentation, traversal, server rig, input and owner jump motor. No maps, practice targets, workshop menus or camera overrides are included.
+Do not mix scripts from older packages. The test package includes 17 scripts, including Stage 4 geometry/dressing, inherited geometry dependencies, shared presentation, traversal, server rig, input and owner jump motor. The package includes the workshop combat module. The example creates practice targets at runtime; no prebuilt map, workshop menus or camera overrides are included.
 
 ## Target-game integration
 
@@ -29,9 +30,9 @@ api.Destroy()
 -- Alternatively: Installer.Uninstall(character)
 ```
 
-YourBuildingCombatService is a placeholder for the game's server adapter. The adapter supplies Handle, Cancel, PrepareFinisher, SelectFocusTarget, FocusAim and AreaImpact. EnableTraversal=true additionally requires TraversalTargets and StepImpact; see [building traversal contract](KAIJU_BUILDING_TRAVERSAL.md). Combat damage and resources remain game-owned. InstallInput=false does not remove presentation or the jump motor.
+YourBuildingCombatService is a placeholder for the game's server adapter. The supplied example instead uses KaijuStageOneCombat for practice; its provisional damage and health values are not the game balance. The adapter supplies Handle, Cancel, PrepareFinisher, SelectFocusTarget, FocusAim and AreaImpact. EnableTraversal=true additionally requires TraversalTargets and StepImpact; see [building traversal contract](KAIJU_BUILDING_TRAVERSAL.md). Combat damage and resources remain game-owned. InstallInput=false does not remove presentation or the jump motor.
 
-The equipped model retains the existing `Stage_4_Geometry_Review` name for compatibility with the workshop model. EvolutionStage=4 identifies the stage. PipelinePhase=6, TestOnly=true and TestPackageVersion=0.1.0-test explicitly identify its status; FinalInstallerVersion is absent.
+The equipped model retains the existing `Stage_4_Geometry_Review` name for compatibility with the workshop model. EvolutionStage=4 identifies the stage. PipelinePhase=6, TestOnly=true and TestPackageVersion=0.1.1-test explicitly identify its status; FinalInstallerVersion is absent.
 
 ## Build and tests
 

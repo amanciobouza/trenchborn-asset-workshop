@@ -6,7 +6,7 @@ local Builder=require(script.Parent:WaitForChild("KaijuEvolutionBlockout"))
 local StageFour=require(script.Parent:WaitForChild("KaijuStageFourGoldenMaster"))
 local Dressing=require(script.Parent:WaitForChild("KaijuStageFourDressing"))
 local Rig=require(script.Parent:WaitForChild("KaijuStageOneRig"))
-local Installer={Version="0.1.0-test",ApprovedRevision="6badd010b0a0650bdbe0b7f21ab90e58d23741e7"}
+local Installer={Version="0.1.1-test",ApprovedRevision="6badd010b0a0650bdbe0b7f21ab90e58d23741e7"}
 local installations=setmetatable({}, {__mode="k"})
 local NAME="Stage_4_Geometry_Review"
 local function stamp(model)
