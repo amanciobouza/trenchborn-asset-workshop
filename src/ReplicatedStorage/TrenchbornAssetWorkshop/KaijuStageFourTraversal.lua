@@ -32,6 +32,9 @@ function Traversal.Attach(model,root,humanoid,rootHeight,collider,combat,player)
   probes[side]={Offset=CFrame.new(pos.X,height/2+scale,pos.Z*0.35),
    Size=Vector3.new(sole.Size.X*0.74,height,sole.Size.Z*0.60)}
  end
+ -- One authority for registered buildings: torso and legs use the same
+ -- travel/turn solver. Physical torso contact must not pin the Humanoid first.
+ probes.Torso={Offset=CFrame.new(0,bodyY,ribPosition.Z),Size=bodySize}
  local pairsByAvatar={}
  local mediumParts={}
  local function refresh()
@@ -40,10 +43,10 @@ function Traversal.Attach(model,root,humanoid,rootHeight,collider,combat,player)
   for _,entry in ipairs(records) do
    for _,buildingPart in ipairs(entry.Parts) do
     if entry.Height>=kneeHeight then table.insert(mediumParts,buildingPart) end
-    -- The tiny hidden Roblox avatar must not block houses in the leg gap.
-    -- It retains normal ground/world collision; our torso and probes own buildings.
+    -- Exempt avatar AND torso from physical contact with registered buildings.
+    -- Terrain and other world geometry retain their normal physical collision.
     for _,avatar in ipairs(character:GetDescendants()) do
-     if avatar:IsA("BasePart") and avatar~=collider and not avatar:IsDescendantOf(model) then
+     if avatar:IsA("BasePart") and not avatar:IsDescendantOf(model) then
       local linked=pairsByAvatar[avatar] or {};pairsByAvatar[avatar]=linked
       if not linked[buildingPart] then
        local joint=Instance.new("NoCollisionConstraint")
@@ -109,7 +112,7 @@ function Traversal.Attach(model,root,humanoid,rootHeight,collider,combat,player)
     local after=translated*CFrame.new(0,-rootHeight,0)*probe.Offset
     if horizontal.Magnitude>0.001 then
      local hit=workspace:Blockcast(before,probe.Size,horizontal,params)
-     if hit and hit.Distance<=nearest then nearest=math.max(0,hit.Distance-0.08*scale);normal=hit.Normal end
+     if hit and horizontal:Dot(hit.Normal)<-0.001 and hit.Distance<=nearest then nearest=math.max(0,hit.Distance-0.08*scale);normal=hit.Normal end
     end
     -- Permit escape from existing overlaps; reject newly entered parts.
     local existing={}
@@ -156,7 +159,7 @@ function Traversal.Attach(model,root,humanoid,rootHeight,collider,combat,player)
   report:Disconnect();heartbeat:Disconnect();folder:Destroy();remote:Destroy()
  end
  model.Destroying:Once(stop)
- model:SetAttribute("TraversalRevision","S4_IndependentTravelAndTurn_02")
+ model:SetAttribute("TraversalRevision","S4_UnifiedBodyBuildingCollision_03")
  model:SetAttribute("StepOverHeight",kneeHeight)
  model:SetAttribute("TraversalRootHeight",rootHeight)
  return {Destroy=stop}

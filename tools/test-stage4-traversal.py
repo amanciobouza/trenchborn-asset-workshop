@@ -92,6 +92,7 @@ workspace.GetPartBoundsInBox=function(_,cf)
 end
 workspace.Blockcast=function(_,cf,_,delta)
  if scenario=='wall' and delta.X>0 then return {Distance=2,Normal=Vector3.new(-1,0,0)} end
+ if scenario=='away' then return {Distance=0,Normal=Vector3.new(0,0,1)} end
 end
 RaycastParams={new=function()return {} end}
 local mediumParts={obstacle};local probes={{Offset=CFrame.new(),Size=Vector3.new(1,1,1)}}
@@ -120,9 +121,37 @@ move(0,-1,0)
 assert(root.CFrame.Position.Z==-1,'Allow movement out of existing overlap')
 move(0,1,0)
 assert(root.CFrame.Position.Z==1 and not attrs.TraversalBlocked)
+-- The identical solver must cover the torso, even without leg contact.
+probes={Torso={Offset=CFrame.new(),Size=Vector3.new(8,9,6)}}
+scenario='wall';previous=CFrame.new()
+move(3,0,0,10,0)
+assert(root.CFrame.Position.X<2,'Torso query blocks a tall wall')
+scenario='away';previous=CFrame.new()
+move(0,1,0)
+assert(root.CFrame.Position.Z==1,'Ignore separating contact at distance zero')
 scenario='turn';previous=CFrame.new()
 move(0,0,1)
 assert(root.CFrame.Yaw==0 and attrs.TraversalTurnBlocked,'Pure turn still blocked')
+'''
+# Run actual exemption setup: include torso, deduplicate, leave world untouched.
+refresh=s[s.index(' local pairsByAvatar={}'):s.index(' local previous=root.CFrame')]
+code+=r'''
+local collider={IsA=function()return true end,IsDescendantOf=function()return false end}
+local avatar={IsA=function()return true end,IsDescendantOf=function()return false end}
+local visual={IsA=function()return true end,IsDescendantOf=function()return true end}
+character.GetDescendants=function()return {collider,avatar,visual} end
+local buildingPart={}
+combat.TraversalTargets=function()return {{Height=20,Parts={buildingPart}}} end
+local folder={};local constraints={}
+Instance={new=function(kind)
+ assert(kind=='NoCollisionConstraint')
+ local c={};table.insert(constraints,c);return c
+end}
+'''+refresh+r'''
+assert(#constraints==2,'Torso and hidden avatar must both be exempt')
+assert(constraints[1].Part0==collider and constraints[2].Part0==avatar)
+for _,c in ipairs(constraints) do assert(c.Part1==buildingPart and c.Parent==folder) end
+refresh();assert(#constraints==2,'Do not duplicate collision constraints')
 '''
 runtime=ctypes.util.find_library('lua5.4') or ctypes.util.find_library('lua5.3')
 if not runtime: raise RuntimeError('This test requires the Lua 5.3 or 5.4 shared library')
@@ -138,3 +167,5 @@ lib.lua_close.argtypes=[ctypes.c_void_p];lib.lua_close(L)
 print('Passed: valid left/right steps; wrong owner, opposite foot, NaN, airborne, special, repeated and stationary steps rejected; only small footprint-overlapping house receives damage.')
 
 print('Passed: retreat during blocked AutoRotate, turning after clearance, wall entry, overlap escape and pure-turn blocking.')
+
+print('Passed: torso wall blocking, separating contact, torso/avatar building exemptions and deduplication.')
