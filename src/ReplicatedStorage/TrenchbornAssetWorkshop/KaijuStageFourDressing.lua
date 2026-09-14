@@ -183,9 +183,10 @@ function Dressing.Apply(model)
  physicalTwigs(model)
  model:SetAttribute("PipelinePhase",5)
  model:SetAttribute("DressingRevision",REVISION)
- model:SetAttribute("DressingReview","Pending_UserVisualReview")
+ model:SetAttribute("DressingReview","ApprovedByUser")
+ model:SetAttribute("ApprovedDressingCommit","3c44d29b31f414593863dadcb0ae6197549c0d12")
  model:SetAttribute("Stage4EnergySurfaceCount",count)
- model:SetAttribute("Purpose","Stage 4 surface dressing review; geometry approved")
+ model:SetAttribute("Purpose","Stage 4 approved geometry and dressing; ready for gameplay review")
  return model
 end
 return Dressing

@@ -50,7 +50,7 @@ stageThreeTitle.BackgroundColor3=Color3.fromRGB(25,29,38)
 stageThreeTitle.TextColor3=Color3.fromRGB(240,210,70)
 stageThreeTitle.Text="STAGE 3 · GEOMETRY REVIEW";stageThreeTitle.TextScaled=true
 stageThreeTitle.Parent=stageThreeLabel
--- Stage 3 stays as the comparison; Stage 4 previews the Phase 5 dressing.
+-- Stage 3 stays as the comparison; Stage 4 previews Phase 6 gameplay with approved dressing.
 local stageFourBuilder=require(packageFolder:WaitForChild("KaijuStageFourGoldenMaster"))
 local stageFourOrigin=origin*CFrame.new(-96,0,0)
 local stageFour=stageFourBuilder.Build(workshop,stageFourOrigin,{Scale=script:GetAttribute("Stage4Scale")})
@@ -131,10 +131,10 @@ local function equip(player, character)
 	combatModule.BuildRange(player, ground, character)
 	local combat = combatModule.Attach(kaiju, root, humanoid, height)
 	local rig = stageOneRig.Attach(kaiju, root, humanoid, combat)
- -- Shared movement remains available for inspection; dressing/gameplay approval is pending.
- kaiju:SetAttribute("PipelinePhase",5)
+ -- Phase 6 reuses the shared runtime; only the Stage 4 in-game review is pending.
+ kaiju:SetAttribute("PipelinePhase",6)
  kaiju:SetAttribute("QualityGateB","ApprovedByUser")
- kaiju:SetAttribute("DressingReview","Pending_UserVisualReview")
+ kaiju:SetAttribute("DressingReview","ApprovedByUser")
  kaiju:SetAttribute("QualityGateC","Pending_Stage4GameplayReview")
 	local reactionTestConnection
 	if game:GetService("RunService"):IsStudio() then
@@ -207,9 +207,11 @@ local function equip(player, character)
 		lastAttackRequest = now
 		rig.RequestAttack()
 	end)
-	kaiju:SetAttribute("GeometryAmendmentReview", "Pending")
-	kaiju:SetAttribute("QualityGateB","Pending")
-	kaiju:SetAttribute("GameplayReview","Shared motions reused for Stage 3 geometry preview")
+	kaiju:SetAttribute("GeometryAmendmentReview", "ApprovedByUser")
+	kaiju:SetAttribute("QualityGateB","ApprovedByUser")
+	kaiju:SetAttribute("GameplayReview","Pending_UserStage4InGameReview")
+	kaiju:SetAttribute("RuntimeReview","Pending_UserStage4InGameReview")
+	kaiju:SetAttribute("WorkshopOnly",true)
 	kaiju:SetAttribute("ControlledBy", player.UserId)
 
 	-- Torso collision prevents the upper body passing through walls.
@@ -268,7 +270,8 @@ end
 Players.PlayerAdded:Connect(connectPlayer)
 Players.PlayerRemoving:Connect(combatModule.RemoveRange)
 for _, player in ipairs(Players:GetPlayers()) do connectPlayer(player) end
-workshop:SetAttribute("CurrentAsset", "Kaiju Stage 3 - Rift Stalker")
-workshop:SetAttribute("CurrentPhase", 4)
-workshop:SetAttribute("QualityStatus", "Stage4_DressingPreview_GeometryApproved")
-print("[Kaiju] Play: control Stage 4 with Roblox movement. Guardian controls retired.")
+workshop:SetAttribute("CurrentAsset", "Kaiju Stage 4 - Caldera Tyrant")
+workshop:SetAttribute("CurrentPhase", 6)
+workshop:SetAttribute("QualityStatus", "Stage4_GameplayReview_GeometryAndDressingApproved")
+print("[Kaiju Stage 4 | Phase 6] Geometry and dressing approved. In-game review pending.")
+print("[Stage 4 test] Walk/run, F combo, Space jump/landing, E focus, R area, Reaction test, respawn.")
