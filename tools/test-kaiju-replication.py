@@ -215,6 +215,16 @@ for stage=1,5 do
  api.SetRunning(true);root.AssemblyLinearVelocity=Vector3.new(0,0,-16)
  for i=1,20 do tick(0.04) end
  assert(h.WalkSpeed==16)
+ -- Phase 6 reaction recovery: light hit, heavy stagger and healing.
+ h.Health=92;h.HealthChanged:Fire(92)
+ assert(m:GetAttribute("ReactionState")=="Hit")
+ tick(0.4);assert(m:GetAttribute("ReactionState")=="Idle")
+ h.Health=67;h.HealthChanged:Fire(67)
+ assert(m:GetAttribute("ReactionState")=="Stagger")
+ assert(not api.RequestAttack() and not api.RequestJump() and not api.RequestFocus())
+ tick(0.9);assert(m:GetAttribute("ReactionState")=="Idle")
+ h.Health=100;h.HealthChanged:Fire(100)
+ assert(m:GetAttribute("ReactionState")=="Idle","Healing is not a hit")
  -- Rejections retain the request-time ground evidence for both specials.
  h.FloorMaterial="Air"
  local ok,why=api.RequestFocus()
@@ -263,6 +273,7 @@ for stage=1,5 do
  -- Death cancels an active special and later clients join the existing death clock.
  tick(2);assert(api.RequestArea());h.Health=0;h.HealthChanged:Fire(0);tick(0.1)
  assert(root.Anchored and m:GetAttribute("SpecialAttackLocked")==nil)
+ assert(not api.RequestAttack() and not api.RequestJump() and not api.RequestFocus() and not api.RequestArea(),"Defeat rejects combat")
  for i=1,50 do tick(0.1) end
  local deathState=http:JSONDecode(m:GetAttribute("KaijuPresentationState"));assert(deathState.Defeat)
  view.Stop();side="client";view=Presentation.Attach(m,root,h);view.Apply(deathState);tick(0.1)
@@ -311,7 +322,22 @@ assert(tick("Air",-8)==-8)
 h.State="Swimming";tick("Ground",3)
 h.State="Running"
 assert(tick("Ground",20)==20,"Swimming clears pending landing")
+-- A new character must detach old impulse and landing listeners.
+local oldRoot=root
+local nextCharacter=Instance.new("Model");nextCharacter.Parent=workspace
+local nextRoot=Instance.new("Part");nextRoot.Name="HumanoidRootPart";nextRoot.Parent=nextCharacter;nextRoot.Anchored=false
+local nextHuman=Instance.new("Humanoid");nextHuman.Parent=nextCharacter;nextHuman.Health=100;nextHuman.FloorMaterial="Air"
+function nextCharacter:FindFirstChildOfClass() return nextHuman end
+local nextModel=Instance.new("Model");nextModel.Parent=nextCharacter;nextModel:SetAttribute("EvolutionStage",4)
+local nextRemote=Instance.new("RemoteEvent");nextRemote.Name="KaijuJumpImpulse";nextRemote.Parent=nextModel;nextRemote.OnClientEvent=signal()
+players.LocalPlayer.Character=nextCharacter;players.LocalPlayer.CharacterAdded:Fire(nextCharacter)
+oldRoot.AssemblyLinearVelocity=Vector3.zero
+remote.OnClientEvent:Fire(90);assert(oldRoot.AssemblyLinearVelocity.Y==0,"Old character cannot receive impulse")
+nextRemote.OnClientEvent:Fire(60);assert(nextRoot.AssemblyLinearVelocity.Y==60,"Respawn accepts its own impulse")
 script.Destroying:Fire()
+nextRoot.AssemblyLinearVelocity=Vector3.zero
+nextRemote.OnClientEvent:Fire(60);assert(nextRoot.AssemblyLinearVelocity.Y==0,"Destroy disconnects current impulse")
+print("PASS: respawn isolates old/new jump motors and destruction removes listeners")
 print("PASS: owner jump motor ascent, roof contact, falling, rebound, fresh jump and swimming")
 ''')
 

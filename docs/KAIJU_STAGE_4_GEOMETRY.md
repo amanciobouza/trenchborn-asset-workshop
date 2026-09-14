@@ -1,4 +1,12 @@
-# Stage 4: technical breakdown and geometry candidate
+# Stage 4: approved geometry and current Phase 6 review
+
+## Current status
+
+Geometry (Quality Gate B) and dressing are approved by the user. Stage 4 is in Phase 6; Quality Gate C remains pending. The finisher at chest height and turning/walking away from the hip-high tower are user-confirmed. Slope, multiplayer and Stage 1–3 traversal tests remain open.
+
+See [Phase 6 review](KAIJU_STAGE_4_GAMEPLAY.md) for automated evidence and remaining visual tests. The sections below record the historical geometry proposals; their old pending-gate statements do not override this current status.
+
+## Historical geometry development
 
 Design approved by Amancio: three broad basalt chest rows per side, narrow energy gaps, a larger irregular rocky dorsal ridge, reinforced shoulder/forearm/hip/shin regions. Central exposed reactor and large skull crown are reserved for Stage 5. No new stage name has been approved; the runtime uses Stage_4_Geometry_Review.
 

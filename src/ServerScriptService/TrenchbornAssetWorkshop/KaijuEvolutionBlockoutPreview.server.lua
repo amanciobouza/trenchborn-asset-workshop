@@ -138,6 +138,11 @@ local function equip(player, character)
  kaiju:SetAttribute("QualityGateB","ApprovedByUser")
  kaiju:SetAttribute("DressingReview","ApprovedByUser")
  kaiju:SetAttribute("QualityGateC","Pending_Stage4GameplayReview")
+ kaiju:SetAttribute("FinisherReview","ApprovedByUser")
+ kaiju:SetAttribute("HipTowerEscapeReview","ApprovedByUser")
+ kaiju:SetAttribute("ReactionRespawnReview","Pending_UserStudioReview")
+ kaiju:SetAttribute("SlopeReview","Pending_UserStudioReview")
+ kaiju:SetAttribute("MultiplayerReview","Pending_UserStudioReview")
 	local reactionTestConnection
 	if game:GetService("RunService"):IsStudio() then
 		local testRemote=Instance.new("RemoteEvent");testRemote.Name="TestReaction";testRemote.Parent=kaiju
