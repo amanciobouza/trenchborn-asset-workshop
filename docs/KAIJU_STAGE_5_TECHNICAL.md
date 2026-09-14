@@ -118,7 +118,7 @@ Alle elf Rückenplatten tragen links und rechts zusätzliche aufgesetzte Panzerf
 
 ### Brustfreiraum unter dem Maul
 
-Der gesamte Kraterbrustpanzer wird bei Bedarf abgesenkt. Seine Oberkante liegt mindestens 1,5 Prozent der Brustbreite unterhalb der tiefsten Unterkiefergeometrie, einschliesslich Kieferpanzer. Kern, Kraterwände und Bauchplatten folgen gemeinsam. Skalierte Geometrieprüfungen sichern den Abstand in der Ausgangspose; geöffnetes Maul und Angriffsposen bleiben in Studio zu prüfen.
+Der gesamte Kraterbrustpanzer wird bei Bedarf abgesenkt. Seine Oberkante liegt mindestens 0,3 Prozent der Brustbreite unterhalb der tiefsten Unterkiefergeometrie, einschliesslich Kieferpanzer. Kern, Kraterwände und Bauchplatten folgen gemeinsam. Skalierte Geometrieprüfungen sichern den Abstand in der Ausgangspose; geöffnetes Maul und Angriffsposen bleiben in Studio zu prüfen.
 
 Brustposition nach Sichtfeedback wieder angehoben: halbierter Kieferabstand; die Reserve für die Plattendicke bleibt bestehen. Sichtprüfung in Studio offen.
 
@@ -127,3 +127,5 @@ Brust auf erneuten Wunsch weiter angehoben: Kieferabstand auf 1,5 Prozent der Br
 ### Seitenspitzen am Schwanzansatz
 
 Das unterste seitliche Spitzenpaar am Rumpf (`DorsalRock_03_SideSpine_*`) folgt in Stufe 5 nun vollständig `TailBase`, einschliesslich Sockel und Überlappungen. Zuvor band der gemeinsame Plattenindex die Spitzen an `Torso`, dessen Sprintneigung sie vom Schwanzansatz abheben konnte. Die übrigen Rückenplatten und Segel behalten ihre Zuordnung. Sprint-Sichtprüfung steht aus.
+
+Brust weiter bis knapp unter den Kiefer angehoben: 0,3 Prozent Restabstand und zwei Prozent Reserve für die Plattendicke. Bewegung mit geöffnetem Maul bleibt visuell zu prüfen.
