@@ -4,7 +4,7 @@ local Players=game:GetService("Players")
 local Builder=require(script.Parent:WaitForChild("KaijuEvolutionBlockout"))
 local StageThree=require(script.Parent:WaitForChild("KaijuStageThreeGoldenMaster"))
 local Rig=require(script.Parent:WaitForChild("KaijuStageOneRig"))
-local Installer={Version="1.1.4",ApprovedRevision="8a88c8ab7fe9e36ce6b7c6ea3f9c911942513456"}
+local Installer={Version="1.1.5",ApprovedRevision="8a88c8ab7fe9e36ce6b7c6ea3f9c911942513456"}
 local installations=setmetatable({}, {__mode="k"})
 local NAME="Stage_3_Rift_Stalker"
 local function stamp(model)
@@ -44,7 +44,7 @@ function Installer.Install(character,options)
   local leg=character:FindFirstChild("Left Leg");if leg then height=height+leg.Size.Y end
  end
  local ground=root.CFrame*CFrame.new(0,-height,0)
- local model,rig,combat,collider,inputGui,motorGui
+ local model,rig,combat,collider,inputGui,motorGui,traversal
  local connections,saved={},{}
  local settings={}
  for _,key in ipairs({"WalkSpeed","AutoRotate","UseJumpPower","JumpPower","AutoJumpEnabled","BreakJointsOnDeath"}) do settings[key]=humanoid[key] end
@@ -65,6 +65,7 @@ function Installer.Install(character,options)
  function api.Destroy()
   if removed then return end;removed=true
   for _,c in ipairs(connections) do c:Disconnect() end
+  if traversal then traversal.Destroy() end
   if rig then rig.Stop() end
   if combat and combat.Destroy then combat.Destroy() end
   if inputGui then inputGui:Destroy() end
@@ -102,6 +103,17 @@ function Installer.Install(character,options)
   humanoid.WalkSpeed=10;humanoid.AutoRotate=true
   humanoid.UseJumpPower=true;humanoid.JumpPower=0;humanoid.AutoJumpEnabled=false
   rig=Rig.Attach(model,root,humanoid,combat)
+  -- Existing adapters remain valid; registered-building traversal is enabled
+  -- automatically when both optional server adapter methods are available.
+  local supportsTraversal=type(combat.TraversalTargets)=="function" and type(combat.StepImpact)=="function"
+  assert(options.EnableTraversal~=true or supportsTraversal,"EnableTraversal requires TraversalTargets and StepImpact")
+  if supportsTraversal and options.EnableTraversal~=false then
+   traversal=require(script.Parent:WaitForChild("KaijuBuildingTraversal")).Attach(model,root,humanoid,height,collider,combat,player)
+   model:SetAttribute("BuildingTraversalEnabled",true)
+  else
+   model:SetAttribute("BuildingTraversalEnabled",false)
+   model:SetAttribute("BuildingTraversalDisabledReason",options.EnableTraversal==false and "Disabled by option" or "Adapter missing TraversalTargets/StepImpact")
+  end
   for _,name in ipairs({"RequestAttack","RequestJump","SetAirDirection","RequestFocus","RequestArea","SetRunning","GetCombatFrame"}) do
    api[name]=function(...) if removed then return false end;return rig[name](...) end
   end

@@ -1,4 +1,4 @@
-# Storm Hunter — portable package 1.1.0
+# Storm Hunter — portable package 1.1.5
 
 This release moves procedural animation and Kaiju effects to client presentation. Geometry and the accepted animation definitions are retained. The earlier ApprovedRevision remains a baseline; the new runtime and target-project integration are pending playtest.
 
@@ -66,3 +66,7 @@ Keep already-authorized Focus/Area attacks valid during transient FloorMaterial=
 Run `python tools/build-kaiju-stage2.py` or `rojo build kaiju-stage2.project.json -o KaijuStageTwo.rbxm`. The Python builder checks exact embedded source round-trips; the manifest records source and artifact hashes. `python tools/test-kaiju-replication.py` exercises mocked runtime contracts across all five stage numbers.
 
 See [client presentation architecture and adapter migration](KAIJU_CLIENT_PRESENTATION.md) for synchronization, distance quality levels, streaming and test scope. No Roblox Studio rendering or measured multiplayer performance result is claimed. Test import, Scale=1/InstallInput=false, spectators, slopes, jump, swimming, combat grip, specials, streaming, defeat, respawn and uninstall in the receiving experience. Sound assets need permission in that experience.
+
+## Shared building traversal
+
+See [building traversal and adapter integration](KAIJU_BUILDING_TRAVERSAL.md) for the shared Stage 1–4 collision and validated footfall behaviour. Replace the entire package on upgrade.

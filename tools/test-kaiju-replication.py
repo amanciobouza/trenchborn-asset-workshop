@@ -15,7 +15,7 @@ def run(code,execute=True):
 # Only the migrated runtime: unrelated workshop modules use native Luau syntax.
 for name in ['KaijuPresentation','KaijuPresentationClient.client','KaijuPresentationBootstrap',
              'KaijuSkeleton','KaijuStageOneRig','KaijuStageOneCombo','KaijuStageOneJump',
-             'KaijuStageOneJumpMotor.client','KaijuStageOneCombat',
+             'KaijuStageOneJumpMotor.client','KaijuStageOneCombat','KaijuBuildingTraversal',
              'KaijuStageOneInstaller','KaijuStageTwoInstaller','KaijuStageThreeInstaller']:
     run((SRC/(name+'.lua')).read_text(),False)
 mock=r'''
@@ -313,4 +313,53 @@ h.State="Running"
 assert(tick("Ground",20)==20,"Swimming clears pending landing")
 script.Destroying:Fire()
 print("PASS: owner jump motor ascent, roof contact, falling, rebound, fresh jump and swimming")
+''')
+
+# Run complete traversal setup/cleanup for every supported stage and build scale.
+run(mock+'\nlocal Traversal=(function()\n'+(SRC/'KaijuBuildingTraversal.lua').read_text()+'\nend)()\n'+r'''
+function methods:FindFirstChildOfClass(kind)
+ for _,p in ipairs(self:GetChildren()) do if p:IsA(kind) then return p end end
+end
+function methods:ToObjectSpace(other) return self.CFrame:ToObjectSpace(other) end
+local oldNew=Instance.new
+Instance.new=function(kind)
+ local p=oldNew(kind)
+ if kind=="RemoteEvent" then p.OnServerEvent=signal() end
+ return p
+end
+for stage=1,4 do for _,scale in ipairs({0.5,1,2}) do
+ local character=Instance.new("Model");character.Parent=workspace
+ local model=Instance.new("Model");model.Parent=character;model.Scale=scale;model:SetAttribute("EvolutionStage",stage)
+ local root=Instance.new("Part");root.Parent=character
+ local h=Instance.new("Humanoid");h.Parent=character
+ local collider=Instance.new("Part");collider.Parent=character;collider.CanCollide=true
+ local function part(name,x,y,z,sx,sy,sz)
+  local p=Instance.new("Part");p.Parent=model;p.Name=name
+  p.CFrame=CFrame.new(x*scale,y*scale,z*scale);p.Size=Vector3.new(sx,sy,sz)*scale
+  model[name]=p;return p
+ end
+ part("LeftKneeJoint",-3,8+stage,0,3,3,3)
+ part("LeftHipJoint",-3,15+stage,0,3,3,3)
+ part("LowerRibcage",0,20+stage,0,9,6,7)
+ part("LeftForefootCoreY",-3,1,0,3,2,4)
+ part("RightForefootCoreY",3,1,0,3,2,4)
+ local building=Instance.new("Part");building.Parent=workspace
+ local adapter={TraversalTargets=function()return {{Height=30*scale,Parts={building}}} end,
+  StepImpact=function()error("No footfall authorized") end}
+ local runtime=Traversal.Attach(model,root,h,0,collider,adapter,nil)
+ assert(model:GetAttribute("StepOverHeight")== (8+stage)*scale)
+ assert(model:GetAttribute("TraversalLeftFootX")==-3*scale)
+ assert(math.abs(collider.Size.X-9*0.60*scale)<0.00001)
+ assert(collider.Position.Y-collider.Size.Y/2>=14*scale)
+ local folder=character:FindFirstChild("KaijuBuildingTraversal");assert(folder)
+ local exempt=false
+ for _,p in ipairs(folder:GetChildren()) do if p.Part0==collider and p.Part1==building then exempt=true end end
+ assert(exempt and collider.CanCollide,"Only building pairs are exempt; world collision remains")
+ local remote=model:FindFirstChild("ReportFootfall");assert(remote)
+ remote.OnServerEvent:Fire(nil,"Left",Vector3.zero)
+ runtime.Destroy();runtime.Destroy()
+ assert(not folder.Parent and not remote.Parent,"Uninstall removes traversal folder and footfall remote")
+ character:Destroy();building:Destroy()
+end end
+print("PASS: shared traversal setup and cleanup, stages 1–4 at scales 0.5/1/2, torso exemptions and NPC footfall rejection")
 ''')

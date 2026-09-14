@@ -1,5 +1,160 @@
 <?xml version='1.0' encoding='utf-8'?>
-<roblox version="4"><Item class="Folder" referent="RBX0"><Properties><string name="Name">TrenchbornKaijuStageOne</string></Properties><Item class="ModuleScript" referent="RBX1"><Properties><string name="Name">KaijuPresentation</string><ProtectedString name="Source">-- Shared client presentation. Preserves the approved procedural poses and Kaiju FX.
+<roblox version="4"><Item class="Folder" referent="RBX0"><Properties><string name="Name">TrenchbornKaijuStageOne</string></Properties><Item class="ModuleScript" referent="RBX1"><Properties><string name="Name">KaijuBuildingTraversal</string><ProtectedString name="Source">-- Shared Stage 1–4 traversal. Registered buildings only; damage stays in
+-- the combat adapter. No physical animated-leg colliders or touch damage.
+local RunService=game:GetService("RunService")
+local Traversal={}
+function Traversal.Attach(model,root,humanoid,rootHeight,collider,combat,player)
+ local stage=model:GetAttribute("EvolutionStage")
+ assert(type(stage)=="number" and stage&gt;=1 and stage&lt;=4,"Stage 1–4 required")
+ assert(type(combat.TraversalTargets)=="function" and type(combat.StepImpact)=="function","Traversal requires TraversalTargets and StepImpact")
+ local scale=model:GetScale()
+ local character=model.Parent
+ local ground=root.CFrame*CFrame.new(0,-rootHeight,0)
+ local kneeHeight=ground:PointToObjectSpace(model.LeftKneeJoint.Position).Y
+ local hipHeight=ground:PointToObjectSpace(model.LeftHipJoint.Position).Y
+ local rib=model.LowerRibcage
+ local ribPosition=ground:PointToObjectSpace(rib.Position)
+ local bodySize=Vector3.new(rib.Size.X*0.60,rib.Size.Y*0.80,rib.Size.Z*0.65)
+ local bodyY=math.max(ribPosition.Y,math.max(kneeHeight+scale,14*scale)+bodySize.Y/2)
+ -- Raise the central solid entirely above the knee corridor.
+ collider.Size=bodySize
+ local weld=collider:FindFirstChildOfClass("WeldConstraint")
+ if weld then weld:Destroy() end
+ collider.CFrame=ground*CFrame.new(0,bodyY,ribPosition.Z)
+ weld=Instance.new("WeldConstraint");weld.Part0=root;weld.Part1=collider;weld.Parent=collider
+ local folder=Instance.new("Folder");folder.Name="KaijuBuildingTraversal";folder.Parent=character
+ local remote=Instance.new("RemoteEvent");remote.Name="ReportFootfall";remote.Parent=model
+ local feet,probes={},{}
+ for _,side in ipairs({"Left","Right"}) do
+  local sole=model[side.."ForefootCoreY"]
+  local pos=ground:PointToObjectSpace(sole.Position)
+  feet[side]={X=pos.X,Z=pos.Z,Size=Vector3.new(sole.Size.X*0.88,sole.Size.Y,sole.Size.Z*0.88)}
+  model:SetAttribute("Traversal"..side.."FootX",pos.X)
+  model:SetAttribute("Traversal"..side.."FootZ",pos.Z)
+  local height=hipHeight-scale
+  probes[side]={Offset=CFrame.new(pos.X,height/2+scale,pos.Z*0.35),
+   Size=Vector3.new(sole.Size.X*0.74,height,sole.Size.Z*0.60)}
+ end
+ -- One authority for registered buildings: torso and legs use the same
+ -- travel/turn solver. Physical torso contact must not pin the Humanoid first.
+ probes.Torso={Offset=CFrame.new(0,bodyY,ribPosition.Z),Size=bodySize}
+ local pairsByAvatar={}
+ local mediumParts={}
+ local function refresh()
+  mediumParts={}
+  local records=combat.TraversalTargets()
+  for _,entry in ipairs(records) do
+   for _,buildingPart in ipairs(entry.Parts) do
+    if entry.Height&gt;=kneeHeight then table.insert(mediumParts,buildingPart) end
+    -- Exempt avatar AND torso from physical contact with registered buildings.
+    -- Terrain and other world geometry retain their normal physical collision.
+    for _,avatar in ipairs(character:GetDescendants()) do
+     if avatar:IsA("BasePart") and not avatar:IsDescendantOf(model) then
+      local linked=pairsByAvatar[avatar] or {};pairsByAvatar[avatar]=linked
+      if not linked[buildingPart] then
+       local joint=Instance.new("NoCollisionConstraint")
+       joint.Part0=avatar;joint.Part1=buildingPart;joint.Parent=folder
+       linked[buildingPart]=joint
+      end
+     end
+    end
+   end
+  end
+ end
+ refresh()
+ local previous=root.CFrame
+ local refreshAt=0
+ local stopped=false
+ local lastAny=-math.huge
+ local lastStep={Left=-math.huge,Right=-math.huge}
+ local lastPosition={Left=root.Position,Right=root.Position}
+ local function finite(v)
+  return typeof(v)=="Vector3" and v.X==v.X and v.Y==v.Y and v.Z==v.Z
+   and math.abs(v.X)&lt;1e7 and math.abs(v.Y)&lt;1e7 and math.abs(v.Z)&lt;1e7
+ end
+ local report=remote.OnServerEvent:Connect(function(sender,side,point)
+  if not player or sender~=player or player.Character~=character or not feet[side] or not finite(point) then return end
+  if humanoid.Health&lt;=0 or humanoid.FloorMaterial==Enum.Material.Air or root.Anchored
+   or model:GetAttribute("SpecialAttackLocked") or (model:GetAttribute("ComboStep") or 0)&gt;0
+   or (model:GetAttribute("JumpPhase") and model:GetAttribute("JumpPhase")~="Idle") then return end
+  local now=os.clock()
+  if now-lastAny&lt;0.18*scale or now-lastStep[side]&lt;0.60*scale then return end
+  local distance=root.Position-lastPosition[side]
+  if Vector3.new(distance.X,0,distance.Z).Magnitude&lt;2.5*scale then return end
+  local velocity=root.AssemblyLinearVelocity
+  if Vector3.new(velocity.X,0,velocity.Z).Magnitude&lt;0.5 then return end
+  local foot=feet[side]
+  local currentGround=root.CFrame*CFrame.new(0,-rootHeight,0)
+  local localPoint=currentGround:PointToObjectSpace(point)
+  if math.abs(localPoint.X-foot.X)&gt;foot.Size.X*0.65 or math.abs(localPoint.Y)&gt;2*scale
+   or math.abs(localPoint.Z-foot.Z)&gt;8*scale then return end
+  -- Client chooses neither a target nor damage. Clamp height to server ground.
+  local cf=currentGround*CFrame.new(localPoint.X,0,localPoint.Z)
+  lastAny=now;lastStep[side]=now;lastPosition[side]=root.Position
+  combat.StepImpact(cf,foot.Size,kneeHeight)
+ end)
+ local heartbeat=RunService.Heartbeat:Connect(function()
+  if stopped or not root.Parent then return end
+  if os.clock()&gt;=refreshAt then refresh();refreshAt=os.clock()+0.4 end
+  local current=root.CFrame
+  if humanoid.Health&lt;=0 or root.Anchored then previous=current;return end
+  local delta=current.Position-previous.Position
+  local horizontal=Vector3.new(delta.X,0,delta.Z)
+  local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Include
+  params.FilterDescendantsInstances=mediumParts;params.RespectCanCollide=true
+  local overlap=OverlapParams.new();overlap.FilterType=Enum.RaycastFilterType.Include
+  overlap.FilterDescendantsInstances=mediumParts;overlap.RespectCanCollide=true
+  local nearest,normal=horizontal.Magnitude,nil
+  local translationBlocked=false
+  -- Humanoid AutoRotate owns facing. Evaluate only translation, using the
+  -- requested orientation at both endpoints so a turn cannot rewind facing.
+  -- Turning in tight spaces may briefly overlap visual armor with a building.
+  local startFrame=CFrame.new(previous.Position)*current.Rotation
+  local translated=current
+  if #mediumParts&gt;0 then
+   for _,probe in pairs(probes) do
+    local before=startFrame*CFrame.new(0,-rootHeight,0)*probe.Offset
+    local after=translated*CFrame.new(0,-rootHeight,0)*probe.Offset
+    if horizontal.Magnitude&gt;0.001 then
+     local hit=workspace:Blockcast(before,probe.Size,horizontal,params)
+     if hit and horizontal:Dot(hit.Normal)&lt;-0.001 and hit.Distance&lt;=nearest then nearest=math.max(0,hit.Distance-0.08*scale);normal=hit.Normal end
+    end
+    -- Permit escape from existing overlaps; reject newly entered parts.
+    local existing={}
+    for _,part in ipairs(workspace:GetPartBoundsInBox(before,probe.Size,overlap)) do existing[part]=true end
+    for _,part in ipairs(workspace:GetPartBoundsInBox(after,probe.Size,overlap)) do
+     if not existing[part] then translationBlocked=true end
+    end
+   end
+  end
+  local position=current.Position
+  if normal or translationBlocked then
+   position=previous.Position+Vector3.new(0,delta.Y,0)
+   if normal and horizontal.Magnitude&gt;0 then position=position+horizontal.Unit*nearest end
+  end
+  if normal or translationBlocked then
+   root.CFrame=CFrame.new(position)*current.Rotation
+   local velocity=root.AssemblyLinearVelocity
+   if normal then
+    local into=math.min(0,velocity:Dot(normal));root.AssemblyLinearVelocity=velocity-normal*into
+   elseif translationBlocked then root.AssemblyLinearVelocity=Vector3.new(0,velocity.Y,0) end
+  end
+  model:SetAttribute("TraversalBlocked",normal~=nil or translationBlocked)
+  model:SetAttribute("TraversalTurnBlocked",false)
+  previous=root.CFrame
+ end)
+ local function stop()
+  if stopped then return end;stopped=true
+  report:Disconnect();heartbeat:Disconnect();folder:Destroy();remote:Destroy()
+ end
+ model.Destroying:Once(stop)
+ model:SetAttribute("TraversalRevision","S1_S4_FreeFacingTranslationCollision_05")
+ model:SetAttribute("StepOverHeight",kneeHeight)
+ model:SetAttribute("TraversalRootHeight",rootHeight)
+ return {Destroy=stop}
+end
+return Traversal
+</ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX2"><Properties><string name="Name">KaijuPresentation</string><ProtectedString name="Source">-- Shared client presentation. Preserves the approved procedural poses and Kaiju FX.
 -- Receives server states and writes only local transforms/cosmetics.
 local RunService = game:GetService("RunService")
 local CollectionService = game:GetService("CollectionService")
@@ -1482,7 +1637,7 @@ function Rig.Attach(model, movementRoot, humanoid, options)
  end}
 end
 return Rig
-</ProtectedString></Properties></Item><Item class="LocalScript" referent="RBX2"><Properties><string name="Name">KaijuPresentationClient</string><ProtectedString name="Source">-- A single observer renders all streamed Kaijus, regardless of who controls them.
+</ProtectedString></Properties></Item><Item class="LocalScript" referent="RBX3"><Properties><string name="Name">KaijuPresentationClient</string><ProtectedString name="Source">-- A single observer renders all streamed Kaijus, regardless of who controls them.
 local CollectionService=game:GetService("CollectionService")
 local RunService=game:GetService("RunService")
 local HttpService=game:GetService("HttpService")
@@ -1564,7 +1719,7 @@ script.Destroying:Connect(function()
  for model in pairs(active) do remove(model) end
  table.clear(pending)
 end)
-</ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX3"><Properties><string name="Name">KaijuPresentationBootstrap</string><ProtectedString name="Source">-- One presentation observer per player, including spectators and future joins.
+</ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX4"><Properties><string name="Name">KaijuPresentationBootstrap</string><ProtectedString name="Source">-- One presentation observer per player, including spectators and future joins.
 -- Deliberately independent of owner controls and InstallInput/EnableRemotes.
 local Players=game:GetService("Players")
 local RunService=game:GetService("RunService")
@@ -1591,7 +1746,7 @@ function Bootstrap.Ensure()
  for _,player in ipairs(Players:GetPlayers()) do install(player) end
 end
 return Bootstrap
-</ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX4"><Properties><string name="Name">KaijuSkeleton</string><ProtectedString name="Source">-- Build immutable rest joints once. Runtime animation belongs to clients.
+</ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX5"><Properties><string name="Name">KaijuSkeleton</string><ProtectedString name="Source">-- Build immutable rest joints once. Runtime animation belongs to clients.
 local Skeleton={}
 local CYCLE_SECONDS=1.9
 function Skeleton.Build(model,movementRoot)
@@ -1745,12 +1900,12 @@ function Skeleton.Build(model,movementRoot)
  return {Bones=bones,Motors=motors,Rest=rest,Root=rootJoint,Offset=rootOffset,RestFrame=rootRest,Folder=folder,Visuals=visuals}
 end
 return Skeleton
-</ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX5"><Properties><string name="Name">KaijuStageOneInstaller</string><ProtectedString name="Source">-- Phase 7: approved Stage 1 asset. Call from the server, after avatar appearance loads.
+</ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX6"><Properties><string name="Name">KaijuStageOneInstaller</string><ProtectedString name="Source">-- Phase 7: approved Stage 1 asset. Call from the server, after avatar appearance loads.
 local RunService=game:GetService("RunService")
 local Players=game:GetService("Players")
 local Builder=require(script.Parent:WaitForChild("KaijuEvolutionBlockout"))
 local Rig=require(script.Parent:WaitForChild("KaijuStageOneRig"))
-local Installer={Version="1.3.3",ApprovedRevision="e835a34d4d65a8a73a895da704d2f960190e047e"}
+local Installer={Version="1.3.4",ApprovedRevision="e835a34d4d65a8a73a895da704d2f960190e047e"}
 local installations=setmetatable({}, {__mode="k"})
 local NAME="Stage_1_Primal_Beast"
 local function stamp(model)
@@ -1801,7 +1956,7 @@ function Installer.Install(character,options)
   local leg=character:FindFirstChild("Left Leg");if leg then height=height+leg.Size.Y end
  end
  local ground=root.CFrame*CFrame.new(0,-height,0)
- local model,rig,combat,collider,inputGui,motorGui
+ local model,rig,combat,collider,inputGui,motorGui,traversal
  local connections,saved={},{}
  local settings={}
  for _,key in ipairs({"WalkSpeed","AutoRotate","UseJumpPower","JumpPower","AutoJumpEnabled","BreakJointsOnDeath"}) do settings[key]=humanoid[key] end
@@ -1822,6 +1977,7 @@ function Installer.Install(character,options)
  function api.Destroy()
   if removed then return end;removed=true
   for _,c in ipairs(connections) do c:Disconnect() end
+  if traversal then traversal.Destroy() end
   if rig then rig.Stop() end
   if combat and combat.Destroy then combat.Destroy() end
   if inputGui then inputGui:Destroy() end
@@ -1859,6 +2015,17 @@ function Installer.Install(character,options)
   humanoid.WalkSpeed=10;humanoid.AutoRotate=true
   humanoid.UseJumpPower=true;humanoid.JumpPower=0;humanoid.AutoJumpEnabled=false
   rig=Rig.Attach(model,root,humanoid,combat)
+  -- Existing adapters remain valid; registered-building traversal is enabled
+  -- automatically when both optional server adapter methods are available.
+  local supportsTraversal=type(combat.TraversalTargets)=="function" and type(combat.StepImpact)=="function"
+  assert(options.EnableTraversal~=true or supportsTraversal,"EnableTraversal requires TraversalTargets and StepImpact")
+  if supportsTraversal and options.EnableTraversal~=false then
+   traversal=require(script.Parent:WaitForChild("KaijuBuildingTraversal")).Attach(model,root,humanoid,height,collider,combat,player)
+   model:SetAttribute("BuildingTraversalEnabled",true)
+  else
+   model:SetAttribute("BuildingTraversalEnabled",false)
+   model:SetAttribute("BuildingTraversalDisabledReason",options.EnableTraversal==false and "Disabled by option" or "Adapter missing TraversalTargets/StepImpact")
+  end
   for _,name in ipairs({"RequestAttack","RequestJump","SetAirDirection","RequestFocus","RequestArea","SetRunning","GetCombatFrame"}) do
    api[name]=function(...) if removed then return false end;return rig[name](...) end
   end
@@ -1915,7 +2082,7 @@ function Installer.Uninstall(character)
  api.Destroy();return true
 end
 return Installer
-</ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX6"><Properties><string name="Name">KaijuEvolutionBlockout</string><ProtectedString name="Source">--!strict
+</ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX7"><Properties><string name="Name">KaijuEvolutionBlockout</string><ProtectedString name="Source">--!strict
 -- Phase 4 artistic blockout for the five-stage Primal Beast evolution.
 -- Deliberately restricted to Roblox primitive volumes.
 
@@ -2720,7 +2887,7 @@ function Builder.Build(target: Instance, ground: CFrame?, options): Model
 end
 
 return Builder
-</ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX7"><Properties><string name="Name">KaijuStageOneRig</string><ProtectedString name="Source">-- Shared server authority. Immutable joints; clients render poses and Kaiju FX.
+</ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX8"><Properties><string name="Name">KaijuStageOneRig</string><ProtectedString name="Source">-- Shared server authority. Immutable joints; clients render poses and Kaiju FX.
 local RunService=game:GetService("RunService")
 local CollectionService=game:GetService("CollectionService")
 local HttpService=game:GetService("HttpService")
@@ -3062,7 +3229,7 @@ function Rig.Attach(model,root,humanoid,combat)
  return api
 end
 return Rig
-</ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX8"><Properties><string name="Name">KaijuStageOneCombo</string><ProtectedString name="Source">-- Three-hit combo with a server-authorized, optional lethal finisher.
+</ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX9"><Properties><string name="Name">KaijuStageOneCombo</string><ProtectedString name="Source">-- Three-hit combo with a server-authorized, optional lethal finisher.
 local Combo = {}
 local function hook(side, sign)
 	local other = side == "Left" and "Right" or "Left"
@@ -3224,7 +3391,7 @@ function Combo.new(prepareFinisher,evolutionStage)
 	return state
 end
 return Combo
-</ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX9"><Properties><string name="Name">KaijuStageOneJump</string><ProtectedString name="Source">-- Jump timing is server-owned. Cooldown starts with activation.
+</ProtectedString></Properties></Item><Item class="ModuleScript" referent="RBX10"><Properties><string name="Name">KaijuStageOneJump</string><ProtectedString name="Source">-- Jump timing is server-owned. Cooldown starts with activation.
 local Jump = {}
 local COYOTE_TIME=0.12
 local WINDUP=0 -- Brief anticipation, then immediate takeoff.
@@ -3282,7 +3449,7 @@ function Jump.new()
 	return s
 end
 return Jump
-</ProtectedString></Properties></Item><Item class="LocalScript" referent="RBX10"><Properties><string name="Name">KaijuStageOneInput</string><ProtectedString name="Source">-- Optional portable input only. No camera, combat test UI or practice targets.
+</ProtectedString></Properties></Item><Item class="LocalScript" referent="RBX11"><Properties><string name="Name">KaijuStageOneInput</string><ProtectedString name="Source">-- Optional portable input only. No camera, combat test UI or practice targets.
 local Players=game:GetService("Players")
 local CAS=game:GetService("ContextActionService")
 local UIS=game:GetService("UserInputService")
@@ -3364,7 +3531,7 @@ local function stop()
  for _,name in ipairs(names) do CAS:UnbindAction(name) end
 end
 script.Destroying:Connect(stop)
-</ProtectedString></Properties></Item><Item class="LocalScript" referent="RBX11"><Properties><string name="Name">KaijuStageOneJumpMotor</string><ProtectedString name="Source">-- Always-installed owner runtime: server-authorized jumps and landing rebound removal.
+</ProtectedString></Properties></Item><Item class="LocalScript" referent="RBX12"><Properties><string name="Name">KaijuStageOneJumpMotor</string><ProtectedString name="Source">-- Always-installed owner runtime: server-authorized jumps and landing rebound removal.
 -- Joint transforms belong exclusively to KaijuPresentationClient.
 -- No input bindings, camera or horizontal steering; required with InstallInput=false.
 local Players=game:GetService("Players")

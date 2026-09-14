@@ -2,7 +2,7 @@
 import ctypes,ctypes.util
 from pathlib import Path
 wd=Path(__file__).resolve().parents[1]
-s=(wd/'src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuStageFourTraversal.lua').read_text()
+s=(wd/'src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuBuildingTraversal.lua').read_text()
 finite=s[s.index(' local function finite(v)'):s.index(' local report=')]
 report=s[s.index(' local report='):s.index(' local heartbeat=')]
 code=r'''
