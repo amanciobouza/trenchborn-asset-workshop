@@ -107,3 +107,7 @@ Zwei überlappende, facettierte Panzerreihen decken den oberen Rücken von Schul
 ### Körpernahe Panzerung und flachere Krone
 
 Brust: Abstand zur Haut reduziert und Kratertiefe von 15 auf 9,5 Prozent der Brustbreite verringert; der Kern bleibt vor der ursprünglichen Körperoberfläche. Rücken: Panzerpunkte folgen der jeweils äussersten Körperoberfläche statt einer gemeinsamen hinteren Begrenzung. Dünnere, leicht überlappende Reihen erhalten die Schulterbreite. Krone: fünf kürzere, breitere, im Schädel eingebettete Felszacken mit nach hinten versetzten Seiten. Die visuelle Freigabe bleibt offen.
+
+### Füsse, aufsteigende Schultern und Kopfschuppen
+
+Stufe 5 erhält um 24 Prozent breitere und 18 Prozent längere Füsse, einschliesslich Zehen, Klauen und Fersenpanzer. Drei überlappende Panzerplatten pro Fuss folgen dem Fussgelenk. Drei seitlich nach oben gezogene Schulterplatten pro Seite folgen dem Oberarm. Die Krone wird durch neun breite, scharfe Panzerzacken in drei gestaffelten Reihen ersetzt; ihre Spitzen zeigen ausdrücklich nach hinten oben. Die körpernahe Brust- und Rückenpanzerung bleibt erhalten. Studio-Sichtprüfung und Gelenkfreiheit sind offen.

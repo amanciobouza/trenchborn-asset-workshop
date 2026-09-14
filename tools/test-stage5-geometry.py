@@ -134,7 +134,7 @@ for _,scale in ipairs({0.5,1,2}) do
  end
  assert(armorCount>=24 and minX<m.LeftShoulderJoint.Position.X and maxX>m.RightShoulderJoint.Position.X,'Upper back armor must span both shoulder roots')
  assert(not m:FindFirstChild('LeftRibArmorStage4Row1Core'))
- assert(m:FindFirstChild('Stage5ChestCore') and m:FindFirstChild('Stage5Crown_5'))
+ assert(m:FindFirstChild('Stage5ChestCore') and m:FindFirstChild('Stage5Crown_5_1'))
  assert(math.abs(m.LeftForefootCoreY.Position.Y-m.LeftForefootCoreY.Size.Y/2)<1e-6)
  assert(not folder:FindFirstChild('StageFiveBuild'))
  assert(not pcall(Builder.Build,folder,CFrame.identity,{Scale=scale}),'No duplicate candidate')

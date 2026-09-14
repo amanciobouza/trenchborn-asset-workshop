@@ -139,16 +139,54 @@ function Builder.Build(parent,ground,options)
     end
    end
   end
+  for _,sign in ipairs({-1,1}) do
+   local side=sign<0 and "Left" or "Right"
+   local foot=model[side.."ForefootCoreY"]
+   local footFrame=foot.CFrame
+   -- Widen the whole foot, including toes, claws and existing heel armor.
+   -- Keep the sole height and ankle pivot unchanged.
+   for _,prefix in ipairs({"Forefoot","Heel","Toe","FrontClaw","RearClaw","InstepFlow"}) do
+    stretch(model,side..prefix,footFrame,Vector3.new(1.24,1,1.18))
+   end
+   for row=1,3 do
+    local w=foot.Size.X*(0.96-(row-1)*0.08)
+    local z=foot.Size.Z*(0.30-(row-1)*0.28)
+    local y=foot.Size.Y*(0.50+(4-row)*0.12)
+    local function point(x,dy,dz)return foot.CFrame:PointToWorldSpace(Vector3.new(x,y+dy,z+dz)) end
+    region(G.Quad(model,side.."ForefootArmorStage5_"..row,
+     point(-w/2,0,foot.Size.Z*0.18),point(w/2,0,foot.Size.Z*0.18),
+     point(w/2,-foot.Size.Y*0.20,-foot.Size.Z*0.18),point(-w/2,-foot.Size.Y*0.20,-foot.Size.Z*0.18),
+     row==2 and EDGE or ROCK,foot.Size.Y*0.24),side.."Foot")
+   end
+   local shoulder=model[side.."ShoulderJoint"]
+   for layer=1,3 do
+    local size=shoulder.Size
+    local z=size.Z*(0.35-(layer-1)*0.32)
+    local function point(x,y,dz)return shoulder.CFrame:PointToWorldSpace(Vector3.new(sign*x,y,z+dz)) end
+    region(G.Triangle(model,side.."ShoulderArmorStage5Raised_"..layer,
+     point(size.X*0.12,size.Y*0.24,-size.Z*0.34),
+     point(size.X*0.30,size.Y*0.08,size.Z*0.35),
+     point(size.X*(0.92+layer*0.07),size.Y*(1.18-layer*0.08),size.Z*0.04),
+     layer==2 and EDGE or ROCK,size.X*0.26),side.."UpperArm")
+   end
+  end
   local skull=model.Cranium
-  for i=1,5 do
-   local across=(i-3)/2
-   local height=skull.Size.Y*(i==3 and 0.40 or 0.28+0.035*(i%2))
-   -- Broad, embedded roots form a low rock crest instead of five tall prongs.
-   local root=Vector3.new(across*skull.Size.X*0.37,skull.Size.Y*(0.40-0.12*math.abs(across)),
-    skull.Size.Z*(0.12+0.16*math.abs(across)))
-   local crown=G.Part(model,"Stage5Crown_"..i,Vector3.new(skull.Size.X*0.29,height,skull.Size.Z*0.52),
-    skull.CFrame*CFrame.new(root+Vector3.new(0,height*0.20,0))*CFrame.Angles(-0.18,across*0.18,-across*0.30),ROCK,"CornerWedgePart")
-   crown:SetAttribute("RigRegion","Head")
+  -- Three staggered rows of broad-rooted, sharp scales sweep back and up.
+  -- The tip is explicit, avoiding native wedge rotation ambiguity.
+  for row=1,3 do
+   for column=-1,1 do
+    local x=column*skull.Size.X*(0.29-row*0.015)
+    local z=skull.Size.Z*(-0.22+(row-1)*0.23)
+    local y=skull.Size.Y*(0.43-0.10*math.abs(column))
+    local length=skull.Size.Z*(0.36+row*0.035)
+    local height=skull.Size.Y*(0.28+row*0.055+(column==0 and 0.06 or 0))
+    local function point(dx,dy,dz)return skull.CFrame:PointToWorldSpace(Vector3.new(x+dx,y+dy,z+dz)) end
+    region(G.Triangle(model,"Stage5Crown_"..((row-1)*3+column+2),
+     point(0,-skull.Size.Y*0.09,-length*0.30),
+     point(0,-skull.Size.Y*0.14,length*0.35),
+     point(column*skull.Size.X*0.055,height,length),
+     row==2 and EDGE or ROCK,skull.Size.X*(column==0 and 0.24 or 0.21)),"Head")
+   end
   end
   local anchors={}
   for i=1,11 do
@@ -201,7 +239,7 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("QualityGateB","Pending_UserGeometryReview");model:SetAttribute("QualityGateC","Pending")
   model:SetAttribute("DressingReview","Pending_Phase5");model:SetAttribute("SailBayCount",10)
   model:SetAttribute("SailPresentation","StaticGeometryProxy")
-  model:SetAttribute("GeometryRevision","S5_CloseFittingArmor_LowRockCrown_03")
+  model:SetAttribute("GeometryRevision","S5_ArmoredFeet_RisingShoulders_SweptHeadScales_04")
   model:SetAttribute("Purpose","Stage 5 static geometry review; not a playable/final asset")
   model.Parent=parent
  end)
