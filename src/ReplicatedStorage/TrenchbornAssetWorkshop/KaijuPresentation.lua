@@ -169,6 +169,7 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 	local pelvisTurn=CFrame.identity
 	local hipYaw,hipRoll=0,0
 	local legs = {}
+	local stepClearance={}
 	local footPivots={}
 	for _, side in ipairs({"Left", "Right"}) do
 		local hip = bones[side.."Thigh"]:GetAttribute("RigRestFrame").Position
@@ -1030,12 +1031,37 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 					travel, lift = -stride/2 + stride*t/stance, 0
 				else
 					local swing = (t-stance)/(1-stance)
+					-- Stage 4 lifts over small registered buildings instead of swinging
+					-- through their roofs. Cache clearance for this swing, not per frame.
+					local stepHeight=model:GetAttribute("StepOverHeight")
+					local traversalHeight=model:GetAttribute("TraversalRootHeight")
+					local footX=model:GetAttribute("Traversal"..side.."FootX")
+					local footZ=model:GetAttribute("Traversal"..side.."FootZ")
+					local turn=math.floor(cycle+offset+stance/2)
+					if stepHeight and traversalHeight and footX and footZ and movementRoot and (not stepClearance[side] or stepClearance[side].Turn~=turn) then
+						local clearance=0
+						local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Exclude
+						params.FilterDescendantsInstances={model.Parent,effectsFolder}
+						local groundFrame=movementRoot.CFrame*CFrame.new(0,-traversalHeight,0)
+						for _,ahead in ipairs({-stride/2,0,stride/2}) do
+							local origin=groundFrame:PointToWorldSpace(Vector3.new(footX,
+							 stepHeight+scale,footZ+ahead*scale))
+							local hit=workspace:Raycast(origin,Vector3.new(0,-stepHeight-scale,0),params)
+							local building=hit and hit.Instance:FindFirstAncestorOfClass("Model")
+							if building and building:GetAttribute("MaxHealth") and not building:GetAttribute("Destroyed") then
+								local _,size=building:GetBoundingBox()
+								if size.Y<stepHeight then clearance=math.max(clearance,hit.Position.Y-groundFrame.Position.Y+scale) end
+								end
+						end
+						stepClearance[side]={Turn=turn,Height=clearance/scale}
+					end
 					local smooth = swing*swing*(3-2*swing)
 					travel = stride/2-stride*smooth
 					-- Spend more of the swing lifting the heavy leg, then settle firmly.
 					-- Both ends and the apex have zero vertical velocity.
 					local liftPhase=swing<0.52 and swing/0.52 or (1-swing)/0.48
-					lift = (2.6+0.2*runBlend)*liftPhase*liftPhase*(3-2*liftPhase)
+					lift = math.max(2.6+0.2*runBlend,stepHeight and stepClearance[side] and stepClearance[side].Height or 0)
+					 *liftPhase*liftPhase*(3-2*liftPhase)
 					-- After toe-off, finish the push behind the hips before recovering forward.
 					local rearKick=math.sin(math.pi*math.min(swing/0.36,1))^2*runBlend
 					travel=travel+2.4*rearKick
@@ -1046,6 +1072,13 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 				local contact=math.floor(cycle+offset+stance/2)
 				if not special and soundContacts[side] and contact>soundContacts[side] then
 					feedback(running and "RunStep" or "Step",bones[side.."Foot"])
+					-- Report the rendered sole contact only from its owning client.
+					-- Server traversal validates timing/foot envelope and chooses targets.
+					local remote=model:FindFirstChild("ReportFootfall")
+					if remote and owner==game:GetService("Players").LocalPlayer then
+						local sole=model:FindFirstChild(side.."ForefootCoreY")
+						if sole then remote:FireServer(side,sole.CFrame:PointToWorldSpace(Vector3.new(0,-sole.Size.Y/2,0))) end
+					end
 				end
 				soundContacts[side]=contact
 				if running and runBlend>0.8 then

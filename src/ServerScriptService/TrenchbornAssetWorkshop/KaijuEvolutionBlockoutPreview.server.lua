@@ -128,7 +128,9 @@ local function equip(player, character)
 	local ground = root.CFrame * CFrame.new(0, -height, 0)
 	kaiju:PivotTo(ground * pivotFromGround)
 	kaiju.Parent = character
-	combatModule.BuildRange(player, ground, character)
+	combatModule.BuildRange(player, ground, character,{
+  Knee=ground:PointToObjectSpace(kaiju.LeftKneeJoint.Position).Y,
+  Torso=ground:PointToObjectSpace(kaiju.LowerRibcage.Position).Y})
 	local combat = combatModule.Attach(kaiju, root, humanoid, height)
 	local rig = stageOneRig.Attach(kaiju, root, humanoid, combat)
  -- Phase 6 reuses the shared runtime; only the Stage 4 in-game review is pending.
@@ -225,6 +227,8 @@ local function equip(player, character)
 	collider.Parent = character
 	local weld = Instance.new("WeldConstraint")
 	weld.Part0, weld.Part1, weld.Parent = root, collider, collider
+	local traversal=require(packageFolder:WaitForChild("KaijuStageFourTraversal"))
+	local traversalRuntime=traversal.Attach(kaiju,root,humanoid,height,collider,combat,player)
 
 	humanoid.WalkSpeed = 10
 	humanoid.AutoRotate = true
@@ -246,6 +250,7 @@ local function equip(player, character)
 		attackConnection:Disconnect()
 		added:Disconnect()
 		appearance:Disconnect()
+		traversalRuntime.Destroy()
 		rig.Stop()
 	end)
 end

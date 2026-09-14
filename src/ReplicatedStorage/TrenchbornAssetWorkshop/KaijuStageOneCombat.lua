@@ -100,14 +100,14 @@ function Combat.RemoveRange(player)
 	range:Destroy()
 	ranges[player]=nil
 end
-function Combat.BuildRange(player, ground, character)
+function Combat.BuildRange(player, ground, character, traversalSizes)
 	Combat.RemoveRange(player)
 	local range=Instance.new("Folder")
 	range.Name="KaijuCombatPractice_"..player.UserId
 	range.Parent=workspace
 	ranges[player]=range
-	for i=1,3 do
-		local cf=ground*CFrame.new((i-2)*20,0,-22)
+	for i=1,(traversalSizes and 5 or 3) do
+		local cf=ground*CFrame.new(i<=3 and (i-2)*20 or (i==4 and -24 or 24),0,i<=3 and -22 or -60)
 		local params=RaycastParams.new()
 		params.FilterType=Enum.RaycastFilterType.Exclude
 		params.FilterDescendantsInstances={character,range}
@@ -116,7 +116,7 @@ function Combat.BuildRange(player, ground, character)
 		local model=Instance.new("Model")
 		model.Name="PracticeBuilding_"..i
 		model.Parent=range
-		local height=5+i*2
+		local height=i<=3 and 5+i*2 or (i==4 and traversalSizes.Knee*1.35 or traversalSizes.Torso*1.25)
 		local body=part(model,"Building",Vector3.new(8,height,7),cf*CFrame.new(0,height/2,0),Color3.fromRGB(159,146,120))
 		local roof=part(model,"Roof",Vector3.new(9,1.2,8),cf*CFrame.new(0,height+0.6,0),Color3.fromRGB(75,84,98))
 		model.PrimaryPart=body
@@ -366,15 +366,17 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 			else cancel() end
 			return
 		end
+		local step=kind=="Step"
 		local landing=kind=="Land"
 		local focus=kind=="Focus"
 		local area=kind=="Area"
-		if not landing and not focus and not area and (kind~="Hit" or not DAMAGE[index]) then return end
-		local damage=area and AREA_DAMAGE or focus and FOCUS_DAMAGE or landing and LAND_DAMAGE or DAMAGE[index]
+		if not step and not landing and not focus and not area and (kind~="Hit" or not DAMAGE[index]) then return end
+		local damage=step and 220 or area and AREA_DAMAGE or focus and FOCUS_DAMAGE or landing and LAND_DAMAGE or DAMAGE[index]
 		candidate=nil
 		clearCue()
 		local target,point
-		if area then target=finisherUntil;point=areaPoint(target,from)
+		if step then target=finisherUntil;point=from
+		elseif area then target=finisherUntil;point=areaPoint(target,from)
 		elseif focus then
 			target=finisherUntil
 			local visible
@@ -384,6 +386,7 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 		elseif index==4 then target=locked else target,point=selectTarget(index) end
 		locked=nil
 		local data=target and targets[target]
+		if step and (not data or data.Health<=0 or data.HeldBy) then return false end
 		local lifted=index==4 and held==target and data and data.HeldBy==holder
 		if not landing and not focus and not area and index==4 then
 			if lifted then point=data.Body.Position else point=target and reachable(target) end
@@ -392,7 +395,7 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 		data.Health=math.max(0,data.Health-damage)
 		target:SetAttribute("Health",data.Health)
 		target:SetAttribute("LastComboStep",index)
-		target:SetAttribute("LastDamageType",area and "Area" or focus and "Focus" or landing and "Landing" or "Combo")
+		target:SetAttribute("LastDamageType",step and "Footstep" or area and "Area" or focus and "Focus" or landing and "Landing" or "Combo")
 		kaiju:SetAttribute("LastAttackResult","Hit")
 		data.Gui.Enabled=true
 		data.Bar.Size=UDim2.fromScale(data.Health/220,1)
@@ -445,7 +448,35 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 		kaiju:SetAttribute("AreaHitCount",#victims)
 
 	end
+	local function traversalTargets()
+		local result={}
+		for target,data in pairs(targets) do
+			if target.Parent and data.Health>0 and not data.HeldBy then
+				local cf,size=target:GetBoundingBox()
+				table.insert(result,{Model=target,Parts={data.Body,data.Roof},Height=size.Y})
+			end
+		end
+		return result
+	end
+	local function stepImpact(footFrame,footSize,kneeHeight)
+		-- Server traversal validates the footfall; only registered small buildings
+		-- actually overlapping this sole footprint may receive workshop stomp damage.
+		local hitCount=0
+		for _,entry in ipairs(traversalTargets()) do
+			if entry.Height<kneeHeight then
+				local params=OverlapParams.new();params.FilterType=Enum.RaycastFilterType.Include
+				params.FilterDescendantsInstances=entry.Parts
+				local box=footFrame*CFrame.new(0,kneeHeight/2,0)
+				local size=Vector3.new(footSize.X,kneeHeight,footSize.Z)
+				if #workspace:GetPartBoundsInBox(box,size,params)>0 then
+					if handle("Step",0,entry.Model,footFrame.Position) then hitCount=hitCount+1 end
+				end
+			end
+		end
+		kaiju:SetAttribute("LastFootstepHitCount",hitCount)
+		return hitCount
+	end
 	kaiju.Destroying:Once(cancel)
-	return {Handle=handle,Cancel=cancel,PrepareFinisher=prepareFinisher,FocusAim=focusAim,SelectFocusTarget=selectFocusTarget,AreaImpact=areaImpact}
+	return {Handle=handle,Cancel=cancel,PrepareFinisher=prepareFinisher,FocusAim=focusAim,SelectFocusTarget=selectFocusTarget,AreaImpact=areaImpact,TraversalTargets=traversalTargets,StepImpact=stepImpact}
 end
 return Combat
