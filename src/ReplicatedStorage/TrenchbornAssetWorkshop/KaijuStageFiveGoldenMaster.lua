@@ -57,6 +57,20 @@ function Builder.Build(parent,ground,options)
   local lipZ=backZ-depth
   local apertureX,apertureY=width*0.175,width*0.23
   local outerX,outerY=width*0.50,width*0.40
+  -- Chest height must follow the jaw clearance, not shoulder width alone.
+  -- Include the full oriented bounds of the jaw and its attached armor.
+  local jawBottom=math.huge
+  for _,p in ipairs(model:GetChildren()) do
+   if p:IsA("BasePart") and p.Name:match("^LowerJaw") then
+    local cf,h=p.CFrame,p.Size/2
+    jawBottom=math.min(jawBottom,p.Position.Y-math.abs(cf.RightVector.Y)*h.X
+     -math.abs(cf.UpVector.Y)*h.Y-math.abs(cf.ZVector.Y)*h.Z)
+   end
+  end
+  assert(jawBottom<math.huge,"Missing lower jaw for chest clearance")
+  local clearance=width*0.09
+  chestY=math.min(chestY,jawBottom-clearance-outerY-width*0.03)
+  model:SetAttribute("NormalizedChestJawClearance",clearance)
   local backing=G.Part(model,"Stage5ChestBacking",Vector3.new(width*0.78,width*0.77,width*0.08),
    CFrame.new(0,chestY,backZ+width*0.03),DARK)
   backing.Shape=Enum.PartType.Ball;backing:SetAttribute("RigRegion","Torso")
@@ -281,7 +295,7 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("QualityGateB","Pending_UserGeometryReview");model:SetAttribute("QualityGateC","Pending")
   model:SetAttribute("DressingReview","Pending_Phase5");model:SetAttribute("SailBayCount",10)
   model:SetAttribute("SailPresentation","StaticGeometryProxy")
-  model:SetAttribute("GeometryRevision","S5_DorsalFlank_SeamArmor_HeavyFeet_05")
+  model:SetAttribute("GeometryRevision","S5_ChestBelowJaw_06")
   model:SetAttribute("Purpose","Stage 5 static geometry review; not a playable/final asset")
   model.Parent=parent
  end)

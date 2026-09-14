@@ -115,3 +115,7 @@ Stufe 5 erhält um 24 Prozent breitere und 18 Prozent längere Füsse, einschlie
 ### Zusätzliche Rückenlagen und schwere Fusspanzer
 
 Alle elf Rückenplatten tragen links und rechts zusätzliche aufgesetzte Panzerflächen. Zwölf versetzte Deckplatten überbrücken die Fugen der oberen Rückenrüstung. Die Füsse sind gegenüber der Stufe-4-Basis nun 42 Prozent breiter und 34 Prozent länger; dicke Seitenwände und eine Zehenkappe ergänzen die überlappenden Oberplatten. Sohlenhöhe und Fussgelenk bleiben erhalten. Form, Zwischenräume und Bewegungsfreiheit müssen in Studio geprüft werden.
+
+### Brustfreiraum unter dem Maul
+
+Der gesamte Kraterbrustpanzer wird bei Bedarf abgesenkt. Seine Oberkante liegt mindestens neun Prozent der Brustbreite unterhalb der tiefsten Unterkiefergeometrie, einschliesslich Kieferpanzer. Kern, Kraterwände und Bauchplatten folgen gemeinsam. Skalierte Geometrieprüfungen sichern den Abstand in der Ausgangspose; geöffnetes Maul und Angriffsposen bleiben in Studio zu prüfen.

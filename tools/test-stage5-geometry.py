@@ -87,6 +87,7 @@ addModule('KaijuStageFourGoldenMaster',{Build=function(parent)
  part('LowerRibcage',0,19,0,9,7,6)
  part('BellyShield',0,18,-2,6,8,2)
  part('Cranium',0,31,-3,6,5,6)
+ part('LowerJawRear',0,27,-5,6,3,5)
  for _,sign in ipairs({-1,1}) do
   local side=sign<0 and 'Left' or 'Right'
   part(side..'Pectoral',sign*3,23,-3,5,4,2)
@@ -134,6 +135,23 @@ for _,scale in ipairs({0.5,1,2}) do
  end
  assert(armorCount>=24 and minX<m.LeftShoulderJoint.Position.X and maxX>m.RightShoulderJoint.Position.X,'Upper back armor must span both shoulder roots')
  assert(not m:FindFirstChild('LeftRibArmorStage4Row1Core'))
+ local jaw=m:FindFirstChild('LowerJawRear')
+ local limit=jaw.Position.Y-jaw.Size.Y/2-m:GetAttribute('NormalizedChestJawClearance')*m:GetScale()
+ for _,p in ipairs(m:GetChildren()) do
+  if p.Name:match('^Stage5Chest') then
+   local cf,h=p.CFrame,p.Size/2
+   local top=p.Position.Y+math.abs(cf.RightVector.Y)*h.X+math.abs(cf.UpVector.Y)*h.Y+math.abs(cf.ZVector.Y)*h.Z
+   if p:IsA('WedgePart') then
+    top=-math.huge
+    for _,x in ipairs({-h.X,h.X}) do
+     for _,v in ipairs({Vector3.new(x,-h.Y,-h.Z),Vector3.new(x,-h.Y,h.Z),Vector3.new(x,h.Y,h.Z)}) do
+      top=math.max(top,cf:PointToWorldSpace(v).Y)
+     end
+    end
+   end
+   assert(top<=limit+1e-6,'Chest armor must stay below jaw clearance')
+  end
+ end
  assert(m:FindFirstChild('Stage5ChestCore') and m:FindFirstChild('Stage5Crown_5_1'))
  assert(math.abs(m.LeftForefootCoreY.Position.Y-m.LeftForefootCoreY.Size.Y/2)<1e-6)
  assert(not folder:FindFirstChild('StageFiveBuild'))
