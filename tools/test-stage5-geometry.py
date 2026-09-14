@@ -112,7 +112,9 @@ for _,scale in ipairs({0.5,1,2}) do
  assert(m:GetAttribute('FinalInstallerVersion')==nil)
  local sails=m:FindFirstChild('Stage5SailGeometry');assert(sails and #sails:GetChildren()==10)
  local geometry=0
- for _,bay in ipairs(sails:GetChildren()) do
+ for index,bay in ipairs(sails:GetChildren()) do
+  assert(bay:FindFirstChild('FromUpper').Value.Parent.Name==string.format('DorsalShield_%02d',index))
+  assert(bay:FindFirstChild('ToUpper').Value.Parent.Name==string.format('DorsalShield_%02d',index+1))
   local fields,refs=0,0
   for _,p in ipairs(bay:GetChildren()) do
    if p:IsA('ObjectValue') then assert(p.Value and p.Value.Parent);refs=refs+1 end
@@ -120,6 +122,17 @@ for _,scale in ipairs({0.5,1,2}) do
   end
   assert(refs==4 and fields>=6);geometry=geometry+fields
  end
+ local armorCount,minX,maxX=0,math.huge,-math.huge
+ for _,p in ipairs(m:GetChildren()) do
+  if p.Name:match('^Stage5UpperBackArmor_') then
+   armorCount=armorCount+1
+   assert(p:GetAttribute('RigRegion')=='Torso' and not p.CanCollide)
+   for _,v in ipairs({Vector3.new(0,-p.Size.Y/2,-p.Size.Z/2),Vector3.new(0,-p.Size.Y/2,p.Size.Z/2),Vector3.new(0,p.Size.Y/2,p.Size.Z/2)}) do
+    local x=p.CFrame:PointToWorldSpace(v).X;minX=math.min(minX,x);maxX=math.max(maxX,x)
+   end
+  end
+ end
+ assert(armorCount>=24 and minX<m.LeftShoulderJoint.Position.X and maxX>m.RightShoulderJoint.Position.X,'Upper back armor must span both shoulder roots')
  assert(not m:FindFirstChild('LeftRibArmorStage4Row1Core'))
  assert(m:FindFirstChild('Stage5ChestCore') and m:FindFirstChild('Stage5Crown_5'))
  assert(math.abs(m.LeftForefootCoreY.Position.Y-m.LeftForefootCoreY.Size.Y/2)<1e-6)

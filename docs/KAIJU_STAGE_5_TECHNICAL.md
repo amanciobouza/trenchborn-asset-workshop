@@ -99,3 +99,7 @@ The existing workshop still equips Stage 4. A stationary Stage 5 candidate appea
 ### Steuerbare Geometrievorschau
 
 Die Workshop-Vorschau rüstet jetzt Stufe 5 aus; Stufe 4 bleibt als Vergleich stehen. Bewegung, Sprung, Angriffe, Brusthöhen-Finisher und Gebäudekollision verwenden die gemeinsamen Systeme. Zehn Segelfelder werden clientseitig aus beiden animierten Plattenrahmen aktualisiert, mit wiederverwendeten Dreiecksteilen und vollständigem Aufräumen beim Respawn. Die Geometrievorschau bleibt Phase 4; Gate B und C sind offen. Bewegung, Segelanschlüsse und Gebäudeverhalten müssen in Studio geprüft werden.
+
+### Oberer Rücken und durchgehende Segel
+
+Zwei überlappende, facettierte Panzerreihen decken den oberen Rücken von Schulteransatz zu Schulteransatz ab und folgen dem Torso. Alle zehn Segelfelder verbinden weiterhin die elf Hauptplatten. Ihre Anschlüsse richten sich nach aussen (Rücken: hinten, Schwanz: oben), statt die entfernteste Ecke vom Körperzentrum zu wählen. Die untere Kante ist nach aussen versetzt, der Durchhang auf sechs Prozent reduziert. Die beiden vom Benutzer gemeldeten sichtbaren Lücken sind ohne Studio-Aufnahme nicht lokalisiert; die Korrektur muss dort visuell bestätigt werden.

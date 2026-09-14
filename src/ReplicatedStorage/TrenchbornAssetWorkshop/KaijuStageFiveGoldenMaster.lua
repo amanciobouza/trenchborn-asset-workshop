@@ -1,5 +1,5 @@
 -- Phase 4 candidate: approved Stage 5 visual target; geometry approval pending.
--- Static sail surfaces establish topology. Animated two-bone surfaces follow later.
+-- Static sail topology is also consumed by the animated two-anchor renderer.
 local StageFour=require(script.Parent:WaitForChild("KaijuStageFourGoldenMaster"))
 local Base=require(script.Parent:WaitForChild("KaijuEvolutionBlockout"))
 local G=require(script.Parent:WaitForChild("KaijuStageFiveGeometry"))
@@ -97,6 +97,36 @@ function Builder.Build(parent,ground,options)
     stretch(model,side..entry[1],model[side..entry[2]].CFrame,Vector3.new(entry[3],1.06,entry[3]))
    end
   end
+  -- A faceted upper-back cuirass spans the shoulder roots. All pieces follow
+  -- Torso; arm shells remain independently articulated at the shoulder joints.
+  local rib=model.UpperRibcage
+  local backZ=-math.huge
+  for _,name in ipairs({"UpperRibcage","LowerRibcage","DorsalLumbarMass","NapeFlow"}) do
+   local p=model:FindFirstChild(name)
+   if p then
+    local cf,h=p.CFrame,p.Size/2
+    backZ=math.max(backZ,p.Position.Z+math.abs(cf.RightVector.Z)*h.X+math.abs(cf.UpVector.Z)*h.Y+math.abs(cf.ZVector.Z)*h.Z)
+   end
+  end
+  local crestZ=backZ+width*0.025
+  for row=1,2 do
+   local yTop=rib.Position.Y+rib.Size.Y*(0.47-(row-1)*0.30)
+   local yBottom=yTop-rib.Size.Y*0.34
+   for _,sign in ipairs({-1,1}) do
+    local shoulder=model[sign<0 and "LeftShoulderJoint" or "RightShoulderJoint"]
+    local edgeZ=shoulder.Position.Z+shoulder.Size.Z/2+width*0.055
+    local function point(t,y)
+     return Vector3.new(sign*shoulderSpan*0.52*t,y-rib.Size.Y*0.12*t,
+      crestZ+(edgeZ-crestZ)*t*t+(row-1)*width*0.025)
+    end
+    for col=1,3 do
+     local a,b=(col-1)/3,col/3
+     region(G.Quad(model,"Stage5UpperBackArmor_"..row.."_"..sign.."_"..col,
+      point(a,yTop),point(b,yTop),point(b,yBottom),point(a,yBottom),
+      col==2 and EDGE or ROCK,width*0.065),"Torso")
+    end
+   end
+  end
   local skull=model.Cranium
   for i=1,5 do
    local across=(i-3)/2
@@ -114,11 +144,14 @@ function Builder.Build(parent,ground,options)
    for _,prefix in ipairs({"DorsalShield_","DorsalRock_","DorsalEnergy_"}) do
     stretch(model,prefix..stem,plate.CFrame,Vector3.new(1.02,f,1.20))
    end
-   local host=i<=3 and model.UpperRibcage or model:FindFirstChild(string.format("TailSegment_%02d",i-2))
+   -- Use the outward direction, not distance from a body centre: distance
+   -- can pick an along-back corner and fold a bay into the next plate.
+   local outward=i<=3 and Vector3.zAxis or Vector3.yAxis
    local points={Vector3.new(0,-plate.Size.Y/2,-plate.Size.Z/2),Vector3.new(0,-plate.Size.Y/2,plate.Size.Z/2),Vector3.new(0,plate.Size.Y/2,plate.Size.Z/2)}
-   table.sort(points,function(a,b)return (plate.CFrame:PointToWorldSpace(a)-host.Position).Magnitude<(plate.CFrame:PointToWorldSpace(b)-host.Position).Magnitude end)
-   local lower=Instance.new("Attachment");lower.Name="Stage5SailLower";lower.Position=points[1];lower.Parent=plate
-   local upper=Instance.new("Attachment");upper.Name="Stage5SailUpper";upper.Position=points[3];upper.Parent=plate
+   table.sort(points,function(a,b)return plate.CFrame:VectorToWorldSpace(a):Dot(outward)<plate.CFrame:VectorToWorldSpace(b):Dot(outward) end)
+   local lift=plate.CFrame:VectorToObjectSpace(outward)*0.06
+   local lower=Instance.new("Attachment");lower.Name="Stage5SailLower";lower.Position=points[1]:Lerp(points[3],0.24)+lift;lower.Parent=plate
+   local upper=Instance.new("Attachment");upper.Name="Stage5SailUpper";upper.Position=points[3]+lift;upper.Parent=plate
    anchors[i]={Lower=lower,Upper=upper}
   end
   local sails=Instance.new("Folder");sails.Name="Stage5SailGeometry";sails.Parent=model
@@ -131,7 +164,7 @@ function Builder.Build(parent,ground,options)
    local topA,topB=anchors[i].Upper.WorldPosition,anchors[i+1].Upper.WorldPosition
    local function top(t)
     local lower=a:Lerp(b,t);local line=topA:Lerp(topB,t)
-    return line:Lerp(lower,0.18*math.sin(t*math.pi))
+    return line:Lerp(lower,0.06*math.sin(t*math.pi))
    end
    for strip=1,3 do
     local t0,t1=(strip-1)/3,strip/3
@@ -154,7 +187,7 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("QualityGateB","Pending_UserGeometryReview");model:SetAttribute("QualityGateC","Pending")
   model:SetAttribute("DressingReview","Pending_Phase5");model:SetAttribute("SailBayCount",10)
   model:SetAttribute("SailPresentation","StaticGeometryProxy")
-  model:SetAttribute("GeometryRevision","S5_CraterChest_EnergySailProxy_01")
+  model:SetAttribute("GeometryRevision","S5_ShoulderSpanBackArmor_ContinuousSails_02")
   model:SetAttribute("Purpose","Stage 5 static geometry review; not a playable/final asset")
   model.Parent=parent
  end)
