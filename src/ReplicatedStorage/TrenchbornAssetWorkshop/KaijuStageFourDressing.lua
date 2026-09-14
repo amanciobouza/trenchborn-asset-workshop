@@ -1,7 +1,7 @@
 -- Phase 5 surface dressing of the user-approved Stage 4 geometry.
 -- SurfaceGuis add emissive fissures without changing any solid or rig region.
 local Dressing={}
-local REVISION="S4_ShoulderArmVeinsAndThickerEnergy_03"
+local REVISION="S4_FineBranchesFromMainVeins_04"
 -- Authored independently for each side and tier: no reflection or repeated
 -- chest stamp. Fixed coordinates keep the result stable across rebuilds.
 local patterns={
@@ -43,6 +43,26 @@ local function patternFor(name)
  if name:find("Kneecap",1,true) then return patterns["Knee"..side] end
  return patterns["Other"..side]
 end
+local function seedFor(name)
+ local value=17
+ for i=1,#name do value=(value*31+name:byte(i))%65521 end
+ return value
+end
+local function drawLine(gui,a,b,thickness)
+ local delta=b-a
+ if delta.Magnitude<0.01 then return end
+ for layer=1,2 do
+  local line=Instance.new("Frame")
+  line.Name=layer==1 and "FissureLip" or "Energy"
+  line.AnchorPoint=Vector2.new(0.5,0.5)
+  line.Position=UDim2.fromOffset((a.X+b.X)/2,(a.Y+b.Y)/2)
+  line.Size=UDim2.fromOffset(delta.Magnitude,layer==1 and thickness*2.0 or thickness)
+  line.Rotation=math.deg(math.atan2(delta.Y,delta.X))
+  line.BorderSizePixel=0;line.ZIndex=layer
+  line.BackgroundColor3=layer==1 and Color3.fromRGB(24,29,34) or Color3.fromRGB(244,207,39)
+  line.Parent=gui
+ end
+end
 local function fissures(part)
  local gui=Instance.new("SurfaceGui")
  gui.Name="Stage4EnergyFissures";gui.Face=Enum.NormalId.Front
@@ -51,25 +71,65 @@ local function fissures(part)
  gui.CanvasSize=Vector2.new(512,512);gui.Parent=part
  local pattern=patternFor(part.Name)
  local points=pattern.P
- for _,edge in ipairs(pattern.E) do
-  local a,b=points[edge[1]],points[edge[2]]
-  local ax=a[1]*512
-  local bx=b[1]*512
-  local ay,by=a[2]*512,b[2]*512
-  local delta=Vector2.new(bx-ax,by-ay)
+ local seed=seedFor(part.Name)
+ for index,edge in ipairs(pattern.E) do
+  local pa,pb=points[edge[1]],points[edge[2]]
+  local a,b=Vector2.new(pa[1],pa[2])*512,Vector2.new(pb[1],pb[2])*512
+  local delta=b-a
   local thickness=(pattern.Fine and 4 or 6)*(edge[3] or 1)
-  -- Existing surface veins are 20% thicker; arm details stay finer.
-  -- A dark lip keeps the yellow seam legible against the basalt.
-  for layer=1,2 do
-   local line=Instance.new("Frame")
-   line.Name=layer==1 and "FissureLip" or "Energy"
-   line.AnchorPoint=Vector2.new(0.5,0.5)
-   line.Position=UDim2.fromOffset((ax+bx)/2,(ay+by)/2)
-   line.Size=UDim2.fromOffset(delta.Magnitude,layer==1 and thickness+6 or thickness)
-   line.Rotation=math.deg(math.atan2(delta.Y,delta.X))
-   line.BorderSizePixel=0;line.ZIndex=layer
-   line.BackgroundColor3=layer==1 and Color3.fromRGB(24,29,34) or Color3.fromRGB(244,207,39)
-   line.Parent=gui
+  drawLine(gui,a,b,thickness)
+  -- Two short bent twigs leave the thicker network on selected segments.
+  -- Roots lie on the parent line; each terminal stroke tapers further.
+  if not pattern.Fine and (index==1 or index==3) then
+   local variation=(seed+index*97)%101
+   local root=a:Lerp(b,0.30+variation/250)
+   local tangent=delta.Unit
+   local sign=variation%2==0 and -1 or 1
+   local normal=Vector2.new(-tangent.Y,tangent.X)*sign
+   local length=24+variation*0.20
+   local function inside(v) return Vector2.new(math.clamp(v.X,30,482),math.clamp(v.Y,30,482)) end
+   local bend=inside(root+normal*length*0.62+tangent*length*0.30)
+   local tip=inside(bend+normal*length*0.44-tangent*length*0.18)
+   drawLine(gui,root,bend,thickness*0.42)
+   drawLine(gui,bend,tip,thickness*0.22)
+  end
+ end
+end
+local function physicalTwigs(model)
+ -- Existing 3-D veins use local Y as their surface normal and Z along the
+ -- main vein. Short lateral strokes retain the parent's articulated prefix.
+ for _,main in ipairs(model:GetChildren()) do
+  if main:IsA("BasePart") and main:GetAttribute("KaijuArmorEnergy")==true
+   and not main:GetAttribute("Stage4VeinTwig") then
+   local seed=seedFor(main.Name)
+   if seed%3==0 then
+    local sign=seed%2==0 and -1 or 1
+    local length=math.min(main.Size.Z*0.22,main.Size.X*5)
+    if length>main.Size.X then
+     local root=Vector3.new(0,0,main.Size.Z*((seed%41)/100-0.20))
+     local bend=root+Vector3.new(sign*length*0.62,0,length*0.30)
+     local tip=bend+Vector3.new(sign*length*0.44,0,-length*0.18)
+     for index,ends in ipairs({{root,bend},{bend,tip}}) do
+      local a=main.CFrame:PointToWorldSpace(ends[1])
+      local b=main.CFrame:PointToWorldSpace(ends[2])
+      local width=main.Size.X*(index==1 and 0.42 or 0.22)
+      for layer=1,2 do
+       local part=Instance.new("Part")
+       part.Name=main.Name.."FineTwig"..index..(layer==1 and "Rim" or "Energy")
+       part.Size=Vector3.new(width*(layer==1 and 2 or 1),main.Size.Y*0.75,(b-a).Magnitude+width*0.2)
+       part.CFrame=CFrame.lookAt((a+b)/2,b,main.CFrame.UpVector)
+        +main.CFrame.UpVector*(layer==1 and -main.Size.Y*0.25 or 0)
+       part.Anchored=true;part.CanCollide=false;part.CanTouch=false;part.CanQuery=false;part.CastShadow=false
+       part.Material=layer==1 and Enum.Material.Basalt or Enum.Material.Neon
+       part.Color=layer==1 and Color3.fromRGB(29,32,35) or main.Color
+       part.Transparency=layer==1 and 0 or main.Transparency
+       part:SetAttribute("Stage4VeinTwig",true)
+       if layer==2 then part:SetAttribute("KaijuArmorEnergy",true) end
+       part.Parent=model
+      end
+     end
+    end
+   end
   end
  end
 end
@@ -78,7 +138,8 @@ function Dressing.Apply(model)
  assert(model:GetAttribute("QualityGateB")=="ApprovedByUser","Stage 4 geometry must be approved")
  -- Reapplying is safe and does not accumulate surface layers.
  for _,item in ipairs(model:GetDescendants()) do
-  if item:IsA("SurfaceGui") and item.Name=="Stage4EnergyFissures" then item:Destroy() end
+  if (item:IsA("SurfaceGui") and item.Name=="Stage4EnergyFissures")
+   or item:GetAttribute("Stage4VeinTwig") then item:Destroy() end
  end
  -- Strengthen inherited physical fissures only in this Stage 4 instance.
  -- Track the applied ratio so repeated dressing cannot inflate the veins.
@@ -119,6 +180,7 @@ function Dressing.Apply(model)
    end
   end
  end
+ physicalTwigs(model)
  model:SetAttribute("PipelinePhase",5)
  model:SetAttribute("DressingRevision",REVISION)
  model:SetAttribute("DressingReview","Pending_UserVisualReview")
