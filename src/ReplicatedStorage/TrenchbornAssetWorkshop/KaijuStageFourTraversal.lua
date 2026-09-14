@@ -99,30 +99,56 @@ function Traversal.Attach(model,root,humanoid,rootHeight,collider,combat,player)
   local overlap=OverlapParams.new();overlap.FilterType=Enum.RaycastFilterType.Include
   overlap.FilterDescendantsInstances=mediumParts;overlap.RespectCanCollide=true
   local nearest,normal=horizontal.Magnitude,nil
-  local turnBlocked=false
+  local translationBlocked=false
+  -- Resolve travel with the previous orientation. AutoRotate must not turn an
+  -- otherwise clear retreat into a collision and discard the entire movement.
+  local translated=CFrame.new(current.Position)*previous.Rotation
   if #mediumParts>0 then
    for _,probe in pairs(probes) do
     local before=previous*CFrame.new(0,-rootHeight,0)*probe.Offset
-    local after=current*CFrame.new(0,-rootHeight,0)*probe.Offset
+    local after=translated*CFrame.new(0,-rootHeight,0)*probe.Offset
     if horizontal.Magnitude>0.001 then
      local hit=workspace:Blockcast(before,probe.Size,horizontal,params)
      if hit and hit.Distance<=nearest then nearest=math.max(0,hit.Distance-0.08*scale);normal=hit.Normal end
     end
-    -- Blockcast ignores initial overlaps: also catch rotation into a building.
-    if #workspace:GetPartBoundsInBox(after,probe.Size,overlap)>0
-     and #workspace:GetPartBoundsInBox(before,probe.Size,overlap)==0 then turnBlocked=true end
+    -- Permit escape from existing overlaps; reject newly entered parts.
+    local existing={}
+    for _,part in ipairs(workspace:GetPartBoundsInBox(before,probe.Size,overlap)) do existing[part]=true end
+    for _,part in ipairs(workspace:GetPartBoundsInBox(after,probe.Size,overlap)) do
+     if not existing[part] then translationBlocked=true end
+    end
    end
   end
-  if normal or turnBlocked then
-   local position=previous.Position+Vector3.new(0,delta.Y,0)
-   if normal and not turnBlocked and horizontal.Magnitude>0 then position=position+horizontal.Unit*nearest end
-   root.CFrame=CFrame.new(position)*(turnBlocked and previous.Rotation or current.Rotation)
+  local position=current.Position
+  if normal or translationBlocked then
+   position=previous.Position+Vector3.new(0,delta.Y,0)
+   if normal and horizontal.Magnitude>0 then position=position+horizontal.Unit*nearest end
+  end
+  -- Test rotation at the accepted destination, never at the old position.
+  -- A rejected turn keeps successful travel and its horizontal velocity.
+  local travelFrame=CFrame.new(position)*previous.Rotation
+  local rotatedFrame=CFrame.new(position)*current.Rotation
+  local turnBlocked=false
+  if #mediumParts>0 then
+   for _,probe in pairs(probes) do
+    local before=travelFrame*CFrame.new(0,-rootHeight,0)*probe.Offset
+    local after=rotatedFrame*CFrame.new(0,-rootHeight,0)*probe.Offset
+    local existing={}
+    for _,part in ipairs(workspace:GetPartBoundsInBox(before,probe.Size,overlap)) do existing[part]=true end
+    for _,part in ipairs(workspace:GetPartBoundsInBox(after,probe.Size,overlap)) do
+     if not existing[part] then turnBlocked=true end
+    end
+   end
+  end
+  if normal or translationBlocked or turnBlocked then
+   root.CFrame=turnBlocked and travelFrame or rotatedFrame
    local velocity=root.AssemblyLinearVelocity
    if normal then
     local into=math.min(0,velocity:Dot(normal));root.AssemblyLinearVelocity=velocity-normal*into
-   else root.AssemblyLinearVelocity=Vector3.new(0,velocity.Y,0) end
-   model:SetAttribute("TraversalBlocked",true)
-  else model:SetAttribute("TraversalBlocked",false) end
+   elseif translationBlocked then root.AssemblyLinearVelocity=Vector3.new(0,velocity.Y,0) end
+  end
+  model:SetAttribute("TraversalBlocked",normal~=nil or translationBlocked or turnBlocked)
+  model:SetAttribute("TraversalTurnBlocked",turnBlocked)
   previous=root.CFrame
  end)
  local function stop()
@@ -130,7 +156,7 @@ function Traversal.Attach(model,root,humanoid,rootHeight,collider,combat,player)
   report:Disconnect();heartbeat:Disconnect();folder:Destroy();remote:Destroy()
  end
  model.Destroying:Once(stop)
- model:SetAttribute("TraversalRevision","S4_ClearLegGap_ServerFootsteps_01")
+ model:SetAttribute("TraversalRevision","S4_IndependentTravelAndTurn_02")
  model:SetAttribute("StepOverHeight",kneeHeight)
  model:SetAttribute("TraversalRootHeight",rootHeight)
  return {Destroy=stop}

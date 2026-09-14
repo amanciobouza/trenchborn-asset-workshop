@@ -62,6 +62,68 @@ local kaiju={SetAttribute=function()end}
 assert(stepImpact(CFrame.new(-3,0,-10),Vector3.new(3,1,4),10)==1)
 assert(hits['left house'] and not hits['gap house'] and not hits['medium house'])
 '''
+# Exercise the actual traversal heartbeat with deterministic collision queries.
+heartbeat=s[s.index(' local heartbeat='):s.index(' local function stop()')]
+code+=r'''
+vector.__add=function(a,b) return Vector3.new(a.X+b.X,a.Y+b.Y,a.Z+b.Z) end
+vector.__mul=function(a,b) return Vector3.new(a.X*b,a.Y*b,a.Z*b) end
+vector.__index=function(v,k)
+ if k=='Magnitude' then return math.sqrt(v.X*v.X+v.Y*v.Y+v.Z*v.Z) end
+ if k=='Unit' then return v*(1/v.Magnitude) end
+ if k=='Dot' then return function(a,b)return a.X*b.X+a.Y*b.Y+a.Z*b.Z end end
+end
+CFrame.new=function(x,y,z)
+ return setmetatable({Position=type(x)=='table' and x or Vector3.new(x or 0,y or 0,z or 0),Yaw=0},frame)
+end
+frame.__index=function(f,k)
+ if k=='Rotation' then local r=CFrame.new();r.Yaw=f.Yaw;return r end
+ return frame[k]
+end
+frame.__mul=function(a,b)
+ local r=CFrame.new(a.Position+b.Position);r.Yaw=a.Yaw+b.Yaw;return r
+end
+local obstacle={}
+local scenario='turn'
+workspace.GetPartBoundsInBox=function(_,cf)
+ if scenario=='turn' then return cf.Yaw>0.5 and cf.Position.Z<3 and {obstacle} or {} end
+ if scenario=='wall' then return cf.Position.X>=2 and {obstacle} or {} end
+ if scenario=='escape' then return cf.Position.Z<0 and {obstacle} or {} end
+ return {}
+end
+workspace.Blockcast=function(_,cf,_,delta)
+ if scenario=='wall' and delta.X>0 then return {Distance=2,Normal=Vector3.new(-1,0,0)} end
+end
+RaycastParams={new=function()return {} end}
+local mediumParts={obstacle};local probes={{Offset=CFrame.new(),Size=Vector3.new(1,1,1)}}
+local stopped=false;local refreshAt=math.huge;local function refresh() end
+local previous=CFrame.new();root.Parent=character;root.Anchored=false
+model.SetAttribute=function(_,key,value) attrs[key]=value end
+local update
+local RunService={Heartbeat={Connect=function(_,fn) update=fn;return {} end}}
+'''+heartbeat+r'''
+local function move(x,z,yaw,vx,vz)
+ root.CFrame=CFrame.new(x,0,z);root.CFrame.Yaw=yaw
+ root.AssemblyLinearVelocity=Vector3.new(vx or 0,4,vz or 10)
+ update()
+end
+move(0,1,1)
+assert(root.CFrame.Position.Z==1 and root.CFrame.Yaw==0,'Blocked turn must preserve retreat')
+assert(root.AssemblyLinearVelocity.Z==10 and attrs.TraversalTurnBlocked)
+move(0,4,1)
+assert(root.CFrame.Position.Z==4 and root.CFrame.Yaw==1 and not attrs.TraversalBlocked,'Turn once clear')
+scenario='wall';previous=CFrame.new()
+move(3,0,0,10,0)
+assert(root.CFrame.Position.X<2 and root.AssemblyLinearVelocity.X==0,'Still block travel into buildings')
+assert(root.AssemblyLinearVelocity.Y==4,'Preserve vertical motion')
+scenario='escape';previous=CFrame.new(0,0,-2)
+move(0,-1,0)
+assert(root.CFrame.Position.Z==-1,'Allow movement out of existing overlap')
+move(0,1,0)
+assert(root.CFrame.Position.Z==1 and not attrs.TraversalBlocked)
+scenario='turn';previous=CFrame.new()
+move(0,0,1)
+assert(root.CFrame.Yaw==0 and attrs.TraversalTurnBlocked,'Pure turn still blocked')
+'''
 runtime=ctypes.util.find_library('lua5.4') or ctypes.util.find_library('lua5.3')
 if not runtime: raise RuntimeError('This test requires the Lua 5.3 or 5.4 shared library')
 lib=ctypes.CDLL(runtime);lib.luaL_newstate.restype=ctypes.c_void_p
@@ -74,3 +136,5 @@ if status:
  raise RuntimeError(lib.lua_tolstring(L,-1,None).decode())
 lib.lua_close.argtypes=[ctypes.c_void_p];lib.lua_close(L)
 print('Passed: valid left/right steps; wrong owner, opposite foot, NaN, airborne, special, repeated and stationary steps rejected; only small footprint-overlapping house receives damage.')
+
+print('Passed: retreat during blocked AutoRotate, turning after clearance, wall entry, overlap escape and pure-turn blocking.')
