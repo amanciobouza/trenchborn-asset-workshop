@@ -123,3 +123,7 @@ Der gesamte Kraterbrustpanzer wird bei Bedarf abgesenkt. Seine Oberkante liegt m
 Brustposition nach Sichtfeedback wieder angehoben: halbierter Kieferabstand; die Reserve für die Plattendicke bleibt bestehen. Sichtprüfung in Studio offen.
 
 Brust auf erneuten Wunsch weiter angehoben: Kieferabstand auf 1,5 Prozent der Brustbreite reduziert; Reserve für Plattendicke bleibt. Sichtprüfung offen.
+
+### Seitenspitzen am Schwanzansatz
+
+Das unterste seitliche Spitzenpaar am Rumpf (`DorsalRock_03_SideSpine_*`) folgt in Stufe 5 nun vollständig `TailBase`, einschliesslich Sockel und Überlappungen. Zuvor band der gemeinsame Plattenindex die Spitzen an `Torso`, dessen Sprintneigung sie vom Schwanzansatz abheben konnte. Die übrigen Rückenplatten und Segel behalten ihre Zuordnung. Sprint-Sichtprüfung steht aus.

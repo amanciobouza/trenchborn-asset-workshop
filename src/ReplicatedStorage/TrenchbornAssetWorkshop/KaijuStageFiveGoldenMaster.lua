@@ -262,6 +262,14 @@ function Builder.Build(parent,ground,options)
    local upper=Instance.new("Attachment");upper.Name="Stage5SailUpper";upper.Position=points[3]+lift;upper.Parent=plate
    anchors[i]={Lower=lower,Upper=upper}
   end
+  -- The lowest torso-side pair sits on the sacral/tail-root surface. Its
+  -- inherited DorsalRock_03 name otherwise binds it to the pitching torso,
+  -- lifting the pair off its host during sprint. Move the complete clusters.
+  for _,p in ipairs(model:GetChildren()) do
+   if p:IsA("BasePart") and p.Name:match("^DorsalRock_03_SideSpine_") then
+    p:SetAttribute("RigRegion","TailBase")
+   end
+  end
   local sails=Instance.new("Folder");sails.Name="Stage5SailGeometry";sails.Parent=model
   for i=1,10 do
    local bay=Instance.new("Folder");bay.Name=string.format("SailBay_%02d",i);bay.Parent=sails

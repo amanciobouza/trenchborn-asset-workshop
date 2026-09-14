@@ -99,6 +99,9 @@ addModule('KaijuStageFourGoldenMaster',{Build=function(parent)
   part(string.format('DorsalShield_%02d',i),0,28-i*1.5,3+i*2,1,5,4,'WedgePart')
   if i>3 then part(string.format('TailSegment_%02d',i-2),0,24-i*1.5,3+i*2,3,3,3) end
  end
+ for _,side in ipairs({'Left','Right'}) do
+  part('DorsalRock_03_SideSpine_'..side..'Shard',0,16,6,1,1,3)
+ end
  m:SetAttribute('ApprovedGeometryCommit','stage4');m:SetAttribute('FinalInstallerVersion','old')
  return m
 end})
@@ -111,6 +114,9 @@ for _,scale in ipairs({0.5,1,2}) do
  assert(m:GetAttribute('EvolutionStage')==5 and m:GetAttribute('PipelinePhase')==4)
  assert(m:GetAttribute('QualityGateB')=='Pending_UserGeometryReview' and m:GetAttribute('ApprovedGeometryCommit')==nil)
  assert(m:GetAttribute('FinalInstallerVersion')==nil)
+ for _,side in ipairs({'Left','Right'}) do
+  assert(m:FindFirstChild('DorsalRock_03_SideSpine_'..side..'Shard'):GetAttribute('RigRegion')=='TailBase','Sacral spikes must not inherit sprint torso pitch')
+ end
  local sails=m:FindFirstChild('Stage5SailGeometry');assert(sails and #sails:GetChildren()==10)
  local geometry=0
  for index,bay in ipairs(sails:GetChildren()) do
