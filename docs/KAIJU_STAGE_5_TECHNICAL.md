@@ -118,4 +118,6 @@ Alle elf Rückenplatten tragen links und rechts zusätzliche aufgesetzte Panzerf
 
 ### Brustfreiraum unter dem Maul
 
-Der gesamte Kraterbrustpanzer wird bei Bedarf abgesenkt. Seine Oberkante liegt mindestens neun Prozent der Brustbreite unterhalb der tiefsten Unterkiefergeometrie, einschliesslich Kieferpanzer. Kern, Kraterwände und Bauchplatten folgen gemeinsam. Skalierte Geometrieprüfungen sichern den Abstand in der Ausgangspose; geöffnetes Maul und Angriffsposen bleiben in Studio zu prüfen.
+Der gesamte Kraterbrustpanzer wird bei Bedarf abgesenkt. Seine Oberkante liegt mindestens 4,5 Prozent der Brustbreite unterhalb der tiefsten Unterkiefergeometrie, einschliesslich Kieferpanzer. Kern, Kraterwände und Bauchplatten folgen gemeinsam. Skalierte Geometrieprüfungen sichern den Abstand in der Ausgangspose; geöffnetes Maul und Angriffsposen bleiben in Studio zu prüfen.
+
+Brustposition nach Sichtfeedback wieder angehoben: halbierter Kieferabstand; die Reserve für die Plattendicke bleibt bestehen. Sichtprüfung in Studio offen.
