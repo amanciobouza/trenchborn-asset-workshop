@@ -133,3 +133,5 @@ Brust weiter bis knapp unter den Kiefer angehoben: 0,3 Prozent Restabstand und z
 ### Leuchtvorschau und Brust-Schulter-Rücken-Verbindung
 
 Auf ausdrücklichen Wunsch ist das Leuchten in der laufenden Geometrievorschau aktiv: vorhandene Neonadern bleiben erhalten, Brustkern und bewegliche Segel erhalten Neonmaterial. Die Segelfarbe folgt dem Brustkern und damit dessen Spezialangriffsfarbe. Je drei erhöhte seitliche Kragenplatten verbinden den oberen Brustrand über die Schulteransätze mit dem Rückenpanzer. Schmale Energiefugen markieren die Verbindungen. Der zentrale Maulbereich bleibt ausgespart. Geometrie- und Dressingfreigabe werden dadurch nicht erteilt; Form und Bewegungsfreiheit sind in Studio zu prüfen.
+
+Brusthauptteil nach erneutem Höhenfeedback angehoben: vertikaler Aussenradius von 40 auf 32 Prozent der Brustbreite reduziert, bei gleicher Kiefergrenze. Dadurch steigt die Kratermitte bei aktiver Höhenbegrenzung um acht Prozent der Brustbreite; Kern, Rückwand und Bauchabschluss folgen. Sichtprüfung offen.

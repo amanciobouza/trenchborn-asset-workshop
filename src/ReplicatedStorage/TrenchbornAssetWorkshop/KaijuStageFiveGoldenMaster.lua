@@ -54,8 +54,8 @@ function Builder.Build(parent,ground,options)
   local depth=width*0.095
   local backZ=skinFront-width*0.015
   local lipZ=backZ-depth
-  local apertureX,apertureY=width*0.175,width*0.23
-  local outerX,outerY=width*0.50,width*0.40
+  local apertureX,apertureY=width*0.175,width*0.21
+  local outerX,outerY=width*0.50,width*0.32
   -- Chest height must follow the jaw clearance, not shoulder width alone.
   -- Include the full oriented bounds of the jaw and its attached armor.
   local jawBottom=math.huge
@@ -70,7 +70,7 @@ function Builder.Build(parent,ground,options)
   local clearance=width*0.003
   chestY=math.min(chestY,jawBottom-clearance-outerY-width*0.02)
   model:SetAttribute("NormalizedChestJawClearance",clearance)
-  local backing=G.Part(model,"Stage5ChestBacking",Vector3.new(width*0.78,width*0.77,width*0.08),
+  local backing=G.Part(model,"Stage5ChestBacking",Vector3.new(width*0.78,width*0.61,width*0.08),
    CFrame.new(0,chestY,backZ+width*0.03),DARK)
   backing.Shape=Enum.PartType.Ball;backing:SetAttribute("RigRegion","Torso")
   local core=G.Part(model,"Stage5ChestCore",Vector3.new(apertureX*1.12,apertureY*1.10,width*0.07),
