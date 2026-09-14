@@ -114,6 +114,26 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 	for _,p in ipairs(visuals) do
 		if p:GetAttribute("KaijuArmorEnergy") then table.insert(armorEnergy,p) end
 	end
+	-- Special attacks share one palette across neon parts and surface veins.
+	-- Only emissive GUI strokes are tagged; the dark fissure lips stay dark.
+	local specialEnergy={}
+	for _,p in ipairs(visuals) do
+		if string.match(p.Name,"^DorsalEnergy_") or p:GetAttribute("KaijuArmorEnergy") then
+			table.insert(specialEnergy,p)
+		end
+	end
+	for _,p in ipairs(model:GetDescendants()) do
+		if p:IsA("GuiObject") and p:GetAttribute("KaijuArmorEnergy") then
+			table.insert(specialEnergy,p)
+		end
+	end
+	local function energyColor(p)
+		return p:IsA("GuiObject") and p.BackgroundColor3 or p.Color
+	end
+	local function setEnergyColor(p,color)
+		if not p.Parent then return end
+		if p:IsA("GuiObject") then p.BackgroundColor3=color else p.Color=color end
+	end
 	local scale = model:GetScale()
 	-- Shared focus visual mass; gameplay reach/damage and pulse travel stay unchanged.
 	local focusCoreWidth = 1.30
@@ -433,7 +453,7 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 	local function endArea()
 		if not area then return end
 		if area.ChargeSound then area.ChargeSound:Destroy() end
-		for p,color in pairs(area.Colors) do if p.Parent then p.Color=color end end
+		for p,color in pairs(area.Colors) do setEnergyColor(p,color) end
 		for _,a in ipairs(area.Attachments) do a:Destroy() end
 		area.Effects:Destroy()
 		releaseSpecial()
@@ -486,8 +506,8 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 		end
 		for i=1,#area.Nodes-1 do arc(area.Nodes[i],area.Nodes[i+1]) end
 		if #area.Nodes>2 then arc(area.Nodes[#area.Nodes],area.Nodes[2]) end
-		for _,p in ipairs(visuals) do
-			if string.match(p.Name,"^DorsalEnergy_") or p:GetAttribute("KaijuArmorEnergy") then area.Colors[p]=p.Color end
+		for _,p in ipairs(specialEnergy) do
+			if p.Parent then area.Colors[p]=energyColor(p) end
 		end
 		areaReadyAt=clock()+4 -- Provisional workshop cooldown, starting at activation.
 		beginSpecial("Area")
@@ -498,7 +518,7 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 		if not focus then return end
 		if focus.ChargeSound then focus.ChargeSound:Destroy() end
 		if focus.BeamSound then focus.BeamSound:Destroy() end
-		for part,color in pairs(focus.Colors) do if part.Parent then part.Color=color end end
+		for part,color in pairs(focus.Colors) do setEnergyColor(part,color) end
 		focus.Mouth:Destroy()
 		focus.Effects:Destroy()
 		releaseSpecial()
@@ -598,8 +618,8 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 		end
 		focus.Beam=beam("Beam",focusColor)
 		focus.Core=beam("Core",Color3.fromRGB(220,255,255))
-		for _,p in ipairs(visuals) do
-			if string.match(p.Name,"^DorsalEnergy_") or p:GetAttribute("KaijuArmorEnergy") then focus.Colors[p]=p.Color end
+		for _,p in ipairs(specialEnergy) do
+			if p.Parent then focus.Colors[p]=energyColor(p) end
 		end
 		beginSpecial("Focus")
 		presentationAttribute("FocusPhase","Charging")
@@ -1182,7 +1202,7 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 			for p,color in pairs(focus.Colors) do
 				local index=tonumber(string.match(p.Name,"^DorsalEnergy_(%d+)")) or 1
 				local onset=math.clamp((tailCount-index)/(tailCount-1),0,1)*1.5
-				p.Color=color:Lerp(focusColor,math.clamp((t-onset)/0.3,0,1)*fadeOut)
+				setEnergyColor(p,color:Lerp(focusColor,math.clamp((t-onset)/0.3,0,1)*fadeOut))
 			end
 			local orbSize=(0.15+charge*0.85)*(1+0.08*math.sin(t*28)*charge)*scale*fadeOut*focusChargeScale
 			focus.Orb.Size=Vector3.new(orbSize,orbSize,orbSize)
@@ -1262,7 +1282,7 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 			end
 			for p,color in pairs(area.Colors) do
 				local charged=focusColor:Lerp(Color3.fromRGB(220,255,255),release*0.7)
-				p.Color=color:Lerp(charged,tension)
+				setEnergyColor(p,color:Lerp(charged,tension))
 			end
 			presentationAttribute("AreaPhase",areaTime<AREA_TIMING.Discharge and "Charging" or areaTime<AREA_TIMING.Recovery and "Discharge" or "Recovery")
 			if areaTime>=AREA_TIMING.Discharge and not area.Hit then

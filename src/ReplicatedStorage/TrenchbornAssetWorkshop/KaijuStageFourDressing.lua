@@ -1,7 +1,7 @@
 -- Phase 5 surface dressing of the user-approved Stage 4 geometry.
 -- SurfaceGuis add emissive fissures without changing any solid or rig region.
 local Dressing={}
-local REVISION="S4_FineBranchesFromMainVeins_04"
+local REVISION="S4_SpecialAttackSurfaceColor_05"
 -- Authored independently for each side and tier: no reflection or repeated
 -- chest stamp. Fixed coordinates keep the result stable across rebuilds.
 local patterns={
@@ -60,6 +60,7 @@ local function drawLine(gui,a,b,thickness)
   line.Rotation=math.deg(math.atan2(delta.Y,delta.X))
   line.BorderSizePixel=0;line.ZIndex=layer
   line.BackgroundColor3=layer==1 and Color3.fromRGB(24,29,34) or Color3.fromRGB(244,207,39)
+  if layer==2 then line:SetAttribute("KaijuArmorEnergy",true) end
   line.Parent=gui
  end
 end
