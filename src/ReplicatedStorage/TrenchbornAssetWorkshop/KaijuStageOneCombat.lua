@@ -70,11 +70,11 @@ local function flash(model)
 	TweenService:Create(h,TweenInfo.new(0.22),{FillTransparency=1}):Play()
 	Debris:AddItem(h,0.25)
 end
-local function splitBuilding(target, data, right)
+local function splitBuilding(target, data, right, stageFourScale)
 	-- Two recognizable building halves, each retaining its piece of the roof.
 	for _, sign in ipairs({-1,1}) do
 		local pivot=data.Body.CFrame*CFrame.new(sign*data.Body.Size.X/4,0,0)
-		local shift=right*(sign*8)+Vector3.new(0,3,0)
+		local shift=right*(sign*8*(stageFourScale or 1))+Vector3.new(0,stageFourScale and -0.5*stageFourScale or 3,0)
 		local transform=CFrame.new(shift)*pivot*CFrame.Angles(0,0,-sign*0.35)*pivot:Inverse()
 		for _, source in ipairs({data.Body,data.Roof}) do
 			local p=part(target.Parent,"TornBuildingHalf",Vector3.new(source.Size.X/2,source.Size.Y,source.Size.Z),
@@ -200,6 +200,8 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 		local started=os.clock()
 		local startRoot=root.Position
 		local initial=target:GetPivot()
+		local bounds,boundsSize=target:GetBoundingBox()
+		local boundsOffset=initial:ToObjectSpace(bounds).Position
 		liftConnection=RunService.Heartbeat:Connect(function()
 			if not target.Parent or targets[target]~=data or humanoid.Health<=0
 				or not kaiju:IsDescendantOf(workspace) or humanoid.FloorMaterial==Enum.Material.Air
@@ -211,6 +213,24 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 			if not leftFrame or not rightFrame then cancel();return end
 			local grip=(leftFrame.Position+rightFrame.Position)/2
 			local destination=CFrame.new(grip)*root.CFrame.Rotation
+			if kaiju:GetAttribute("EvolutionStage")==4 then
+				local jawFrame=poseProvider.GetCombatFrame(kaiju,"Jaw")
+				local torsoFrame=poseProvider.GetCombatFrame(kaiju,"Torso")
+				local jaw=kaiju.LowerJawRear
+				local rib=kaiju.LowerRibcage
+				if not jawFrame or not torsoFrame then cancel();return end
+				local jawWorld=jawFrame*jaw:GetAttribute("RigLocalFrame")
+				local jawHalf=(math.abs(jawWorld.RightVector.Y)*jaw.Size.X
+				 +math.abs(jawWorld.UpVector.Y)*jaw.Size.Y+math.abs(jawWorld.ZVector.Y)*jaw.Size.Z)/2
+				local chest=root.CFrame:PointToObjectSpace((torsoFrame*rib:GetAttribute("RigLocalFrame")).Position)
+				local heldCenter=root.CFrame:PointToObjectSpace(grip)
+				-- Respect the whole roof, not only the model pivot at the hand midpoint.
+				local topLimit=jawWorld.Position.Y-jawHalf-scale
+				local centerY=math.min(grip.Y,topLimit-boundsSize.Y/2)
+				local centerZ=math.min(heldCenter.Z,chest.Z-rib.Size.Z/2-boundsSize.Z/2-0.3*scale)
+				local center=root.CFrame:PointToWorldSpace(Vector3.new(heldCenter.X,0,centerZ))
+				destination=CFrame.new(center.X,centerY,center.Z)*root.CFrame.Rotation*CFrame.new(-boundsOffset)
+			end
 			target:PivotTo(initial:Lerp(destination,u))
 		end)
 	end
@@ -420,7 +440,7 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 			end)
 		end
 		if data.Health==0 then
-			if lifted then splitBuilding(target,data,root.CFrame.RightVector) end
+			if lifted then splitBuilding(target,data,root.CFrame.RightVector,kaiju:GetAttribute("EvolutionStage")==4 and scale or nil) end
 			release(false)
 			target:SetAttribute("Destroyed",true)
 			data.Gui.Enabled=false

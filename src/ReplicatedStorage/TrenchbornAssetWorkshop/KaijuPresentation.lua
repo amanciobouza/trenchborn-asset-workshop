@@ -339,7 +339,7 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 	end
 	local heartbeat, destroying, healthConnection, poseConnection
 	-- ownedJoints initialized with immutable rest-frame proxies above.
-	local combo = Combo.new(combat and combat.PrepareFinisher)
+	local combo = Combo.new(combat and combat.PrepareFinisher,stage)
 	local jump = Jump.new()
 	local swimState=Enum.HumanoidStateType.Swimming
 	local swimEnabled=humanoid and humanoid:GetStateEnabled(swimState)

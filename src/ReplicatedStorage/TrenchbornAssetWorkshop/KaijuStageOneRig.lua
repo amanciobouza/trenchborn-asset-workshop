@@ -27,7 +27,7 @@ function Rig.Attach(model,root,humanoid,combat)
  end
  local rootRef=Instance.new("ObjectValue");rootRef.Name="KaijuMovementRoot";rootRef.Value=root;rootRef.Parent=model
  local humanRef=Instance.new("ObjectValue");humanRef.Name="KaijuHumanoid";humanRef.Value=humanoid;humanRef.Parent=model
- local combo=Combo.new(combat and combat.PrepareFinisher)
+ local combo=Combo.new(combat and combat.PrepareFinisher,model:GetAttribute("EvolutionStage"))
  local jump=Jump.new()
  local stopped,runRequested=false,false
  local focus,area,lock,reaction,defeat
@@ -99,7 +99,7 @@ function Rig.Attach(model,root,humanoid,combat)
  local function combatFrame(name)
   local poses,weight,crouch
   if combo.Active then
-   local sample=Combo.new();sample.Index=combo.Index;sample.Started=combo.Started;sample.Active=true
+   local sample=Combo.new(nil,model:GetAttribute("EvolutionStage"));sample.Index=combo.Index;sample.Started=combo.Started;sample.Active=true
    local ignoredName,ignoredIndex
    poses,weight,ignoredName,ignoredIndex,crouch=sample:Sample(now())
   end

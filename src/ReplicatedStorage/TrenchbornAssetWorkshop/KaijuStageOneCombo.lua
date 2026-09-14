@@ -48,8 +48,22 @@ local attacks = {
 		{2.45,{},0},
 	}},
 }
+-- Stage 4 holds the building below the jaw, then tears across the chest.
+-- Keep grab/impact/recovery timings identical on server and clients.
+local stageFourTear={
+ {0,{},0},
+ {0.38,tear(-34,48,12,40,4,-4,0),2.6},
+ {0.62,tear(-38,44,16,44,2,-7,0),3.0},
+ {0.92,tear(-5,72,12,52,5,-9,-10),0.5},
+ {1.08,tear(-5,72,12,52,5,-11,-10),0.5},
+ {1.34,tear(-5,48,12,-12,8,-18,48),0.3},
+ {1.46,tear(-3,38,10,-10,10,-20,58),0.2},
+ {1.64,tear(-5,15,18,-10,7,-14,85),0.4},
+ {1.90,tear(-5,15,18,-10,7,-14,85),0.4},
+ {2.45,{},0},
+}
 local impactTimes = {0.44, 0.44, 0.54, 1.34}
-function Combo.new(prepareFinisher)
+function Combo.new(prepareFinisher,evolutionStage)
 	local state = {Index=0, Started=0, Ended=-math.huge, Active=false, Queued=false, Events={}}
 	local function start(index, now)
 		state.Index=index
@@ -99,7 +113,7 @@ function Combo.new(prepareFinisher)
 	function state:Sample(now)
 		if not self.Active then return nil end
 		local attack = attacks[self.Index]
-		local frames = attack.Frames
+		local frames = evolutionStage==4 and self.Index==4 and stageFourTear or attack.Frames
 		local t = now-self.Started
 		local duration = frames[#frames][1]
 		-- Crossing markers (not equality checks) survives skipped animation frames.
