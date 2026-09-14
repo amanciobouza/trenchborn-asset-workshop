@@ -220,8 +220,8 @@ local function equip(player, character)
 	-- Feet and tail remain visual until the combat hitbox pass.
 	local collider = Instance.new("Part")
 	collider.Name = "KaijuBodyCollider"
-	collider.Size = Vector3.new(8, 14, 6) * kaiju:GetScale()
-	collider.CFrame = ground * CFrame.new(0, collider.Size.Y/2 + 9 * kaiju:GetScale(), 0)
+	collider.Size = Vector3.new(8, 9, 6) * kaiju:GetScale()
+	collider.CFrame = ground * CFrame.new(0, collider.Size.Y/2 + 14 * kaiju:GetScale(), 0)
 	collider.Transparency, collider.Massless = 1, true
 	collider.CanCollide, collider.CanTouch = true, false
 	collider.Parent = character

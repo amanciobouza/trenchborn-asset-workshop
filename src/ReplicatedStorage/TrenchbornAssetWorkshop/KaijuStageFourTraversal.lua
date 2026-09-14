@@ -12,7 +12,7 @@ function Traversal.Attach(model,root,humanoid,rootHeight,collider,combat,player)
  local rib=model.LowerRibcage
  local ribPosition=ground:PointToObjectSpace(rib.Position)
  local bodySize=Vector3.new(rib.Size.X*0.60,rib.Size.Y*0.80,rib.Size.Z*0.65)
- local bodyY=math.max(ribPosition.Y,kneeHeight+bodySize.Y/2+scale)
+ local bodyY=math.max(ribPosition.Y,math.max(kneeHeight+scale,14*scale)+bodySize.Y/2)
  -- Raise the central solid entirely above the knee corridor.
  collider.Size=bodySize
  local weld=collider:FindFirstChildOfClass("WeldConstraint")

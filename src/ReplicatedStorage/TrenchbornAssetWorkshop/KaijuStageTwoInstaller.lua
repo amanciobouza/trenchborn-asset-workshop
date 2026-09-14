@@ -4,7 +4,7 @@ local Players=game:GetService("Players")
 local Builder=require(script.Parent:WaitForChild("KaijuEvolutionBlockout"))
 local StageTwo=require(script.Parent:WaitForChild("KaijuStageTwoGoldenMaster"))
 local Rig=require(script.Parent:WaitForChild("KaijuStageOneRig"))
-local Installer={Version="1.1.3",ApprovedRevision="803c8ae4789f87b1a20ba6fa5433ecfda5e49675"}
+local Installer={Version="1.1.4",ApprovedRevision="803c8ae4789f87b1a20ba6fa5433ecfda5e49675"}
 local installations=setmetatable({}, {__mode="k"})
 local NAME="Stage_2_Storm_Hunter"
 local function stamp(model)
@@ -92,8 +92,9 @@ function Installer.Install(character,options)
   for _,item in ipairs(character:GetDescendants()) do hide(item) end
   table.insert(connections,character.DescendantAdded:Connect(hide))
   collider=Instance.new("Part");collider.Name="KaijuBodyCollider"
-  collider.Size=Vector3.new(8,14,6)*model:GetScale()
-  collider.CFrame=ground*CFrame.new(0,collider.Size.Y/2+9*model:GetScale(),0)
+  -- Keep the torso top at 23 scaled studs; remove its lower five studs.
+  collider.Size=Vector3.new(8,9,6)*model:GetScale()
+  collider.CFrame=ground*CFrame.new(0,collider.Size.Y/2+14*model:GetScale(),0)
   collider.Transparency=1;collider.Massless=true;collider.CanCollide=true;collider.CanTouch=false
   collider.Parent=character
   local weld=Instance.new("WeldConstraint");weld.Part0=root;weld.Part1=collider;weld.Parent=collider

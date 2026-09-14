@@ -90,8 +90,17 @@ function Rig.Attach(model,root,humanoid,combat)
   return not stopped and root and humanoid and humanoid.Health>0 and not defeat and model:GetAttribute("IdleEnabled")~=false
  end
  local function readySpecial()
-  return alive() and not staggered() and not lock and jump.Phase=="Idle" and not combo.Active
-   and humanoid.FloorMaterial~=Enum.Material.Air
+  -- Sample at request time: diagnostics must describe the rejected attempt.
+  attr("SpecialFloorMaterial",humanoid.FloorMaterial.Name or tostring(humanoid.FloorMaterial))
+  attr("SpecialVerticalVelocity",root.AssemblyLinearVelocity.Y)
+  attr("SpecialHumanoidState",tostring(humanoid:GetState()))
+  if not alive() then return false,"Not alive" end
+  if staggered() then return false,"Staggered" end
+  if lock then return false,"Special active" end
+  if jump.Phase~="Idle" then return false,"Jump active" end
+  if combo.Active then return false,"Combo active" end
+  if humanoid.FloorMaterial==Enum.Material.Air then return false,"Airborne" end
+  return true
  end
  local query=RaycastParams.new();query.FilterType=Enum.RaycastFilterType.Exclude
  query.FilterDescendantsInstances={root and root.Parent or model};query.RespectCanCollide=true
@@ -138,9 +147,17 @@ function Rig.Attach(model,root,humanoid,combat)
   return (combatFrame("Head")*upperLocal*CFrame.new(0,-upper.Size.Y/2-0.2*scale,model:FindFirstChild("UpperMuzzleCoreZ").Size.Z*0.25)).Position
  end
  local function requestFocus()
-  if not readySpecial() or now()<focusReady or not combat or not combat.SelectFocusTarget or not combat.FocusAim then return false end
+  local function reject(reason)
+   attr("FocusRejectReason",reason)
+   return false,reason
+  end
+  local ready,reason=readySpecial()
+  if not ready then return reject(reason) end
+  if now()<focusReady then return reject("Cooldown") end
+  if not combat or not combat.SelectFocusTarget or not combat.FocusAim then return reject("No adapter") end
   local target=combat.SelectFocusTarget(mouth())
-  if not target then attr("FocusPhase","No target");return false end
+  if not target then attr("FocusPhase","No target");return reject("No target") end
+  attr("FocusRejectReason",nil)
   begin("Focus");focus={Started=now(),Target=target,Ticks=0,AimAt=0}
   focus.Point,focus.Visible=combat.FocusAim(target,mouth())
   attr("KaijuFocusPoint",focus.Point);attr("KaijuFocusVisible",focus.Visible==true)
@@ -151,7 +168,8 @@ function Rig.Attach(model,root,humanoid,combat)
    attr("AreaRejectReason",reason)
    return false,reason
   end
-  if not readySpecial() then return reject("Not ready") end
+  local ready,reason=readySpecial()
+  if not ready then return reject(reason) end
   if now()<areaReady then return reject("Cooldown") end
   if not combat or not combat.AreaImpact then return reject("No adapter") end
   local hit=workspace:Raycast(root.Position+Vector3.new(0,30*scale,0),Vector3.new(0,-70*scale,0),query)

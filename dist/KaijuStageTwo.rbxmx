@@ -1751,7 +1751,7 @@ local Players=game:GetService("Players")
 local Builder=require(script.Parent:WaitForChild("KaijuEvolutionBlockout"))
 local StageTwo=require(script.Parent:WaitForChild("KaijuStageTwoGoldenMaster"))
 local Rig=require(script.Parent:WaitForChild("KaijuStageOneRig"))
-local Installer={Version="1.1.3",ApprovedRevision="803c8ae4789f87b1a20ba6fa5433ecfda5e49675"}
+local Installer={Version="1.1.4",ApprovedRevision="803c8ae4789f87b1a20ba6fa5433ecfda5e49675"}
 local installations=setmetatable({}, {__mode="k"})
 local NAME="Stage_2_Storm_Hunter"
 local function stamp(model)
@@ -1839,8 +1839,9 @@ function Installer.Install(character,options)
   for _,item in ipairs(character:GetDescendants()) do hide(item) end
   table.insert(connections,character.DescendantAdded:Connect(hide))
   collider=Instance.new("Part");collider.Name="KaijuBodyCollider"
-  collider.Size=Vector3.new(8,14,6)*model:GetScale()
-  collider.CFrame=ground*CFrame.new(0,collider.Size.Y/2+9*model:GetScale(),0)
+  -- Keep the torso top at 23 scaled studs; remove its lower five studs.
+  collider.Size=Vector3.new(8,9,6)*model:GetScale()
+  collider.CFrame=ground*CFrame.new(0,collider.Size.Y/2+14*model:GetScale(),0)
   collider.Transparency=1;collider.Massless=true;collider.CanCollide=true;collider.CanTouch=false
   collider.Parent=character
   local weld=Instance.new("WeldConstraint");weld.Part0=root;weld.Part1=collider;weld.Parent=collider
@@ -3105,8 +3106,17 @@ function Rig.Attach(model,root,humanoid,combat)
   return not stopped and root and humanoid and humanoid.Health&gt;0 and not defeat and model:GetAttribute("IdleEnabled")~=false
  end
  local function readySpecial()
-  return alive() and not staggered() and not lock and jump.Phase=="Idle" and not combo.Active
-   and humanoid.FloorMaterial~=Enum.Material.Air
+  -- Sample at request time: diagnostics must describe the rejected attempt.
+  attr("SpecialFloorMaterial",humanoid.FloorMaterial.Name or tostring(humanoid.FloorMaterial))
+  attr("SpecialVerticalVelocity",root.AssemblyLinearVelocity.Y)
+  attr("SpecialHumanoidState",tostring(humanoid:GetState()))
+  if not alive() then return false,"Not alive" end
+  if staggered() then return false,"Staggered" end
+  if lock then return false,"Special active" end
+  if jump.Phase~="Idle" then return false,"Jump active" end
+  if combo.Active then return false,"Combo active" end
+  if humanoid.FloorMaterial==Enum.Material.Air then return false,"Airborne" end
+  return true
  end
  local query=RaycastParams.new();query.FilterType=Enum.RaycastFilterType.Exclude
  query.FilterDescendantsInstances={root and root.Parent or model};query.RespectCanCollide=true
@@ -3153,9 +3163,17 @@ function Rig.Attach(model,root,humanoid,combat)
   return (combatFrame("Head")*upperLocal*CFrame.new(0,-upper.Size.Y/2-0.2*scale,model:FindFirstChild("UpperMuzzleCoreZ").Size.Z*0.25)).Position
  end
  local function requestFocus()
-  if not readySpecial() or now()&lt;focusReady or not combat or not combat.SelectFocusTarget or not combat.FocusAim then return false end
+  local function reject(reason)
+   attr("FocusRejectReason",reason)
+   return false,reason
+  end
+  local ready,reason=readySpecial()
+  if not ready then return reject(reason) end
+  if now()&lt;focusReady then return reject("Cooldown") end
+  if not combat or not combat.SelectFocusTarget or not combat.FocusAim then return reject("No adapter") end
   local target=combat.SelectFocusTarget(mouth())
-  if not target then attr("FocusPhase","No target");return false end
+  if not target then attr("FocusPhase","No target");return reject("No target") end
+  attr("FocusRejectReason",nil)
   begin("Focus");focus={Started=now(),Target=target,Ticks=0,AimAt=0}
   focus.Point,focus.Visible=combat.FocusAim(target,mouth())
   attr("KaijuFocusPoint",focus.Point);attr("KaijuFocusVisible",focus.Visible==true)
@@ -3166,7 +3184,8 @@ function Rig.Attach(model,root,humanoid,combat)
    attr("AreaRejectReason",reason)
    return false,reason
   end
-  if not readySpecial() then return reject("Not ready") end
+  local ready,reason=readySpecial()
+  if not ready then return reject(reason) end
   if now()&lt;areaReady then return reject("Cooldown") end
   if not combat or not combat.AreaImpact then return reject("No adapter") end
   local hit=workspace:Raycast(root.Position+Vector3.new(0,30*scale,0),Vector3.new(0,-70*scale,0),query)
@@ -3667,16 +3686,21 @@ local function watch(character)
    if not remote then task.wait(0.03) end
   until remote or os.clock()&gt;deadline
   if not remote or not alive or ticket~=generation then return end
-  local flight=false
-  local tookOffAt,settleUntil=0,0
+  local flight,fallObserved=false,false
+  local settleUntil=0
   contactConnection=game:GetService("RunService").Heartbeat:Connect(function()
    if not alive or player.Character~=character or not model.Parent then return end
    local h=character:FindFirstChildOfClass("Humanoid")
    local root=character:FindFirstChild("HumanoidRootPart")
    if not h or h.Health&lt;=0 or not root or root.Anchored then return end
-   if h:GetState()==Enum.HumanoidStateType.Swimming then flight=false;settleUntil=0;return end
+   if h:GetState()==Enum.HumanoidStateType.Swimming then flight=false;fallObserved=false;settleUntil=0;return end
    local now=os.clock()
-   if flight and now-tookOffAt&gt;0.1 and h.FloorMaterial~=Enum.Material.Air then
+   -- Ground reports during ascent on a roof/slope are not a landing.
+   -- Arm only after an airborne downward sample from this authorized jump.
+   if flight and h.FloorMaterial==Enum.Material.Air and root.AssemblyLinearVelocity.Y &lt; -1 then
+    fallObserved=true
+   end
+   if flight and fallObserved and h.FloorMaterial~=Enum.Material.Air then
     flight=false;settleUntil=now+0.16
    end
    -- Remove only upward contact rebound. X/Z, falling, and a fresh authorized jump stay free.
@@ -3691,7 +3715,7 @@ local function watch(character)
    local root=character:FindFirstChild("HumanoidRootPart")
    if not h or h.Health&lt;=0 or not root or root.Anchored or h:GetState()==Enum.HumanoidStateType.Swimming then return end
    if type(rise)~="number" or rise~=rise or rise&lt;=0 or rise&gt;500 then return end
-   flight=true;tookOffAt=os.clock();settleUntil=0
+   flight=true;fallObserved=false;settleUntil=0
    local velocity=root.AssemblyLinearVelocity
    h:ChangeState(Enum.HumanoidStateType.Freefall)
    root.AssemblyLinearVelocity=Vector3.new(velocity.X,rise,velocity.Z)

@@ -215,8 +215,16 @@ for stage=1,5 do
  api.SetRunning(true);root.AssemblyLinearVelocity=Vector3.new(0,0,-16)
  for i=1,20 do tick(0.04) end
  assert(h.WalkSpeed==16)
+ -- Rejections retain the request-time ground evidence for both specials.
+ h.FloorMaterial="Air"
+ local ok,why=api.RequestFocus()
+ assert(not ok and why=="Airborne" and m:GetAttribute("FocusRejectReason")=="Airborne")
+ assert(m:GetAttribute("SpecialFloorMaterial")=="Air")
+ ok,why=api.RequestArea();assert(not ok and why=="Airborne")
+ h.FloorMaterial="Ground"
  -- Focus accepted while moving; movement lock survives input, slopes and hits.
  assert(api.RequestFocus());assert(root.Anchored and h.WalkSpeed==0)
+ assert(m:GetAttribute("FocusRejectReason")==nil)
  assert(not api.RequestJump() and not api.RequestAttack() and not api.RequestArea())
  h.FloorMaterial="Air";h.Health=80;h.HealthChanged:Fire(80)
  for i=1,50 do tick(0.1) end
@@ -270,3 +278,39 @@ assert 'FireClient' not in client and 'combat.Handle("Focus"' not in client
 assert 'joint.Real.Transform=joint.Inverse*joint.C0' in client
 assert 'joint.Transform=CFrame.identity' not in (SRC/'KaijuStageOneJumpMotor.client.lua').read_text()
 print('PASS: Lua syntax and client/server ownership boundaries')
+
+# Run the actual owner motor against contact/velocity sequences.
+motor_setup=mock+r'''
+side="client"
+os.clock=function() return time end
+local character=Instance.new("Model");character.Parent=workspace
+local root=Instance.new("Part");root.Name="HumanoidRootPart";root.Parent=character;root.Anchored=false
+local h=Instance.new("Humanoid");h.Parent=character;h.Health=100;h.FloorMaterial="Air"
+function character:FindFirstChildOfClass() return h end
+local m=Instance.new("Model");m.Parent=character;m:SetAttribute("EvolutionStage",4)
+local remote=Instance.new("RemoteEvent");remote.Name="KaijuJumpImpulse";remote.Parent=m;remote.OnClientEvent=signal()
+players.LocalPlayer={Character=character,CharacterAdded=signal()}
+script={Destroying=signal()}
+'''
+run(motor_setup+'\n(function()\n'+(SRC/'KaijuStageOneJumpMotor.client.lua').read_text()+'\nend)()\n'+r'''
+local function tick(ground,vy,dt)
+ time=time+(dt or 0.1);h.FloorMaterial=ground
+ root.AssemblyLinearVelocity=Vector3.new(7,vy,9);clientRun.Heartbeat:Fire()
+ assert(root.AssemblyLinearVelocity.X==7 and root.AssemblyLinearVelocity.Z==9)
+ return root.AssemblyLinearVelocity.Y
+end
+remote.OnClientEvent:Fire(60)
+assert(tick("Ground",50,0.2)==50,"Slope contact must preserve rising jump")
+assert(tick("Air",10)==10)
+assert(tick("Ground",5)==5,"Apex contact without observed fall must not arm")
+assert(tick("Air",-8)==-8)
+assert(tick("Ground",12)==0,"Landing rebound after actual fall must be removed")
+remote.OnClientEvent:Fire(60)
+assert(tick("Ground",55,0.02)==55,"Fresh jump clears previous landing filter")
+assert(tick("Air",-8)==-8)
+h.State="Swimming";tick("Ground",3)
+h.State="Running"
+assert(tick("Ground",20)==20,"Swimming clears pending landing")
+script.Destroying:Fire()
+print("PASS: owner jump motor ascent, roof contact, falling, rebound, fresh jump and swimming")
+''')
