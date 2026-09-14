@@ -56,6 +56,23 @@ local stageFourOrigin=origin*CFrame.new(-96,0,0)
 local stageFour=stageFourBuilder.Build(workshop,stageFourOrigin,{Scale=script:GetAttribute("Stage4Scale")})
 local stageFourDressing=require(packageFolder:WaitForChild("KaijuStageFourDressing"))
 stageFourDressing.Apply(stageFour)
+-- Stage 5 Phase 4 candidate is a stationary comparison, not gameplay-approved.
+local stageFiveBuilder=require(packageFolder:WaitForChild("KaijuStageFiveGoldenMaster"))
+local stageFiveOK,stageFive=pcall(stageFiveBuilder.Build,workshop,origin*CFrame.new(-155,0,0),
+ {Scale=script:GetAttribute("Stage5Scale")})
+if stageFiveOK then
+ local gui=Instance.new("BillboardGui");gui.Name="StageFiveReviewLabel"
+ gui.Adornee=stageFive:FindFirstChild("Cranium");gui.Size=UDim2.fromOffset(360,64)
+ gui.StudsOffsetWorldSpace=Vector3.new(0,10,0);gui.MaxDistance=260;gui.Parent=stageFive
+ local label=Instance.new("TextLabel");label.Size=UDim2.fromScale(1,1)
+ label.BackgroundColor3=Color3.fromRGB(25,29,38);label.BackgroundTransparency=0.2
+ label.TextColor3=Color3.fromRGB(240,210,70);label.TextScaled=true
+ label.Text="STAGE 5 · GEOMETRY REVIEW";label.Parent=gui
+ workshop:SetAttribute("GeometryReviewAsset","Stage5")
+ print("[Stage 5 | Phase 4] Static candidate left of comparisons: crater chest and 10 sail fields. Gate B pending.")
+else
+ warn("[Stage 5 geometry] "..tostring(stageFive))
+end
 local template=stageFour:Clone()
 local pivotFromGround=stageFourOrigin:ToObjectSpace(template:GetPivot())
 stageFour:Destroy()

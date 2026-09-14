@@ -84,3 +84,14 @@ Re-evaluate chest-height finisher clearance against the new crater lips, forearm
 Before Gate B: confirm the frontal crater silhouette, actual visible recess, ten filled sail gaps, endpoint alignment under tail bending, open limb joints, crown/neck clearance, grounded feet and no accidental duplicate Stage 4 chest faces. Automated topology/anchor checks support these views but do not replace the user's visual approval.
 
 Next phase: build the Stage 5 geometry candidate. Final dressing, gameplay approval and final installer follow their respective gates.
+
+
+## Phase 4 candidate 01 implementation
+
+KaijuStageFiveGoldenMaster now builds an isolated copy of Stage 4 with twelve irregular crater sectors, dark inner walls/backing, a visible recessed core, tapering abdomen plates, five crown shards and enlarged articulated shoulder/limb shells. The cavity is built forward of the inherited torso front envelope, so the old body cannot hide the core. Its depth attribute is world-scaled; NormalizedChestRecessDepth records the authored value.
+
+Eleven dorsal spars support ten filled static sail proxies. Each bay uses three tessellated strips (six triangles; up to twelve wedge pieces) and four ObjectValue links to upper/lower attachments on adjacent plates. Warm yellow translucent review surfaces show field coverage; these are not final emissive dressing.
+
+The existing workshop still equips Stage 4. A stationary Stage 5 candidate appears at origin offset X=-155 with a STAGE 5 · GEOMETRY REVIEW label. Its failure is reported without aborting Stage 4 setup. Stage5Scale is a build-time script attribute, like the earlier stage scale controls. No animation rig is attached to this static candidate: assigning a sail to only one bone would give a misleading movement preview. Two-anchor animated sail presentation remains the next geometry task.
+
+`python tools/test-stage5-geometry.py` checks triangle area/vertices and right-handed frames, degenerate input, ten filled bays and forty anchor references, cleanup, scale/ground placement and pending approval attributes. Build orchestration uses a synthetic Stage 4 fixture, not the full Roblox geometry. Actual full-model generation, visual proportions, overlaps and dynamic sail clearance are unverified until Studio review. Quality Gate B remains pending.
