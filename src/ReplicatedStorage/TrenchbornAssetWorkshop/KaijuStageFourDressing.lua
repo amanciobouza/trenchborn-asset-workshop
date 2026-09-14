@@ -1,10 +1,18 @@
 -- Phase 5 surface dressing of the user-approved Stage 4 geometry.
 -- SurfaceGuis add emissive fissures without changing any solid or rig region.
 local Dressing={}
-local REVISION="S4_IndependentArmorVeins_02"
+local REVISION="S4_ShoulderArmVeinsAndThickerEnergy_03"
 -- Authored independently for each side and tier: no reflection or repeated
 -- chest stamp. Fixed coordinates keep the result stable across rebuilds.
 local patterns={
+ ShoulderLeftRear={P={{.19,.28},{.40,.40},{.58,.31},{.76,.49},{.47,.65}},E={{1,2},{2,3},{3,4},{2,5,.65}},Fine=true},
+ ShoulderRightRear={P={{.35,.19},{.46,.38},{.39,.58},{.65,.73},{.71,.32}},E={{1,2},{2,3},{3,4},{2,5,.65}},Fine=true},
+ ShoulderLeftUpperArm={P={{.32,.18},{.43,.39},{.34,.60},{.52,.80}},E={{1,2},{2,3},{3,4,.75}},Fine=true},
+ ShoulderRightUpperArm={P={{.22,.67},{.38,.49},{.62,.55},{.77,.36},{.43,.24}},E={{1,2},{2,3},{3,4},{2,5,.65}},Fine=true},
+ ForearmLeftRear={P={{.24,.21},{.39,.41},{.32,.62},{.54,.78},{.68,.44}},E={{1,2},{2,3},{3,4},{2,5,.65}},Fine=true},
+ ForearmRightRear={P={{.19,.57},{.37,.45},{.59,.55},{.77,.37}},E={{1,2},{2,3},{3,4,.75}},Fine=true},
+ ForearmLeftFront={P={{.28,.20},{.47,.40},{.41,.61},{.65,.77}},E={{1,2},{2,3},{3,4,.75}},Fine=true},
+ ForearmRightFront={P={{.18,.35},{.39,.47},{.57,.34},{.77,.58},{.49,.73}},E={{1,2},{2,3},{3,4},{2,5,.65}},Fine=true},
  ChestLeft1={P={{.12,.30},{.36,.44},{.58,.32},{.86,.57},{.44,.73}},E={{1,2},{2,3},{3,4},{2,5}}},
  ChestRight1={P={{.30,.15},{.44,.37},{.37,.60},{.67,.79},{.76,.30},{.61,.44}},E={{1,2},{2,3},{3,4},{2,6},{6,5}}},
  ChestLeft2={P={{.18,.72},{.40,.52},{.61,.59},{.80,.39}},E={{1,2},{2,3},{3,4}}},
@@ -24,6 +32,10 @@ local patterns={
 }
 local function patternFor(name)
  local side=name:find("Right",1,true) and "Right" or "Left"
+ local area=name:match("ShoulderArmorStage4(%a+)OverlapCore$")
+ if area then return patterns["Shoulder"..side..area] end
+ area=name:match("ForearmArmorStage4(%a+)OverlapCore$")
+ if area then return patterns["Forearm"..side..area] end
  local row=name:match("RibArmorStage4Row(%d)")
  if row then return patterns["Chest"..side..row] end
  row=name:match("HipArmorStage4Lame(%d)")
@@ -45,13 +57,15 @@ local function fissures(part)
   local bx=b[1]*512
   local ay,by=a[2]*512,b[2]*512
   local delta=Vector2.new(bx-ax,by-ay)
-  -- A dark lip keeps the thin yellow seam legible against the basalt.
+  local thickness=(pattern.Fine and 4 or 6)*(edge[3] or 1)
+  -- Existing surface veins are 20% thicker; arm details stay finer.
+  -- A dark lip keeps the yellow seam legible against the basalt.
   for layer=1,2 do
    local line=Instance.new("Frame")
    line.Name=layer==1 and "FissureLip" or "Energy"
    line.AnchorPoint=Vector2.new(0.5,0.5)
    line.Position=UDim2.fromOffset((ax+bx)/2,(ay+by)/2)
-   line.Size=UDim2.fromOffset(delta.Magnitude,layer==1 and 11 or 5)
+   line.Size=UDim2.fromOffset(delta.Magnitude,layer==1 and thickness+6 or thickness)
    line.Rotation=math.deg(math.atan2(delta.Y,delta.X))
    line.BorderSizePixel=0;line.ZIndex=layer
    line.BackgroundColor3=layer==1 and Color3.fromRGB(24,29,34) or Color3.fromRGB(244,207,39)
@@ -65,6 +79,22 @@ function Dressing.Apply(model)
  -- Reapplying is safe and does not accumulate surface layers.
  for _,item in ipairs(model:GetDescendants()) do
   if item:IsA("SurfaceGui") and item.Name=="Stage4EnergyFissures" then item:Destroy() end
+ end
+ -- Strengthen inherited physical fissures only in this Stage 4 instance.
+ -- Track the applied ratio so repeated dressing cannot inflate the veins.
+ for _,part in ipairs(model:GetChildren()) do
+  if part:IsA("BasePart") and part:GetAttribute("KaijuArmorEnergy")==true then
+   local ratio=1.20/(part:GetAttribute("Stage4VeinWidthFactor") or 1)
+   part.Size=Vector3.new(part.Size.X*ratio,part.Size.Y,part.Size.Z)
+   part:SetAttribute("Stage4VeinWidthFactor",1.20)
+   local rimName=part.Name:gsub("Energy$","Rim")
+   local rim=model:FindFirstChild(rimName)
+   if rim and rim:IsA("BasePart") then
+    local rimRatio=1.12/(rim:GetAttribute("Stage4VeinWidthFactor") or 1)
+    rim.Size=Vector3.new(rim.Size.X*rimRatio,rim.Size.Y,rim.Size.Z)
+    rim:SetAttribute("Stage4VeinWidthFactor",1.12)
+   end
+  end
  end
  local count=0
  for _,part in ipairs(model:GetChildren()) do
@@ -82,7 +112,9 @@ function Dressing.Apply(model)
    local chest=part.Name:match("RibArmorStage4Row%dRockLayerCore$")
    local raised=part.Name:match("RaisedFaceCore$")
    local nape=part.Name:match("RibArmorStage4Nape%dCore$")
-   if chest or raised or nape then
+   local arm=part.Name:match("ShoulderArmorStage4%a+OverlapCore$")
+    or part.Name:match("ForearmArmorStage4%a+OverlapCore$")
+   if chest or raised or nape or arm then
     fissures(part);count=count+1
    end
   end
