@@ -129,3 +129,7 @@ Brust auf erneuten Wunsch weiter angehoben: Kieferabstand auf 1,5 Prozent der Br
 Das unterste seitliche Spitzenpaar am Rumpf (`DorsalRock_03_SideSpine_*`) folgt in Stufe 5 nun vollständig `TailBase`, einschliesslich Sockel und Überlappungen. Zuvor band der gemeinsame Plattenindex die Spitzen an `Torso`, dessen Sprintneigung sie vom Schwanzansatz abheben konnte. Die übrigen Rückenplatten und Segel behalten ihre Zuordnung. Sprint-Sichtprüfung steht aus.
 
 Brust weiter bis knapp unter den Kiefer angehoben: 0,3 Prozent Restabstand und zwei Prozent Reserve für die Plattendicke. Bewegung mit geöffnetem Maul bleibt visuell zu prüfen.
+
+### Leuchtvorschau und Brust-Schulter-Rücken-Verbindung
+
+Auf ausdrücklichen Wunsch ist das Leuchten in der laufenden Geometrievorschau aktiv: vorhandene Neonadern bleiben erhalten, Brustkern und bewegliche Segel erhalten Neonmaterial. Die Segelfarbe folgt dem Brustkern und damit dessen Spezialangriffsfarbe. Je drei erhöhte seitliche Kragenplatten verbinden den oberen Brustrand über die Schulteransätze mit dem Rückenpanzer. Schmale Energiefugen markieren die Verbindungen. Der zentrale Maulbereich bleibt ausgespart. Geometrie- und Dressingfreigabe werden dadurch nicht erteilt; Form und Bewegungsfreiheit sind in Studio zu prüfen.

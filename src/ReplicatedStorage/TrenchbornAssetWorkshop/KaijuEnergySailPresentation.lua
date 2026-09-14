@@ -17,7 +17,7 @@ function Renderer.Attach(model,parent,anchorFrame)
    local pair={}
    for j=1,2 do
     local p=G.Part(folder,bay.Name.."_"..i.."_"..j,Vector3.new(0.03,1,1),CFrame.identity,Color3.fromRGB(236,192,65),"WedgePart")
-    p.Transparency=1;p.CastShadow=false;pair[j]=p
+    p.Transparency=1;p.Material=Enum.Material.Neon;p.CastShadow=false;pair[j]=p
    end
    entry.Triangles[i]=pair
   end
@@ -26,7 +26,9 @@ function Renderer.Attach(model,parent,anchorFrame)
  local stopped=false
  local function update()
   if stopped then return end
+  local core=model:FindFirstChild("Stage5ChestCore")
   for _,bay in ipairs(bays) do
+   if core then for _,pair in ipairs(bay.Triangles) do for _,p in ipairs(pair) do p.Color=core.Color end end end
    local a=anchorFrame(bay.Refs.FromLower).Position
    local b=anchorFrame(bay.Refs.ToLower).Position
    local ta=anchorFrame(bay.Refs.FromUpper).Position

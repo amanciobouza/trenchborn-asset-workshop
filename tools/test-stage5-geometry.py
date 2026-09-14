@@ -181,6 +181,11 @@ view.Update()
 local first
 for _,p in ipairs(moving:GetChildren()) do if p.Transparency<1 then first=p;break end end
 assert(first)
+local core=m:FindFirstChild('Stage5ChestCore')
+assert(core.Material==Enum.Material.Neon and core:GetAttribute('KaijuArmorEnergy'))
+local cyan=Color3.fromRGB(65,225,255)
+core.Color=cyan;view.Update()
+for _,p in ipairs(moving:GetChildren()) do assert(p.Material==Enum.Material.Neon and p.Color==cyan) end
 local start=first.Position
 offset=Vector3.new(7,3,-2);view.Update()
 assert((first.Position-start-offset).Magnitude<1e-6)

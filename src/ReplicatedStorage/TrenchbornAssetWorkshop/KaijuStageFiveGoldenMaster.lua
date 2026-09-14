@@ -36,9 +36,8 @@ function Builder.Build(parent,ground,options)
   model=StageFour.Build(staging,CFrame.identity)
   local authoredScale=model:GetScale()
   model:ScaleTo(1);model.Name=NAME
-  -- Clear inherited emissive dressing; geometry is readable without final FX.
+  -- Retain existing energy glow for the requested illuminated preview.
   for _,p in ipairs(model:GetDescendants()) do
-   if p:IsA("BasePart") and p.Material==Enum.Material.Neon then p.Material=Enum.Material.SmoothPlastic end
    if p:IsA("Light") or p:IsA("ParticleEmitter") then p.Enabled=false end
   end
   for _,p in ipairs(model:GetChildren()) do
@@ -78,6 +77,7 @@ function Builder.Build(parent,ground,options)
    CFrame.new(0,chestY,backZ-width*0.035),FIELD)
   core.Shape=Enum.PartType.Ball;core:SetAttribute("RigRegion","Torso")
   core:SetAttribute("Stage5EnergyRole","Core")
+  core.Material=Enum.Material.Neon;core:SetAttribute("KaijuArmorEnergy",true)
   local inner,outer={},{}
   for i=1,12 do
    local angle=(i-1)*math.pi/6
@@ -151,6 +151,40 @@ function Builder.Build(parent,ground,options)
       point(a,yTop),point(b,yTop),point(b,yBottom),point(a,yBottom),
       col==2 and EDGE or ROCK,width*0.045),"Torso")
     end
+   end
+  end
+  -- Raised lateral collar: climb outside the jaw, then wrap behind each
+  -- shoulder root into the back cuirass. These plates belong to the torso.
+  local jawHalfWidth=0
+  for _,p in ipairs(model:GetChildren()) do
+   if p:IsA("BasePart") and p.Name:match("^LowerJaw") then
+    local cf,h=p.CFrame,p.Size/2
+    jawHalfWidth=math.max(jawHalfWidth,math.abs(p.Position.X)+math.abs(cf.RightVector.X)*h.X
+     +math.abs(cf.UpVector.X)*h.Y+math.abs(cf.ZVector.X)*h.Z)
+   end
+  end
+  for _,sign in ipairs({-1,1}) do
+   local shoulder=model[sign<0 and "LeftShoulderJoint" or "RightShoulderJoint"]
+   local x=math.max(jawHalfWidth+width*0.065,shoulderSpan*0.34)
+   local topY=math.max(chestY+outerY,shoulder.Position.Y+shoulder.Size.Y*0.45)
+   local rearZ=rearSurface(sign*x,rib.Position.Y,rib.Position.Z+rib.Size.Z/2)
+   local nodes={
+    Vector3.new(sign*outerX*0.73,chestY+outerY*0.64,backZ-width*0.08),
+    Vector3.new(sign*x,topY,backZ+width*0.04),
+    Vector3.new(sign*(x+width*0.045),topY,shoulder.Position.Z),
+    Vector3.new(sign*x,rib.Position.Y+rib.Size.Y*0.32,rearZ+width*0.04)}
+   for i=1,3 do
+    local a,b=nodes[i],nodes[i+1]
+    local drop=Vector3.new(0,-width*0.15,0)
+    local parts=G.Quad(model,"Stage5CollarLink_"..sign.."_"..i,a,b,b+drop,a+drop,
+     i==2 and EDGE or ROCK,width*0.075)
+    region(parts,"Torso")
+    -- Fine luminous seam along each link; shares the special-attack palette.
+    local offset=Vector3.new(sign*width*0.043,0,0)
+    local seams=G.Quad(model,"Stage5CollarEnergy_"..sign.."_"..i,
+     a+drop*0.35+offset,b+drop*0.35+offset,b+drop*0.41+offset,a+drop*0.41+offset,FIELD,width*0.012)
+    region(seams,"Torso")
+    for _,p in ipairs(seams) do p.Material=Enum.Material.Neon;p:SetAttribute("KaijuArmorEnergy",true) end
    end
   end
   -- Staggered cover plates bridge the seams of the shoulder-spanning back armor.
@@ -285,7 +319,7 @@ function Builder.Build(parent,ground,options)
    for strip=1,3 do
     local t0,t1=(strip-1)/3,strip/3
     for _,p in ipairs(G.Quad(bay,"Field"..strip,a:Lerp(b,t0),a:Lerp(b,t1),top(t1),top(t0),FIELD,0.035)) do
-     p.Transparency=0.42;p.CastShadow=false;p:SetAttribute("GeometryProxy",true)
+     p.Transparency=0.42;p.Material=Enum.Material.Neon;p.CastShadow=false;p:SetAttribute("GeometryProxy",true)
     end
    end
   end
