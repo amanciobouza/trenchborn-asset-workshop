@@ -102,6 +102,25 @@ function Rig.Attach(model, movementRoot, humanoid, options)
  local rootJoint=rootMotor and poseJoint(rootMotor)
  local rootOffset=rootJoint and rootJoint.C0
  local rootRest=movementRoot and movementRoot.CFrame*rootOffset or bones.Pelvis.CFrame
+ local sailView
+ local sailRef=model:FindFirstChild("KaijuSailRenderer")
+ if sailRef and sailRef.Value then
+  local function anchorFrame(attachment)
+   local cache={}
+   local function world(name)
+    if cache[name] then return cache[name] end
+    if name=="Pelvis" then
+     cache[name]=rootJoint and rootJoint.Part0.CFrame*rootJoint.C0 or bones.Pelvis.CFrame
+    else
+     local joint=motors[name];cache[name]=world(joint.Part0.Name)*joint.C0
+    end
+    return cache[name]
+   end
+   local plate=attachment.Parent
+   return world(plate:GetAttribute("RigRegion"))*plate:GetAttribute("RigLocalFrame")*attachment.CFrame
+  end
+  sailView=require(sailRef.Value).Attach(model,effectsFolder,anchorFrame)
+ end
  local tailCount=0
  while bones["Tail"..(tailCount+1)] do tailCount=tailCount+1 end
  for _,part in ipairs(model:GetChildren()) do
@@ -659,6 +678,7 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 		if destroying then destroying:Disconnect() end
 		if healthConnection then healthConnection:Disconnect() end
 		if poseConnection then poseConnection:Disconnect() end
+  if sailView then sailView.Destroy() end
 		for _, joint in ipairs(ownedJoints) do
 			if joint.Real.Parent then joint.Real.Transform=CFrame.identity end
 		end
@@ -824,6 +844,7 @@ function Rig.Attach(model, movementRoot, humanoid, options)
  end
  -- Apply after Animator, using the non-replicated animation layer.
  poseConnection=RunService.PreSimulation:Connect(function()
+  if sailView then sailView.Update() end
   for _,joint in ipairs(ownedJoints) do
    if joint.Real.Parent then joint.Real.Transform=joint.Inverse*joint.C0 end
   end

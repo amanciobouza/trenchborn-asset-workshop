@@ -165,7 +165,7 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 	end
 	local scale=kaiju:GetScale()
 	local stage=kaiju:GetAttribute("EvolutionStage")
-	local chestHeightFinisher=stage==2 or stage==3 or stage==4
+	local chestHeightFinisher=stage==2 or stage==3 or stage==4 or stage==5
 	kaiju:SetAttribute("KaijuAreaVisualRadius",AREA_RADIUS*scale)
 	local function release(restore)
 		if liftConnection then liftConnection:Disconnect();liftConnection=nil end

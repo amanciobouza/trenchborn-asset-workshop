@@ -95,3 +95,7 @@ Eleven dorsal spars support ten filled static sail proxies. Each bay uses three 
 The existing workshop still equips Stage 4. A stationary Stage 5 candidate appears at origin offset X=-155 with a STAGE 5 · GEOMETRY REVIEW label. Its failure is reported without aborting Stage 4 setup. Stage5Scale is a build-time script attribute, like the earlier stage scale controls. No animation rig is attached to this static candidate: assigning a sail to only one bone would give a misleading movement preview. Two-anchor animated sail presentation remains the next geometry task.
 
 `python tools/test-stage5-geometry.py` checks triangle area/vertices and right-handed frames, degenerate input, ten filled bays and forty anchor references, cleanup, scale/ground placement and pending approval attributes. Build orchestration uses a synthetic Stage 4 fixture, not the full Roblox geometry. Actual full-model generation, visual proportions, overlaps and dynamic sail clearance are unverified until Studio review. Quality Gate B remains pending.
+
+### Steuerbare Geometrievorschau
+
+Die Workshop-Vorschau rüstet jetzt Stufe 5 aus; Stufe 4 bleibt als Vergleich stehen. Bewegung, Sprung, Angriffe, Brusthöhen-Finisher und Gebäudekollision verwenden die gemeinsamen Systeme. Zehn Segelfelder werden clientseitig aus beiden animierten Plattenrahmen aktualisiert, mit wiederverwendeten Dreiecksteilen und vollständigem Aufräumen beim Respawn. Die Geometrievorschau bleibt Phase 4; Gate B und C sind offen. Bewegung, Segelanschlüsse und Gebäudeverhalten müssen in Studio geprüft werden.

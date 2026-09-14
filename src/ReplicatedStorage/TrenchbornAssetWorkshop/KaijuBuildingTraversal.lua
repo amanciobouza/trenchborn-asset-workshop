@@ -4,7 +4,7 @@ local RunService=game:GetService("RunService")
 local Traversal={}
 function Traversal.Attach(model,root,humanoid,rootHeight,collider,combat,player)
  local stage=model:GetAttribute("EvolutionStage")
- assert(type(stage)=="number" and stage>=1 and stage<=4,"Stage 1–4 required")
+ assert(type(stage)=="number" and stage>=1 and stage<=5,"Stage 1–5 required")
  assert(type(combat.TraversalTargets)=="function" and type(combat.StepImpact)=="function","Traversal requires TraversalTargets and StepImpact")
  local scale=model:GetScale()
  local character=model.Parent

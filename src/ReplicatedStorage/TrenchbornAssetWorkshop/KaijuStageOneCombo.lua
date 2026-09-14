@@ -113,7 +113,7 @@ function Combo.new(prepareFinisher,evolutionStage)
 	function state:Sample(now)
 		if not self.Active then return nil end
 		local attack = attacks[self.Index]
-		local frames = (evolutionStage==2 or evolutionStage==3 or evolutionStage==4) and self.Index==4 and chestHeightTear or attack.Frames
+		local frames = (evolutionStage==2 or evolutionStage==3 or evolutionStage==4 or evolutionStage==5) and self.Index==4 and chestHeightTear or attack.Frames
 		local t = now-self.Started
 		local duration = frames[#frames][1]
 		-- Crossing markers (not equality checks) survives skipped animation frames.

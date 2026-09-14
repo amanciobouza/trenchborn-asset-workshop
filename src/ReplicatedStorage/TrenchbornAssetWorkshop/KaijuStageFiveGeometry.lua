@@ -9,7 +9,8 @@ function Geometry.Part(parent,name,size,cf,color,class)
 end
 -- Split a triangle on its longest side. Native wedge cross-section vertices
 -- are (-Y,-Z), (-Y,+Z), (+Y,+Z); both halves have their right angle at the foot.
-function Geometry.Triangle(parent,name,a,b,c,color,thickness)
+function Geometry.Triangle(parent,name,a,b,c,color,thickness,reuse)
+ if reuse then for _,p in ipairs(reuse) do p.Transparency=1 end end
  local ab,bc,ca=(b-a).Magnitude,(c-b).Magnitude,(a-c).Magnitude
  if ab>bc and ab>=ca then a,b,c=c,a,b elseif ca>bc and ca>=ab then a,b,c=b,c,a end
  local length=(c-b).Magnitude
@@ -25,7 +26,8 @@ function Geometry.Triangle(parent,name,a,b,c,color,thickness)
   local width,back=entry[1],entry[2]
   if width>1e-5 then
    local cf=CFrame.fromMatrix(foot+up*(height/2)-back*(width/2),up:Cross(back),up,back)
-   local p=Geometry.Part(parent,name.."_"..index,Vector3.new(thickness or 0.06,height,width),cf,color,"WedgePart")
+   local p=reuse and reuse[index] or Geometry.Part(parent,name.."_"..index,Vector3.new(thickness or 0.06,height,width),cf,color,"WedgePart")
+   p.Size=Vector3.new(thickness or 0.06,height,width);p.CFrame=cf;if reuse then p.Transparency=0.42 end
    table.insert(result,p)
   end
  end

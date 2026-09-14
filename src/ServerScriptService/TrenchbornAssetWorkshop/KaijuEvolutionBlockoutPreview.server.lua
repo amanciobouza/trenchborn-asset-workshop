@@ -30,7 +30,7 @@ end
 if soleBottom<math.huge then
 	display:PivotTo(display:GetPivot()+Vector3.new(0,origin.Position.Y-soleBottom,0))
 end
--- Keep Stages 1–3 as stationary comparisons; equip Stage 4 on respawn.
+-- Keep Stages 1–4 as stationary comparisons; equip Stage 5 on respawn.
 local stormBuilder=require(packageFolder:WaitForChild("KaijuStageTwoGoldenMaster"))
 local stormOrigin=origin*CFrame.new(42,0,0)
 local storm=stormBuilder.Build(workshop,stormOrigin,stageTwoOptions)
@@ -56,26 +56,16 @@ local stageFourOrigin=origin*CFrame.new(-96,0,0)
 local stageFour=stageFourBuilder.Build(workshop,stageFourOrigin,{Scale=script:GetAttribute("Stage4Scale")})
 local stageFourDressing=require(packageFolder:WaitForChild("KaijuStageFourDressing"))
 stageFourDressing.Apply(stageFour)
--- Stage 5 Phase 4 candidate is a stationary comparison, not gameplay-approved.
 local stageFiveBuilder=require(packageFolder:WaitForChild("KaijuStageFiveGoldenMaster"))
-local stageFiveOK,stageFive=pcall(stageFiveBuilder.Build,workshop,origin*CFrame.new(-155,0,0),
- {Scale=script:GetAttribute("Stage5Scale")})
-if stageFiveOK then
- local gui=Instance.new("BillboardGui");gui.Name="StageFiveReviewLabel"
- gui.Adornee=stageFive:FindFirstChild("Cranium");gui.Size=UDim2.fromOffset(360,64)
- gui.StudsOffsetWorldSpace=Vector3.new(0,10,0);gui.MaxDistance=260;gui.Parent=stageFive
- local label=Instance.new("TextLabel");label.Size=UDim2.fromScale(1,1)
- label.BackgroundColor3=Color3.fromRGB(25,29,38);label.BackgroundTransparency=0.2
- label.TextColor3=Color3.fromRGB(240,210,70);label.TextScaled=true
- label.Text="STAGE 5 · GEOMETRY REVIEW";label.Parent=gui
- workshop:SetAttribute("GeometryReviewAsset","Stage5")
- print("[Stage 5 | Phase 4] Static candidate left of comparisons: crater chest and 10 sail fields. Gate B pending.")
-else
- warn("[Stage 5 geometry] "..tostring(stageFive))
-end
-local template=stageFour:Clone()
-local pivotFromGround=stageFourOrigin:ToObjectSpace(template:GetPivot())
-stageFour:Destroy()
+local stageFiveOrigin=origin*CFrame.new(-155,0,0)
+local stageFive=stageFiveBuilder.Build(workshop,stageFiveOrigin,{Scale=script:GetAttribute("Stage5Scale")})
+local renderer=Instance.new("ObjectValue");renderer.Name="KaijuSailRenderer"
+renderer.Value=packageFolder:WaitForChild("KaijuEnergySailPresentation");renderer.Parent=stageFive
+local template=stageFive:Clone()
+local pivotFromGround=stageFiveOrigin:ToObjectSpace(template:GetPivot())
+stageFive:Destroy()
+stageOneRig.Attach(stageFour)
+stageFour:SetAttribute("AnimationMode","Idle")
 stageOneRig.Attach(stageThree)
 stageThree:SetAttribute("AnimationMode","Idle")
 stageThreeTitle.Text="STAGE 3 · COMPARISON"
@@ -102,8 +92,8 @@ local function equip(player, character)
 	local humanoid = character:WaitForChild("Humanoid", 15)
 	local root = character:WaitForChild("HumanoidRootPart", 15)
 	if not humanoid or not root or player.Character ~= character then return end
-	if character:GetAttribute("KaijuStageFourEquipped") then return end
-	character:SetAttribute("KaijuStageFourEquipped", true)
+	if character:GetAttribute("KaijuStageFiveEquipped") then return end
+	character:SetAttribute("KaijuStageFiveEquipped", true)
 	-- Finish avatar scaling before calculating the ground-to-root offset.
 	local deadline = os.clock() + 10
 	while not player:HasAppearanceLoaded() and os.clock() < deadline do
@@ -115,7 +105,7 @@ local function equip(player, character)
 	-- Retain Roblox's controller for keyboard, controller, touch, gravity and
 	-- respawning. Only its visible avatar is replaced.
 	local kaiju = template:Clone()
-	kaiju.Name = "Stage_4_Geometry_Review"
+	kaiju.Name = "Stage_5_Geometry_Review"
 	local function hideAvatar(item)
 		if item:IsDescendantOf(kaiju) then return end
 		if item:IsA("BasePart") then
@@ -150,16 +140,12 @@ local function equip(player, character)
   Torso=ground:PointToObjectSpace(kaiju.LowerRibcage.Position).Y})
 	local combat = combatModule.Attach(kaiju, root, humanoid, height)
 	local rig = stageOneRig.Attach(kaiju, root, humanoid, combat)
- -- Phase 6 reuses the shared runtime; only the Stage 4 in-game review is pending.
- kaiju:SetAttribute("PipelinePhase",6)
- kaiju:SetAttribute("QualityGateB","ApprovedByUser")
- kaiju:SetAttribute("DressingReview","ApprovedByUser")
- kaiju:SetAttribute("QualityGateC","Pending_Stage4GameplayReview")
- kaiju:SetAttribute("FinisherReview","ApprovedByUser")
- kaiju:SetAttribute("HipTowerEscapeReview","ApprovedByUser")
- kaiju:SetAttribute("ReactionRespawnReview","ApprovedByUser")
- kaiju:SetAttribute("SlopeReview","Pending_UserStudioReview")
- kaiju:SetAttribute("MultiplayerReview","Pending_UserStudioReview")
+ -- Playable posing preview does not approve Stage 5 geometry or gameplay.
+ kaiju:SetAttribute("PipelinePhase",4)
+ kaiju:SetAttribute("QualityGateB","Pending_UserGeometryReview")
+ kaiju:SetAttribute("DressingReview","Pending_Phase5")
+ kaiju:SetAttribute("QualityGateC","Pending")
+ kaiju:SetAttribute("SailPresentation","TwoAnchorClientGeometry")
 	local reactionTestConnection
 	if game:GetService("RunService"):IsStudio() then
 		local testRemote=Instance.new("RemoteEvent");testRemote.Name="TestReaction";testRemote.Parent=kaiju
@@ -231,10 +217,10 @@ local function equip(player, character)
 		lastAttackRequest = now
 		rig.RequestAttack()
 	end)
-	kaiju:SetAttribute("GeometryAmendmentReview", "ApprovedByUser")
-	kaiju:SetAttribute("QualityGateB","ApprovedByUser")
-	kaiju:SetAttribute("GameplayReview","Pending_UserStage4InGameReview")
-	kaiju:SetAttribute("RuntimeReview","Pending_UserStage4InGameReview")
+	kaiju:SetAttribute("GeometryAmendmentReview", "Pending_UserGeometryReview")
+	kaiju:SetAttribute("QualityGateB","Pending_UserGeometryReview")
+	kaiju:SetAttribute("GameplayReview","Pending_Stage5GeometryPoseReview")
+	kaiju:SetAttribute("RuntimeReview","Pending_Stage5GeometryPoseReview")
 	kaiju:SetAttribute("WorkshopOnly",true)
 	kaiju:SetAttribute("ControlledBy", player.UserId)
 
@@ -297,8 +283,8 @@ end
 Players.PlayerAdded:Connect(connectPlayer)
 Players.PlayerRemoving:Connect(combatModule.RemoveRange)
 for _, player in ipairs(Players:GetPlayers()) do connectPlayer(player) end
-workshop:SetAttribute("CurrentAsset", "Kaiju Stage 4 - Caldera Tyrant")
-workshop:SetAttribute("CurrentPhase", 6)
-workshop:SetAttribute("QualityStatus", "Stage4_GameplayReview_GeometryAndDressingApproved")
-print("[Kaiju Stage 4 | Phase 6] Geometry and dressing approved. In-game review pending.")
-print("[Stage 4 test] Walk/run, F combo, Space jump/landing, E focus, R area, Reaction test, respawn.")
+workshop:SetAttribute("CurrentAsset", "Kaiju Stage 5 - Geometry Review")
+workshop:SetAttribute("CurrentPhase", 4)
+workshop:SetAttribute("QualityStatus", "Stage5_PlayableGeometryReview")
+print("[Kaiju Stage 5 | Phase 4] Playable geometry preview. Geometry approval pending.")
+print("[Stage 5 geometry test] Walk/run, F combo, Space jump/landing, E focus, R area, Reaction test, respawn.")

@@ -354,7 +354,7 @@ Instance.new=function(kind)
  if kind=="RemoteEvent" then p.OnServerEvent=signal() end
  return p
 end
-for stage=1,4 do for _,scale in ipairs({0.5,1,2}) do
+for stage=1,5 do for _,scale in ipairs({0.5,1,2}) do
  local character=Instance.new("Model");character.Parent=workspace
  local model=Instance.new("Model");model.Parent=character;model.Scale=scale;model:SetAttribute("EvolutionStage",stage)
  local root=Instance.new("Part");root.Parent=character
@@ -388,7 +388,7 @@ for stage=1,4 do for _,scale in ipairs({0.5,1,2}) do
  assert(not folder.Parent and not remote.Parent,"Uninstall removes traversal folder and footfall remote")
  character:Destroy();building:Destroy()
 end end
-print("PASS: shared traversal setup and cleanup, stages 1–4 at scales 0.5/1/2, torso exemptions and NPC footfall rejection")
+print("PASS: shared traversal setup and cleanup, stages 1–5 at scales 0.5/1/2, torso exemptions and NPC footfall rejection")
 ''')
 
 # Execute the new installer against stubbed geometry/runtime dependencies.

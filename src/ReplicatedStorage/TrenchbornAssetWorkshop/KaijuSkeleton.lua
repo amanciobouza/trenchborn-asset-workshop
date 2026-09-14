@@ -108,7 +108,7 @@ function Skeleton.Build(model,movementRoot)
 		return "Torso"
 	end
 	for _, p in ipairs(visuals) do
-		local name = region(p.Name)
+		local name = p:GetAttribute("RigRegion") or region(p.Name)
 		assert(bones[name], "Unknown region: " .. name)
 		local weld = Instance.new("WeldConstraint")
 		weld.Name = "RigWeld"

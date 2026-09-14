@@ -129,4 +129,30 @@ for _,scale in ipairs({0.5,1,2}) do
 end
 print('PASS: Stage 5 triangle area/vertices/winding, degenerate handling, build orchestration, 10 filled bays, 40 anchor links, scaling, ground contact and pending gates (synthetic Stage 4 fixture)')
 '''
+code+='local Renderer=(function()\n'+(SRC/'KaijuEnergySailPresentation.lua').read_text()+'\nend)()\n'
+code+=r'''
+local parent=Instance.new('Folder')
+local m=Builder.Build(parent,CFrame.identity,{Scale=1})
+local source=m:FindFirstChild('Stage5SailGeometry')
+for _,p in ipairs(source:GetDescendants()) do if p:IsA('BasePart') then p.LocalTransparencyModifier=0 end end
+local offset=Vector3.zero
+local collapsed=false
+local view=Renderer.Attach(m,parent,function(ref)return CFrame.new(collapsed and offset or ref.WorldPosition+offset) end)
+local moving=parent:FindFirstChild('MovingEnergySails')
+assert(#moving:GetChildren()==120)
+view.Update()
+local first
+for _,p in ipairs(moving:GetChildren()) do if p.Transparency<1 then first=p;break end end
+assert(first)
+local start=first.Position
+offset=Vector3.new(7,3,-2);view.Update()
+assert((first.Position-start-offset).Magnitude<1e-6)
+assert(#moving:GetChildren()==120)
+collapsed=true;view.Update()
+for _,p in ipairs(moving:GetChildren()) do assert(p.Transparency==1) end
+view.Destroy();view.Destroy();view.Update()
+assert(not moving.Parent)
+for _,p in ipairs(source:GetDescendants()) do if p:IsA('BasePart') then assert(p.LocalTransparencyModifier==0) end end
+print('PASS: moving sail anchors, fixed part count, degenerate hiding and idempotent cleanup')
+'''
 run(code)
