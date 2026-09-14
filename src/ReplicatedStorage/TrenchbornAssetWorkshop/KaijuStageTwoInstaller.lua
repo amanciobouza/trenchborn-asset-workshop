@@ -4,14 +4,15 @@ local Players=game:GetService("Players")
 local Builder=require(script.Parent:WaitForChild("KaijuEvolutionBlockout"))
 local StageTwo=require(script.Parent:WaitForChild("KaijuStageTwoGoldenMaster"))
 local Rig=require(script.Parent:WaitForChild("KaijuStageOneRig"))
-local Installer={Version="1.1.2",ApprovedRevision="803c8ae4789f87b1a20ba6fa5433ecfda5e49675"}
+local Installer={Version="1.1.3",ApprovedRevision="803c8ae4789f87b1a20ba6fa5433ecfda5e49675"}
 local installations=setmetatable({}, {__mode="k"})
 local NAME="Stage_2_Storm_Hunter"
 local function stamp(model)
  model:SetAttribute("PipelinePhase",7)
  model:SetAttribute("QualityGateB","ApprovedByUser")
  model:SetAttribute("QualityGateC","Pending_ClientPresentation")
- model:SetAttribute("RuntimeReview","ApprovedByUser")
+ model:SetAttribute("RuntimeReview","Pending_FinisherRetest")
+ model:SetAttribute("FinisherReview","Pending_UserInGameReview")
  model:SetAttribute("DressingReview","ApprovedByUser")
  model:SetAttribute("Purpose","Portable Storm Hunter player character")
  model:SetAttribute("FinalInstallerVersion",Installer.Version)

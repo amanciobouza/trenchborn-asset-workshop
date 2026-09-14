@@ -70,11 +70,11 @@ local function flash(model)
 	TweenService:Create(h,TweenInfo.new(0.22),{FillTransparency=1}):Play()
 	Debris:AddItem(h,0.25)
 end
-local function splitBuilding(target, data, right, stageFourScale)
+local function splitBuilding(target, data, right, chestTearScale)
 	-- Two recognizable building halves, each retaining its piece of the roof.
 	for _, sign in ipairs({-1,1}) do
 		local pivot=data.Body.CFrame*CFrame.new(sign*data.Body.Size.X/4,0,0)
-		local shift=right*(sign*8*(stageFourScale or 1))+Vector3.new(0,stageFourScale and -0.5*stageFourScale or 3,0)
+		local shift=right*(sign*8*(chestTearScale or 1))+Vector3.new(0,chestTearScale and -0.5*chestTearScale or 3,0)
 		local transform=CFrame.new(shift)*pivot*CFrame.Angles(0,0,-sign*0.35)*pivot:Inverse()
 		for _, source in ipairs({data.Body,data.Roof}) do
 			local p=part(target.Parent,"TornBuildingHalf",Vector3.new(source.Size.X/2,source.Size.Y,source.Size.Z),
@@ -164,6 +164,8 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 		kaiju:SetAttribute("FinisherAvailable",false)
 	end
 	local scale=kaiju:GetScale()
+	local stage=kaiju:GetAttribute("EvolutionStage")
+	local chestHeightFinisher=stage==2 or stage==3 or stage==4
 	kaiju:SetAttribute("KaijuAreaVisualRadius",AREA_RADIUS*scale)
 	local function release(restore)
 		if liftConnection then liftConnection:Disconnect();liftConnection=nil end
@@ -213,7 +215,7 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 			if not leftFrame or not rightFrame then cancel();return end
 			local grip=(leftFrame.Position+rightFrame.Position)/2
 			local destination=CFrame.new(grip)*root.CFrame.Rotation
-			if kaiju:GetAttribute("EvolutionStage")==4 then
+			if chestHeightFinisher then
 				local jawFrame=poseProvider.GetCombatFrame(kaiju,"Jaw")
 				local torsoFrame=poseProvider.GetCombatFrame(kaiju,"Torso")
 				local jaw=kaiju.LowerJawRear
@@ -440,7 +442,7 @@ function Combat.Attach(kaiju, root, humanoid, rootHeight)
 			end)
 		end
 		if data.Health==0 then
-			if lifted then splitBuilding(target,data,root.CFrame.RightVector,kaiju:GetAttribute("EvolutionStage")==4 and scale or nil) end
+			if lifted then splitBuilding(target,data,root.CFrame.RightVector,chestHeightFinisher and scale or nil) end
 			release(false)
 			target:SetAttribute("Destroyed",true)
 			data.Gui.Enabled=false

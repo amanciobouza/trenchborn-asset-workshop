@@ -4,14 +4,15 @@ local Players=game:GetService("Players")
 local Builder=require(script.Parent:WaitForChild("KaijuEvolutionBlockout"))
 local StageThree=require(script.Parent:WaitForChild("KaijuStageThreeGoldenMaster"))
 local Rig=require(script.Parent:WaitForChild("KaijuStageOneRig"))
-local Installer={Version="1.1.2",ApprovedRevision="8a88c8ab7fe9e36ce6b7c6ea3f9c911942513456"}
+local Installer={Version="1.1.3",ApprovedRevision="8a88c8ab7fe9e36ce6b7c6ea3f9c911942513456"}
 local installations=setmetatable({}, {__mode="k"})
 local NAME="Stage_3_Rift_Stalker"
 local function stamp(model)
  model:SetAttribute("PipelinePhase",7)
  model:SetAttribute("QualityGateB","ApprovedByUser")
  model:SetAttribute("QualityGateC","Pending_ClientPresentation")
- model:SetAttribute("RuntimeReview","ApprovedByUser")
+ model:SetAttribute("RuntimeReview","Pending_FinisherRetest")
+ model:SetAttribute("FinisherReview","Pending_UserInGameReview")
  model:SetAttribute("DressingReview","ApprovedByUser")
  model:SetAttribute("Purpose","Portable Rift Stalker player character")
  model:SetAttribute("FinalInstallerVersion",Installer.Version)

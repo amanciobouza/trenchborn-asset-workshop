@@ -48,9 +48,9 @@ local attacks = {
 		{2.45,{},0},
 	}},
 }
--- Stage 4 holds the building below the jaw, then tears across the chest.
+-- Stages 2–4 hold the building below the jaw, then tear across the chest.
 -- Keep grab/impact/recovery timings identical on server and clients.
-local stageFourTear={
+local chestHeightTear={
  {0,{},0},
  {0.38,tear(-34,48,12,40,4,-4,0),2.6},
  {0.62,tear(-38,44,16,44,2,-7,0),3.0},
@@ -113,7 +113,7 @@ function Combo.new(prepareFinisher,evolutionStage)
 	function state:Sample(now)
 		if not self.Active then return nil end
 		local attack = attacks[self.Index]
-		local frames = evolutionStage==4 and self.Index==4 and stageFourTear or attack.Frames
+		local frames = (evolutionStage==2 or evolutionStage==3 or evolutionStage==4) and self.Index==4 and chestHeightTear or attack.Frames
 		local t = now-self.Started
 		local duration = frames[#frames][1]
 		-- Crossing markers (not equality checks) survives skipped animation frames.

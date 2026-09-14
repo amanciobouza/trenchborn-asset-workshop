@@ -115,6 +115,26 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 	for _,p in ipairs(visuals) do
 		if p:GetAttribute("KaijuArmorEnergy") then table.insert(armorEnergy,p) end
 	end
+	-- Special attacks share one palette across neon parts and surface veins.
+	-- Only emissive GUI strokes are tagged; the dark fissure lips stay dark.
+	local specialEnergy={}
+	for _,p in ipairs(visuals) do
+		if string.match(p.Name,"^DorsalEnergy_") or p:GetAttribute("KaijuArmorEnergy") then
+			table.insert(specialEnergy,p)
+		end
+	end
+	for _,p in ipairs(model:GetDescendants()) do
+		if p:IsA("GuiObject") and p:GetAttribute("KaijuArmorEnergy") then
+			table.insert(specialEnergy,p)
+		end
+	end
+	local function energyColor(p)
+		return p:IsA("GuiObject") and p.BackgroundColor3 or p.Color
+	end
+	local function setEnergyColor(p,color)
+		if not p.Parent then return end
+		if p:IsA("GuiObject") then p.BackgroundColor3=color else p.Color=color end
+	end
 	local scale = model:GetScale()
 	-- Shared focus visual mass; gameplay reach/damage and pulse travel stay unchanged.
 	local focusCoreWidth = 1.30
@@ -150,6 +170,7 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 	local pelvisTurn=CFrame.identity
 	local hipYaw,hipRoll=0,0
 	local legs = {}
+	local stepClearance={}
 	local footPivots={}
 	for _, side in ipairs({"Left", "Right"}) do
 		local hip = bones[side.."Thigh"]:GetAttribute("RigRestFrame").Position
@@ -319,7 +340,7 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 	end
 	local heartbeat, destroying, healthConnection, poseConnection
 	-- ownedJoints initialized with immutable rest-frame proxies above.
-	local combo = Combo.new(combat and combat.PrepareFinisher)
+	local combo = Combo.new(combat and combat.PrepareFinisher,stage)
 	local jump = Jump.new()
 	local swimState=Enum.HumanoidStateType.Swimming
 	local swimEnabled=humanoid and humanoid:GetStateEnabled(swimState)
@@ -434,7 +455,7 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 	local function endArea()
 		if not area then return end
 		if area.ChargeSound then area.ChargeSound:Destroy() end
-		for p,color in pairs(area.Colors) do if p.Parent then p.Color=color end end
+		for p,color in pairs(area.Colors) do setEnergyColor(p,color) end
 		for _,a in ipairs(area.Attachments) do a:Destroy() end
 		area.Effects:Destroy()
 		releaseSpecial()
@@ -487,8 +508,8 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 		end
 		for i=1,#area.Nodes-1 do arc(area.Nodes[i],area.Nodes[i+1]) end
 		if #area.Nodes&gt;2 then arc(area.Nodes[#area.Nodes],area.Nodes[2]) end
-		for _,p in ipairs(visuals) do
-			if string.match(p.Name,"^DorsalEnergy_") or p:GetAttribute("KaijuArmorEnergy") then area.Colors[p]=p.Color end
+		for _,p in ipairs(specialEnergy) do
+			if p.Parent then area.Colors[p]=energyColor(p) end
 		end
 		areaReadyAt=clock()+4 -- Provisional workshop cooldown, starting at activation.
 		beginSpecial("Area")
@@ -499,7 +520,7 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 		if not focus then return end
 		if focus.ChargeSound then focus.ChargeSound:Destroy() end
 		if focus.BeamSound then focus.BeamSound:Destroy() end
-		for part,color in pairs(focus.Colors) do if part.Parent then part.Color=color end end
+		for part,color in pairs(focus.Colors) do setEnergyColor(part,color) end
 		focus.Mouth:Destroy()
 		focus.Effects:Destroy()
 		releaseSpecial()
@@ -599,8 +620,8 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 		end
 		focus.Beam=beam("Beam",focusColor)
 		focus.Core=beam("Core",Color3.fromRGB(220,255,255))
-		for _,p in ipairs(visuals) do
-			if string.match(p.Name,"^DorsalEnergy_") or p:GetAttribute("KaijuArmorEnergy") then focus.Colors[p]=p.Color end
+		for _,p in ipairs(specialEnergy) do
+			if p.Parent then focus.Colors[p]=energyColor(p) end
 		end
 		beginSpecial("Focus")
 		presentationAttribute("FocusPhase","Charging")
@@ -1011,12 +1032,37 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 					travel, lift = -stride/2 + stride*t/stance, 0
 				else
 					local swing = (t-stance)/(1-stance)
+					-- Stage 4 lifts over small registered buildings instead of swinging
+					-- through their roofs. Cache clearance for this swing, not per frame.
+					local stepHeight=model:GetAttribute("StepOverHeight")
+					local traversalHeight=model:GetAttribute("TraversalRootHeight")
+					local footX=model:GetAttribute("Traversal"..side.."FootX")
+					local footZ=model:GetAttribute("Traversal"..side.."FootZ")
+					local turn=math.floor(cycle+offset+stance/2)
+					if stepHeight and traversalHeight and footX and footZ and movementRoot and (not stepClearance[side] or stepClearance[side].Turn~=turn) then
+						local clearance=0
+						local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Exclude
+						params.FilterDescendantsInstances={model.Parent,effectsFolder}
+						local groundFrame=movementRoot.CFrame*CFrame.new(0,-traversalHeight,0)
+						for _,ahead in ipairs({-stride/2,0,stride/2}) do
+							local origin=groundFrame:PointToWorldSpace(Vector3.new(footX,
+							 stepHeight+scale,footZ+ahead*scale))
+							local hit=workspace:Raycast(origin,Vector3.new(0,-stepHeight-scale,0),params)
+							local building=hit and hit.Instance:FindFirstAncestorOfClass("Model")
+							if building and building:GetAttribute("MaxHealth") and not building:GetAttribute("Destroyed") then
+								local _,size=building:GetBoundingBox()
+								if size.Y&lt;stepHeight then clearance=math.max(clearance,hit.Position.Y-groundFrame.Position.Y+scale) end
+								end
+						end
+						stepClearance[side]={Turn=turn,Height=clearance/scale}
+					end
 					local smooth = swing*swing*(3-2*swing)
 					travel = stride/2-stride*smooth
 					-- Spend more of the swing lifting the heavy leg, then settle firmly.
 					-- Both ends and the apex have zero vertical velocity.
 					local liftPhase=swing&lt;0.52 and swing/0.52 or (1-swing)/0.48
-					lift = (2.6+0.2*runBlend)*liftPhase*liftPhase*(3-2*liftPhase)
+					lift = math.max(2.6+0.2*runBlend,stepHeight and stepClearance[side] and stepClearance[side].Height or 0)
+					 *liftPhase*liftPhase*(3-2*liftPhase)
 					-- After toe-off, finish the push behind the hips before recovering forward.
 					local rearKick=math.sin(math.pi*math.min(swing/0.36,1))^2*runBlend
 					travel=travel+2.4*rearKick
@@ -1027,6 +1073,13 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 				local contact=math.floor(cycle+offset+stance/2)
 				if not special and soundContacts[side] and contact&gt;soundContacts[side] then
 					feedback(running and "RunStep" or "Step",bones[side.."Foot"])
+					-- Report the rendered sole contact only from its owning client.
+					-- Server traversal validates timing/foot envelope and chooses targets.
+					local remote=model:FindFirstChild("ReportFootfall")
+					if remote and owner==game:GetService("Players").LocalPlayer then
+						local sole=model:FindFirstChild(side.."ForefootCoreY")
+						if sole then remote:FireServer(side,sole.CFrame:PointToWorldSpace(Vector3.new(0,-sole.Size.Y/2,0))) end
+					end
 				end
 				soundContacts[side]=contact
 				if running and runBlend&gt;0.8 then
@@ -1183,7 +1236,7 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 			for p,color in pairs(focus.Colors) do
 				local index=tonumber(string.match(p.Name,"^DorsalEnergy_(%d+)")) or 1
 				local onset=math.clamp((tailCount-index)/(tailCount-1),0,1)*1.5
-				p.Color=color:Lerp(focusColor,math.clamp((t-onset)/0.3,0,1)*fadeOut)
+				setEnergyColor(p,color:Lerp(focusColor,math.clamp((t-onset)/0.3,0,1)*fadeOut))
 			end
 			local orbSize=(0.15+charge*0.85)*(1+0.08*math.sin(t*28)*charge)*scale*fadeOut*focusChargeScale
 			focus.Orb.Size=Vector3.new(orbSize,orbSize,orbSize)
@@ -1263,7 +1316,7 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 			end
 			for p,color in pairs(area.Colors) do
 				local charged=focusColor:Lerp(Color3.fromRGB(220,255,255),release*0.7)
-				p.Color=color:Lerp(charged,tension)
+				setEnergyColor(p,color:Lerp(charged,tension))
 			end
 			presentationAttribute("AreaPhase",areaTime&lt;AREA_TIMING.Discharge and "Charging" or areaTime&lt;AREA_TIMING.Recovery and "Discharge" or "Recovery")
 			if areaTime&gt;=AREA_TIMING.Discharge and not area.Hit then
@@ -1698,14 +1751,15 @@ local Players=game:GetService("Players")
 local Builder=require(script.Parent:WaitForChild("KaijuEvolutionBlockout"))
 local StageThree=require(script.Parent:WaitForChild("KaijuStageThreeGoldenMaster"))
 local Rig=require(script.Parent:WaitForChild("KaijuStageOneRig"))
-local Installer={Version="1.1.2",ApprovedRevision="8a88c8ab7fe9e36ce6b7c6ea3f9c911942513456"}
+local Installer={Version="1.1.3",ApprovedRevision="8a88c8ab7fe9e36ce6b7c6ea3f9c911942513456"}
 local installations=setmetatable({}, {__mode="k"})
 local NAME="Stage_3_Rift_Stalker"
 local function stamp(model)
  model:SetAttribute("PipelinePhase",7)
  model:SetAttribute("QualityGateB","ApprovedByUser")
  model:SetAttribute("QualityGateC","Pending_ClientPresentation")
- model:SetAttribute("RuntimeReview","ApprovedByUser")
+ model:SetAttribute("RuntimeReview","Pending_FinisherRetest")
+ model:SetAttribute("FinisherReview","Pending_UserInGameReview")
  model:SetAttribute("DressingReview","ApprovedByUser")
  model:SetAttribute("Purpose","Portable Rift Stalker player character")
  model:SetAttribute("FinalInstallerVersion",Installer.Version)
@@ -3419,7 +3473,7 @@ function Rig.Attach(model,root,humanoid,combat)
  end
  local rootRef=Instance.new("ObjectValue");rootRef.Name="KaijuMovementRoot";rootRef.Value=root;rootRef.Parent=model
  local humanRef=Instance.new("ObjectValue");humanRef.Name="KaijuHumanoid";humanRef.Value=humanoid;humanRef.Parent=model
- local combo=Combo.new(combat and combat.PrepareFinisher)
+ local combo=Combo.new(combat and combat.PrepareFinisher,model:GetAttribute("EvolutionStage"))
  local jump=Jump.new()
  local stopped,runRequested=false,false
  local focus,area,lock,reaction,defeat
@@ -3491,7 +3545,7 @@ function Rig.Attach(model,root,humanoid,combat)
  local function combatFrame(name)
   local poses,weight,crouch
   if combo.Active then
-   local sample=Combo.new();sample.Index=combo.Index;sample.Started=combo.Started;sample.Active=true
+   local sample=Combo.new(nil,model:GetAttribute("EvolutionStage"));sample.Index=combo.Index;sample.Started=combo.Started;sample.Active=true
    local ignoredName,ignoredIndex
    poses,weight,ignoredName,ignoredIndex,crouch=sample:Sample(now())
   end
@@ -3764,8 +3818,22 @@ local attacks = {
 		{2.45,{},0},
 	}},
 }
+-- Stages 2–4 hold the building below the jaw, then tear across the chest.
+-- Keep grab/impact/recovery timings identical on server and clients.
+local chestHeightTear={
+ {0,{},0},
+ {0.38,tear(-34,48,12,40,4,-4,0),2.6},
+ {0.62,tear(-38,44,16,44,2,-7,0),3.0},
+ {0.92,tear(-5,72,12,52,5,-9,-10),0.5},
+ {1.08,tear(-5,72,12,52,5,-11,-10),0.5},
+ {1.34,tear(-5,48,12,-12,8,-18,48),0.3},
+ {1.46,tear(-3,38,10,-10,10,-20,58),0.2},
+ {1.64,tear(-5,15,18,-10,7,-14,85),0.4},
+ {1.90,tear(-5,15,18,-10,7,-14,85),0.4},
+ {2.45,{},0},
+}
 local impactTimes = {0.44, 0.44, 0.54, 1.34}
-function Combo.new(prepareFinisher)
+function Combo.new(prepareFinisher,evolutionStage)
 	local state = {Index=0, Started=0, Ended=-math.huge, Active=false, Queued=false, Events={}}
 	local function start(index, now)
 		state.Index=index
@@ -3815,7 +3883,7 @@ function Combo.new(prepareFinisher)
 	function state:Sample(now)
 		if not self.Active then return nil end
 		local attack = attacks[self.Index]
-		local frames = attack.Frames
+		local frames = (evolutionStage==2 or evolutionStage==3 or evolutionStage==4) and self.Index==4 and chestHeightTear or attack.Frames
 		local t = now-self.Started
 		local duration = frames[#frames][1]
 		-- Crossing markers (not equality checks) survives skipped animation frames.
