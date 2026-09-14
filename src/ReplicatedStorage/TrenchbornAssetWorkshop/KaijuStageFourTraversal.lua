@@ -103,12 +103,14 @@ function Traversal.Attach(model,root,humanoid,rootHeight,collider,combat,player)
   overlap.FilterDescendantsInstances=mediumParts;overlap.RespectCanCollide=true
   local nearest,normal=horizontal.Magnitude,nil
   local translationBlocked=false
-  -- Resolve travel with the previous orientation. AutoRotate must not turn an
-  -- otherwise clear retreat into a collision and discard the entire movement.
-  local translated=CFrame.new(current.Position)*previous.Rotation
+  -- Humanoid AutoRotate owns facing. Evaluate only translation, using the
+  -- requested orientation at both endpoints so a turn cannot rewind facing.
+  -- Turning in tight spaces may briefly overlap visual armor with a building.
+  local startFrame=CFrame.new(previous.Position)*current.Rotation
+  local translated=current
   if #mediumParts>0 then
    for _,probe in pairs(probes) do
-    local before=previous*CFrame.new(0,-rootHeight,0)*probe.Offset
+    local before=startFrame*CFrame.new(0,-rootHeight,0)*probe.Offset
     local after=translated*CFrame.new(0,-rootHeight,0)*probe.Offset
     if horizontal.Magnitude>0.001 then
      local hit=workspace:Blockcast(before,probe.Size,horizontal,params)
@@ -127,31 +129,15 @@ function Traversal.Attach(model,root,humanoid,rootHeight,collider,combat,player)
    position=previous.Position+Vector3.new(0,delta.Y,0)
    if normal and horizontal.Magnitude>0 then position=position+horizontal.Unit*nearest end
   end
-  -- Test rotation at the accepted destination, never at the old position.
-  -- A rejected turn keeps successful travel and its horizontal velocity.
-  local travelFrame=CFrame.new(position)*previous.Rotation
-  local rotatedFrame=CFrame.new(position)*current.Rotation
-  local turnBlocked=false
-  if #mediumParts>0 then
-   for _,probe in pairs(probes) do
-    local before=travelFrame*CFrame.new(0,-rootHeight,0)*probe.Offset
-    local after=rotatedFrame*CFrame.new(0,-rootHeight,0)*probe.Offset
-    local existing={}
-    for _,part in ipairs(workspace:GetPartBoundsInBox(before,probe.Size,overlap)) do existing[part]=true end
-    for _,part in ipairs(workspace:GetPartBoundsInBox(after,probe.Size,overlap)) do
-     if not existing[part] then turnBlocked=true end
-    end
-   end
-  end
-  if normal or translationBlocked or turnBlocked then
-   root.CFrame=turnBlocked and travelFrame or rotatedFrame
+  if normal or translationBlocked then
+   root.CFrame=CFrame.new(position)*current.Rotation
    local velocity=root.AssemblyLinearVelocity
    if normal then
     local into=math.min(0,velocity:Dot(normal));root.AssemblyLinearVelocity=velocity-normal*into
    elseif translationBlocked then root.AssemblyLinearVelocity=Vector3.new(0,velocity.Y,0) end
   end
-  model:SetAttribute("TraversalBlocked",normal~=nil or translationBlocked or turnBlocked)
-  model:SetAttribute("TraversalTurnBlocked",turnBlocked)
+  model:SetAttribute("TraversalBlocked",normal~=nil or translationBlocked)
+  model:SetAttribute("TraversalTurnBlocked",false)
   previous=root.CFrame
  end)
  local function stop()
@@ -159,7 +145,7 @@ function Traversal.Attach(model,root,humanoid,rootHeight,collider,combat,player)
   report:Disconnect();heartbeat:Disconnect();folder:Destroy();remote:Destroy()
  end
  model.Destroying:Once(stop)
- model:SetAttribute("TraversalRevision","S4_UnifiedBodyBuildingCollision_03")
+ model:SetAttribute("TraversalRevision","S4_FreeFacingTranslationCollision_04")
  model:SetAttribute("StepOverHeight",kneeHeight)
  model:SetAttribute("TraversalRootHeight",rootHeight)
  return {Destroy=stop}

@@ -108,14 +108,18 @@ local function move(x,z,yaw,vx,vz)
  update()
 end
 move(0,1,1)
-assert(root.CFrame.Position.Z==1 and root.CFrame.Yaw==0,'Blocked turn must preserve retreat')
-assert(root.AssemblyLinearVelocity.Z==10 and attrs.TraversalTurnBlocked)
+assert(root.CFrame.Position.Z==1 and root.CFrame.Yaw==1,'Retreat must preserve requested facing')
+assert(root.AssemblyLinearVelocity.Z==10 and not attrs.TraversalTurnBlocked)
 move(0,4,1)
 assert(root.CFrame.Position.Z==4 and root.CFrame.Yaw==1 and not attrs.TraversalBlocked,'Turn once clear')
 scenario='wall';previous=CFrame.new()
 move(3,0,0,10,0)
 assert(root.CFrame.Position.X<2 and root.AssemblyLinearVelocity.X==0,'Still block travel into buildings')
 assert(root.AssemblyLinearVelocity.Y==4,'Preserve vertical motion')
+-- Even a translation correction must retain the new facing.
+scenario='wall';previous=CFrame.new()
+move(3,0,1,10,0)
+assert(root.CFrame.Position.X<2 and root.CFrame.Yaw==1,'Wall correction must never rewind facing')
 scenario='escape';previous=CFrame.new(0,0,-2)
 move(0,-1,0)
 assert(root.CFrame.Position.Z==-1,'Allow movement out of existing overlap')
@@ -131,7 +135,7 @@ move(0,1,0)
 assert(root.CFrame.Position.Z==1,'Ignore separating contact at distance zero')
 scenario='turn';previous=CFrame.new()
 move(0,0,1)
-assert(root.CFrame.Yaw==0 and attrs.TraversalTurnBlocked,'Pure turn still blocked')
+assert(root.CFrame.Yaw==1 and not attrs.TraversalTurnBlocked,'Pure turn must not face the tower again')
 '''
 # Run actual exemption setup: include torso, deduplicate, leave world untouched.
 refresh=s[s.index(' local pairsByAvatar={}'):s.index(' local previous=root.CFrame')]
@@ -166,6 +170,6 @@ if status:
 lib.lua_close.argtypes=[ctypes.c_void_p];lib.lua_close(L)
 print('Passed: valid left/right steps; wrong owner, opposite foot, NaN, airborne, special, repeated and stationary steps rejected; only small footprint-overlapping house receives damage.')
 
-print('Passed: retreat during blocked AutoRotate, turning after clearance, wall entry, overlap escape and pure-turn blocking.')
+print('Passed: retreat with requested facing, wall blocking without facing rewind, overlap escape and free in-place turns.')
 
 print('Passed: torso wall blocking, separating contact, torso/avatar building exemptions and deduplication.')
