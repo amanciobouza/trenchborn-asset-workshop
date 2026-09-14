@@ -1,4 +1,4 @@
--- Phase 4 geometry candidate; Stage 4 design approved, geometry not yet approved.
+-- Phase 4 Golden Master; Stage 4 geometry approved by the user on 2026-09-14.
 local StageThree=require(script.Parent:WaitForChild("KaijuStageThreeGoldenMaster"))
 local Base=require(script.Parent:WaitForChild("KaijuEvolutionBlockout"))
 local Builder={}
@@ -335,11 +335,13 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("BuildScale",multiplier)
   model:SetAttribute("PipelinePhase",4)
   model:SetAttribute("QualityGateA","ApprovedByUser")
-  model:SetAttribute("QualityGateB","Pending_UserGeometryReview")
+  model:SetAttribute("QualityGateB","ApprovedByUser")
+  model:SetAttribute("ApprovedGeometryCommit","6badd010b0a0650bdbe0b7f21ab90e58d23741e7")
+  model:SetAttribute("ApprovedRevision","S4_VisibleLowerJawArmor_10")
   model:SetAttribute("QualityGateC","Pending_Stage4GameplayReview")
   model:SetAttribute("GeometryRevision","S4_VisibleLowerJawArmor_10")
   model:SetAttribute("VisualTarget","Approved Stage 4 front/side/back concept")
-  model:SetAttribute("Purpose","Stage 4 geometry review; chest energy dressing follows Gate B")
+  model:SetAttribute("Purpose","Stage 4 approved geometry; ready for surface dressing")
   model.Parent=parent
  end)
  staging:Destroy()

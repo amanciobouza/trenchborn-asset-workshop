@@ -50,10 +50,12 @@ stageThreeTitle.BackgroundColor3=Color3.fromRGB(25,29,38)
 stageThreeTitle.TextColor3=Color3.fromRGB(240,210,70)
 stageThreeTitle.Text="STAGE 3 · GEOMETRY REVIEW";stageThreeTitle.TextScaled=true
 stageThreeTitle.Parent=stageThreeLabel
--- Stage 3 stays as the comparison; Stage 4 is the playable geometry candidate.
+-- Stage 3 stays as the comparison; Stage 4 previews the Phase 5 dressing.
 local stageFourBuilder=require(packageFolder:WaitForChild("KaijuStageFourGoldenMaster"))
 local stageFourOrigin=origin*CFrame.new(-96,0,0)
 local stageFour=stageFourBuilder.Build(workshop,stageFourOrigin,{Scale=script:GetAttribute("Stage4Scale")})
+local stageFourDressing=require(packageFolder:WaitForChild("KaijuStageFourDressing"))
+stageFourDressing.Apply(stageFour)
 local template=stageFour:Clone()
 local pivotFromGround=stageFourOrigin:ToObjectSpace(template:GetPivot())
 stageFour:Destroy()
@@ -129,9 +131,10 @@ local function equip(player, character)
 	combatModule.BuildRange(player, ground, character)
 	local combat = combatModule.Attach(kaiju, root, humanoid, height)
 	local rig = stageOneRig.Attach(kaiju, root, humanoid, combat)
- -- Attaching the shared runtime does not approve the new geometry or dressing.
- kaiju:SetAttribute("PipelinePhase",4)
- kaiju:SetAttribute("QualityGateB","Pending_UserGeometryReview")
+ -- Shared movement remains available for inspection; dressing/gameplay approval is pending.
+ kaiju:SetAttribute("PipelinePhase",5)
+ kaiju:SetAttribute("QualityGateB","ApprovedByUser")
+ kaiju:SetAttribute("DressingReview","Pending_UserVisualReview")
  kaiju:SetAttribute("QualityGateC","Pending_Stage4GameplayReview")
 	local reactionTestConnection
 	if game:GetService("RunService"):IsStudio() then
@@ -267,5 +270,5 @@ Players.PlayerRemoving:Connect(combatModule.RemoveRange)
 for _, player in ipairs(Players:GetPlayers()) do connectPlayer(player) end
 workshop:SetAttribute("CurrentAsset", "Kaiju Stage 3 - Rift Stalker")
 workshop:SetAttribute("CurrentPhase", 4)
-workshop:SetAttribute("QualityStatus", "Stage4_MovementPreview_GeometryPending")
+workshop:SetAttribute("QualityStatus", "Stage4_DressingPreview_GeometryApproved")
 print("[Kaiju] Play: control Stage 4 with Roblox movement. Guardian controls retired.")
