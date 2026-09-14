@@ -52,8 +52,8 @@ function Builder.Build(parent,ground,options)
    local p=model:FindFirstChild(name);if p then skinFront=math.min(skinFront,front(p)) end
   end
   -- Entire cavity is forward of the old skin: its core cannot be swallowed.
-  local depth=width*0.15
-  local backZ=skinFront-width*0.045
+  local depth=width*0.095
+  local backZ=skinFront-width*0.015
   local lipZ=backZ-depth
   local apertureX,apertureY=width*0.175,width*0.23
   local outerX,outerY=width*0.50,width*0.40
@@ -100,40 +100,54 @@ function Builder.Build(parent,ground,options)
   -- A faceted upper-back cuirass spans the shoulder roots. All pieces follow
   -- Torso; arm shells remain independently articulated at the shoulder joints.
   local rib=model.UpperRibcage
-  local backZ=-math.huge
-  for _,name in ipairs({"UpperRibcage","LowerRibcage","DorsalLumbarMass","NapeFlow"}) do
-   local p=model:FindFirstChild(name)
-   if p then
-    local cf,h=p.CFrame,p.Size/2
-    backZ=math.max(backZ,p.Position.Z+math.abs(cf.RightVector.Z)*h.X+math.abs(cf.UpVector.Z)*h.Y+math.abs(cf.ZVector.Z)*h.Z)
-   end
+  local backMasses={}
+  for _,name in ipairs({"UpperRibcage","LowerRibcage","DorsalLumbarMass","NapeFlow","LeftShoulderJoint","RightShoulderJoint"}) do
+   local p=model:FindFirstChild(name);if p then table.insert(backMasses,p) end
   end
-  local crestZ=backZ+width*0.025
+  -- Sample the outer skin at each vertex instead of using the deepest point
+  -- of the entire torso as a flat offset for both armor rows.
+  local function rearSurface(x,y,fallback)
+   local rear=-math.huge
+   for _,p in ipairs(backMasses) do
+    local o=p.CFrame:PointToObjectSpace(Vector3.new(x,y,0))
+    local d=p.CFrame:VectorToObjectSpace(Vector3.zAxis)
+    local h=p.Size/2
+    local a=(d.X/h.X)^2+(d.Y/h.Y)^2+(d.Z/h.Z)^2
+    local b=2*(o.X*d.X/h.X^2+o.Y*d.Y/h.Y^2+o.Z*d.Z/h.Z^2)
+    local c=(o.X/h.X)^2+(o.Y/h.Y)^2+(o.Z/h.Z)^2-1
+    local discriminant=b*b-4*a*c
+    if discriminant>=0 then rear=math.max(rear,(-b+math.sqrt(discriminant))/(2*a)) end
+   end
+   return rear>-math.huge and rear or fallback
+  end
   for row=1,2 do
    local yTop=rib.Position.Y+rib.Size.Y*(0.47-(row-1)*0.30)
    local yBottom=yTop-rib.Size.Y*0.34
    for _,sign in ipairs({-1,1}) do
     local shoulder=model[sign<0 and "LeftShoulderJoint" or "RightShoulderJoint"]
-    local edgeZ=shoulder.Position.Z+shoulder.Size.Z/2+width*0.055
+    local edgeZ=shoulder.Position.Z+shoulder.Size.Z/2
     local function point(t,y)
-     return Vector3.new(sign*shoulderSpan*0.52*t,y-rib.Size.Y*0.12*t,
-      crestZ+(edgeZ-crestZ)*t*t+(row-1)*width*0.025)
+     local x,py=sign*shoulderSpan*0.52*t,y-rib.Size.Y*0.12*t
+     local fallback=(rib.Position.Z+rib.Size.Z/2)*(1-t)+edgeZ*t
+     return Vector3.new(x,py,rearSurface(x,py,fallback)+width*(0.010+(row-1)*0.008))
     end
     for col=1,3 do
      local a,b=(col-1)/3,col/3
      region(G.Quad(model,"Stage5UpperBackArmor_"..row.."_"..sign.."_"..col,
       point(a,yTop),point(b,yTop),point(b,yBottom),point(a,yBottom),
-      col==2 and EDGE or ROCK,width*0.065),"Torso")
+      col==2 and EDGE or ROCK,width*0.045),"Torso")
     end
    end
   end
   local skull=model.Cranium
   for i=1,5 do
    local across=(i-3)/2
-   local height=skull.Size.Y*(i==3 and 0.68 or 0.46+0.04*(i%2))
-   local root=skull.CFrame:PointToWorldSpace(Vector3.new(across*skull.Size.X*0.43,skull.Size.Y*0.35,skull.Size.Z*0.20))
-   local crown=G.Part(model,"Stage5Crown_"..i,Vector3.new(skull.Size.X*0.20,height,skull.Size.Z*0.43),
-    CFrame.new(root+Vector3.new(across*height*0.13,height*0.35,0))*CFrame.Angles(0,0,-across*0.24),ROCK,"CornerWedgePart")
+   local height=skull.Size.Y*(i==3 and 0.40 or 0.28+0.035*(i%2))
+   -- Broad, embedded roots form a low rock crest instead of five tall prongs.
+   local root=Vector3.new(across*skull.Size.X*0.37,skull.Size.Y*(0.40-0.12*math.abs(across)),
+    skull.Size.Z*(0.12+0.16*math.abs(across)))
+   local crown=G.Part(model,"Stage5Crown_"..i,Vector3.new(skull.Size.X*0.29,height,skull.Size.Z*0.52),
+    skull.CFrame*CFrame.new(root+Vector3.new(0,height*0.20,0))*CFrame.Angles(-0.18,across*0.18,-across*0.30),ROCK,"CornerWedgePart")
    crown:SetAttribute("RigRegion","Head")
   end
   local anchors={}
@@ -187,7 +201,7 @@ function Builder.Build(parent,ground,options)
   model:SetAttribute("QualityGateB","Pending_UserGeometryReview");model:SetAttribute("QualityGateC","Pending")
   model:SetAttribute("DressingReview","Pending_Phase5");model:SetAttribute("SailBayCount",10)
   model:SetAttribute("SailPresentation","StaticGeometryProxy")
-  model:SetAttribute("GeometryRevision","S5_ShoulderSpanBackArmor_ContinuousSails_02")
+  model:SetAttribute("GeometryRevision","S5_CloseFittingArmor_LowRockCrown_03")
   model:SetAttribute("Purpose","Stage 5 static geometry review; not a playable/final asset")
   model.Parent=parent
  end)

@@ -103,3 +103,7 @@ Die Workshop-Vorschau rüstet jetzt Stufe 5 aus; Stufe 4 bleibt als Vergleich st
 ### Oberer Rücken und durchgehende Segel
 
 Zwei überlappende, facettierte Panzerreihen decken den oberen Rücken von Schulteransatz zu Schulteransatz ab und folgen dem Torso. Alle zehn Segelfelder verbinden weiterhin die elf Hauptplatten. Ihre Anschlüsse richten sich nach aussen (Rücken: hinten, Schwanz: oben), statt die entfernteste Ecke vom Körperzentrum zu wählen. Die untere Kante ist nach aussen versetzt, der Durchhang auf sechs Prozent reduziert. Die beiden vom Benutzer gemeldeten sichtbaren Lücken sind ohne Studio-Aufnahme nicht lokalisiert; die Korrektur muss dort visuell bestätigt werden.
+
+### Körpernahe Panzerung und flachere Krone
+
+Brust: Abstand zur Haut reduziert und Kratertiefe von 15 auf 9,5 Prozent der Brustbreite verringert; der Kern bleibt vor der ursprünglichen Körperoberfläche. Rücken: Panzerpunkte folgen der jeweils äussersten Körperoberfläche statt einer gemeinsamen hinteren Begrenzung. Dünnere, leicht überlappende Reihen erhalten die Schulterbreite. Krone: fünf kürzere, breitere, im Schädel eingebettete Felszacken mit nach hinten versetzten Seiten. Die visuelle Freigabe bleibt offen.
