@@ -140,11 +140,11 @@ local function equip(player, character)
   Torso=ground:PointToObjectSpace(kaiju.LowerRibcage.Position).Y})
 	local combat = combatModule.Attach(kaiju, root, humanoid, height)
 	local rig = stageOneRig.Attach(kaiju, root, humanoid, combat)
- -- Geometry and dressing approved by user; gameplay review remains open.
- kaiju:SetAttribute("PipelinePhase",6)
+ -- Geometry, dressing and workshop gameplay approved by user.
+ kaiju:SetAttribute("PipelinePhase",7)
  kaiju:SetAttribute("QualityGateB","ApprovedByUser")
  kaiju:SetAttribute("DressingReview","ApprovedByUser")
- kaiju:SetAttribute("QualityGateC","Pending")
+ kaiju:SetAttribute("QualityGateC","ApprovedByUser")
  kaiju:SetAttribute("SailPresentation","TwoAnchorClientGeometry")
 	local reactionTestConnection
 	if game:GetService("RunService"):IsStudio() then
@@ -219,8 +219,8 @@ local function equip(player, character)
 	end)
 	kaiju:SetAttribute("GeometryAmendmentReview", "ApprovedByUser")
 	kaiju:SetAttribute("QualityGateB","ApprovedByUser")
-	kaiju:SetAttribute("GameplayReview","Pending_Stage5GameplayReview")
-	kaiju:SetAttribute("RuntimeReview","Pending_Stage5GameplayReview")
+	kaiju:SetAttribute("GameplayReview","ApprovedByUser")
+	kaiju:SetAttribute("RuntimeReview","ApprovedByUser")
 	kaiju:SetAttribute("WorkshopOnly",true)
 	kaiju:SetAttribute("ControlledBy", player.UserId)
 
@@ -283,8 +283,8 @@ end
 Players.PlayerAdded:Connect(connectPlayer)
 Players.PlayerRemoving:Connect(combatModule.RemoveRange)
 for _, player in ipairs(Players:GetPlayers()) do connectPlayer(player) end
-workshop:SetAttribute("CurrentAsset", "Kaiju Stage 5 - Gameplay Review")
-workshop:SetAttribute("CurrentPhase", 6)
-workshop:SetAttribute("QualityStatus", "Stage5_GameplayReview")
-print("[Kaiju Stage 5 | Phase 6] Geometry and dressing approved. Gameplay review pending.")
+workshop:SetAttribute("CurrentAsset", "Kaiju Stage 5 - Approved")
+workshop:SetAttribute("CurrentPhase", 7)
+workshop:SetAttribute("QualityStatus", "Stage5_Approved")
+print("[Kaiju Stage 5 | Phase 7] Geometry, dressing and gameplay approved.")
 print("[Stage 5 gameplay test] Walk/run, F combo, Space jump/landing, E focus, R area, Reaction test, respawn.")

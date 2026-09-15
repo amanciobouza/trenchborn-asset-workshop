@@ -1,0 +1,31 @@
+{
+  "package": "TrenchbornKaijuStageFive",
+  "version": "1.0.0",
+  "approvedGeometryRevision": "53316a87cc4a205e6f1c134afc90b158fb5c3c7d",
+  "phase": 7,
+  "testOnly": false,
+  "qualityGateC": "ApprovedByUser",
+  "files": {
+    "KaijuStageFiveGoldenMaster.lua": "e2070e192dba3318fde98a5b6e2778dbbe65e5ab751d6880b47b2607abdc4b64",
+    "KaijuStageFiveGeometry.lua": "6fee8d06b5e3b47dbafea63bd5562beb6774bf3fbe322984658f4fedc31c1f1e",
+    "KaijuEnergySailPresentation.lua": "63f0c0ef0e346d371c16dca8f5d274bed365aa2872f8a122d3d53f74d5b46f20",
+    "KaijuStageOneCombat.lua": "6d4cbff370d437b86dfa2e44bb14797170b9f50639d2cccd75589dadcd91a4ae",
+    "KaijuStageFourGoldenMaster.lua": "00c6de649e5a4e41e6bd0886fb076037365f422471391bac08ea0cd0eea1dca5",
+    "KaijuStageFourDressing.lua": "438d5e82c26088210cbb6c3dc537bdfe68f663a712064aa25df6dbb84ec0af64",
+    "KaijuBuildingTraversal.lua": "66277059d984be73cac078280ba943ff422e600ec8902a82703ce1bbbbc54e55",
+    "KaijuPresentation.lua": "621b76ed7238d1b8224035953b8aa37322b19f23fc4c0233936ee53ea71f7057",
+    "KaijuPresentationClient.client.lua": "cd44509fdd98ccaecac1903b792d96c1949280d34a324f4c2eb3f617c9949897",
+    "KaijuPresentationBootstrap.lua": "0d91ccd5470da47008efbe08b0b8be3f39d7e4ca96703235f4291dd6d90dbf94",
+    "KaijuSkeleton.lua": "7f22492d8e8ffa9924229538a496c433504d9c85eba08f656d71ed466ff8d7ad",
+    "KaijuStageFiveInstaller.lua": "5eab6dc473d9d68d25b82e8f639be0f3c1bc6c064dedc8c0b5eaddc2622458c7",
+    "KaijuStageThreeGoldenMaster.lua": "9a7d2d3c401329c8739feea895f94ff679ccfd2d01d5d6b5057bc20d81331170",
+    "KaijuStageTwoGoldenMaster.lua": "d26ec007799be683490721e7510422dbec28451c56dea2d07fd62f56a8e99a0a",
+    "KaijuEvolutionBlockout.lua": "4bdede7f9d298174679efc76ea63e5ab59905087ae03351eafb5b288af5a373f",
+    "KaijuStageOneRig.lua": "bfa8bea48772444b0dee75e533c3186f5f1e708a00c9fa56237691e04fcd199b",
+    "KaijuStageOneCombo.lua": "6ba5705dae01c6fed5e8bd34e15b12968813053cc3266e2693c1b1a21dca17f3",
+    "KaijuStageOneJump.lua": "84938fbdd7e3bc64794e17d8325d0aa2bc745499f88e80c61317f744ba438b7e",
+    "KaijuStageFiveInput.client.lua": "77916b750786806517b65fa2011a7a8ce17d2a14143dcafded770092119d9642",
+    "KaijuStageOneJumpMotor.client.lua": "ce4d5ef9d90109df17d6517e0e4c406a1bc7856f76acc2cfee49f17c1588381f"
+  },
+  "artifactSha256": "49d9a0399de92b4b75934506e4991c9f354ab69040cc394e0c610f737f08ca5f"
+}

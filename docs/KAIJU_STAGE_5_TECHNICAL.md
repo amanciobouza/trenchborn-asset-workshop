@@ -204,3 +204,9 @@ Stufe 5 lädt bei Fokus und Fläche von der hintersten Rückenplatte nach vorne 
 ## Gesamtfreigabe und Phase 6
 
 Der Benutzer hat den Gesamtstand einschliesslich Brusthöhe, Kopf, Füssen und Panzerung sowie das Dressing ausdrücklich freigegeben („okpasst“). Gate B und DressingReview: ApprovedByUser. Segel, Leuchtkerne und Ladewelle für Fokus/Fläche sind ebenfalls bestätigt. Phase 6 ist aktiv; Gate C und abschliessende Gameplay-/Integrationsprüfung bleiben offen. Kein finaler Installer freigegeben.
+
+## Gameplay-Freigabe und finales Paket (Phase 7)
+
+Der Benutzer hat die anschliessende Gameplay-Prüfung mit „passt“ bestätigt und die Erstellung des finalen Pakets mit „ok“ beauftragt. Gate C: ApprovedByUser. Diese Freigabe ersetzt die zuvor offenen Workshop-Prüfvermerke; die Integration ins Zielspiel bleibt separat offen.
+
+`dist/KaijuStageFive.rbxmx`, Version 1.0.0, enthält das freigegebene Modell samt Segelrenderer, Präsentation, Steuerung und Installer. Installationsanleitung: `KAIJU_STAGE_5_INSTALL.md`; Studio-Beispiel: `examples/KaijuStageFive.server.lua`. Installer-Lebenszyklus, Fehler-Rollback, Geometrie und XML-Export sind automatisiert mit Lua-Mocks beziehungsweise Quelltextvergleich geprüft. Der exportierte Installer wurde hier nicht in Roblox Studio ausgeführt.
