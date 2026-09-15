@@ -143,3 +143,7 @@ Segeloberkanten enden nun zehn Prozent unterhalb der äusseren Plattenspitzen. D
 Brusthöhe direkt an der Kieferunterkante ausgerichtet: die zusätzliche Obergrenze durch die ursprüngliche Pectoral-Höhe entfällt. Krater, Kern und Bauchabschluss folgen dieser Position; der kleine Abstand inklusive Materialdicke bleibt erhalten. Studio-Sichtprüfung offen.
 
 Korrektur nach ausbleibender sichtbarer Höhenänderung: Bezug ist jetzt die vordere zentrale Unterkiefergeometrie (`LowerJawFront*`), nicht die tiefste Begrenzung sämtlicher seitlicher Kieferpanzer. Rückfall auf `LowerJawRear`, falls kein Vorderkiefer existiert. Das Modellattribut `ChestHeightReference=FrontJawUnderside` kennzeichnet diese Fassung. Sichtprüfung erforderlich.
+
+### Breiterer Stand
+
+Beide vollständigen Beinbaugruppen werden nach aussen versetzt, einschliesslich Gelenkpunkten und Panzerung. Der Abstand berücksichtigt die tatsächlichen Fuss-Hüllflächen und lässt mindestens zehn Prozent der Brustbreite frei. Die Brustmitte steigt durch einen etwas flacheren oberen Panzerbogen nochmals um zwei Prozent der Brustbreite. Stand, Hüftanschlüsse und Gangbild bleiben in Studio zu prüfen.

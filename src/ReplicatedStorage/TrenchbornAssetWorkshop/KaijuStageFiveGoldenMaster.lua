@@ -55,7 +55,7 @@ function Builder.Build(parent,ground,options)
   local backZ=skinFront-width*0.015
   local lipZ=backZ-depth
   local apertureX,apertureY=width*0.175,width*0.21
-  local outerX,outerY=width*0.50,width*0.32
+  local outerX,outerY=width*0.50,width*0.30
   -- Chest height must follow the jaw clearance, not shoulder width alone.
   -- Use the central mouth underside, not low lateral jaw armor.
   local jawBottom=math.huge
@@ -76,7 +76,7 @@ function Builder.Build(parent,ground,options)
   chestY=jawBottom-clearance-outerY-width*0.02
   model:SetAttribute("NormalizedChestJawClearance",clearance)
   model:SetAttribute("ChestHeightReference","FrontJawUnderside")
-  local backing=G.Part(model,"Stage5ChestBacking",Vector3.new(width*0.78,width*0.61,width*0.08),
+  local backing=G.Part(model,"Stage5ChestBacking",Vector3.new(width*0.78,width*0.57,width*0.08),
    CFrame.new(0,chestY,backZ+width*0.03),DARK)
   backing.Shape=Enum.PartType.Ball;backing:SetAttribute("RigRegion","Torso")
   local core=G.Part(model,"Stage5ChestCore",Vector3.new(apertureX*1.12,apertureY*1.10,width*0.07),
@@ -254,6 +254,38 @@ function Builder.Build(parent,ground,options)
      layer==2 and EDGE or ROCK,size.X*0.26),side.."UpperArm")
    end
   end
+  -- Move complete leg assemblies, so rig pivots, footfall probes and armor
+  -- share the wider stance. Ensure actual armored feet have a visible gap.
+  local inner={Left=-math.huge,Right=math.huge}
+  for _,p in ipairs(model:GetChildren()) do
+   if p:IsA("BasePart") then
+    for _,side in ipairs({"Left","Right"}) do
+     local suffix=p.Name:sub(#side+1)
+     if p.Name:sub(1,#side)==side and (suffix:match("^Forefoot") or suffix:match("^Toe") or suffix:match("^Heel") or suffix:match("^FrontClaw")) then
+      local cf,h=p.CFrame,p.Size/2
+      local extent=math.abs(cf.RightVector.X)*h.X+math.abs(cf.UpVector.X)*h.Y+math.abs(cf.ZVector.X)*h.Z
+      if side=="Left" then inner.Left=math.max(inner.Left,p.Position.X+extent)
+      else inner.Right=math.min(inner.Right,p.Position.X-extent) end
+     end
+    end
+   end
+  end
+  local stanceShift=math.max(width*0.045,(width*0.10-(inner.Right-inner.Left))/2)
+  for _,p in ipairs(model:GetChildren()) do
+   if p:IsA("BasePart") then
+    for _,side in ipairs({"Left","Right"}) do
+     if p.Name:sub(1,#side)==side then
+      local suffix=p.Name:sub(#side+1)
+      for _,prefix in ipairs({"Hip","Thigh","OuterQuadriceps","UpperLeg","Knee","Calf","LowerLeg","Hock","Metatarsal","Ankle","Instep","Heel","Forefoot","Toe","FrontClaw","RearClaw","Shin"}) do
+       if suffix:sub(1,#prefix)==prefix then
+        p.CFrame=p.CFrame+Vector3.new((side=="Left" and -1 or 1)*stanceShift,0,0);break
+       end
+      end
+     end
+    end
+   end
+  end
+  model:SetAttribute("NormalizedStanceShift",stanceShift)
   local skull=model.Cranium
   -- Three staggered rows of broad-rooted, sharp scales sweep back and up.
   -- The tip is explicit, avoiding native wedge rotation ambiguity.
