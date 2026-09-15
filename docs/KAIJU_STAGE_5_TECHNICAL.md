@@ -192,3 +192,7 @@ Linker Schienbeinpanzer: bestehende Hauptader auf das 2,8-Fache verbreitert, mit
 ### Grosse Beinader von Hüfte bis Schienbein
 
 Die vorherige Abnahme der einzelnen dicken Schienbeinader ist durch den neuen Wunsch ersetzt. Ein breiter Verlauf erstreckt sich nun über beide linken Hüft-/Oberschenkelplatten, den Kniepanzer und den Schienbeinpanzer. Die Abschnitte reichen nahe an die Plattenränder und bleiben an ihrer jeweiligen Gelenkregion; bewegliche Zwischenräume werden nicht mit frei stehenden Linien überbrückt. Sichtprüfung des Gesamtverlaufs offen.
+
+### Grosse Adern hinten rechts und an der Schulter
+
+Der grosse vordere Verlauf am linken Bein wurde vom Benutzer bestätigt. Entsprechend erhalten die rechte hintere Hüft-/Oberschenkelplatte und der rechte hintere Schienbeinpanzer eine lange Hauptader mit 2,8-facher Breite. Ein weiterer grosser Verlauf liegt auf der linken Schulterrückseite und dem angrenzenden Oberarmpanzer. Eigene Linienformen und schmalere Enden bewahren die Asymmetrie. Gelenkzwischenräume bleiben frei; Sichtprüfung der neuen Verläufe offen.
