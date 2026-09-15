@@ -120,7 +120,7 @@ function Builder.Build(parent,ground,options)
   end
   local riftOffset=Vector3.new(0,0,-width*0.026)
   -- Different upper-side sectors and branch lengths avoid mirrored fissures.
-  for route,i in ipairs({2,3,5,6}) do
+  for route,i in ipairs({2,3,5,6,12}) do
    local j=i%12+1
    local bend=inner[i]:Lerp(outer[i],0.48+route*0.055)
    local start=Vector3.new(inner[i].X*0.86,chestY+(inner[i].Y-chestY)*0.86,backZ)
@@ -436,6 +436,13 @@ function Builder.Build(parent,ground,options)
   -- Each entry is individually authored for one plate face; unlisted plates
   -- remain quiet. No mirrored copies or hash-selected motif library.
   local veinLayouts={
+   ["LeftShoulderArmorStage4RearOverlapCore"]={[1]={P={{.12,.04},{.09,.24},{.25,.38},{.31,.64},{.48,.73}},E={{1,2,.45},{2,3,.85},{3,4,1},{4,5,.5}}}},
+   ["LeftForearmArmorStage4RearOverlapCore"]={[1]={P={{.05,.53},{.21,.48},{.34,.30},{.56,.23}},E={{1,2,.5},{2,3,1},{3,4,.6}}}},
+   ["RightForearmArmorStage4RearOverlapCore"]={[1]={P={{.41,.02},{.32,.21},{.38,.37},{.23,.58},{.20,.77},{.52,.47}},E={{1,2,.4},{2,3,.8},{3,4,1},{4,5,.45},{3,6,.3}}}},
+   ["LeftHipArmorStage4RearOverlapCore"]={[1]={P={{.07,.14},{.25,.18},{.39,.33},{.53,.38}},E={{1,2,.5},{2,3,.9},{3,4,.65}}}},
+   ["RightHipArmorStage4RearOverlapCore"]={[1]={P={{.19,.05},{.26,.27},{.17,.50},{.24,.72}},E={{1,2,.55},{2,3,1},{3,4,.45}}}},
+   ["LeftShinArmorStage4RearOverlapCore"]={[1]={P={{.44,.08},{.37,.26},{.40,.46},{.27,.70},{.54,.58}},E={{1,2,.5},{2,3,.9},{3,4,.7},{3,5,.3}}}},
+   ["RightShinArmorStage4RearOverlapCore"]={[1]={P={{.07,.66},{.22,.59},{.30,.37},{.48,.30},{.59,.15}},E={{1,2,.4},{2,3,.8},{3,4,1},{4,5,.5}}}},
    ["Stage5Crown_2_1"]={[-1]={P={{.08,.12},{.16,.29},{.15,.48},{.09,.68}},E={{1,2,1},{2,3,.8},{3,4,.5}}}},
    ["Stage5Crown_5_1"]={[1]={P={{.12,.17},{.30,.19},{.39,.26},{.47,.29},{.28,.37}},E={{1,2,.8},{2,3,1},{3,4,.6},{2,5,.35}}}},
    ["Stage5Crown_7_1"]={[-1]={P={{.11,.52},{.21,.42},{.36,.34}},E={{1,2,.5},{2,3,.8}}}},

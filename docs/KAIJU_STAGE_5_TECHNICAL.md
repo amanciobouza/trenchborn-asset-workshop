@@ -182,3 +182,7 @@ Die neuen Plattenadern bilden jetzt einen langen, unregelmässig geknickten Riss
 ### Individuell gestaltete Aderverläufe
 
 Die automatische Motivverteilung wurde durch 15 einzeln gezeichnete Verläufe für konkrete Kopf-, Brauen-, Arm-, Hüft-, Knie- und Schienbeinplatten ersetzt. Jede Seite hat eigene Linien, Richtungen, Segmentzahlen und Breiten; nur ausgewählte Verläufe haben einen feinen Seitenast. Nicht aufgeführte Platten erhalten keine neuen Adern. Die Oberflächenbindung bleibt bestehen. Sichtprüfung offen.
+
+### Rückseitige Adern
+
+Sieben weitere, einzeln gestaltete Verläufe ergänzen die linke Schulterrückseite sowie beide Unterarm-, Hüft- und Schienbeinrückseiten. Die rechte Schulterrückseite hatte bereits einen eigenen Verlauf. Ein zusätzlicher Riss führt vom Brustkrater seitlich nach rechts unten. Alle bleiben in ihrer jeweiligen Gelenkregion. Sichtprüfung offen.
