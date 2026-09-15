@@ -139,3 +139,5 @@ Brusthauptteil nach erneutem Höhenfeedback angehoben: vertikaler Aussenradius v
 ### Tiefer sitzende Segel
 
 Segeloberkanten enden nun zehn Prozent unterhalb der äusseren Plattenspitzen. Die unteren Anschlüsse sinken von 24 auf 20 Prozent der Plattenhöhe; der Durchhang steigt von sechs auf zwölf Prozent der Feldhöhe. Statische und animierte Flächen verwenden dieselbe Form. Sichtprüfung auf Durchhang und verdeckte Flächen bleibt offen.
+
+Brusthöhe direkt an der Kieferunterkante ausgerichtet: die zusätzliche Obergrenze durch die ursprüngliche Pectoral-Höhe entfällt. Krater, Kern und Bauchabschluss folgen dieser Position; der kleine Abstand inklusive Materialdicke bleibt erhalten. Studio-Sichtprüfung offen.
