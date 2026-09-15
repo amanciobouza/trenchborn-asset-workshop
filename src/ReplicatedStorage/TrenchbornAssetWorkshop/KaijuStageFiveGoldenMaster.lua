@@ -99,6 +99,26 @@ function Builder.Build(parent,ground,options)
    local deepB=Vector3.new(inner[j].X*0.86,chestY+(inner[j].Y-chestY)*0.86,backZ)
    region(G.Quad(model,name.."InnerWall",inner[i],inner[j],deepB,deepA,DARK,width*0.022),"Torso")
   end
+  local function energyRift(name,a,b,thickness)
+   local length=(b-a).Magnitude
+   if length<0.001 then return end
+   local p=G.Part(model,name,Vector3.new(thickness,thickness,length),
+    CFrame.lookAt((a+b)/2,b),FIELD)
+   p.Material=Enum.Material.Neon;p:SetAttribute("RigRegion","Torso")
+   p:SetAttribute("KaijuArmorEnergy",true)
+  end
+  local riftOffset=Vector3.new(0,0,-width*0.026)
+  -- Different upper-side sectors and branch lengths avoid mirrored fissures.
+  for route,i in ipairs({2,3,5,6}) do
+   local j=i%12+1
+   local bend=inner[i]:Lerp(outer[i],0.48+route*0.055)
+   local start=Vector3.new(inner[i].X*0.86,chestY+(inner[i].Y-chestY)*0.86,backZ)
+   energyRift("Stage5EnergyRift_"..route.."Core",start+riftOffset,inner[i]+riftOffset,width*0.009)
+   energyRift("Stage5EnergyRift_"..route.."Main",inner[i]+riftOffset,outer[i]+riftOffset,width*(route%2==0 and 0.010 or 0.008))
+   -- Branch stays on the inner[i], outer[i], outer[j] triangle.
+   local tip=inner[i]*0.18+outer[i]*(0.65-route*0.04)+outer[j]*(0.17+route*0.04)
+   energyRift("Stage5EnergyRift_"..route.."Branch",bend+riftOffset,tip+riftOffset,width*0.004)
+  end
   for row=1,3 do
    local w=width*(0.68-row*0.09)
    local y=chestY-outerY-width*(row-1)*0.10
@@ -179,6 +199,8 @@ function Builder.Build(parent,ground,options)
     Vector3.new(sign*x,topY,backZ+width*0.04),
     Vector3.new(sign*(x+width*0.045),topY,shoulder.Position.Z),
     Vector3.new(sign*x,rib.Position.Y+rib.Size.Y*0.32,rearZ+width*0.04)}
+   local routeEdge=outer[sign==1 and 2 or 6]+riftOffset
+   energyRift("Stage5EnergyRift_Shoulder_"..sign,routeEdge,nodes[1]+Vector3.new(sign*width*0.043,-width*0.055,0),width*0.008)
    for i=1,3 do
     local a,b=nodes[i],nodes[i+1]
     local drop=Vector3.new(0,-width*0.15,0)

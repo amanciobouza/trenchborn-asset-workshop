@@ -158,3 +158,7 @@ Sechs statt drei Streifen pro Segelfeld bilden den Bogen feiner ab; die animiert
 ### Segel folgen den sichtbaren Platten
 
 Die animierten Segel lesen jetzt in PreRender die tatsächlichen WorldCFrames der Platten-Attachments. Die frühere Rekonstruktion vor dem Physikschritt konnte gegenüber Sprungbewegung und angewendeten Gelenkposen versetzt sein. Die Verbindung wird beim Aufräumen getrennt. Transparenz von 42 auf 82 Prozent erhöht. Beide Seiten aller elf Rückenplatten erhalten sichtbare Neonkerne ausserhalb der zusätzlichen Seitenpanzerung, im gemeinsamen Spezialangriffs-Farbwechsel. Sprung und Gehen sind in Studio zu prüfen.
+
+### Energierisse vom Brustkern zu den Schultern
+
+Vier asymmetrische Hauptadern mit schmalen Seitenästen führen vom inneren Krater über die oberen seitlichen Panzerflächen. Kurze Anschlüsse verbinden sie mit den bestehenden leuchtenden Schulterkragen. Alle Adern folgen dem Torso und der gemeinsamen Spezialangriffsfarbe. Keine zusätzlichen Segel; deren bestätigte Form bleibt bestehen. Sichtprüfung der neuen Energierisse ist offen.
