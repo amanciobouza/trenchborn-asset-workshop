@@ -188,3 +188,7 @@ Die automatische Motivverteilung wurde durch 15 einzeln gezeichnete Verläufe f�
 Sieben weitere, einzeln gestaltete Verläufe ergänzen die linke Schulterrückseite sowie beide Unterarm-, Hüft- und Schienbeinrückseiten. Die rechte Schulterrückseite hatte bereits einen eigenen Verlauf. Ein zusätzlicher Riss führt vom Brustkrater seitlich nach rechts unten. Alle bleiben in ihrer jeweiligen Gelenkregion. Sichtprüfung offen.
 
 Linker Schienbeinpanzer: bestehende Hauptader auf das 2,8-Fache verbreitert, mit weiterhin schmaleren Enden. Die rechte Beinseite bleibt feiner. Sichtprüfung offen.
+
+### Grosse Beinader von Hüfte bis Schienbein
+
+Die vorherige Abnahme der einzelnen dicken Schienbeinader ist durch den neuen Wunsch ersetzt. Ein breiter Verlauf erstreckt sich nun über beide linken Hüft-/Oberschenkelplatten, den Kniepanzer und den Schienbeinpanzer. Die Abschnitte reichen nahe an die Plattenränder und bleiben an ihrer jeweiligen Gelenkregion; bewegliche Zwischenräume werden nicht mit frei stehenden Linien überbrückt. Sichtprüfung des Gesamtverlaufs offen.
