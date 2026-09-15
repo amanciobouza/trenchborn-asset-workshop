@@ -178,3 +178,7 @@ Die zuletzt ergänzten kleinen Adernetze auf sämtlichen Brustkraterflächen ent
 ### Sternförmige Adern korrigiert
 
 Die neuen Plattenadern bilden jetzt einen langen, unregelmässig geknickten Riss pro Fläche. Verzweigungen am gemeinsamen Mittelpunkt entfallen; die Enden werden schmaler. Das gilt für Kopf-, Arm- und Beinplatten. Die kurzen sternförmigen Muster werden beim Neuaufbau ersetzt. Sichtprüfung offen.
+
+### Individuell gestaltete Aderverläufe
+
+Die automatische Motivverteilung wurde durch 15 einzeln gezeichnete Verläufe für konkrete Kopf-, Brauen-, Arm-, Hüft-, Knie- und Schienbeinplatten ersetzt. Jede Seite hat eigene Linien, Richtungen, Segmentzahlen und Breiten; nur ausgewählte Verläufe haben einen feinen Seitenast. Nicht aufgeführte Platten erhalten keine neuen Adern. Die Oberflächenbindung bleibt bestehen. Sichtprüfung offen.

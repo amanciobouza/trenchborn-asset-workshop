@@ -433,30 +433,36 @@ function Builder.Build(parent,ground,options)
   end
   -- Short fissures stay inside a single real plate face. Never connect
   -- separate bones with free-standing strokes across the joint gaps.
+  -- Each entry is individually authored for one plate face; unlisted plates
+  -- remain quiet. No mirrored copies or hash-selected motif library.
+  local veinLayouts={
+   ["Stage5Crown_2_1"]={[-1]={P={{.08,.12},{.16,.29},{.15,.48},{.09,.68}},E={{1,2,1},{2,3,.8},{3,4,.5}}}},
+   ["Stage5Crown_5_1"]={[1]={P={{.12,.17},{.30,.19},{.39,.26},{.47,.29},{.28,.37}},E={{1,2,.8},{2,3,1},{3,4,.6},{2,5,.35}}}},
+   ["Stage5Crown_7_1"]={[-1]={P={{.11,.52},{.21,.42},{.36,.34}},E={{1,2,.5},{2,3,.8}}}},
+   ["Stage5BrowScale_Left_1_1"]={[-1]={P={{.09,.10},{.27,.13},{.40,.17},{.54,.15}},E={{1,2,.9},{2,3,.65},{3,4,.35}}}},
+   ["Stage5BrowScale_Right_2_1"]={[1]={P={{.08,.18},{.13,.36},{.22,.44},{.19,.60}},E={{1,2,.6},{2,3,.85},{3,4,.4}}}},
+   ["LeftShoulderArmorStage4UpperArmOverlapCore"]={[1]={P={{.02,.13},{.16,.26},{.19,.48},{.29,.65},{.48,.69},{.05,.53}},E={{1,2,.7},{2,3,1},{3,4,.85},{4,5,.45},{3,6,.3}}}},
+   ["RightShoulderArmorStage4RearOverlapCore"]={[1]={P={{.04,.57},{.22,.53},{.32,.43},{.54,.40}},E={{1,2,.45},{2,3,.9},{3,4,.7}}}},
+   ["LeftForearmArmorStage4FrontOverlapCore"]={[1]={P={{.12,.01},{.17,.22},{.29,.39},{.32,.68},{.46,.79}},E={{1,2,.45},{2,3,.8},{3,4,1},{4,5,.55}}}},
+   ["RightForearmArmorStage4FrontOverlapCore"]={[1]={P={{.04,.25},{.24,.30},{.43,.24},{.62,.33},{.44,.47},{.49,.62}},E={{1,2,.6},{2,3,1},{3,4,.65},{3,5,.4},{5,6,.25}}}},
+   ["LeftHipArmorStage4Lame1RaisedFaceCore"]={[1]={P={{.06,.06},{.11,.28},{.24,.44},{.25,.72}},E={{1,2,.7},{2,3,1},{3,4,.55}}}},
+   ["RightHipArmorStage4Lame2RaisedFaceCore"]={[1]={P={{.03,.59},{.19,.45},{.38,.46},{.56,.35},{.38,.67}},E={{1,2,.55},{2,3,.9},{3,4,.65},{3,5,.3}}}},
+   ["LeftShinArmorStage4KneecapRaisedFaceCore"]={[1]={P={{.08,.20},{.25,.23},{.41,.36},{.58,.34}},E={{1,2,.55},{2,3,.9},{3,4,.45}}}},
+   ["RightShinArmorStage4KneecapRaisedFaceCore"]={[1]={P={{.44,.08},{.37,.31},{.39,.53}},E={{1,2,.8},{2,3,.45}}}},
+   ["LeftShinArmorRockLayer1Core"]={[1]={P={{.17,.02},{.25,.19},{.23,.43},{.35,.65},{.37,.81}},E={{1,2,.5},{2,3,.9},{3,4,.75},{4,5,.35}}}},
+   ["RightShinArmorRockLayer1Core"]={[1]={P={{.51,.10},{.34,.23},{.31,.48},{.13,.63},{.51,.53}},E={{1,2,.55},{2,3,1},{3,4,.6},{3,5,.3}}}},
+  }
   local veinCount=0
   for _,plate in ipairs(model:GetChildren()) do
-   if plate:IsA("BasePart") and not plate:GetAttribute("KaijuArmorEnergy") then
-    local name=plate.Name
+   local name=plate.Name
+   local layout=veinLayouts[name]
+   if plate:IsA("BasePart") and layout then
     local head=name:match("^Stage5Crown_") or name:match("^Stage5BrowScale_")
-    local chest=false -- Keep only the four larger authored chest routes.
-    local arm=(name:find("ShoulderArmor",1,true) or name:find("ForearmArmor",1,true))
-     and (name:match("OverlapCore$") or name:match("RockLayer1Core$"))
-    local leg=(name:find("HipArmor",1,true) or name:find("ShinArmor",1,true))
-     and (name:match("RaisedFaceCore$") or name:match("RockLayer1Core$") or name:match("OverlapCore$"))
-    local facePlate=arm or leg or (name:find("HeadArmor",1,true) and name:match("Core$"))
-    if ((head or chest) and plate:IsA("WedgePart")) or (facePlate and plate:IsA("Part")) then
-     local seed=0
-     for i=1,#name do seed=(seed*33+name:byte(i))%997 end
-     local variant=(seed%11)/100
-     -- A continuous, elongated crack; no multi-branch central junction.
-     local points={{0.13+variant,0.07},{0.20+variant,0.22},{0.12+variant,0.37},
-      {0.17-variant*0.5,0.53},{0.08,0.76}}
-     if arm or leg then
-      points={{0.09+variant,0.02},{0.23+variant,0.22},{0.18+variant,0.40},
-       {0.40-variant,0.58},{0.48+variant*0.4,0.78}}
-     end
-     local sides=head and {-1,1} or {chest and (plate.CFrame.RightVector.Z<=0 and 1 or -1) or 1}
-     for _,side in ipairs(sides) do
+    local arm=name:find("ShoulderArmor",1,true) or name:find("ForearmArmor",1,true)
+    local leg=name:find("HipArmor",1,true) or name:find("ShinArmor",1,true)
+    do
+     for side,pattern in pairs(layout) do
+      local points=pattern.P
       local normal=plate:IsA("WedgePart") and plate.CFrame.RightVector*side or plate.CFrame.LookVector
       local function point(uv)
        local u,v=uv[1],uv[2]
@@ -469,12 +475,12 @@ function Builder.Build(parent,ground,options)
        end
        return plate.CFrame:PointToWorldSpace(localPoint)+normal*0.018
       end
-      for index,edge in ipairs({{1,2},{2,3},{3,4},{4,5}}) do
+      for index,edge in ipairs(pattern.E) do
        local a,b=point(points[edge[1]]),point(points[edge[2]])
        local length=(b-a).Magnitude
        if length>0.025 then
         local faceSize=(arm or leg) and math.min(plate.Size.X,plate.Size.Y) or math.min(plate.Size.Y,plate.Size.Z)
-        local thickness=math.clamp(faceSize*((arm or leg) and 0.025 or 0.014),0.022,(arm or leg) and 0.11 or 0.065)*(index==4 and 0.65 or 0.85)
+        local thickness=math.clamp(faceSize*((arm or leg) and 0.025 or 0.014),0.022,(arm or leg) and 0.11 or 0.065)*edge[3]
         local glow=G.Part(model,name.."Stage5SurfaceVein_"..side.."_"..index,
          Vector3.new(thickness,0.018,length),CFrame.lookAt((a+b)/2,b,normal),FIELD)
         glow.Material=Enum.Material.Neon;glow.CastShadow=false
