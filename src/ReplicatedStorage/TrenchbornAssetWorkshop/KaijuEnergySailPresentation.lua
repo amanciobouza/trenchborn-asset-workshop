@@ -33,7 +33,7 @@ function Renderer.Attach(model,parent,anchorFrame)
    local b=anchorFrame(bay.Refs.ToLower).Position
    local ta=anchorFrame(bay.Refs.FromUpper).Position
    local tb=anchorFrame(bay.Refs.ToUpper).Position
-   local function top(t)return ta:Lerp(tb,t):Lerp(a:Lerp(b,t),0.06*math.sin(t*math.pi)) end
+   local function top(t)return ta:Lerp(tb,t):Lerp(a:Lerp(b,t),0.12*math.sin(t*math.pi)) end
    for strip=1,3 do
     local t0,t1=(strip-1)/3,strip/3
     local p,q,r,s=a:Lerp(b,t0),a:Lerp(b,t1),top(t1),top(t0)

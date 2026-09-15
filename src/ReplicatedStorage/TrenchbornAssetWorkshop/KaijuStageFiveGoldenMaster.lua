@@ -292,8 +292,8 @@ function Builder.Build(parent,ground,options)
    local points={Vector3.new(0,-plate.Size.Y/2,-plate.Size.Z/2),Vector3.new(0,-plate.Size.Y/2,plate.Size.Z/2),Vector3.new(0,plate.Size.Y/2,plate.Size.Z/2)}
    table.sort(points,function(a,b)return plate.CFrame:VectorToWorldSpace(a):Dot(outward)<plate.CFrame:VectorToWorldSpace(b):Dot(outward) end)
    local lift=plate.CFrame:VectorToObjectSpace(outward)*0.06
-   local lower=Instance.new("Attachment");lower.Name="Stage5SailLower";lower.Position=points[1]:Lerp(points[3],0.24)+lift;lower.Parent=plate
-   local upper=Instance.new("Attachment");upper.Name="Stage5SailUpper";upper.Position=points[3]+lift;upper.Parent=plate
+   local lower=Instance.new("Attachment");lower.Name="Stage5SailLower";lower.Position=points[1]:Lerp(points[3],0.20)+lift;lower.Parent=plate
+   local upper=Instance.new("Attachment");upper.Name="Stage5SailUpper";upper.Position=points[1]:Lerp(points[3],0.90)+lift;upper.Parent=plate
    anchors[i]={Lower=lower,Upper=upper}
   end
   -- The lowest torso-side pair sits on the sacral/tail-root surface. Its
@@ -314,7 +314,7 @@ function Builder.Build(parent,ground,options)
    local topA,topB=anchors[i].Upper.WorldPosition,anchors[i+1].Upper.WorldPosition
    local function top(t)
     local lower=a:Lerp(b,t);local line=topA:Lerp(topB,t)
-    return line:Lerp(lower,0.06*math.sin(t*math.pi))
+    return line:Lerp(lower,0.12*math.sin(t*math.pi))
    end
    for strip=1,3 do
     local t0,t1=(strip-1)/3,strip/3
