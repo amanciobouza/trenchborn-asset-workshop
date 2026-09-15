@@ -5,11 +5,17 @@ function Renderer.Attach(model,parent,anchorFrame)
  local source=assert(model:FindFirstChild("Stage5SailGeometry"),"Missing sail geometry")
  local folder=Instance.new("Folder");folder.Name="MovingEnergySails";folder.Parent=parent
  local hidden,bays={},{}
+ local plateCores={}
+ for _,p in ipairs(model:GetChildren()) do
+  local index=p.Name:match("^DorsalEnergy_(%d+)_Stage5Core_")
+  if index and p:IsA("BasePart") then plateCores[tonumber(index)]=p end
+ end
  for _,p in ipairs(source:GetDescendants()) do
   if p:IsA("BasePart") then hidden[p]=p.LocalTransparencyModifier;p.LocalTransparencyModifier=1 end
  end
  for _,bay in ipairs(source:GetChildren()) do
-  local entry={Refs={},Triangles={}}
+  local index=tonumber(bay.Name:match("(%d+)$"))
+  local entry={Refs={},Triangles={},FromCore=plateCores[index],ToCore=plateCores[index+1]}
   for _,name in ipairs({"FromLower","FromUpper","ToLower","ToUpper"}) do
    entry.Refs[name]=assert(bay:FindFirstChild(name).Value,"Missing sail anchor")
   end
@@ -28,7 +34,7 @@ function Renderer.Attach(model,parent,anchorFrame)
   if stopped then return end
   local core=model:FindFirstChild("Stage5ChestCore")
   for _,bay in ipairs(bays) do
-   if core then for _,pair in ipairs(bay.Triangles) do for _,p in ipairs(pair) do p.Color=core.Color end end end
+
    local a=anchorFrame(bay.Refs.FromLower).Position
    local b=anchorFrame(bay.Refs.ToLower).Position
    local ta=anchorFrame(bay.Refs.FromUpper).Position
@@ -36,6 +42,14 @@ function Renderer.Attach(model,parent,anchorFrame)
    local function top(t)return ta:Lerp(tb,t):Lerp(a:Lerp(b,t),0.30*math.sin(t*math.pi)) end
    for strip=1,6 do
     local t0,t1=(strip-1)/6,strip/6
+    local from=bay.FromCore or core
+    local to=bay.ToCore or core
+    if from and to then
+     local color=from.Color:Lerp(to.Color,(t0+t1)/2)
+     for _,index in ipairs({strip*2-1,strip*2}) do
+      for _,p in ipairs(bay.Triangles[index]) do p.Color=color end
+     end
+    end
     local p,q,r,s=a:Lerp(b,t0),a:Lerp(b,t1),top(t1),top(t0)
     G.Triangle(nil,nil,p,q,r,nil,0.035*model:GetScale(),bay.Triangles[strip*2-1])
     G.Triangle(nil,nil,p,r,s,nil,0.035*model:GetScale(),bay.Triangles[strip*2])

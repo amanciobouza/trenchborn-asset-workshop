@@ -371,6 +371,18 @@ function Rig.Attach(model, movementRoot, humanoid, options)
  end
  local function releaseSpecial() specialLock=nil end
 	local focusColor=Color3.fromRGB(65,225,255)
+ local function stageFiveCharge(p,base,time,fade)
+  local index=tonumber(p.Name:match("^DorsalEnergy_(%d+)"))
+  local onset
+  if index then onset=(11-index)/10*1.15
+  elseif p:GetAttribute("RigRegion")=="Head" or p.Name:find("Brow",1,true) then onset=1.65
+  elseif p.Name=="Stage5ChestCore" then onset=1.48
+  else onset=1.30 end
+  local progress=math.clamp((time-onset)/0.28,0,1)
+  local crest=math.max(0,1-math.abs((time-onset-0.20)/0.20))*0.55
+  local charged=focusColor:Lerp(Color3.fromRGB(220,255,255),crest)
+  return base:Lerp(charged,progress*fade)
+ end
 	local palmRest={}
 	for _,side in ipairs({"Left","Right"}) do
 		local palm=get(side.."PalmCoreZ")
@@ -1250,7 +1262,7 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 			for p,color in pairs(focus.Colors) do
 				local index=tonumber(string.match(p.Name,"^DorsalEnergy_(%d+)")) or 1
 				local onset=math.clamp((tailCount-index)/(tailCount-1),0,1)*1.5
-				setEnergyColor(p,color:Lerp(focusColor,math.clamp((t-onset)/0.3,0,1)*fadeOut))
+				setEnergyColor(p,stage==5 and stageFiveCharge(p,color,t,fadeOut) or color:Lerp(focusColor,math.clamp((t-onset)/0.3,0,1)*fadeOut))
 			end
 			local orbSize=(0.15+charge*0.85)*(1+0.08*math.sin(t*28)*charge)*scale*fadeOut*focusChargeScale
 			focus.Orb.Size=Vector3.new(orbSize,orbSize,orbSize)
@@ -1330,7 +1342,7 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 			end
 			for p,color in pairs(area.Colors) do
 				local charged=focusColor:Lerp(Color3.fromRGB(220,255,255),release*0.7)
-				setEnergyColor(p,color:Lerp(charged,tension))
+				setEnergyColor(p,stage==5 and stageFiveCharge(p,color,areaTime,tension) or color:Lerp(charged,tension))
 			end
 			presentationAttribute("AreaPhase",areaTime<AREA_TIMING.Discharge and "Charging" or areaTime<AREA_TIMING.Recovery and "Discharge" or "Recovery")
 			if areaTime>=AREA_TIMING.Discharge and not area.Hit then

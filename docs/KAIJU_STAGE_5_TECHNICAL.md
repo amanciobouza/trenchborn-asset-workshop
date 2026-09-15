@@ -196,3 +196,7 @@ Die vorherige Abnahme der einzelnen dicken Schienbeinader ist durch den neuen Wu
 ### Grosse Adern hinten rechts und an der Schulter
 
 Der grosse vordere Verlauf am linken Bein wurde vom Benutzer bestätigt. Entsprechend erhalten die rechte hintere Hüft-/Oberschenkelplatte und der rechte hintere Schienbeinpanzer eine lange Hauptader mit 2,8-facher Breite. Ein weiterer grosser Verlauf liegt auf der linken Schulterrückseite und dem angrenzenden Oberarmpanzer. Eigene Linienformen und schmalere Enden bewahren die Asymmetrie. Gelenkzwischenräume bleiben frei; Sichtprüfung der neuen Verläufe offen.
+
+### Ladewelle für Spezialangriffe
+
+Stufe 5 lädt bei Fokus und Fläche von der hintersten Rückenplatte nach vorne auf. Eine kurze weiss-cyanfarbene Spitze hebt die Wellenfront hervor; danach folgen Brustadern, Brustkern und Kopf. Segelfarben interpolieren zwischen den tatsächlichen Leuchtkernen ihrer Nachbarplatten, bei unveränderter Transparenz und Form. Bestehendes Zurücksetzen der Angriffsfarben bleibt aktiv. Studio-Prüfung von Timing und Rückkehr zu Gelb offen.

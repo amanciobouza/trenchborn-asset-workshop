@@ -199,8 +199,10 @@ assert(first)
 local core=m:FindFirstChild('Stage5ChestCore')
 assert(core.Material==Enum.Material.Neon and core:GetAttribute('KaijuArmorEnergy'))
 local cyan=Color3.fromRGB(65,225,255)
-core.Color=cyan;view.Update()
-for _,p in ipairs(moving:GetChildren()) do assert(p.Material==Enum.Material.Neon and p.Color==cyan) end
+core.Color=cyan
+for _,p in ipairs(m:GetChildren()) do if p.Name:match('^DorsalEnergy_') then p.Color=cyan end end
+view.Update()
+for _,p in ipairs(moving:GetChildren()) do assert(p.Material==Enum.Material.Neon and p.Color.R==cyan.R and p.Color.G==cyan.G and p.Color.B==cyan.B) end
 local start=first.Position
 offset=Vector3.new(7,3,-2);view.Update()
 assert((first.Position-start-offset).Magnitude<1e-6)
