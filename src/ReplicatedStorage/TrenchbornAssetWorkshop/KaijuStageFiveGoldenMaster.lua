@@ -57,10 +57,15 @@ function Builder.Build(parent,ground,options)
   local apertureX,apertureY=width*0.175,width*0.21
   local outerX,outerY=width*0.50,width*0.32
   -- Chest height must follow the jaw clearance, not shoulder width alone.
-  -- Include the full oriented bounds of the jaw and its attached armor.
+  -- Use the central mouth underside, not low lateral jaw armor.
   local jawBottom=math.huge
+  local jawSources={}
   for _,p in ipairs(model:GetChildren()) do
-   if p:IsA("BasePart") and p.Name:match("^LowerJaw") then
+   if p:IsA("BasePart") and p.Name:match("^LowerJawFront") then table.insert(jawSources,p) end
+  end
+  if #jawSources==0 then table.insert(jawSources,assert(model:FindFirstChild("LowerJawRear"),"Missing jaw")) end
+  for _,p in ipairs(jawSources) do
+   if p:IsA("BasePart") then
     local cf,h=p.CFrame,p.Size/2
     jawBottom=math.min(jawBottom,p.Position.Y-math.abs(cf.RightVector.Y)*h.X
      -math.abs(cf.UpVector.Y)*h.Y-math.abs(cf.ZVector.Y)*h.Z)
@@ -70,6 +75,7 @@ function Builder.Build(parent,ground,options)
   local clearance=width*0.003
   chestY=jawBottom-clearance-outerY-width*0.02
   model:SetAttribute("NormalizedChestJawClearance",clearance)
+  model:SetAttribute("ChestHeightReference","FrontJawUnderside")
   local backing=G.Part(model,"Stage5ChestBacking",Vector3.new(width*0.78,width*0.61,width*0.08),
    CFrame.new(0,chestY,backZ+width*0.03),DARK)
   backing.Shape=Enum.PartType.Ball;backing:SetAttribute("RigRegion","Torso")

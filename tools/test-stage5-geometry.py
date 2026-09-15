@@ -88,6 +88,8 @@ addModule('KaijuStageFourGoldenMaster',{Build=function(parent)
  part('BellyShield',0,18,-2,6,8,2)
  part('Cranium',0,31,-3,6,5,6)
  part('LowerJawRear',0,27,-5,6,3,5)
+ part('LowerJawFrontCoreY',0,28,-7,5,1,4)
+ part('LowerJawStage4AngleLeft',-4,24,-5,2,4,3)
  for _,sign in ipairs({-1,1}) do
   local side=sign<0 and 'Left' or 'Right'
   part(side..'Pectoral',sign*3,23,-3,5,4,2)
@@ -141,7 +143,8 @@ for _,scale in ipairs({0.5,1,2}) do
  end
  assert(armorCount>=24 and minX<m.LeftShoulderJoint.Position.X and maxX>m.RightShoulderJoint.Position.X,'Upper back armor must span both shoulder roots')
  assert(not m:FindFirstChild('LeftRibArmorStage4Row1Core'))
- local jaw=m:FindFirstChild('LowerJawRear')
+ local jaw=m:FindFirstChild('LowerJawFrontCoreY')
+ assert(m:FindFirstChild('Stage5ChestCore').Position.Y>m.LowerJawRear.Position.Y-m.LowerJawRear.Size.Y/2-14*0.94*0.32*m:GetScale(),'Low side armor must not hold chest down')
  local limit=jaw.Position.Y-jaw.Size.Y/2-m:GetAttribute('NormalizedChestJawClearance')*m:GetScale()
  for _,p in ipairs(m:GetChildren()) do
   if p.Name:match('^Stage5Chest') then
