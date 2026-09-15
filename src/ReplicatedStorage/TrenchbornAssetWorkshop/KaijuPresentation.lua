@@ -106,18 +106,7 @@ function Rig.Attach(model, movementRoot, humanoid, options)
  local sailRef=model:FindFirstChild("KaijuSailRenderer")
  if sailRef and sailRef.Value then
   local function anchorFrame(attachment)
-   local cache={}
-   local function world(name)
-    if cache[name] then return cache[name] end
-    if name=="Pelvis" then
-     cache[name]=rootJoint and rootJoint.Part0.CFrame*rootJoint.C0 or bones.Pelvis.CFrame
-    else
-     local joint=motors[name];cache[name]=world(joint.Part0.Name)*joint.C0
-    end
-    return cache[name]
-   end
-   local plate=attachment.Parent
-   return world(plate:GetAttribute("RigRegion"))*plate:GetAttribute("RigLocalFrame")*attachment.CFrame
+   return attachment.WorldCFrame
   end
   sailView=require(sailRef.Value).Attach(model,effectsFolder,anchorFrame)
  end
@@ -356,7 +345,7 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 			game:GetService("Debris"):AddItem(dust,0.4)
 		end
 	end
-	local heartbeat, destroying, healthConnection, poseConnection
+	local heartbeat, destroying, healthConnection, poseConnection, sailConnection
 	-- ownedJoints initialized with immutable rest-frame proxies above.
 	local combo = Combo.new(combat and combat.PrepareFinisher,stage)
 	local jump = Jump.new()
@@ -678,6 +667,7 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 		if destroying then destroying:Disconnect() end
 		if healthConnection then healthConnection:Disconnect() end
 		if poseConnection then poseConnection:Disconnect() end
+  if sailConnection then sailConnection:Disconnect() end
   if sailView then sailView.Destroy() end
 		for _, joint in ipairs(ownedJoints) do
 			if joint.Real.Parent then joint.Real.Transform=CFrame.identity end
@@ -842,9 +832,13 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 				end
 
  end
+ -- Read the displayed attachment frames after physics has moved the root
+ -- and applied Motor6D transforms; do not predict them before simulation.
+ if sailView then
+  sailConnection=RunService.PreRender:Connect(function() sailView.Update() end)
+ end
  -- Apply after Animator, using the non-replicated animation layer.
  poseConnection=RunService.PreSimulation:Connect(function()
-  if sailView then sailView.Update() end
   for _,joint in ipairs(ownedJoints) do
    if joint.Real.Parent then joint.Real.Transform=joint.Inverse*joint.C0 end
   end

@@ -27,7 +27,7 @@ function Geometry.Triangle(parent,name,a,b,c,color,thickness,reuse)
   if width>1e-5 then
    local cf=CFrame.fromMatrix(foot+up*(height/2)-back*(width/2),up:Cross(back),up,back)
    local p=reuse and reuse[index] or Geometry.Part(parent,name.."_"..index,Vector3.new(thickness or 0.06,height,width),cf,color,"WedgePart")
-   p.Size=Vector3.new(thickness or 0.06,height,width);p.CFrame=cf;if reuse then p.Transparency=0.42 end
+   p.Size=Vector3.new(thickness or 0.06,height,width);p.CFrame=cf;if reuse then p.Transparency=0.82 end
    table.insert(result,p)
   end
  end

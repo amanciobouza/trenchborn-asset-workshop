@@ -129,7 +129,7 @@ for _,scale in ipairs({0.5,1,2}) do
   local fields,refs=0,0
   for _,p in ipairs(bay:GetChildren()) do
    if p:IsA('ObjectValue') then assert(p.Value and p.Value.Parent);refs=refs+1 end
-   if p:IsA('BasePart') then assert(p.Size.Y>0 and p.Size.Z>0 and not p.CanCollide and p.Transparency==0.42);fields=fields+1 end
+   if p:IsA('BasePart') then assert(p.Size.Y>0 and p.Size.Z>0 and not p.CanCollide and p.Transparency==0.82);fields=fields+1 end
   end
   assert(refs==4 and fields>=6);geometry=geometry+fields
  end

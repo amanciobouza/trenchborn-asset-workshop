@@ -352,6 +352,14 @@ function Builder.Build(parent,ground,options)
      point(-h*0.44,-d*0.40),point(-h*0.44,d*0.43),point(h*0.39,d*0.43),
      ROCK,plate.Size.X*0.20)
     for _,p in ipairs(parts) do p:SetAttribute("Stage5ArmorRole","DorsalFlank") end
+    -- Visible energy inset sits outside the new flank armor, not underneath.
+    local function glowPoint(y,z)
+     return plate.CFrame:PointToWorldSpace(Vector3.new(sign*plate.Size.X*0.70,
+      -h/6+(y+h/6)*0.48,d/6+(z-d/6)*0.48))
+    end
+    local glow=G.Triangle(model,"DorsalEnergy_"..stem.."_Stage5Core_"..sign,
+     glowPoint(-h/2,-d/2),glowPoint(-h/2,d/2),glowPoint(h/2,d/2),FIELD,plate.Size.X*0.025)
+    for _,p in ipairs(glow) do p.Material=Enum.Material.Neon;p:SetAttribute("KaijuArmorEnergy",true) end
    end
    -- Use the outward direction, not distance from a body centre: distance
    -- can pick an along-back corner and fold a bay into the next plate.
@@ -386,7 +394,7 @@ function Builder.Build(parent,ground,options)
    for strip=1,6 do
     local t0,t1=(strip-1)/6,strip/6
     for _,p in ipairs(G.Quad(bay,"Field"..strip,a:Lerp(b,t0),a:Lerp(b,t1),top(t1),top(t0),FIELD,0.035)) do
-     p.Transparency=0.42;p.Material=Enum.Material.Neon;p.CastShadow=false;p:SetAttribute("GeometryProxy",true)
+     p.Transparency=0.82;p.Material=Enum.Material.Neon;p.CastShadow=false;p:SetAttribute("GeometryProxy",true)
     end
    end
   end

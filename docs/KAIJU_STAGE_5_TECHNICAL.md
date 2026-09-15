@@ -154,3 +154,7 @@ Drei zusätzliche, überlappende Platten pro Fuss folgen der gewölbten Oberseit
 
 Segelbogen auf Wunsch verstärkt: Durchhang von zwölf auf dreissig Prozent der Feldhöhe erhöht. Anschlüsse bleiben an derselben Stelle; statische und bewegliche Segel verwenden denselben Bogen. Sichtprüfung offen.
 Sechs statt drei Streifen pro Segelfeld bilden den Bogen feiner ab; die animierte Darstellung verwendet weiterhin vorab erzeugte Teile.
+
+### Segel folgen den sichtbaren Platten
+
+Die animierten Segel lesen jetzt in PreRender die tatsächlichen WorldCFrames der Platten-Attachments. Die frühere Rekonstruktion vor dem Physikschritt konnte gegenüber Sprungbewegung und angewendeten Gelenkposen versetzt sein. Die Verbindung wird beim Aufräumen getrennt. Transparenz von 42 auf 82 Prozent erhöht. Beide Seiten aller elf Rückenplatten erhalten sichtbare Neonkerne ausserhalb der zusätzlichen Seitenpanzerung, im gemeinsamen Spezialangriffs-Farbwechsel. Sprung und Gehen sind in Studio zu prüfen.
