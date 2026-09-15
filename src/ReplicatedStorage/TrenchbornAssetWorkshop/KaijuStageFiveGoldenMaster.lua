@@ -1,4 +1,4 @@
--- Phase 4 candidate: approved Stage 5 visual target; geometry approval pending.
+-- Stage 5 geometry and dressing approved by user; Phase 6 gameplay review.
 -- Static sail topology is also consumed by the animated two-anchor renderer.
 local StageFour=require(script.Parent:WaitForChild("KaijuStageFourGoldenMaster"))
 local Base=require(script.Parent:WaitForChild("KaijuEvolutionBlockout"))
@@ -513,12 +513,12 @@ function Builder.Build(parent,ground,options)
   model:PivotTo(model:GetPivot()+Vector3.new(0,-bottom,0));model:PivotTo(ground*model:GetPivot())
   for _,key in ipairs({"ApprovedGeometryCommit","ApprovedRevision","DressingRevision","DressingReview","ApprovedDressingCommit","FinalInstallerVersion","RuntimeReview","IntegrationReview","GeometryAmendmentReview"}) do model:SetAttribute(key,nil) end
   model:SetAttribute("EvolutionStage",5);model:SetAttribute("BuildScale",scale)
-  model:SetAttribute("PipelinePhase",4);model:SetAttribute("QualityGateA","ApprovedByUser")
-  model:SetAttribute("QualityGateB","Pending_UserGeometryReview");model:SetAttribute("QualityGateC","Pending")
-  model:SetAttribute("DressingReview","Pending_Phase5");model:SetAttribute("SailBayCount",10)
+  model:SetAttribute("PipelinePhase",6);model:SetAttribute("QualityGateA","ApprovedByUser")
+  model:SetAttribute("QualityGateB","ApprovedByUser");model:SetAttribute("QualityGateC","Pending")
+  model:SetAttribute("DressingReview","ApprovedByUser");model:SetAttribute("SailBayCount",10)
   model:SetAttribute("SailPresentation","StaticGeometryProxy")
   model:SetAttribute("GeometryRevision","S5_ChestBelowJaw_06")
-  model:SetAttribute("Purpose","Stage 5 static geometry review; not a playable/final asset")
+  model:SetAttribute("Purpose","Stage 5 approved geometry and dressing; gameplay review pending")
   model.Parent=parent
  end)
  staging:Destroy()

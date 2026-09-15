@@ -200,3 +200,7 @@ Der grosse vordere Verlauf am linken Bein wurde vom Benutzer bestätigt. Entspre
 ### Ladewelle für Spezialangriffe
 
 Stufe 5 lädt bei Fokus und Fläche von der hintersten Rückenplatte nach vorne auf. Eine kurze weiss-cyanfarbene Spitze hebt die Wellenfront hervor; danach folgen Brustadern, Brustkern und Kopf. Segelfarben interpolieren zwischen den tatsächlichen Leuchtkernen ihrer Nachbarplatten, bei unveränderter Transparenz und Form. Bestehendes Zurücksetzen der Angriffsfarben bleibt aktiv. Studio-Prüfung von Timing und Rückkehr zu Gelb offen.
+
+## Gesamtfreigabe und Phase 6
+
+Der Benutzer hat den Gesamtstand einschliesslich Brusthöhe, Kopf, Füssen und Panzerung sowie das Dressing ausdrücklich freigegeben („okpasst“). Gate B und DressingReview: ApprovedByUser. Segel, Leuchtkerne und Ladewelle für Fokus/Fläche sind ebenfalls bestätigt. Phase 6 ist aktiv; Gate C und abschliessende Gameplay-/Integrationsprüfung bleiben offen. Kein finaler Installer freigegeben.

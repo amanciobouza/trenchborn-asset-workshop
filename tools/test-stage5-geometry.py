@@ -120,8 +120,8 @@ code+=r'''
 for _,scale in ipairs({0.5,1,2}) do
  local folder=Instance.new('Folder')
  local m=Builder.Build(folder,CFrame.new(10,0,20),{Scale=scale})
- assert(m:GetAttribute('EvolutionStage')==5 and m:GetAttribute('PipelinePhase')==4)
- assert(m:GetAttribute('QualityGateB')=='Pending_UserGeometryReview' and m:GetAttribute('ApprovedGeometryCommit')==nil)
+ assert(m:GetAttribute('EvolutionStage')==5 and m:GetAttribute('PipelinePhase')==6)
+ assert(m:GetAttribute('QualityGateB')=='ApprovedByUser' and m:GetAttribute('ApprovedGeometryCommit')==nil)
  assert(m:GetAttribute('FinalInstallerVersion')==nil)
  for _,side in ipairs({'Left','Right'}) do
   assert(m:FindFirstChild('DorsalRock_03_SideSpine_'..side..'Shard'):GetAttribute('RigRegion')=='TailBase','Sacral spikes must not inherit sprint torso pitch')
