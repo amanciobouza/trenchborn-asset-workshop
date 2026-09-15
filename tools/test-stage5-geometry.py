@@ -95,6 +95,8 @@ addModule('KaijuStageFourGoldenMaster',{Build=function(parent)
   part(side..'Pectoral',sign*3,23,-3,5,4,2)
   for _,joint in ipairs({'ShoulderJoint','ElbowJoint','HipJoint','KneeJoint'}) do part(side..joint,sign*7,20,0,3,3,3) end
   part(side..'ForefootCoreY',sign*4,1,-1,4,2,6)
+  part(side..'InstepFlow',sign*4,2,-0.6,4,4,4)
+  part(side..'BrowRidge',sign*2,32,-5,1.5,0.7,2)
   part(side..'RibArmorStage4Row1Core',sign*3,23,-4,4,3,1)
  end
  for i=1,11 do

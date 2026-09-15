@@ -242,6 +242,21 @@ function Builder.Build(parent,ground,options)
     Vector3.new(fw*1.08,fh*0.86,fl*0.18),
     foot.CFrame*CFrame.new(0,fh*0.10,-fl*0.52),EDGE)
    cap:SetAttribute("RigRegion",side.."Foot")
+   local instep=assert(model:FindFirstChild(side.."InstepFlow"),"Missing instep")
+   local h=instep.Size/2
+   for row=1,3 do
+    local z0=-0.76+(row-1)*0.46
+    local z1=z0+0.55
+    local function point(x,z)
+     local y=h.Y*math.sqrt(math.max(0,1-x*x-z*z))+h.Y*0.07
+     return instep.CFrame:PointToWorldSpace(Vector3.new(x*h.X,y,z*h.Z))
+    end
+    for _,edge in ipairs({-1,1}) do
+     region(G.Quad(model,side.."InstepArmorStage5_"..row.."_"..edge,
+      point(0,z0),point(edge*0.68,z0),point(edge*0.68,z1),point(0,z1),
+      row==2 and EDGE or ROCK,h.Y*0.20),side.."Foot")
+    end
+   end
    local shoulder=model[side.."ShoulderJoint"]
    for layer=1,3 do
     local size=shoulder.Size
@@ -302,6 +317,20 @@ function Builder.Build(parent,ground,options)
      point(0,-skull.Size.Y*0.14,length*0.35),
      point(column*skull.Size.X*0.055,height,length),
      row==2 and EDGE or ROCK,skull.Size.X*(column==0 and 0.24 or 0.21)),"Head")
+   end
+  end
+  -- Start the swept scale rows on the actual brow ridges, above the eyes.
+  for _,sign in ipairs({-1,1}) do
+   local side=sign<0 and "Left" or "Right"
+   local brow=assert(model:FindFirstChild(side.."BrowRidge"),"Missing brow ridge")
+   for row=1,2 do
+    local root=brow.CFrame:PointToWorldSpace(Vector3.new(0,brow.Size.Y*0.46,
+     brow.Size.Z*(-0.24+(row-1)*0.42)))
+    local function point(x,y,z)return root+skull.CFrame:VectorToWorldSpace(Vector3.new(x,y,z)) end
+    region(G.Triangle(model,"Stage5BrowScale_"..side.."_"..row,
+     point(0,0,-skull.Size.Z*0.07),point(0,0,skull.Size.Z*0.19),
+     point(sign*skull.Size.X*0.025,skull.Size.Y*(0.18+row*0.045),skull.Size.Z*(0.28+row*0.025)),
+     row==1 and EDGE or ROCK,brow.Size.X*0.65),"Head")
    end
   end
   local anchors={}

@@ -147,3 +147,7 @@ Korrektur nach ausbleibender sichtbarer Höhenänderung: Bezug ist jetzt die vor
 ### Breiterer Stand
 
 Beide vollständigen Beinbaugruppen werden nach aussen versetzt, einschliesslich Gelenkpunkten und Panzerung. Der Abstand berücksichtigt die tatsächlichen Fuss-Hüllflächen und lässt mindestens zehn Prozent der Brustbreite frei. Die Brustmitte steigt durch einen etwas flacheren oberen Panzerbogen nochmals um zwei Prozent der Brustbreite. Stand, Hüftanschlüsse und Gangbild bleiben in Studio zu prüfen.
+
+### Fussrücken und Brauenschuppen
+
+Drei zusätzliche, überlappende Platten pro Fuss folgen der gewölbten Oberseite von `InstepFlow` und bleiben dem Fussgelenk zugeordnet. Je zwei neue scharfe Schuppen beginnen oberhalb der tatsächlichen Brauen und zeigen nach hinten oben zum bestehenden Kopfkamm. Sichtprüfung, Augenfreiraum und Fussbewegung sind offen.
