@@ -151,3 +151,6 @@ Beide vollständigen Beinbaugruppen werden nach aussen versetzt, einschliesslich
 ### Fussrücken und Brauenschuppen
 
 Drei zusätzliche, überlappende Platten pro Fuss folgen der gewölbten Oberseite von `InstepFlow` und bleiben dem Fussgelenk zugeordnet. Je zwei neue scharfe Schuppen beginnen oberhalb der tatsächlichen Brauen und zeigen nach hinten oben zum bestehenden Kopfkamm. Sichtprüfung, Augenfreiraum und Fussbewegung sind offen.
+
+Segelbogen auf Wunsch verstärkt: Durchhang von zwölf auf dreissig Prozent der Feldhöhe erhöht. Anschlüsse bleiben an derselben Stelle; statische und bewegliche Segel verwenden denselben Bogen. Sichtprüfung offen.
+Sechs statt drei Streifen pro Segelfeld bilden den Bogen feiner ab; die animierte Darstellung verwendet weiterhin vorab erzeugte Teile.

@@ -181,7 +181,7 @@ local offset=Vector3.zero
 local collapsed=false
 local view=Renderer.Attach(m,parent,function(ref)return CFrame.new(collapsed and offset or ref.WorldPosition+offset) end)
 local moving=parent:FindFirstChild('MovingEnergySails')
-assert(#moving:GetChildren()==120)
+assert(#moving:GetChildren()==240)
 view.Update()
 local first
 for _,p in ipairs(moving:GetChildren()) do if p.Transparency<1 then first=p;break end end
@@ -194,7 +194,7 @@ for _,p in ipairs(moving:GetChildren()) do assert(p.Material==Enum.Material.Neon
 local start=first.Position
 offset=Vector3.new(7,3,-2);view.Update()
 assert((first.Position-start-offset).Magnitude<1e-6)
-assert(#moving:GetChildren()==120)
+assert(#moving:GetChildren()==240)
 collapsed=true;view.Update()
 for _,p in ipairs(moving:GetChildren()) do assert(p.Transparency==1) end
 view.Destroy();view.Destroy();view.Update()

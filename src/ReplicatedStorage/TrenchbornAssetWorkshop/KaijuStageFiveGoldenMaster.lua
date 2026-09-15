@@ -381,10 +381,10 @@ function Builder.Build(parent,ground,options)
    local topA,topB=anchors[i].Upper.WorldPosition,anchors[i+1].Upper.WorldPosition
    local function top(t)
     local lower=a:Lerp(b,t);local line=topA:Lerp(topB,t)
-    return line:Lerp(lower,0.12*math.sin(t*math.pi))
+    return line:Lerp(lower,0.30*math.sin(t*math.pi))
    end
-   for strip=1,3 do
-    local t0,t1=(strip-1)/3,strip/3
+   for strip=1,6 do
+    local t0,t1=(strip-1)/6,strip/6
     for _,p in ipairs(G.Quad(bay,"Field"..strip,a:Lerp(b,t0),a:Lerp(b,t1),top(t1),top(t0),FIELD,0.035)) do
      p.Transparency=0.42;p.Material=Enum.Material.Neon;p.CastShadow=false;p:SetAttribute("GeometryProxy",true)
     end

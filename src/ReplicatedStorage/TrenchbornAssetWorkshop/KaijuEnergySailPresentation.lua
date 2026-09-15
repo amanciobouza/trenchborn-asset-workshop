@@ -13,7 +13,7 @@ function Renderer.Attach(model,parent,anchorFrame)
   for _,name in ipairs({"FromLower","FromUpper","ToLower","ToUpper"}) do
    entry.Refs[name]=assert(bay:FindFirstChild(name).Value,"Missing sail anchor")
   end
-  for i=1,6 do
+  for i=1,12 do
    local pair={}
    for j=1,2 do
     local p=G.Part(folder,bay.Name.."_"..i.."_"..j,Vector3.new(0.03,1,1),CFrame.identity,Color3.fromRGB(236,192,65),"WedgePart")
@@ -33,9 +33,9 @@ function Renderer.Attach(model,parent,anchorFrame)
    local b=anchorFrame(bay.Refs.ToLower).Position
    local ta=anchorFrame(bay.Refs.FromUpper).Position
    local tb=anchorFrame(bay.Refs.ToUpper).Position
-   local function top(t)return ta:Lerp(tb,t):Lerp(a:Lerp(b,t),0.12*math.sin(t*math.pi)) end
-   for strip=1,3 do
-    local t0,t1=(strip-1)/3,strip/3
+   local function top(t)return ta:Lerp(tb,t):Lerp(a:Lerp(b,t),0.30*math.sin(t*math.pi)) end
+   for strip=1,6 do
+    local t0,t1=(strip-1)/6,strip/6
     local p,q,r,s=a:Lerp(b,t0),a:Lerp(b,t1),top(t1),top(t0)
     G.Triangle(nil,nil,p,q,r,nil,0.035*model:GetScale(),bay.Triangles[strip*2-1])
     G.Triangle(nil,nil,p,r,s,nil,0.035*model:GetScale(),bay.Triangles[strip*2])
