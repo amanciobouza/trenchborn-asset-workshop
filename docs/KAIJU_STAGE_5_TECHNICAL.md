@@ -174,3 +174,7 @@ Zusätzliche kurze, verzweigte Neonadern liegen auf Brustkraterflächen, ausgew�
 ### Aderdichte neu verteilt
 
 Die zuletzt ergänzten kleinen Adernetze auf sämtlichen Brustkraterflächen entfallen; die vier grösseren Hauptverläufe und Schulteranschlüsse bleiben. Armadern sind länger und kräftiger. Hüft-, Knie- und Schienbeinpanzer erhalten eigene grossflächigere Verläufe auf den äusseren Platten. Alle Verläufe bleiben auf einer einzelnen Gelenkregion. Kopfadern unverändert; Sichtprüfung offen.
+
+### Sternförmige Adern korrigiert
+
+Die neuen Plattenadern bilden jetzt einen langen, unregelmässig geknickten Riss pro Fläche. Verzweigungen am gemeinsamen Mittelpunkt entfallen; die Enden werden schmaler. Das gilt für Kopf-, Arm- und Beinplatten. Die kurzen sternförmigen Muster werden beim Neuaufbau ersetzt. Sichtprüfung offen.

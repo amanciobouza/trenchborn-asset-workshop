@@ -448,11 +448,12 @@ function Builder.Build(parent,ground,options)
      local seed=0
      for i=1,#name do seed=(seed*33+name:byte(i))%997 end
      local variant=(seed%11)/100
-     local points={{0.12+variant,0.16},{0.30,0.26+variant},{0.52-variant,0.20},
-      {0.24,0.51-variant},{0.13+variant,0.60-variant}}
+     -- A continuous, elongated crack; no multi-branch central junction.
+     local points={{0.13+variant,0.07},{0.20+variant,0.22},{0.12+variant,0.37},
+      {0.17-variant*0.5,0.53},{0.08,0.76}}
      if arm or leg then
-      points={{0.05+variant,0.05},{0.28,0.34+variant},{0.58-variant,0.70},
-       {0.60,0.23+variant},{0.08+variant,0.61}}
+      points={{0.09+variant,0.02},{0.23+variant,0.22},{0.18+variant,0.40},
+       {0.40-variant,0.58},{0.48+variant*0.4,0.78}}
      end
      local sides=head and {-1,1} or {chest and (plate.CFrame.RightVector.Z<=0 and 1 or -1) or 1}
      for _,side in ipairs(sides) do
@@ -468,12 +469,12 @@ function Builder.Build(parent,ground,options)
        end
        return plate.CFrame:PointToWorldSpace(localPoint)+normal*0.018
       end
-      for index,edge in ipairs({{1,2},{2,3},{2,4},{4,5}}) do
+      for index,edge in ipairs({{1,2},{2,3},{3,4},{4,5}}) do
        local a,b=point(points[edge[1]]),point(points[edge[2]])
        local length=(b-a).Magnitude
        if length>0.025 then
         local faceSize=(arm or leg) and math.min(plate.Size.X,plate.Size.Y) or math.min(plate.Size.Y,plate.Size.Z)
-        local thickness=math.clamp(faceSize*((arm or leg) and 0.025 or 0.014),0.022,(arm or leg) and 0.11 or 0.065)*(index>2 and 0.55 or 1)
+        local thickness=math.clamp(faceSize*((arm or leg) and 0.025 or 0.014),0.022,(arm or leg) and 0.11 or 0.065)*(index==4 and 0.65 or 0.85)
         local glow=G.Part(model,name.."Stage5SurfaceVein_"..side.."_"..index,
          Vector3.new(thickness,0.018,length),CFrame.lookAt((a+b)/2,b,normal),FIELD)
         glow.Material=Enum.Material.Neon;glow.CastShadow=false
