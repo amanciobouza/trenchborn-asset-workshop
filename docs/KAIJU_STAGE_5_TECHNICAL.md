@@ -162,3 +162,7 @@ Die animierten Segel lesen jetzt in PreRender die tatsächlichen WorldCFrames de
 ### Energierisse vom Brustkern zu den Schultern
 
 Vier asymmetrische Hauptadern mit schmalen Seitenästen führen vom inneren Krater über die oberen seitlichen Panzerflächen. Kurze Anschlüsse verbinden sie mit den bestehenden leuchtenden Schulterkragen. Alle Adern folgen dem Torso und der gemeinsamen Spezialangriffsfarbe. Keine zusätzlichen Segel; deren bestätigte Form bleibt bestehen. Sichtprüfung der neuen Energierisse ist offen.
+
+### Keine schwebenden Beinadern
+
+Stufe 5 entfernt die geerbten frei stehenden `HipArmorGrowthPath*`- und `ShinArmorGrowthPath*`-Verbindungen einschliesslich ihrer Ränder vor dem Skalieren und Riggen. Die kurzen Adern einzelner Panzerplatten bleiben bestehen. Dadurch überspannen keine dieser alten Routen mehr die Zwischenräume der Beinrüstung. Sichtprüfung beim Laufen steht aus.

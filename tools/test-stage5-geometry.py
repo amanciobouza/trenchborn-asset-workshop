@@ -97,6 +97,11 @@ addModule('KaijuStageFourGoldenMaster',{Build=function(parent)
   part(side..'ForefootCoreY',sign*4,1,-1,4,2,6)
   part(side..'InstepFlow',sign*4,2,-0.6,4,4,4)
   part(side..'BrowRidge',sign*2,32,-5,1.5,0.7,2)
+  for _,zone in ipairs({'Hip','Shin'}) do
+   part(side..zone..'ArmorGrowthPath1Energy',sign*4,12,0,0.1,0.1,5)
+   part(side..zone..'ArmorGrowthPath1Rim',sign*4,12,0,0.2,0.1,5)
+   part(side..zone..'ArmorPlateFissureEnergy',sign*4,12,0,0.1,0.1,1)
+  end
   part(side..'RibArmorStage4Row1Core',sign*3,23,-4,4,3,1)
  end
  for i=1,11 do
@@ -145,6 +150,11 @@ for _,scale in ipairs({0.5,1,2}) do
  end
  assert(armorCount>=24 and minX<m.LeftShoulderJoint.Position.X and maxX>m.RightShoulderJoint.Position.X,'Upper back armor must span both shoulder roots')
  assert(not m:FindFirstChild('LeftRibArmorStage4Row1Core'))
+ for _,side in ipairs({'Left','Right'}) do for _,zone in ipairs({'Hip','Shin'}) do
+  assert(not m:FindFirstChild(side..zone..'ArmorGrowthPath1Energy'))
+  assert(not m:FindFirstChild(side..zone..'ArmorGrowthPath1Rim'))
+  assert(m:FindFirstChild(side..zone..'ArmorPlateFissureEnergy'))
+ end end
  local jaw=m:FindFirstChild('LowerJawFrontCoreY')
  assert(m:FindFirstChild('Stage5ChestCore').Position.Y>m.LowerJawRear.Position.Y-m.LowerJawRear.Size.Y/2-14*0.94*0.32*m:GetScale(),'Low side armor must not hold chest down')
  local limit=jaw.Position.Y-jaw.Size.Y/2-m:GetAttribute('NormalizedChestJawClearance')*m:GetScale()

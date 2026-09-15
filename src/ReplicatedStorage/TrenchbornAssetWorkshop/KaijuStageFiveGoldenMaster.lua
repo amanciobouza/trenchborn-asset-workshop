@@ -43,6 +43,17 @@ function Builder.Build(parent,ground,options)
   for _,p in ipairs(model:GetChildren()) do
    if p.Name:match("^LeftRibArmorStage4Row") or p.Name:match("^RightRibArmorStage4Row") then p:Destroy() end
   end
+  -- Inherited skin-route strokes bridge the gaps between the larger leg
+  -- shells. Remove the whole free-standing routes, including their rims;
+  -- retain fissures authored directly on individual hip and shin plates.
+  for _,p in ipairs(model:GetChildren()) do
+   if p:IsA("BasePart") then
+    for _,side in ipairs({"Left","Right"}) do
+     if p.Name:match("^"..side.."HipArmorGrowthPath")
+      or p.Name:match("^"..side.."ShinArmorGrowthPath") then p:Destroy();break end
+    end
+   end
+  end
   local shoulderSpan=math.abs(model.RightShoulderJoint.Position.X-model.LeftShoulderJoint.Position.X)
   local width=shoulderSpan*0.94
   local chestY=(model.LeftPectoral.Position.Y+model.RightPectoral.Position.Y)/2
