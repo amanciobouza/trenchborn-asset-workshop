@@ -1,6 +1,15 @@
 # Trenchborn Asset Workshop
 
+## Portable Primal Beast package 1.1.0
+
+Download [KaijuStageOne.rbxmx](dist/KaijuStageOne.rbxmx), import into ReplicatedStorage, and follow the [target-project setup guide](docs/KAIJU_STAGE_1_PORTABLE.md). Includes optional camera-free input and an explicit movement-only preview mode. Rebuild with `python tools/build-kaiju-stage1.py`.
+
+
 Synchronized Roblox Studio workspace for specification-driven Trenchborn asset development and automated quality gates.
+
+## Kaiju Stage 1 — final installer
+
+`KaijuStageOneInstaller` packages the user-approved Stage 1 runtime. Build the isolated asset with `rojo build kaiju-stage1.project.json -o KaijuStageOne.rbxm`. It requires the main game's building combat adapter and does not install camera logic, HUD or practice targets. See [installation, input API and adapter contract](docs/KAIJU_STAGE_1_RELEASE.md).
 
 ## Marshal-II Roadblock final installer
 
