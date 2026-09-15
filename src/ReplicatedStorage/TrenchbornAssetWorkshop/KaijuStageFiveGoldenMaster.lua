@@ -431,6 +431,56 @@ function Builder.Build(parent,ground,options)
     end
    end
   end
+  -- Short fissures stay inside a single real plate face. Never connect
+  -- separate bones with free-standing strokes across the joint gaps.
+  local veinCount=0
+  for _,plate in ipairs(model:GetChildren()) do
+   if plate:IsA("BasePart") and not plate:GetAttribute("KaijuArmorEnergy") then
+    local name=plate.Name
+    local head=name:match("^Stage5Crown_") or name:match("^Stage5BrowScale_")
+    local chest=name:match("^Stage5ChestCrater_") and not name:find("InnerWall",1,true)
+    local arm=(name:find("ShoulderArmor",1,true) or name:find("ForearmArmor",1,true))
+     and (name:match("OverlapCore$") or name:match("RockLayer1Core$"))
+    local facePlate=arm or (name:find("HeadArmor",1,true) and name:match("Core$"))
+    if ((head or chest) and plate:IsA("WedgePart")) or (facePlate and plate:IsA("Part")) then
+     local seed=0
+     for i=1,#name do seed=(seed*33+name:byte(i))%997 end
+     local variant=(seed%11)/100
+     local points={{0.12+variant,0.16},{0.30,0.26+variant},{0.52-variant,0.20},
+      {0.24,0.51-variant},{0.13+variant,0.60-variant}}
+     local sides=head and {-1,1} or {chest and (plate.CFrame.RightVector.Z<=0 and 1 or -1) or 1}
+     for _,side in ipairs(sides) do
+      local normal=plate:IsA("WedgePart") and plate.CFrame.RightVector*side or plate.CFrame.LookVector
+      local function point(uv)
+       local u,v=uv[1],uv[2]
+       local h=plate.Size/2
+       local localPoint
+       if plate:IsA("WedgePart") then
+        localPoint=Vector3.new(side*h.X,-h.Y+2*h.Y*v,-h.Z+2*h.Z*(u+v))
+       else
+        localPoint=Vector3.new((u-0.33)*plate.Size.X,(v-0.36)*plate.Size.Y,-h.Z)
+       end
+       return plate.CFrame:PointToWorldSpace(localPoint)+normal*0.018
+      end
+      for index,edge in ipairs({{1,2},{2,3},{2,4},{4,5}}) do
+       local a,b=point(points[edge[1]]),point(points[edge[2]])
+       local length=(b-a).Magnitude
+       if length>0.025 then
+        local thickness=math.clamp(math.min(plate.Size.Y,plate.Size.Z)*0.014,0.022,0.065)*(index>2 and 0.55 or 1)
+        local glow=G.Part(model,name.."Stage5SurfaceVein_"..side.."_"..index,
+         Vector3.new(thickness,0.018,length),CFrame.lookAt((a+b)/2,b,normal),FIELD)
+        glow.Material=Enum.Material.Neon;glow.CastShadow=false
+        glow:SetAttribute("KaijuArmorEnergy",true)
+        glow:SetAttribute("Stage5VeinHost",name)
+        if plate:GetAttribute("RigRegion") then glow:SetAttribute("RigRegion",plate:GetAttribute("RigRegion")) end
+        veinCount=veinCount+1
+       end
+      end
+     end
+    end
+   end
+  end
+  model:SetAttribute("Stage5FrontVeinCount",veinCount)
   model:ScaleTo(authoredScale*1.08*scale)
   model:SetAttribute("ChestRecessDepth",depth*model:GetScale())
   local bottom=math.huge

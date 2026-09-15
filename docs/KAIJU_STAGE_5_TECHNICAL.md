@@ -166,3 +166,7 @@ Vier asymmetrische Hauptadern mit schmalen Seitenästen führen vom inneren Krat
 ### Keine schwebenden Beinadern
 
 Stufe 5 entfernt die geerbten frei stehenden `HipArmorGrowthPath*`- und `ShinArmorGrowthPath*`-Verbindungen einschliesslich ihrer Ränder vor dem Skalieren und Riggen. Die kurzen Adern einzelner Panzerplatten bleiben bestehen. Dadurch überspannen keine dieser alten Routen mehr die Zwischenräume der Beinrüstung. Sichtprüfung beim Laufen steht aus.
+
+### Mehr Adern auf der Vorderseite
+
+Zusätzliche kurze, verzweigte Neonadern liegen auf Brustkraterflächen, ausgewählten äusseren Schulter-/Unterarmplatten und besonders auf Kopf- und Brauenschuppen. Pro Platte deterministisch verschiedene Verläufe; auf Kopfschuppen beidseitig. Jeder Verlauf bleibt innerhalb seiner Plattenfläche und folgt deren Rig-Zuordnung. Gemeinsamer Farbwechsel bei Spezialangriffen; Sichtprüfung von Dichte und Lesbarkeit offen.
