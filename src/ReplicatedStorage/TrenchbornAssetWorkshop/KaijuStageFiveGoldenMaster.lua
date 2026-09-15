@@ -456,7 +456,7 @@ function Builder.Build(parent,ground,options)
    ["RightHipArmorStage4Lame2RaisedFaceCore"]={[1]={P={{.03,.59},{.19,.45},{.38,.46},{.56,.35},{.38,.67}},E={{1,2,.55},{2,3,.9},{3,4,.65},{3,5,.3}}}},
    ["LeftShinArmorStage4KneecapRaisedFaceCore"]={[1]={P={{.08,.20},{.25,.23},{.41,.36},{.58,.34}},E={{1,2,.55},{2,3,.9},{3,4,.45}}}},
    ["RightShinArmorStage4KneecapRaisedFaceCore"]={[1]={P={{.44,.08},{.37,.31},{.39,.53}},E={{1,2,.8},{2,3,.45}}}},
-   ["LeftShinArmorRockLayer1Core"]={[1]={P={{.17,.02},{.25,.19},{.23,.43},{.35,.65},{.37,.81}},E={{1,2,.5},{2,3,.9},{3,4,.75},{4,5,.35}}}},
+   ["LeftShinArmorRockLayer1Core"]={[1]={Width=2.8,P={{.17,.02},{.25,.19},{.23,.43},{.35,.65},{.37,.81}},E={{1,2,.5},{2,3,.9},{3,4,.75},{4,5,.35}}}},
    ["RightShinArmorRockLayer1Core"]={[1]={P={{.51,.10},{.34,.23},{.31,.48},{.13,.63},{.51,.53}},E={{1,2,.55},{2,3,1},{3,4,.6},{3,5,.3}}}},
   }
   local veinCount=0
@@ -487,7 +487,7 @@ function Builder.Build(parent,ground,options)
        local length=(b-a).Magnitude
        if length>0.025 then
         local faceSize=(arm or leg) and math.min(plate.Size.X,plate.Size.Y) or math.min(plate.Size.Y,plate.Size.Z)
-        local thickness=math.clamp(faceSize*((arm or leg) and 0.025 or 0.014),0.022,(arm or leg) and 0.11 or 0.065)*edge[3]
+        local thickness=math.clamp(faceSize*((arm or leg) and 0.025 or 0.014),0.022,(arm or leg) and 0.11 or 0.065)*edge[3]*(pattern.Width or 1)
         local glow=G.Part(model,name.."Stage5SurfaceVein_"..side.."_"..index,
          Vector3.new(thickness,0.018,length),CFrame.lookAt((a+b)/2,b,normal),FIELD)
         glow.Material=Enum.Material.Neon;glow.CastShadow=false

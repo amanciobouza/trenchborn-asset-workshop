@@ -186,3 +186,5 @@ Die automatische Motivverteilung wurde durch 15 einzeln gezeichnete Verläufe f�
 ### Rückseitige Adern
 
 Sieben weitere, einzeln gestaltete Verläufe ergänzen die linke Schulterrückseite sowie beide Unterarm-, Hüft- und Schienbeinrückseiten. Die rechte Schulterrückseite hatte bereits einen eigenen Verlauf. Ein zusätzlicher Riss führt vom Brustkrater seitlich nach rechts unten. Alle bleiben in ihrer jeweiligen Gelenkregion. Sichtprüfung offen.
+
+Linker Schienbeinpanzer: bestehende Hauptader auf das 2,8-Fache verbreitert, mit weiterhin schmaleren Enden. Die rechte Beinseite bleibt feiner. Sichtprüfung offen.
