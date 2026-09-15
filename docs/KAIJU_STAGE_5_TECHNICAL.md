@@ -170,3 +170,7 @@ Stufe 5 entfernt die geerbten frei stehenden `HipArmorGrowthPath*`- und `ShinArm
 ### Mehr Adern auf der Vorderseite
 
 Zusätzliche kurze, verzweigte Neonadern liegen auf Brustkraterflächen, ausgewählten äusseren Schulter-/Unterarmplatten und besonders auf Kopf- und Brauenschuppen. Pro Platte deterministisch verschiedene Verläufe; auf Kopfschuppen beidseitig. Jeder Verlauf bleibt innerhalb seiner Plattenfläche und folgt deren Rig-Zuordnung. Gemeinsamer Farbwechsel bei Spezialangriffen; Sichtprüfung von Dichte und Lesbarkeit offen.
+
+### Aderdichte neu verteilt
+
+Die zuletzt ergänzten kleinen Adernetze auf sämtlichen Brustkraterflächen entfallen; die vier grösseren Hauptverläufe und Schulteranschlüsse bleiben. Armadern sind länger und kräftiger. Hüft-, Knie- und Schienbeinpanzer erhalten eigene grossflächigere Verläufe auf den äusseren Platten. Alle Verläufe bleiben auf einer einzelnen Gelenkregion. Kopfadern unverändert; Sichtprüfung offen.
