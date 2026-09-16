@@ -2,8 +2,8 @@ local Specification = {
 	AssetId = "LargeCity_LuxuryWaterfrontResort_L3",
 	DisplayName = "Luxury Waterfront Resort",
 	City = "LargeCity",
-	Phase = 4,
-	QualityGate = "B",
+	Phase = 6,
+	QualityGate = "C-Pending",
 	Style = "Singapore x Miami tropical luxury metropolis",
 
 	Dimensions = {
@@ -44,6 +44,18 @@ local Specification = {
 		"D5_CentralTowerLower",
 		"D6_CentralTowerUpper",
 		"D7_RooftopSkyBar",
+	},
+
+	GameplayReview = {
+		MaxHealth = 64000,
+		EnergyType = "Thermal",
+		DestructionReward = 4828,
+		RequireProgressiveDestruction = true,
+		RequireReset = true,
+		RequireSmokeAndFireReaction = true,
+		RequireDestructibleBuildingTag = true,
+		QualityGateB = "Approved",
+		QualityGateC = "Pending",
 	},
 
 	VisualReviewCriteria = {

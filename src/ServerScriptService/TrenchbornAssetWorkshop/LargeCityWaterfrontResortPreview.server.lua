@@ -10,6 +10,9 @@ local poolFacade = require(packageFolder:WaitForChild("LargeCityWaterfrontResort
 local dressing = require(packageFolder:WaitForChild("LargeCityWaterfrontResortDressing"))
 local signDressing = require(packageFolder:WaitForChild("LargeCityWaterfrontResortSignDressing"))
 local dressingRefinement = require(packageFolder:WaitForChild("LargeCityWaterfrontResortDressingRefinement"))
+local gameplayConfig = require(packageFolder:WaitForChild("LargeCityWaterfrontResortGameplayConfig"))
+local gameplay = require(packageFolder:WaitForChild("LargeCityWaterfrontResortGameplay"))
+local reviewControls = require(packageFolder:WaitForChild("LargeCityWaterfrontResortReviewControls"))
 
 local function getSpawnGroundPosition()
 	local spawn = Workspace:FindFirstChildWhichIsA("SpawnLocation", true)
@@ -23,9 +26,6 @@ local function getSpawnGroundPosition()
 	return Vector3.new(0, 0, 0)
 end
 
--- Place the hotel directly in the central review area near the player spawn.
--- Its entrance is on local -Z; offsetting the pivot +45 studs leaves the entrance
--- only a short walk from SpawnLocation while keeping the spawn itself unobstructed.
 local spawnGround = getSpawnGroundPosition()
 local model = goldenMaster.Build(workshop)
 poolFacade.Apply(model)
@@ -42,12 +42,24 @@ if dressingFolder then
 	if duplicateFacade then duplicateFacade:Destroy() end
 end
 
+-- Place first, then snapshot the geometry in gameplay so Reset restores the
+-- correct world-space CFrames for this review scene.
 model:PivotTo(CFrame.new(spawnGround + Vector3.new(0, 0, 45)))
+local gameplayApi = gameplay.Attach(model, gameplayConfig)
+reviewControls.Attach(
+	workshop,
+	gameplayApi,
+	spawnGround + Vector3.new(-9, 0.4, 7),
+	gameplayConfig.ReviewDamageStep
+)
 
 workshop:SetAttribute("CurrentAsset", specification.AssetName or specification.AssetId)
-workshop:SetAttribute("CurrentPhase", 5)
-workshop:SetAttribute("QualityStatus", "Phase5_DressingReview")
+workshop:SetAttribute("CurrentPhase", 6)
+workshop:SetAttribute("QualityStatus", "Phase6_GameplayDestructionReview")
+workshop:SetAttribute("QualityGateB", "Approved")
+workshop:SetAttribute("QualityGateC", "Pending")
 workshop:SetAttribute("GoldenMasterReviewTarget", model.Name)
 workshop:SetAttribute("ReviewScene", "HotelAtSpawn_GuardiansBehind_NoKaiju")
 
-print("[Trenchborn Asset Workshop] Built dressed Large City Waterfront Resort at spawn review area:", model:GetFullName())
+print("[Trenchborn Asset Workshop] Built Phase 6 Large City Waterfront Resort review:", model:GetFullName())
+print("[Trenchborn Asset Workshop] Review controls: E = damage, R = reset at the pedestal near spawn")
