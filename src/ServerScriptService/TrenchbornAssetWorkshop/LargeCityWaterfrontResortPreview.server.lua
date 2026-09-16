@@ -9,6 +9,7 @@ local goldenMaster = require(packageFolder:WaitForChild("LargeCityWaterfrontReso
 local poolFacade = require(packageFolder:WaitForChild("LargeCityWaterfrontResortPoolFacade"))
 local dressing = require(packageFolder:WaitForChild("LargeCityWaterfrontResortDressing"))
 local signDressing = require(packageFolder:WaitForChild("LargeCityWaterfrontResortSignDressing"))
+local dressingRefinement = require(packageFolder:WaitForChild("LargeCityWaterfrontResortDressingRefinement"))
 
 local function getSpawnGroundPosition()
 	local spawn = Workspace:FindFirstChildWhichIsA("SpawnLocation", true)
@@ -30,6 +31,7 @@ local model = goldenMaster.Build(workshop)
 poolFacade.Apply(model)
 dressing.Apply(model)
 signDressing.Apply(model)
+dressingRefinement.Apply(model)
 
 -- PoolsideFacade is the approved pool-facing facade layer from late Phase 4.
 -- The initial dressing module also contains an experimental facade pass; discard
