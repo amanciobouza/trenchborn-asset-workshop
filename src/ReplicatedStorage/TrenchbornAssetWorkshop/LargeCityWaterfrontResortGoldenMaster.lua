@@ -104,13 +104,16 @@ local function addTower(groupLower, groupUpper)
 	glass(groupUpper, "TowerUpperGlass", Vector3.new(18, 23, 0.5), Vector3.new(0, 49, -6.25))
 	addFacadeRibs(groupUpper, "Upper", -9, 9, 37, 60.5, -6.65, 6)
 
+	-- Lower central core is 28 studs deep: local front face is Z=-14.
+	-- Put the balcony center beyond that face so the full slab projects outside.
 	for floorIndex = 1, 5 do
 		local y = 17 + (floorIndex - 1) * 4.4
-		addBalconyRow(groupLower, "LowerF" .. floorIndex .. "_", Vector3.new(0, y, 5), y, -10.2, 34, 7, 0, 3.4)
+		addBalconyRow(groupLower, "LowerF" .. floorIndex .. "_", Vector3.new(0, y, 5), y, -15.75, 34, 7, 0, 3.4)
 	end
+	-- Upper central core is 25 studs deep: local front face is Z=-12.5.
 	for floorIndex = 1, 6 do
 		local y = 38 + (floorIndex - 1) * 3.8
-		addBalconyRow(groupUpper, "UpperF" .. floorIndex .. "_", Vector3.new(0, y, 6.5), y, -7.3, 28, 6, 0, 3.0)
+		addBalconyRow(groupUpper, "UpperF" .. floorIndex .. "_", Vector3.new(0, y, 6.5), y, -14.05, 28, 6, 0, 3.0)
 	end
 
 	for _, x in ipairs({-17.5, 17.5}) do
@@ -242,7 +245,7 @@ function Builder.Build(parent)
 	model:SetAttribute("AssetId", specification.AssetId)
 	model:SetAttribute("AssetPhase", 4)
 	model:SetAttribute("QualityGate", "B")
-	model:SetAttribute("GeometryRevision", "ResortArchitecture-v4-WingBalconiesFixed")
+	model:SetAttribute("GeometryRevision", "ResortArchitecture-v5-CentralBalconiesFixed")
 	model:SetAttribute("HasInterior", false)
 	model:SetAttribute("Style", specification.Style)
 	model.Parent = parent
