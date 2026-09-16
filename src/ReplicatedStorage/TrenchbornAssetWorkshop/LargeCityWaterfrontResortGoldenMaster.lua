@@ -205,6 +205,59 @@ local function addPoolTerrace(group)
 	end
 end
 
+local function addPoolArchitecture(group)
+	-- Left-side pool bar pavilion gives the waterfront elevation a strong built anchor.
+	block(group, "PoolBarPlinth", Vector3.new(16, 0.8, 10), Vector3.new(-32, 1.75, 31.5), COLORS.Concrete, Enum.Material.Concrete)
+	block(group, "PoolBarCore", Vector3.new(10, 4.8, 5), Vector3.new(-32, 4.5, 32.5), COLORS.Limestone, Enum.Material.Concrete)
+	glass(group, "PoolBarFrontGlass", Vector3.new(8, 3.2, 0.35), Vector3.new(-32, 4.6, 29.82), nil, 0.16)
+	block(group, "PoolBarRoof", Vector3.new(18, 0.7, 12), Vector3.new(-32, 7.25, 31.5), COLORS.Concrete, Enum.Material.Concrete)
+	for _, x in ipairs({-39, -25}) do
+		block(group, "PoolBarColumn_" .. tostring(x), Vector3.new(0.75, 5.2, 0.75), Vector3.new(x, 4.35, 27.8), COLORS.Metal, Enum.Material.Metal)
+	end
+
+	-- Right-side pergola balances the pavilion without closing the pool view.
+	for _, x in ipairs({27.5, 36.5}) do
+		for _, z in ipairs({29.5, 36.5}) do
+			block(group, "PergolaColumn_" .. tostring(x) .. "_" .. tostring(z), Vector3.new(0.65, 5.3, 0.65), Vector3.new(x, 4.15, z), COLORS.Limestone, Enum.Material.Concrete)
+		end
+	end
+	for index, z in ipairs({29.5, 31.25, 33, 34.75, 36.5}) do
+		block(group, "PergolaBeam" .. index, Vector3.new(11, 0.42, 0.7), Vector3.new(32, 6.85, z), COLORS.Concrete, Enum.Material.Concrete)
+	end
+	block(group, "PergolaHeaderFront", Vector3.new(0.7, 0.7, 8.4), Vector3.new(27.5, 6.85, 33), COLORS.Concrete, Enum.Material.Concrete)
+	block(group, "PergolaHeaderRear", Vector3.new(0.7, 0.7, 8.4), Vector3.new(36.5, 6.85, 33), COLORS.Concrete, Enum.Material.Concrete)
+
+	-- Raised spa pool creates a second water feature and breaks up the empty right deck.
+	block(group, "SpaPlinth", Vector3.new(13, 0.8, 9), Vector3.new(32, 1.75, 43.5), COLORS.Concrete, Enum.Material.Concrete)
+	block(group, "SpaEdgeFront", Vector3.new(13, 1.1, 0.8), Vector3.new(32, 2.65, 47.6), COLORS.Limestone, Enum.Material.Concrete)
+	block(group, "SpaEdgeBack", Vector3.new(13, 1.1, 0.8), Vector3.new(32, 2.65, 39.4), COLORS.Limestone, Enum.Material.Concrete)
+	block(group, "SpaEdgeLeft", Vector3.new(0.8, 1.1, 7.4), Vector3.new(25.9, 2.65, 43.5), COLORS.Limestone, Enum.Material.Concrete)
+	block(group, "SpaEdgeRight", Vector3.new(0.8, 1.1, 7.4), Vector3.new(38.1, 2.65, 43.5), COLORS.Limestone, Enum.Material.Concrete)
+	local spaWater = block(group, "SpaWater", Vector3.new(10.6, 0.3, 6.8), Vector3.new(32, 2.72, 43.5), COLORS.Pool, Enum.Material.Glass)
+	spaWater.Transparency = 0.14
+	spaWater.CanCollide = false
+
+	-- Wide side stairs connect both hotel wings down into the pool terrace.
+	for _, sign in ipairs({-1, 1}) do
+		for step = 1, 4 do
+			block(
+				group,
+				(sign < 0 and "LeftWingPoolStep" or "RightWingPoolStep") .. step,
+				Vector3.new(12, 0.55, 2.6),
+				Vector3.new(sign * 30.5, 3.15 - step * 0.5, 20.5 + step * 2.0),
+				COLORS.Limestone,
+				Enum.Material.Concrete
+			)
+		end
+	end
+
+	-- Low planter walls are structural placeholders; foliage itself remains Phase 5 dressing.
+	for _, x in ipairs({-39.5, 39.5}) do
+		block(group, "PoolPlanterWall_" .. tostring(x), Vector3.new(5, 1.5, 16), Vector3.new(x, 1.65, 40), COLORS.Concrete, Enum.Material.Concrete)
+	end
+	group:SetAttribute("Phase5AddFoliageAndFurniture", true)
+end
+
 local function addPromenade(group)
 	block(group, "WaterfrontPromenade", Vector3.new(86, 0.8, 8), Vector3.new(0, 0.4, 58), COLORS.Limestone, Enum.Material.Concrete)
 	block(group, "PromenadeSeaWall", Vector3.new(88, 2.2, 1.2), Vector3.new(0, -0.15, 62), COLORS.Concrete, Enum.Material.Concrete)
@@ -245,7 +298,7 @@ function Builder.Build(parent)
 	model:SetAttribute("AssetId", specification.AssetId)
 	model:SetAttribute("AssetPhase", 4)
 	model:SetAttribute("QualityGate", "B")
-	model:SetAttribute("GeometryRevision", "ResortArchitecture-v5-CentralBalconiesFixed")
+	model:SetAttribute("GeometryRevision", "ResortArchitecture-v6-PoolsideArchitecture")
 	model:SetAttribute("HasInterior", false)
 	model:SetAttribute("Style", specification.Style)
 	model.Parent = parent
@@ -259,6 +312,7 @@ function Builder.Build(parent)
 	local d6 = folder(groups, "D6_CentralTowerUpper")
 	local d7 = folder(groups, "D7_RooftopSkyBar")
 	local terrace = folder(model, "PoolTerrace")
+	local poolArchitecture = folder(model, "PoolArchitecture")
 	local promenade = folder(model, "Promenade")
 
 	addEntrance(d1)
@@ -268,6 +322,7 @@ function Builder.Build(parent)
 	addTower(d5, d6)
 	addSkyBar(d7)
 	addPoolTerrace(terrace)
+	addPoolArchitecture(poolArchitecture)
 	addPromenade(promenade)
 	addLandscapeMassing(model)
 
