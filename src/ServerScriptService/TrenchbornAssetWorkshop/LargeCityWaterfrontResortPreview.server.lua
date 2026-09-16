@@ -6,6 +6,7 @@ local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
 
 local specification = require(packageFolder:WaitForChild("LargeCityWaterfrontResortSpecification"))
 local goldenMaster = require(packageFolder:WaitForChild("LargeCityWaterfrontResortGoldenMaster"))
+local poolFacade = require(packageFolder:WaitForChild("LargeCityWaterfrontResortPoolFacade"))
 
 local function getSpawnGroundPosition()
 	local spawn = Workspace:FindFirstChildWhichIsA("SpawnLocation", true)
@@ -24,6 +25,7 @@ end
 -- only a short walk from SpawnLocation while keeping the spawn itself unobstructed.
 local spawnGround = getSpawnGroundPosition()
 local model = goldenMaster.Build(workshop)
+poolFacade.Apply(model)
 model:PivotTo(CFrame.new(spawnGround + Vector3.new(0, 0, 45)))
 
 workshop:SetAttribute("CurrentAsset", specification.AssetName or specification.AssetId)
