@@ -10,6 +10,23 @@ local function findSign(model)
 	return entrance:FindFirstChild("ResortNameSign")
 end
 
+local function removeOldSignGuis(sign)
+	local entrance = sign.Parent
+	if not entrance then return end
+
+	-- Older dressing versions parented SignSurface to the Entrance folder while
+	-- setting Adornee to ResortNameSign. Newer versions parent it to the sign.
+	-- Remove both variants so only one text layer can render.
+	for _, item in ipairs(entrance:GetDescendants()) do
+		if item:IsA("SurfaceGui") then
+			local isOurSignGui = item.Name == "SignSurface" or item.Adornee == sign
+			if isOurSignGui then
+				item:Destroy()
+			end
+		end
+	end
+end
+
 function SignDressing.Apply(model)
 	assert(model and model:IsA("Model"), "LargeCityWaterfrontResortSignDressing.Apply expects a Model")
 
@@ -17,13 +34,10 @@ function SignDressing.Apply(model)
 	assert(sign and sign:IsA("BasePart"), "ResortNameSign not found after dressing")
 
 	-- The original one-line sign forced TextScaled to fit a very wide phrase into
-	-- a shallow panel, which made the lettering look compressed. Keep TextScaled
-	-- (Trenchborn UI standard), but give the sign a better aspect ratio and use a
-	-- deliberate two-line lockup with an explicit text-size range.
+	-- a shallow panel. Keep TextScaled (Trenchborn UI standard), but give the sign
+	-- a better aspect ratio and use a deliberate two-line lockup.
 	sign.Size = Vector3.new(22, 3.4, 0.45)
-
-	local oldGui = sign:FindFirstChild("SignSurface")
-	if oldGui then oldGui:Destroy() end
+	removeOldSignGuis(sign)
 
 	local gui = Instance.new("SurfaceGui")
 	gui.Name = "SignSurface"
@@ -62,7 +76,7 @@ function SignDressing.Apply(model)
 	textSize.MaxTextSize = 46
 	textSize.Parent = label
 
-	model:SetAttribute("ResortSignRevision", "TwoLineAspectSafe-v2")
+	model:SetAttribute("ResortSignRevision", "TwoLineAspectSafe-v3-Deduplicated")
 	model:SetAttribute("TextLabelsScaled", true)
 	return sign
 end
