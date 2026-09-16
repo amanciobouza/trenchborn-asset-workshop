@@ -7,6 +7,7 @@ local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
 local specification = require(packageFolder:WaitForChild("LargeCityWaterfrontResortSpecification"))
 local goldenMaster = require(packageFolder:WaitForChild("LargeCityWaterfrontResortGoldenMaster"))
 local poolFacade = require(packageFolder:WaitForChild("LargeCityWaterfrontResortPoolFacade"))
+local dressing = require(packageFolder:WaitForChild("LargeCityWaterfrontResortDressing"))
 
 local function getSpawnGroundPosition()
 	local spawn = Workspace:FindFirstChildWhichIsA("SpawnLocation", true)
@@ -26,12 +27,23 @@ end
 local spawnGround = getSpawnGroundPosition()
 local model = goldenMaster.Build(workshop)
 poolFacade.Apply(model)
+dressing.Apply(model)
+
+-- PoolsideFacade is the approved pool-facing facade layer from late Phase 4.
+-- The initial dressing module also contains an experimental facade pass; discard
+-- that duplicate so there is only one glazing layer and therefore no Z-fighting.
+local dressingFolder = model:FindFirstChild("Dressing")
+if dressingFolder then
+	local duplicateFacade = dressingFolder:FindFirstChild("Facade")
+	if duplicateFacade then duplicateFacade:Destroy() end
+end
+
 model:PivotTo(CFrame.new(spawnGround + Vector3.new(0, 0, 45)))
 
 workshop:SetAttribute("CurrentAsset", specification.AssetName or specification.AssetId)
-workshop:SetAttribute("CurrentPhase", 4)
-workshop:SetAttribute("QualityStatus", "Phase4_GeometryReview")
+workshop:SetAttribute("CurrentPhase", 5)
+workshop:SetAttribute("QualityStatus", "Phase5_DressingReview")
 workshop:SetAttribute("GoldenMasterReviewTarget", model.Name)
 workshop:SetAttribute("ReviewScene", "HotelAtSpawn_GuardiansBehind_NoKaiju")
 
-print("[Trenchborn Asset Workshop] Built Large City Waterfront Resort at spawn review area:", model:GetFullName())
+print("[Trenchborn Asset Workshop] Built dressed Large City Waterfront Resort at spawn review area:", model:GetFullName())
