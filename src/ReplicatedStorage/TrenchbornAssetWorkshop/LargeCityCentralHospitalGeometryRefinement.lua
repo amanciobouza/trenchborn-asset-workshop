@@ -7,36 +7,56 @@ local function requirePart(model, name)
 end
 
 local function moveZ(part, z)
+	local rotation = part.CFrame - part.CFrame.Position
 	local position = part.Position
-	part.CFrame = CFrame.new(position.X, position.Y, z) * (part.CFrame - part.CFrame.Position)
+	part.CFrame = CFrame.new(position.X, position.Y, z) * rotation
+end
+
+local function setDepth(part, depth)
+	part.Size = Vector3.new(part.Size.X, part.Size.Y, depth)
 end
 
 function Refinement.Apply(model)
 	assert(model and model:IsA("Model"), "LargeCityCentralHospitalGeometryRefinement.Apply expects a Model")
 
-	-- The two lower-tower side caps originally shared the exact outer X planes
-	-- with TowerLowerMass. At grazing angles Roblox alternated between both faces.
-	-- Turn them into deliberate external fins with a small stand-off instead of
-	-- overlapping wall volumes.
-	local leftCap = requirePart(model, "TowerLowerLeftCap")
-	leftCap.Size = Vector3.new(1.2, 33, 35.0)
-	leftCap.CFrame = CFrame.new(-23.55, 27, 7)
+	-- Remove the decorative lower-tower side caps entirely. They were originally
+	-- embedded into the main tower volume and later moved outward as fins, but the
+	-- junction still produced an unpleasant overlapping-wall read at grazing angles.
+	-- The main tower mass already has a complete structural side wall, so keeping a
+	-- second wall layer is unnecessary.
+	for _, name in ipairs({"TowerLowerLeftCap", "TowerLowerRightCap"}) do
+		local cap = model:FindFirstChild(name, true)
+		if cap then cap:Destroy() end
+	end
 
-	local rightCap = requirePart(model, "TowerLowerRightCap")
-	rightCap.Size = Vector3.new(1.2, 33, 35.0)
-	rightCap.CFrame = CFrame.new(23.55, 27, 7)
+	-- The limestone tower spine is the most-forward structural layer at about
+	-- local Z = -7.6. Keep the medical cross almost a full stud farther forward,
+	-- and make the two bars thin in depth so neither the wall nor the two cross
+	-- pieces can visually fight each other.
+	local towerVertical = requirePart(model, "TowerCrossVertical")
+	setDepth(towerVertical, 0.28)
+	moveZ(towerVertical, -8.72)
+	towerVertical.CanCollide = false
 
-	-- The tower cross was intersecting the projecting limestone spine. Move both
-	-- cross bars fully in front of the most-forward structural face.
-	moveZ(requirePart(model, "TowerCrossVertical"), -8.05)
-	moveZ(requirePart(model, "TowerCrossHorizontal"), -8.08)
+	local towerHorizontal = requirePart(model, "TowerCrossHorizontal")
+	setDepth(towerHorizontal, 0.28)
+	moveZ(towerHorizontal, -8.80)
+	towerHorizontal.CanCollide = false
 
-	-- Give the emergency cross the same explicit stand-off from its facade.
-	moveZ(requirePart(model, "EmergencyCrossVertical"), -18.95)
-	moveZ(requirePart(model, "EmergencyCrossHorizontal"), -18.98)
+	-- Apply the same generous facade stand-off to the emergency cross.
+	local emergencyVertical = requirePart(model, "EmergencyCrossVertical")
+	setDepth(emergencyVertical, 0.26)
+	moveZ(emergencyVertical, -19.35)
+	emergencyVertical.CanCollide = false
 
-	model:SetAttribute("GeometryRevision", "CentralHospital-v2-ZFightClean")
+	local emergencyHorizontal = requirePart(model, "EmergencyCrossHorizontal")
+	setDepth(emergencyHorizontal, 0.26)
+	moveZ(emergencyHorizontal, -19.42)
+	emergencyHorizontal.CanCollide = false
+
+	model:SetAttribute("GeometryRevision", "CentralHospital-v3-NoFacadeOverlap")
 	model:SetAttribute("FacadeStandOffPass", true)
+	model:SetAttribute("LowerTowerSideCapsRemoved", true)
 	return model
 end
 
