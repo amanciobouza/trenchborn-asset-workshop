@@ -2,8 +2,8 @@ local Specification = {
 	AssetId = "LargeCity_CentralHospital_L3",
 	DisplayName = "Central Hospital",
 	City = "LargeCity",
-	Phase = 4,
-	QualityGate = "B-Pending",
+	Phase = 6,
+	QualityGate = "C-Pending",
 	Style = "Singapore x Miami tropical metropolitan healthcare landmark",
 
 	AssetBrief = {
@@ -181,8 +181,32 @@ local Specification = {
 	},
 
 	QualityGateB = {
+		Status = "Approved",
+		ReviewRevision = "CentralHospital-v10-AtriumFacadeClearance",
+		ApprovedGeometry = true,
+	},
+
+	Phase5 = {
+		Status = "Approved",
+		DressingRevision = "CentralHospital-Dressing-v2",
+		ApprovedRead = "Hospital signage, emergency identity, helipad markings, doors and tropical civic dressing approved.",
+	},
+
+	Phase6 = {
+		Status = "ExternalGameTestPending",
+		Integration = "Use the shared building/component damage and collapse controller in the main game; do not add a workshop-local Guardian destruction controller.",
+		RequiredChecks = {
+			"All seven destruction groups are targetable by the shared building damage controller.",
+			"MaxHealth resolves to 64000 and EnergyType resolves to Chemical.",
+			"Collapse order preserves readable hospital chunks and does not explode into unbounded physics debris.",
+			"Dressing follows or is removed with its owning structural group during destruction.",
+			"Respawn/reset restores geometry, dressing, metadata and collision state correctly.",
+		},
+	},
+
+	QualityGateC = {
 		Status = "Pending",
-		ReviewRevision = "CentralHospital-v1",
+		Reason = "Requires in-game shared collapse integration test.",
 	},
 
 	Phase3Acceptance = {
