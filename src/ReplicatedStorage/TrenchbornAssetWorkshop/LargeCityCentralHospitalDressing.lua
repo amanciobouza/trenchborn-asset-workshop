@@ -149,8 +149,10 @@ local function addMainEntranceDressing(root)
 	local sign = block(area, "CentralHospitalSign", Vector3.new(25, 3.2, 0.45), Vector3.new(5, 11.6, -13.55), COLORS.DarkGlass, Enum.Material.Glass)
 	addSurfaceText(area, sign, "CENTRAL HOSPITAL", Enum.NormalId.Front, COLORS.White)
 
+	-- Canopy bottom is Y=6.6. Keep the glass doors clearly below it so the doors
+	-- read as being under the canopy rather than cutting through the slab.
 	for _, x in ipairs({-4.5, 2.0, 8.5, 15.0}) do
-		block(area, "LobbyDoor" .. tostring(x), Vector3.new(5.0, 5.6, 0.22), Vector3.new(x, 4.9, -13.47), COLORS.DarkGlass, Enum.Material.Glass, nil, 0.12)
+		block(area, "LobbyDoor" .. tostring(x), Vector3.new(5.0, 5.4, 0.22), Vector3.new(x, 3.85, -13.47), COLORS.DarkGlass, Enum.Material.Glass, nil, 0.12)
 	end
 
 	addPlanter(area, "MainPlanterLeft", Vector3.new(-18, 0.85, -25.5), Vector3.new(8, 1.3, 3.0))
@@ -196,9 +198,10 @@ local function addHelipadDressing(root)
 	local inner = cylinder(area, "HelipadRingCutout", Vector3.new(0.20, 12.7, 12.7), Vector3.new(-3, 76.41, 8.5), COLORS.MedicalRed, Enum.Material.SmoothPlastic, Vector3.new(0, 0, 90))
 	inner.CastShadow = false
 
-	block(area, "HelipadHVertical", Vector3.new(1.8, 0.16, 8.0), Vector3.new(-3, 76.48, 8.5), COLORS.White, Enum.Material.SmoothPlastic)
-	block(area, "HelipadHLeft", Vector3.new(1.7, 0.16, 6.6), Vector3.new(-6.0, 76.48, 8.5), COLORS.White, Enum.Material.SmoothPlastic)
-	block(area, "HelipadHRight", Vector3.new(1.7, 0.16, 6.6), Vector3.new(0.0, 76.48, 8.5), COLORS.White, Enum.Material.SmoothPlastic)
+	-- Real H: two longitudinal legs plus one horizontal connector.
+	block(area, "HelipadHLeft", Vector3.new(1.7, 0.16, 7.4), Vector3.new(-6.0, 76.48, 8.5), COLORS.White, Enum.Material.SmoothPlastic)
+	block(area, "HelipadHRight", Vector3.new(1.7, 0.16, 7.4), Vector3.new(0.0, 76.48, 8.5), COLORS.White, Enum.Material.SmoothPlastic)
+	block(area, "HelipadHCrossbar", Vector3.new(7.7, 0.16, 1.7), Vector3.new(-3.0, 76.50, 8.5), COLORS.White, Enum.Material.SmoothPlastic)
 end
 
 function Dressing.Apply(model)
@@ -219,7 +222,7 @@ function Dressing.Apply(model)
 	model:SetAttribute("AssetPhase", 5)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Approved")
-	model:SetAttribute("DressingRevision", "CentralHospital-Dressing-v1")
+	model:SetAttribute("DressingRevision", "CentralHospital-Dressing-v2")
 	model:SetAttribute("DressingStatus", "Review")
 	return model
 end
