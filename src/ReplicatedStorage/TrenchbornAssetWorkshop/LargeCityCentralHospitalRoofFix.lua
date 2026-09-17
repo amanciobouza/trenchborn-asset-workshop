@@ -11,7 +11,10 @@ end
 
 local function createBlock(parent, name, size, position, color, material)
 	local existing = parent:FindFirstChild(name)
-	if existing then existing:Destroy() end
+	if existing then
+		existing:Destroy()
+	end
+
 	local item = Instance.new("Part")
 	item.Name = name
 	item.Size = size
@@ -35,27 +38,20 @@ function RoofFix.Apply(model)
 	assert(model and model:IsA("Model"), "LargeCityCentralHospitalRoofFix.Apply expects a Model")
 
 	local roof = requireRoof(model)
-	if not roof then return model end
+	if not roof then
+		return model
+	end
 
 	-- Main upper-tower roof footprint is approximately X=-19..23 and Z=-7.75..24.75.
 	-- Keep every rooftop object inside that footprint so nothing appears to float
 	-- beyond the building edge.
 
 	-- Shift and slightly shrink the helipad to the left to create a supported
-	-- mechanical-service strip on the right side of the SAME roof.
-	local helipadDeck = findPart(roof, "HelipadDeck")
-	if helipadDeck then
-		hel ipadDeck = nil
-	end
-	if helipadDeck then
-		hel ipadDeck = nil
-	end
-
-	-- Re-fetch without alias tricks: explicit assignments keep this module simple.
-	hel ipadDeck = findPart(roof, "HelipadDeck")
-	if hel ipadDeck then
-		hel ipadDeck.Size = Vector3.new(27, 1.0, 27)
-		hel ipadDeck.Position = Vector3.new(-3, 75.2, 8.5)
+	-- mechanical-service strip on the right side of the same roof.
+	local deck = findPart(roof, "HelipadDeck")
+	if deck then
+		deck.Size = Vector3.new(27, 1.0, 27)
+		deck.Position = Vector3.new(-3, 75.2, 8.5)
 	end
 
 	local raisedPad = findPart(roof, "HelipadRaisedPad")
@@ -64,6 +60,7 @@ function RoofFix.Apply(model)
 		raisedPad.Position = Vector3.new(-3, 75.95, 8.5)
 	end
 
+	-- Dedicated service plinth fully supported by the main upper roof.
 	local plinth = createBlock(
 		roof,
 		"RoofPlantServicePlinth",
@@ -74,6 +71,7 @@ function RoofFix.Apply(model)
 	)
 	plinth:SetAttribute("RoofSupport", "MainTowerUpperRoof")
 
+	-- Five compact HVAC units, all inside the plinth footprint.
 	local hvacPositions = {
 		Vector3.new(14.5, 76.6, 0),
 		Vector3.new(19.5, 76.6, 0),
@@ -96,6 +94,7 @@ function RoofFix.Apply(model)
 		end
 	end
 
+	-- Vent stacks also sit on the same service plinth.
 	local ventPositions = {
 		Vector3.new(14, 77.65, -3),
 		Vector3.new(20, 77.65, -3),
@@ -111,6 +110,7 @@ function RoofFix.Apply(model)
 		end
 	end
 
+	-- Compact rooftop service core on the same supported strip.
 	local access = findPart(roof, "RooftopServiceCore") or findPart(roof, "HelipadAccessCore")
 	if access then
 		access.Name = "RooftopServiceCore"
@@ -119,11 +119,24 @@ function RoofFix.Apply(model)
 		access:SetAttribute("RoofSupport", "RoofPlantServicePlinth")
 	end
 
+	-- Match perimeter bars to the shifted helipad and keep them touching the deck.
 	local railSpecs = {
-		["HelipadRailX-12.5"] = {Size = Vector3.new(0.35, 1.2, 27), Position = Vector3.new(-16.5, 76.3, 8.5)},
-		["HelipadRailX16.5"] = {Size = Vector3.new(0.35, 1.2, 27), Position = Vector3.new(10.5, 76.3, 8.5)},
-		["HelipadRailZ-6"] = {Size = Vector3.new(27, 1.2, 0.35), Position = Vector3.new(-3, 76.3, -5)},
-		["HelipadRailZ23"] = {Size = Vector3.new(27, 1.2, 0.35), Position = Vector3.new(-3, 76.3, 22)},
+		["HelipadRailX-12.5"] = {
+			Size = Vector3.new(0.35, 1.2, 27),
+			Position = Vector3.new(-16.5, 76.3, 8.5),
+		},
+		["HelipadRailX16.5"] = {
+			Size = Vector3.new(0.35, 1.2, 27),
+			Position = Vector3.new(10.5, 76.3, 8.5),
+		},
+		["HelipadRailZ-6"] = {
+			Size = Vector3.new(27, 1.2, 0.35),
+			Position = Vector3.new(-3, 76.3, -5),
+		},
+		["HelipadRailZ23"] = {
+			Size = Vector3.new(27, 1.2, 0.35),
+			Position = Vector3.new(-3, 76.3, 22),
+		},
 	}
 	for name, spec in pairs(railSpecs) do
 		local rail = findPart(roof, name)
