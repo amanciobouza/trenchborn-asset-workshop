@@ -11,19 +11,8 @@ local dressing = require(packageFolder:WaitForChild("LargeCityWaterfrontResortDr
 local signDressing = require(packageFolder:WaitForChild("LargeCityWaterfrontResortSignDressing"))
 local dressingRefinement = require(packageFolder:WaitForChild("LargeCityWaterfrontResortDressingRefinement"))
 
-local function getSpawnGroundPosition()
-	local spawn = Workspace:FindFirstChildWhichIsA("SpawnLocation", true)
-	if spawn then
-		return Vector3.new(
-			spawn.Position.X,
-			spawn.Position.Y + spawn.Size.Y * 0.5,
-			spawn.Position.Z
-		)
-	end
-	return Vector3.new(0, 0, 0)
-end
-
-local spawnGround = getSpawnGroundPosition()
+local layout = workshop:WaitForChild("LargeCity_Layout_Blockout")
+local resortAnchor = layout:WaitForChild("Markers"):WaitForChild("ResortAnchor")
 local model = goldenMaster.Build(workshop)
 poolFacade.Apply(model)
 dressing.Apply(model)
@@ -42,7 +31,13 @@ end
 -- This workshop intentionally stops before the production building-collapse logic.
 -- Destruction integration is validated in the main game project, where the shared
 -- house/component collapse controller already exists.
-model:PivotTo(CFrame.new(spawnGround + Vector3.new(0, 0, 45)))
+model:PivotTo(resortAnchor.CFrame)
+
+local reservedPlot = layout:WaitForChild("BuildingPlots"):FindFirstChild("LC-01_ReservedForApprovedResort")
+if reservedPlot then
+	reservedPlot.Transparency = 1
+	reservedPlot.CanCollide = false
+end
 
 local oldControls = workshop:FindFirstChild("LargeCityResortReviewControls")
 if oldControls then oldControls:Destroy() end
@@ -53,7 +48,7 @@ workshop:SetAttribute("QualityStatus", "Phase5_Approved_Phase6ExternalIntegratio
 workshop:SetAttribute("QualityGateB", "Approved")
 workshop:SetAttribute("QualityGateC", "ExternalGameTestPending")
 workshop:SetAttribute("GoldenMasterReviewTarget", model.Name)
-workshop:SetAttribute("ReviewScene", "HotelAtSpawn_GuardiansBehind_NoKaiju")
+workshop:SetAttribute("ReviewScene", "LargeCityLayout_ResortOnWaterfrontPlot_NoKaiju")
 workshop:SetAttribute("Phase6ReviewDamageKey", nil)
 workshop:SetAttribute("Phase6ReviewResetKey", nil)
 workshop:SetAttribute("Phase6ReviewDamageStep", nil)
