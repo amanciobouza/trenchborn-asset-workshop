@@ -7,6 +7,7 @@ local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
 local specification = require(packageFolder:WaitForChild("LargeCityCentralHospitalSpecification"))
 local goldenMaster = require(packageFolder:WaitForChild("LargeCityCentralHospitalGoldenMaster"))
 local roofFix = require(packageFolder:WaitForChild("LargeCityCentralHospitalRoofFix"))
+local geometryRefinement = require(packageFolder:WaitForChild("LargeCityCentralHospitalGeometryRefinement"))
 
 local function getSpawnGroundPosition()
 	local spawn = Workspace:FindFirstChildWhichIsA("SpawnLocation", true)
@@ -28,6 +29,7 @@ if oldLayout then oldLayout:Destroy() end
 local spawnGround = getSpawnGroundPosition()
 local model = goldenMaster.Build(workshop)
 roofFix.Apply(model)
+geometryRefinement.Apply(model)
 model:PivotTo(CFrame.new(spawnGround + Vector3.new(180, 0, 0)) * CFrame.Angles(0, math.rad(90), 0))
 
 workshop:SetAttribute("CurrentAsset", specification.AssetId)
