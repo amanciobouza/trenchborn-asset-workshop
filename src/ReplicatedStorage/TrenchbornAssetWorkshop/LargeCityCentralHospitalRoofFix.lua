@@ -1,13 +1,5 @@
 local RoofFix = {}
 
-local function movePart(folder, name, position)
-	local item = folder:FindFirstChild(name)
-	if item and item:IsA("BasePart") then
-		item.Position = position
-	end
-	return item
-end
-
 function RoofFix.Apply(model)
 	assert(model and model:IsA("Model"), "LargeCityCentralHospitalRoofFix.Apply expects a Model")
 
@@ -15,44 +7,40 @@ function RoofFix.Apply(model)
 	local roof = groups and groups:FindFirstChild("D7_HelipadRoofPlant")
 	if not roof then return model end
 
-	-- The first Golden Master placed roof-plant equipment outside the supporting
-	-- roof footprint. Keep the helipad clean and relocate all plant onto the
-	-- Secondary Wing roof, where every unit visibly sits on structural geometry.
-	local hvacPositions = {
-		Vector3.new(34, 26.1, 13),
-		Vector3.new(45, 26.1, 13),
-		Vector3.new(56, 26.1, 13),
-		Vector3.new(39.5, 26.1, 20),
-		Vector3.new(51.5, 26.1, 20),
+	-- Keep Phase 4 focused on clean architectural geometry. The individual HVAC
+	-- boxes, vent stacks, access block and perimeter bars read as unsupported or
+	-- floating from gameplay distance, even when their numeric bottoms touched a
+	-- roof plane. Remove all freestanding roof equipment for the Golden Master.
+	-- Roof/service detail can return later as integrated Dressing geometry.
+	local removeNames = {
+		"HelipadAccessCore",
+		"HelipadRailX-12.5",
+		"HelipadRailX16.5",
+		"HelipadRailZ-6",
+		"HelipadRailZ23",
 	}
-	for index, position in ipairs(hvacPositions) do
-		local unit = movePart(roof, "HVACUnit" .. index, position)
-		local cap = movePart(roof, "HVACCap" .. index, position + Vector3.new(0, 1.35, 0))
-		if unit then unit:SetAttribute("RoofSupport", "SecondaryWingRoof") end
-		if cap then cap:SetAttribute("RoofSupport", "SecondaryWingRoof") end
+
+	for _, name in ipairs(removeNames) do
+		local item = roof:FindFirstChild(name)
+		if item then item:Destroy() end
 	end
 
-	local ventPositions = {
-		Vector3.new(30, 27.2, 20),
-		Vector3.new(35, 27.2, 20),
-		Vector3.new(61, 27.2, 20),
-		Vector3.new(66, 27.2, 20),
-	}
-	for index, position in ipairs(ventPositions) do
-		local vent = roof:FindFirstChild("VentStack" .. index)
-		if vent and vent:IsA("BasePart") then
-			vent.CFrame = CFrame.new(position) * CFrame.Angles(0, 0, math.rad(90))
-			vent:SetAttribute("RoofSupport", "SecondaryWingRoof")
+	for index = 1, 5 do
+		for _, prefix in ipairs({"HVACUnit", "HVACCap"}) do
+			local item = roof:FindFirstChild(prefix .. index)
+			if item then item:Destroy() end
 		end
 	end
 
-	-- Keep the helipad access core entirely on the main tower roof instead of
-	-- hanging beyond its west edge.
-	local access = movePart(roof, "HelipadAccessCore", Vector3.new(-14.5, 76.5, 13))
-	if access then access:SetAttribute("RoofSupport", "MainTowerRoof") end
+	for index = 1, 4 do
+		local vent = roof:FindFirstChild("VentStack" .. index)
+		if vent then vent:Destroy() end
+	end
 
-	model:SetAttribute("GeometryRevision", "CentralHospital-v2-RoofPlantSupported")
-	model:SetAttribute("RoofPlantSupportFix", true)
+	-- Only the two supported helipad slabs remain in D7 during geometry review.
+	model:SetAttribute("GeometryRevision", "CentralHospital-v3-CleanRoof")
+	model:SetAttribute("RoofPlantDeferredToDressing", true)
+	model:SetAttribute("FreestandingRoofGeometryRemoved", true)
 	return model
 end
 
