@@ -2,8 +2,8 @@ local Specification = {
 	AssetId = "LargeCity_CentralHospital_L3",
 	DisplayName = "Central Hospital",
 	City = "LargeCity",
-	Phase = 3,
-	QualityGate = "A-Approved",
+	Phase = 4,
+	QualityGate = "B-Pending",
 	Style = "Singapore x Miami tropical metropolitan healthcare landmark",
 
 	AssetBrief = {
@@ -178,6 +178,11 @@ local Specification = {
 			"Tropical Large City identity is present without reading as a resort.",
 			"Design can be built entirely in Roblox Studio without modeled interior geometry.",
 		},
+	},
+
+	QualityGateB = {
+		Status = "Pending",
+		ReviewRevision = "CentralHospital-v1",
 	},
 
 	Phase3Acceptance = {
