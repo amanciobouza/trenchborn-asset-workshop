@@ -5,33 +5,17 @@ local workshop = Workspace:WaitForChild("TrenchbornAssetWorkshop")
 local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
 
 local specification = require(packageFolder:WaitForChild("LargeCityWaterfrontResortSpecification"))
-local goldenMaster = require(packageFolder:WaitForChild("LargeCityWaterfrontResortGoldenMaster"))
-local poolFacade = require(packageFolder:WaitForChild("LargeCityWaterfrontResortPoolFacade"))
-local dressing = require(packageFolder:WaitForChild("LargeCityWaterfrontResortDressing"))
-local signDressing = require(packageFolder:WaitForChild("LargeCityWaterfrontResortSignDressing"))
-local dressingRefinement = require(packageFolder:WaitForChild("LargeCityWaterfrontResortDressingRefinement"))
+local installer = require(packageFolder:WaitForChild("LargeCityWaterfrontResortInstaller"))
 
 local layout = workshop:WaitForChild("LargeCity_Layout_Blockout")
 local resortAnchor = layout:WaitForChild("Markers"):WaitForChild("ResortAnchor")
-local model = goldenMaster.Build(workshop)
-poolFacade.Apply(model)
-dressing.Apply(model)
-signDressing.Apply(model)
-dressingRefinement.Apply(model)
 
--- PoolsideFacade is the approved pool-facing facade layer from late Phase 4.
--- The initial dressing module also contains an experimental facade pass; discard
--- that duplicate so there is only one glazing layer and therefore no Z-fighting.
-local dressingFolder = model:FindFirstChild("Dressing")
-if dressingFolder then
-	local duplicateFacade = dressingFolder:FindFirstChild("Facade")
-	if duplicateFacade then duplicateFacade:Destroy() end
-end
-
--- This workshop intentionally stops before the production building-collapse logic.
--- Destruction integration is validated in the main game project, where the shared
--- house/component collapse controller already exists.
-model:PivotTo(resortAnchor.CFrame)
+-- Preview the exact Phase 7 package that will later be installed in the main game.
+-- The main game's shared KaijuHouse destruction/collapse logic is intentionally not
+-- duplicated in this workshop; Quality Gate C stays pending until the city is tested there.
+local model = installer.Install(workshop, {
+	CFrame = resortAnchor.CFrame,
+})
 
 local reservedPlot = layout:WaitForChild("BuildingPlots"):FindFirstChild("LC-01_ReservedForApprovedResort")
 if reservedPlot then
@@ -42,16 +26,15 @@ end
 local oldControls = workshop:FindFirstChild("LargeCityResortReviewControls")
 if oldControls then oldControls:Destroy() end
 
-workshop:SetAttribute("CurrentAsset", specification.AssetName or specification.AssetId)
-workshop:SetAttribute("CurrentPhase", 5)
-workshop:SetAttribute("QualityStatus", "Phase5_Approved_Phase6ExternalIntegration")
+workshop:SetAttribute("CurrentAsset", specification.AssetId)
+workshop:SetAttribute("CurrentPhase", 7)
+workshop:SetAttribute("QualityStatus", "FinalInstallerReady_ExternalGameTestPending")
+workshop:SetAttribute("QualityGateA", "Approved")
 workshop:SetAttribute("QualityGateB", "Approved")
 workshop:SetAttribute("QualityGateC", "ExternalGameTestPending")
 workshop:SetAttribute("GoldenMasterReviewTarget", model.Name)
 workshop:SetAttribute("ReviewScene", "LargeCityLayout_ResortOnWaterfrontPlot_NoKaiju")
-workshop:SetAttribute("Phase6ReviewDamageKey", nil)
-workshop:SetAttribute("Phase6ReviewResetKey", nil)
-workshop:SetAttribute("Phase6ReviewDamageStep", nil)
+workshop:SetAttribute("FinalInstallerModule", "LargeCityWaterfrontResortInstaller")
 
-print("[Trenchborn Asset Workshop] Built approved dressed Large City Waterfront Resort:", model:GetFullName())
-print("[Trenchborn Asset Workshop] Phase 6 collapse/destruction integration deferred to the main game project")
+print("[Trenchborn Asset Workshop] Built Phase 7 Waterfront Resort through final installer:", model:GetFullName())
+print("[Trenchborn Asset Workshop] Quality Gate C will be validated later in the main game with shared KaijuHouse collapse logic")
