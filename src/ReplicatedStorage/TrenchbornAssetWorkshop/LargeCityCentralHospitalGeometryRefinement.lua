@@ -37,33 +37,29 @@ function Refinement.Apply(model)
 		if cap then cap:Destroy() end
 	end
 
-	-- Align the glazed circulation slot with the main entrance. Previously the
-	-- lower slot was centred at X=-1 while the lobby is centred at X=5. That made
-	-- its two thin mullions read as one centre post plus one edge post. The atrium
-	-- now rises from the entrance as one coherent vertical feature, framed by a
-	-- symmetric pair of edge mullions. The upper slot narrows slightly but keeps
-	-- the same centre line.
+	-- The atrium belongs to the tower, not to the slightly offset podium entrance.
+	-- Centre each section on the mass that actually carries it: lower tower X=0,
+	-- stepped upper tower X=2. Frame each glass slot with one mullion on either
+	-- edge so there is no centre-post / edge-post imbalance.
 	local lowerAtrium = requirePart(model, "LowerVerticalAtrium")
-	movePart(lowerAtrium, Vector3.new(5, lowerAtrium.Position.Y, lowerAtrium.Position.Z))
+	movePart(lowerAtrium, Vector3.new(0, lowerAtrium.Position.Y, lowerAtrium.Position.Z))
 
 	local lowerLeft = requirePart(model, "LowerAtriumMullion-3")
 	local lowerRight = requirePart(model, "LowerAtriumMullion1")
-	movePart(lowerLeft, Vector3.new(2.4, 27, -10.52))
-	movePart(lowerRight, Vector3.new(7.6, 27, -10.52))
+	movePart(lowerLeft, Vector3.new(-2.6, 27, -10.52))
+	movePart(lowerRight, Vector3.new(2.6, 27, -10.52))
 
 	local upperAtrium = requirePart(model, "UpperVerticalAtrium")
-	movePart(upperAtrium, Vector3.new(5, upperAtrium.Position.Y, upperAtrium.Position.Z))
+	movePart(upperAtrium, Vector3.new(2, upperAtrium.Position.Y, upperAtrium.Position.Z))
 
 	local upperGroup = upperAtrium.Parent
-	local upperLeft = ensureMullion(upperGroup, "UpperAtriumMullionLeft", 2.6, 26, -7.52, lowerLeft)
-	movePart(upperLeft, Vector3.new(2.6, 59, -7.52))
-	local upperRight = ensureMullion(upperGroup, "UpperAtriumMullionRight", 7.4, 26, -7.52, lowerRight)
-	movePart(upperRight, Vector3.new(7.4, 59, -7.52))
+	local upperLeft = ensureMullion(upperGroup, "UpperAtriumMullionLeft", -0.4, 26, -7.52, lowerLeft)
+	movePart(upperLeft, Vector3.new(-0.4, 59, -7.52))
+	local upperRight = ensureMullion(upperGroup, "UpperAtriumMullionRight", 4.4, 26, -7.52, lowerRight)
+	movePart(upperRight, Vector3.new(4.4, 59, -7.52))
 
 	-- Keep the tower cross mounted very close to the facade: enough stand-off to
-	-- avoid Z-fighting, but not enough to read as a floating sign. The most-forward
-	-- structural face is around local Z=-7.6. With these depths the rear surfaces
-	-- sit only about 0.08-0.16 studs away from the wall.
+	-- avoid Z-fighting, but not enough to read as a floating sign.
 	local towerVertical = requirePart(model, "TowerCrossVertical")
 	setDepth(towerVertical, 0.32)
 	movePart(towerVertical, Vector3.new(2, 61, -7.84))
@@ -74,9 +70,7 @@ function Refinement.Apply(model)
 	movePart(towerHorizontal, Vector3.new(2, 61, -7.92))
 	towerHorizontal.CanCollide = false
 
-	-- The Emergency cross stays above the canopy, but is also mounted close to
-	-- the emergency-wing facade instead of being pulled far into the foreground.
-	-- Its bottom edge clears the canopy by a small visible margin.
+	-- The Emergency cross stays above the canopy and close to the facade.
 	local emergencyVertical = requirePart(model, "EmergencyCrossVertical")
 	setDepth(emergencyVertical, 0.30)
 	movePart(emergencyVertical, Vector3.new(-57, 10.95, -18.75))
@@ -87,10 +81,10 @@ function Refinement.Apply(model)
 	movePart(emergencyHorizontal, Vector3.new(-57, 10.95, -18.83))
 	emergencyHorizontal.CanCollide = false
 
-	model:SetAttribute("GeometryRevision", "CentralHospital-v7-EntranceAtriumAligned")
+	model:SetAttribute("GeometryRevision", "CentralHospital-v8-AtriumTowerCentered")
 	model:SetAttribute("FacadeStandOffPass", true)
 	model:SetAttribute("LowerTowerSideCapsRemoved", true)
-	model:SetAttribute("EntranceAtriumAligned", true)
+	model:SetAttribute("AtriumCenteredOnTower", true)
 	model:SetAttribute("AtriumMullionsSymmetric", true)
 	model:SetAttribute("TowerCrossFreestanding", false)
 	model:SetAttribute("TowerCrossFacadeMounted", true)
