@@ -22,7 +22,7 @@ local function ensureMullion(parent, name, position, height, z, template)
 		item.Name = name
 		item.Parent = parent
 	end
-	item.Size = Vector3.new(0.32, height, 0.65)
+	item.Size = Vector3.new(0.32, height, 0.30)
 	movePart(item, Vector3.new(position, item.Position.Y, z))
 	return item
 end
@@ -37,37 +37,43 @@ function Refinement.Apply(model)
 		if cap then cap:Destroy() end
 	end
 
-	-- The atrium belongs to the tower, not to the slightly offset podium entrance.
-	-- Centre each section on the mass that actually carries it: lower tower X=0,
-	-- stepped upper tower X=2. Frame each glass slot with one mullion on either
-	-- edge so there is no centre-post / edge-post imbalance.
+	-- Centre the atrium on the tower masses and place the glass fully OUTSIDE the
+	-- structural facade. The lower central spine reaches to about Z=-10.70 and the
+	-- upper spine to about Z=-7.60. The glass rear faces now clear those planes by
+	-- a few hundredths of a stud instead of being buried inside the building.
 	local lowerAtrium = requirePart(model, "LowerVerticalAtrium")
-	movePart(lowerAtrium, Vector3.new(0, lowerAtrium.Position.Y, lowerAtrium.Position.Z))
+	setDepth(lowerAtrium, 0.42)
+	movePart(lowerAtrium, Vector3.new(0, lowerAtrium.Position.Y, -10.95))
 
 	local lowerLeft = requirePart(model, "LowerAtriumMullion-3")
 	local lowerRight = requirePart(model, "LowerAtriumMullion1")
-	movePart(lowerLeft, Vector3.new(-2.6, 27, -10.52))
-	movePart(lowerRight, Vector3.new(2.6, 27, -10.52))
+	setDepth(lowerLeft, 0.30)
+	setDepth(lowerRight, 0.30)
+	-- Mullions sit just in front of the glass rather than penetrating it.
+	movePart(lowerLeft, Vector3.new(-2.6, 27, -11.31))
+	movePart(lowerRight, Vector3.new(2.6, 27, -11.31))
 
 	local upperAtrium = requirePart(model, "UpperVerticalAtrium")
-	movePart(upperAtrium, Vector3.new(2, upperAtrium.Position.Y, upperAtrium.Position.Z))
+	setDepth(upperAtrium, 0.42)
+	movePart(upperAtrium, Vector3.new(2, upperAtrium.Position.Y, -7.88))
 
 	local upperGroup = upperAtrium.Parent
-	local upperLeft = ensureMullion(upperGroup, "UpperAtriumMullionLeft", -0.4, 26, -7.52, lowerLeft)
-	movePart(upperLeft, Vector3.new(-0.4, 59, -7.52))
-	local upperRight = ensureMullion(upperGroup, "UpperAtriumMullionRight", 4.4, 26, -7.52, lowerRight)
-	movePart(upperRight, Vector3.new(4.4, 59, -7.52))
+	local upperLeft = ensureMullion(upperGroup, "UpperAtriumMullionLeft", -0.4, 26, -8.24, lowerLeft)
+	movePart(upperLeft, Vector3.new(-0.4, 59, -8.24))
+	local upperRight = ensureMullion(upperGroup, "UpperAtriumMullionRight", 4.4, 26, -8.24, lowerRight)
+	movePart(upperRight, Vector3.new(4.4, 59, -8.24))
 
-	-- Keep the tower cross mounted very close to the facade: enough stand-off to
-	-- avoid Z-fighting, but not enough to read as a floating sign.
+	-- The medical cross sits on top of the upper atrium glazing. Move it forward
+	-- together with the glass so it remains facade-mounted instead of becoming
+	-- embedded between glass and concrete.
 	local towerVertical = requirePart(model, "TowerCrossVertical")
 	setDepth(towerVertical, 0.32)
-	movePart(towerVertical, Vector3.new(2, 61, -7.84))
+	movePart(towerVertical, Vector3.new(2, 61, -8.28))
 	towerVertical.CanCollide = false
 
 	local towerHorizontal = requirePart(model, "TowerCrossHorizontal")
 	setDepth(towerHorizontal, 0.24)
-	movePart(towerHorizontal, Vector3.new(2, 61, -7.92))
+	movePart(towerHorizontal, Vector3.new(2, 61, -8.34))
 	towerHorizontal.CanCollide = false
 
 	-- The Emergency cross stays above the canopy and close to the facade.
@@ -81,11 +87,12 @@ function Refinement.Apply(model)
 	movePart(emergencyHorizontal, Vector3.new(-57, 10.95, -18.83))
 	emergencyHorizontal.CanCollide = false
 
-	model:SetAttribute("GeometryRevision", "CentralHospital-v8-AtriumTowerCentered")
+	model:SetAttribute("GeometryRevision", "CentralHospital-v9-AtriumFacadeStandOff")
 	model:SetAttribute("FacadeStandOffPass", true)
 	model:SetAttribute("LowerTowerSideCapsRemoved", true)
 	model:SetAttribute("AtriumCenteredOnTower", true)
 	model:SetAttribute("AtriumMullionsSymmetric", true)
+	model:SetAttribute("AtriumGlassOutsideStructure", true)
 	model:SetAttribute("TowerCrossFreestanding", false)
 	model:SetAttribute("TowerCrossFacadeMounted", true)
 	model:SetAttribute("EmergencyCrossClearOfCanopy", true)
