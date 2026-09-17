@@ -2,8 +2,8 @@ local Specification = {
 	AssetId = "LargeCity_Stadium_L3",
 	DisplayName = "Large City Stadium",
 	City = "LargeCity",
-	Phase = 1,
-	QualityGate = "Pre-A",
+	Phase = 2,
+	QualityGate = "A-Pending",
 	Style = "Singapore x Miami tropical metropolitan sports landmark",
 
 	AssetBrief = {
@@ -35,21 +35,8 @@ local Specification = {
 	VisualLanguage = {
 		PrimaryMaterials = {"light concrete", "white structural steel", "dark glass", "brushed metal"},
 		Accent = "restrained teal/cyan with limited warm sports signage accents",
-		Avoid = {
-			"sealed futuristic dome",
-			"generic rectangular box",
-			"small-town football field",
-			"resort aesthetic",
-			"Mega City sci-fi language",
-		},
-		IdentityAnchors = {
-			"open stadium bowl",
-			"partial roof canopy",
-			"visible seating tiers",
-			"repeated structural ribs",
-			"large civic entrance",
-			"scoreboard / stadium signage",
-		},
+		Avoid = {"sealed futuristic dome", "generic rectangular box", "small-town football field", "resort aesthetic", "Mega City sci-fi language"},
+		IdentityAnchors = {"open stadium bowl", "partial roof canopy", "visible seating tiers", "repeated structural ribs", "large civic entrance", "scoreboard / stadium signage"},
 	},
 
 	ProposedGameplayMetadata = {
@@ -60,15 +47,7 @@ local Specification = {
 		Rationale = "Stadium is one of the largest Large City landmarks; Electric fits floodlights, scoreboards and stadium infrastructure.",
 	},
 
-	PlannedDestructionGroups = {
-		"D1_MainEntrance",
-		"D2_LowerBowl",
-		"D3_UpperBowl",
-		"D4_RoofCanopyWest",
-		"D5_RoofCanopyEast",
-		"D6_ScoreboardAndPylons",
-		"D7_ServiceAndConcourse",
-	},
+	PlannedDestructionGroups = {"D1_MainEntrance", "D2_LowerBowl", "D3_UpperBowl", "D4_RoofCanopyWest", "D5_RoofCanopyEast", "D6_ScoreboardAndPylons", "D7_ServiceAndConcourse"},
 
 	Phase1Acceptance = {
 		"Silhouette reads immediately as a stadium from gameplay distance.",
@@ -80,8 +59,12 @@ local Specification = {
 	},
 
 	VisualTarget = {
-		Status = "Pending",
-		NextPhase = 2,
+		Status = "InReview",
+		Revision = "LargeCityStadium-VisualTarget-v1",
+		TargetRead = "A tropical metropolitan open-bowl stadium with a sculptural partial roof, visible seating terraces, strong structural ribs, four landmark pylons, monumental entrance gates and palm-lined civic plazas.",
+		Camera = "Three-quarter aerial exterior view high enough to read the open bowl and roof opening, but low enough to judge facade rhythm and entrance scale.",
+		Lighting = "Bright sunny Large City daylight, warm tropical atmosphere, clean blue sky.",
+		NextGate = "Quality Gate A",
 	},
 }
 
