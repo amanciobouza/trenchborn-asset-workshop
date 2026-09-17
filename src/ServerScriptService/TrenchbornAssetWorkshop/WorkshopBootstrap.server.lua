@@ -34,18 +34,6 @@ local sovereignGameplay = require(packageFolder:WaitForChild("SovereignApexGamep
 local sovereignSoundController = require(packageFolder:WaitForChild("SovereignApexSoundController"))
 local sovereignRuntimeController = require(packageFolder:WaitForChild("SovereignApexRuntimeController"))
 
-local function getSpawnGroundPosition()
-	local spawn = Workspace:FindFirstChildWhichIsA("SpawnLocation", true)
-	if spawn then
-		return Vector3.new(
-			spawn.Position.X,
-			spawn.Position.Y + spawn.Size.Y * 0.5,
-			spawn.Position.Z
-		)
-	end
-	return Vector3.new(0, 0, 0)
-end
-
 local function groundCorrectionFor(model)
 	local minimumVisibleY = math.huge
 	for _, item in ipairs(model:GetDescendants()) do
@@ -61,8 +49,10 @@ local function faceCFrame(position, target)
 	return CFrame.lookAt(position, flatTarget)
 end
 
-local spawnGround = getSpawnGroundPosition()
-local hotelCenter = spawnGround + Vector3.new(0, 0, 45)
+local layout = workshop:WaitForChild("LargeCity_Layout_Blockout")
+local layoutMarkers = layout:WaitForChild("Markers")
+local hotelCenter = layoutMarkers:WaitForChild("ResortAnchor").Position
+local guardianReviewAnchor = layoutMarkers:WaitForChild("GuardianReviewAnchor").Position
 local guardianFocus = hotelCenter
 
 -- This branch is now a building review scene. Kaiju preview models are intentionally
@@ -79,13 +69,13 @@ workshop:SetAttribute("CurrentAsset", specification.AssetName)
 workshop:SetAttribute("CurrentPhase", specification.PipelinePhase)
 local model = goldenMaster.Build(workshop)
 dressing.Apply(model)
-model:PivotTo(faceCFrame(spawnGround + Vector3.new(-62, 0, 165), guardianFocus))
+model:PivotTo(faceCFrame(guardianReviewAnchor + Vector3.new(-62, 0, 20), guardianFocus))
 
 local rigPrototype = model:Clone()
 rigPrototype.Name = "Marshal_II_Roadblock_FleetRigPrototype"
 rigPrototype:SetAttribute("AnimationPrototype", true)
 rigPrototype.Parent = workshop
-rigPrototype:PivotTo(faceCFrame(spawnGround + Vector3.new(62, 0, 215), guardianFocus))
+rigPrototype:PivotTo(faceCFrame(guardianReviewAnchor + Vector3.new(62, 0, 70), guardianFocus))
 fleetRig.Apply(rigPrototype, {AnchorRoot = true})
 gameplay.Attach(rigPrototype, gameplayConfig)
 guardianSoundController.Attach(rigPrototype)
@@ -96,7 +86,7 @@ testHarness.Attach(workshop, model, gameplayConfig)
 local comparisonWarden = wardenGoldenMaster.Build(workshop)
 comparisonWarden.Name = "Warden_I_Shepherd_AnimationPrototype"
 comparisonWarden:SetAttribute("AnimationPrototype", true)
-comparisonWarden:PivotTo(faceCFrame(spawnGround + Vector3.new(-20, 0, 165), guardianFocus))
+comparisonWarden:PivotTo(faceCFrame(guardianReviewAnchor + Vector3.new(-20, 0, 20), guardianFocus))
 wardenDressing.Apply(comparisonWarden)
 fleetRig.Apply(comparisonWarden, {AnchorRoot = true})
 wardenGameplay.Attach(comparisonWarden, wardenGameplayConfig)
@@ -107,7 +97,7 @@ workshop:SetAttribute("AnimationTestTarget", "Warden-I Shepherd")
 local bastionModel = bastionGoldenMaster.Build(workshop)
 bastionDressing.Apply(bastionModel)
 local bastionGroundCorrection = groundCorrectionFor(bastionModel)
-local bastionPosition = spawnGround + Vector3.new(25, bastionGroundCorrection, 180)
+local bastionPosition = guardianReviewAnchor + Vector3.new(25, bastionGroundCorrection, 35)
 bastionModel:PivotTo(faceCFrame(bastionPosition, guardianFocus))
 fleetRig.Apply(bastionModel, {AnchorRoot = true})
 bastionGameplay.Attach(bastionModel, bastionGameplayConfig)
@@ -121,7 +111,7 @@ workshop:SetAttribute("GoldenMasterReviewTarget", bastionModel.Name)
 local sovereignModel = sovereignGoldenMaster.Build(workshop)
 sovereignDressing.Apply(sovereignModel)
 local sovereignGroundCorrection = groundCorrectionFor(sovereignModel)
-local sovereignPosition = spawnGround + Vector3.new(72, sovereignGroundCorrection, 180)
+local sovereignPosition = guardianReviewAnchor + Vector3.new(72, sovereignGroundCorrection, 35)
 sovereignModel:PivotTo(faceCFrame(sovereignPosition, guardianFocus))
 fleetRig.Apply(sovereignModel, {AnchorRoot = true})
 sovereignGameplay.Attach(sovereignModel, sovereignGameplayConfig)
