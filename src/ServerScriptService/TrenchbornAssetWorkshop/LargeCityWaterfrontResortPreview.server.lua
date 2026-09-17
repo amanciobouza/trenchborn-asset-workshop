@@ -10,9 +10,6 @@ local poolFacade = require(packageFolder:WaitForChild("LargeCityWaterfrontResort
 local dressing = require(packageFolder:WaitForChild("LargeCityWaterfrontResortDressing"))
 local signDressing = require(packageFolder:WaitForChild("LargeCityWaterfrontResortSignDressing"))
 local dressingRefinement = require(packageFolder:WaitForChild("LargeCityWaterfrontResortDressingRefinement"))
-local gameplayConfig = require(packageFolder:WaitForChild("LargeCityWaterfrontResortGameplayConfig"))
-local gameplay = require(packageFolder:WaitForChild("LargeCityWaterfrontResortGameplay"))
-local reviewControls = require(packageFolder:WaitForChild("LargeCityWaterfrontResortReviewControls"))
 
 local function getSpawnGroundPosition()
 	local spawn = Workspace:FindFirstChildWhichIsA("SpawnLocation", true)
@@ -42,24 +39,24 @@ if dressingFolder then
 	if duplicateFacade then duplicateFacade:Destroy() end
 end
 
--- Place first, then snapshot the geometry in gameplay so Reset restores the
--- correct world-space CFrames for this review scene.
+-- This workshop intentionally stops before the production building-collapse logic.
+-- Destruction integration is validated in the main game project, where the shared
+-- house/component collapse controller already exists.
 model:PivotTo(CFrame.new(spawnGround + Vector3.new(0, 0, 45)))
-local gameplayApi = gameplay.Attach(model, gameplayConfig)
-reviewControls.Attach(
-	workshop,
-	gameplayApi,
-	spawnGround + Vector3.new(-9, 0.4, 7),
-	gameplayConfig.ReviewDamageStep
-)
+
+local oldControls = workshop:FindFirstChild("LargeCityResortReviewControls")
+if oldControls then oldControls:Destroy() end
 
 workshop:SetAttribute("CurrentAsset", specification.AssetName or specification.AssetId)
-workshop:SetAttribute("CurrentPhase", 6)
-workshop:SetAttribute("QualityStatus", "Phase6_GameplayDestructionReview")
+workshop:SetAttribute("CurrentPhase", 5)
+workshop:SetAttribute("QualityStatus", "Phase5_Approved_Phase6ExternalIntegration")
 workshop:SetAttribute("QualityGateB", "Approved")
-workshop:SetAttribute("QualityGateC", "Pending")
+workshop:SetAttribute("QualityGateC", "ExternalGameTestPending")
 workshop:SetAttribute("GoldenMasterReviewTarget", model.Name)
 workshop:SetAttribute("ReviewScene", "HotelAtSpawn_GuardiansBehind_NoKaiju")
+workshop:SetAttribute("Phase6ReviewDamageKey", nil)
+workshop:SetAttribute("Phase6ReviewResetKey", nil)
+workshop:SetAttribute("Phase6ReviewDamageStep", nil)
 
-print("[Trenchborn Asset Workshop] Built Phase 6 Large City Waterfront Resort review:", model:GetFullName())
-print("[Trenchborn Asset Workshop] Review controls: E = damage, R = reset at the pedestal near spawn")
+print("[Trenchborn Asset Workshop] Built approved dressed Large City Waterfront Resort:", model:GetFullName())
+print("[Trenchborn Asset Workshop] Phase 6 collapse/destruction integration deferred to the main game project")
