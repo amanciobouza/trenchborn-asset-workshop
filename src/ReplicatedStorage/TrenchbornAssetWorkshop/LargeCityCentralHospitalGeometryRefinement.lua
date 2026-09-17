@@ -37,43 +37,44 @@ function Refinement.Apply(model)
 		if cap then cap:Destroy() end
 	end
 
-	-- Centre the atrium on the tower masses and place the glass fully OUTSIDE the
-	-- structural facade. The lower central spine reaches to about Z=-10.70 and the
-	-- upper spine to about Z=-7.60. The glass rear faces now clear those planes by
-	-- a few hundredths of a stud instead of being buried inside the building.
+	-- Centre the atrium on the tower masses and keep the glass visibly outside
+	-- the structural facade. The lower central spine reaches to about Z=-10.70;
+	-- use a deliberate ~0.19 stud rear-face clearance so the glazing cannot read
+	-- as buried inside the concrete from grazing camera angles.
 	local lowerAtrium = requirePart(model, "LowerVerticalAtrium")
 	setDepth(lowerAtrium, 0.42)
-	movePart(lowerAtrium, Vector3.new(0, lowerAtrium.Position.Y, -10.95))
+	movePart(lowerAtrium, Vector3.new(0, lowerAtrium.Position.Y, -11.10))
 
 	local lowerLeft = requirePart(model, "LowerAtriumMullion-3")
 	local lowerRight = requirePart(model, "LowerAtriumMullion1")
 	setDepth(lowerLeft, 0.30)
 	setDepth(lowerRight, 0.30)
-	-- Mullions sit just in front of the glass rather than penetrating it.
-	movePart(lowerLeft, Vector3.new(-2.6, 27, -11.31))
-	movePart(lowerRight, Vector3.new(2.6, 27, -11.31))
+	-- Mullions sit immediately in front of the glazing, not through it.
+	movePart(lowerLeft, Vector3.new(-2.6, 27, -11.47))
+	movePart(lowerRight, Vector3.new(2.6, 27, -11.47))
 
+	-- The stepped upper tower spine reaches to about Z=-7.60. Give this glazing
+	-- even more clearance because the medical cross is layered in front of it.
 	local upperAtrium = requirePart(model, "UpperVerticalAtrium")
 	setDepth(upperAtrium, 0.42)
-	movePart(upperAtrium, Vector3.new(2, upperAtrium.Position.Y, -7.88))
+	movePart(upperAtrium, Vector3.new(2, upperAtrium.Position.Y, -8.02))
 
 	local upperGroup = upperAtrium.Parent
-	local upperLeft = ensureMullion(upperGroup, "UpperAtriumMullionLeft", -0.4, 26, -8.24, lowerLeft)
-	movePart(upperLeft, Vector3.new(-0.4, 59, -8.24))
-	local upperRight = ensureMullion(upperGroup, "UpperAtriumMullionRight", 4.4, 26, -8.24, lowerRight)
-	movePart(upperRight, Vector3.new(4.4, 59, -8.24))
+	local upperLeft = ensureMullion(upperGroup, "UpperAtriumMullionLeft", -0.4, 26, -8.39, lowerLeft)
+	movePart(upperLeft, Vector3.new(-0.4, 59, -8.39))
+	local upperRight = ensureMullion(upperGroup, "UpperAtriumMullionRight", 4.4, 26, -8.39, lowerRight)
+	movePart(upperRight, Vector3.new(4.4, 59, -8.39))
 
-	-- The medical cross sits on top of the upper atrium glazing. Move it forward
-	-- together with the glass so it remains facade-mounted instead of becoming
-	-- embedded between glass and concrete.
+	-- Keep the medical cross as the outermost layer: concrete -> glass -> mullion
+	-- -> cross. This preserves the facade-mounted read without intersections.
 	local towerVertical = requirePart(model, "TowerCrossVertical")
 	setDepth(towerVertical, 0.32)
-	movePart(towerVertical, Vector3.new(2, 61, -8.28))
+	movePart(towerVertical, Vector3.new(2, 61, -8.76))
 	towerVertical.CanCollide = false
 
 	local towerHorizontal = requirePart(model, "TowerCrossHorizontal")
 	setDepth(towerHorizontal, 0.24)
-	movePart(towerHorizontal, Vector3.new(2, 61, -8.34))
+	movePart(towerHorizontal, Vector3.new(2, 61, -8.84))
 	towerHorizontal.CanCollide = false
 
 	-- The Emergency cross stays above the canopy and close to the facade.
@@ -87,7 +88,7 @@ function Refinement.Apply(model)
 	movePart(emergencyHorizontal, Vector3.new(-57, 10.95, -18.83))
 	emergencyHorizontal.CanCollide = false
 
-	model:SetAttribute("GeometryRevision", "CentralHospital-v9-AtriumFacadeStandOff")
+	model:SetAttribute("GeometryRevision", "CentralHospital-v10-AtriumClearFacade")
 	model:SetAttribute("FacadeStandOffPass", true)
 	model:SetAttribute("LowerTowerSideCapsRemoved", true)
 	model:SetAttribute("AtriumCenteredOnTower", true)
