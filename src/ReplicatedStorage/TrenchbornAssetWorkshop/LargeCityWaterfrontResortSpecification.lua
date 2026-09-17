@@ -2,8 +2,8 @@ local Specification = {
 	AssetId = "LargeCity_LuxuryWaterfrontResort_L3",
 	DisplayName = "Luxury Waterfront Resort",
 	City = "LargeCity",
-	Phase = 6,
-	QualityGate = "C-Pending",
+	Phase = 7,
+	QualityGate = "C-ExternalGameTestPending",
 	Style = "Singapore x Miami tropical luxury metropolis",
 
 	Dimensions = {
@@ -46,16 +46,18 @@ local Specification = {
 		"D7_RooftopSkyBar",
 	},
 
-	GameplayReview = {
+	Installer = {
+		ModelName = "LargeCity_LuxuryWaterfrontResort_L3",
+		RequiredTag = "KaijuHouse",
 		MaxHealth = 64000,
-		EnergyType = "Thermal",
-		DestructionReward = 4828,
-		RequireProgressiveDestruction = true,
-		RequireReset = true,
-		RequireSmokeAndFireReaction = true,
-		RequireDestructibleBuildingTag = true,
+		EnergyType = "Heat",
+		BuildingType = "Hotel",
+		CityTier = 4,
+		FinalInstallerVersion = 1,
+		QualityGateA = "Approved",
 		QualityGateB = "Approved",
-		QualityGateC = "Pending",
+		QualityGateC = "ExternalGameTestPending",
+		UsesSharedMainGameDestruction = true,
 	},
 
 	VisualReviewCriteria = {
