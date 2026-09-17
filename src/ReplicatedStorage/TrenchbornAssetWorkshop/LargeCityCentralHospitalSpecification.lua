@@ -2,8 +2,8 @@ local Specification = {
 	AssetId = "LargeCity_CentralHospital_L3",
 	DisplayName = "Central Hospital",
 	City = "LargeCity",
-	Phase = 1,
-	QualityGate = "A-Pending",
+	Phase = 3,
+	QualityGate = "A-Approved",
 	Style = "Singapore x Miami tropical metropolitan healthcare landmark",
 
 	AssetBrief = {
@@ -12,6 +12,16 @@ local Specification = {
 		Scale = "Large L3 civic complex with one dominant clinical tower, lower diagnostic/emergency wings and rooftop medical infrastructure.",
 		GameplayRead = "Readable from kaiju distance: hospital cross/medical identity, emergency entrance, helipad and stepped tower massing.",
 		NoInterior = true,
+	},
+
+	VisualTarget = {
+		Approved = true,
+		Revision = "CentralHospital-VisualTarget-v1",
+		ApprovedRead = "Modern tropical hospital campus with broad clinical tower, strong emergency canopy, asymmetric diagnostic wing, rooftop helipad and visible medical identity.",
+		Front = "Main entrance centered under glazed diagnostic podium; emergency wing offset left; diagnostics/service volume offset right.",
+		Roof = "Large readable helipad plus mechanical plant, parapets and service equipment.",
+		Rear = "Service/loading volumes and technical access; intentionally more functional than the public front.",
+		Landscape = "Palm-lined civic forecourt and planted edges; functional, clean and tropical rather than resort-like.",
 	},
 
 	Architecture = {
@@ -45,6 +55,102 @@ local Specification = {
 		SecondaryWing = Vector3.new(48, 24, 32),
 	},
 
+	TechnicalBreakdown = {
+		CoordinateSystem = {
+			Pivot = "Ground center of complete hospital campus",
+			Front = "Local -Z faces public boulevard / main entrance",
+			Rear = "Local +Z faces service/loading side",
+			GroundY = 0,
+		},
+
+		Massing = {
+			MainTowerLower = {
+				Size = Vector3.new(46, 34, 34),
+				Center = Vector3.new(0, 27, 7),
+				Purpose = "Lower inpatient tower and main vertical mass",
+			},
+			MainTowerUpper = {
+				Size = Vector3.new(40, 30, 31),
+				Center = Vector3.new(2, 59, 8.5),
+				Purpose = "Stepped upper patient tower",
+			},
+			DiagnosticPodium = {
+				Size = Vector3.new(78, 14, 42),
+				Center = Vector3.new(5, 8, 8),
+				Purpose = "Main entrance, diagnostics and treatment base",
+			},
+			EmergencyWing = {
+				Size = Vector3.new(38, 13, 29),
+				Center = Vector3.new(-43, 7.5, -4),
+				Purpose = "Emergency department and ambulance arrival",
+			},
+			SecondaryWing = {
+				Size = Vector3.new(42, 23, 31),
+				Center = Vector3.new(47, 12.5, 9),
+				Purpose = "Diagnostics / outpatient clinical wing",
+			},
+		},
+
+		FacadeModules = {
+			TowerFloorHeight = 4.0,
+			TowerWindowBandHeight = 2.1,
+			TowerWindowBandDepth = 0.35,
+			TowerVerticalMullionWidth = 0.3,
+			PodiumGlassHeight = 5.5,
+			EmergencyCanopyClearHeight = 5.2,
+			FacadeStandOff = 0.25,
+			Rule = "All glass and facade overlays must stand clear of structural faces to avoid Z-fighting.",
+		},
+
+		EmergencyArrival = {
+			CanopySize = Vector3.new(34, 1.0, 16),
+			CanopyCenter = Vector3.new(-43, 7.8, -22),
+			DriveThroughWidth = 26,
+			Columns = 4,
+			AmbulanceBays = 2,
+			VisualAnchor = "EMERGENCY sign above canopy plus medical cross on wing",
+		},
+
+		MainEntrance = {
+			CanopySize = Vector3.new(28, 0.8, 9),
+			CanopyCenter = Vector3.new(5, 7.0, -18),
+			DoorSpan = 18,
+			ForecourtDepth = 13,
+			VisualAnchor = "Tall glazed lobby slot and directional hospital signage",
+		},
+
+		Helipad = {
+			DeckSize = Vector3.new(31, 1.0, 31),
+			DeckCenter = Vector3.new(0, 75, 9),
+			PadDiameter = 24,
+			ParapetHeight = 1.2,
+			AccessCore = Vector3.new(8, 5, 7),
+			Marking = "White H in circle on strong red landing field during Dressing phase",
+		},
+
+		RoofPlant = {
+			HVACUnits = 5,
+			VentStacks = 4,
+			ServiceCoreCount = 2,
+			Rule = "Keep plant clustered away from helipad flight area and clearly subordinate to tower silhouette.",
+		},
+
+		LandscapeReferences = {
+			PalmCount = 8,
+			PlanterZones = 5,
+			PublicForecourt = Vector3.new(62, 0, 18),
+			EmergencyBuffer = Vector3.new(42, 0, 11),
+			Phase = 5,
+		},
+
+		PartBudget = {
+			TargetVisibleParts = 560,
+			MaximumVisibleParts = 750,
+			GoldenMasterOnly = "Structural massing, physical window rhythms, canopy geometry, helipad deck, roof plant massing and deterministic pivot.",
+			DressingOnly = "Signs, cross symbols, helipad paint, palms, benches, bollards, small fixtures, window illumination and surface accents.",
+		},
+	},
+
 	PlannedDestructionGroups = {
 		"D1_EmergencyCanopy",
 		"D2_DiagnosticPodium",
@@ -62,12 +168,24 @@ local Specification = {
 		ExternalCollapseIntegration = true,
 	},
 
-	Phase1Acceptance = {
-		"Must read immediately as a hospital from distance.",
-		"Must preserve the tropical Large City identity established by the waterfront resort.",
-		"Must have a civic/medical silhouette, not another hotel or office tower.",
-		"Emergency entrance and helipad are mandatory visual anchors.",
-		"Geometry should support later segmentation into seven destruction groups.",
+	QualityGateA = {
+		Status = "Approved",
+		ApprovedTarget = "CentralHospital-VisualTarget-v1",
+		Acceptance = {
+			"Hospital identity is immediate from gameplay distance.",
+			"Tower, podium, emergency wing and diagnostic wing create an asymmetric civic campus silhouette.",
+			"Helipad and emergency canopy are mandatory and visually dominant anchors.",
+			"Tropical Large City identity is present without reading as a resort.",
+			"Design can be built entirely in Roblox Studio without modeled interior geometry.",
+		},
+	},
+
+	Phase3Acceptance = {
+		"All major visual-target masses have deterministic dimensions and centers.",
+		"Facade modules use real geometry and explicit anti-Z-fighting stand-off.",
+		"Helipad, emergency arrival and main entrance have buildable dimensions.",
+		"Seven destruction groups map cleanly to physical building masses.",
+		"Golden Master part budget remains below 750 visible parts.",
 	},
 }
 
