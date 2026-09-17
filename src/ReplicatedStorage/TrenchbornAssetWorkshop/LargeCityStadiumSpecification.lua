@@ -2,8 +2,8 @@ local Specification = {
 	AssetId = "LargeCity_Stadium_L3",
 	DisplayName = "Large City Stadium",
 	City = "LargeCity",
-	Phase = 2,
-	QualityGate = "A-Pending",
+	Phase = 3,
+	QualityGate = "A-Approved",
 	Style = "Singapore x Miami tropical metropolitan sports landmark",
 
 	AssetBrief = {
@@ -23,20 +23,84 @@ local Specification = {
 		ApprovedBlockoutHeight = 72,
 	},
 
+	VisualTarget = {
+		Approved = true,
+		Status = "Approved",
+		Revision = "LargeCityStadium-VisualTarget-v1",
+		ApprovedRead = "Grand tropical metropolitan open-bowl stadium with layered seating, a light partial roof ring, four tall structural pylons, a monumental glazed entrance and a large internal scoreboard.",
+		Front = "Symmetrical civic arrival facade with broad glazed gate hall, stadium wordmark, strong vertical entrance piers and palm-lined plaza.",
+		Sides = "Oval bowl with repeated concrete/steel ribs, exposed concourse glazing and visible stepped seating mass.",
+		Rear = "Functional bowl elevation with repeated ribs and service/concourse openings; no second ceremonial entrance.",
+		Roof = "Open center with a thin segmented canopy/ring around the bowl; white/light-metal structure, not a sealed dome.",
+		Pylons = "Four tall tapered pylons at the main quadrant positions, clearly above the roof line and readable at kaiju distance.",
+		InteriorRead = "Pitch opening, two-tier seating and one dominant scoreboard are visible from above; no modeled rooms or playable interior required.",
+	},
+
 	DesignIntent = {
-		Silhouette = "Broad oval / rounded-rectangular stadium bowl with a strong elevated roof ring and four unmistakable structural corner or end pylons.",
-		Front = "Grand civic arrival facade with broad stair/ramp language, multiple gate bays and a central stadium wordmark/scoreboard element.",
+		Silhouette = "Broad oval stadium bowl with a strong elevated roof ring and four unmistakable structural pylons.",
+		Front = "Grand civic arrival facade with broad stair/ramp language, multiple gate bays and a central stadium wordmark.",
 		Sides = "Tiered bowl geometry with repeated structural ribs rather than flat walls.",
 		Roof = "Partial open roof canopy framing the pitch opening; not a fully sealed dome.",
 		Rear = "Service/loading side with simplified but credible stadium infrastructure.",
-		Landscape = "Palm-lined plazas, broad pedestrian hardscape and transit-friendly arrival zones; civic/sports character rather than resort landscaping.",
+		Landscape = "Palm-lined plazas, broad pedestrian hardscape and transit-friendly arrival zones.",
 	},
 
 	VisualLanguage = {
 		PrimaryMaterials = {"light concrete", "white structural steel", "dark glass", "brushed metal"},
 		Accent = "restrained teal/cyan with limited warm sports signage accents",
 		Avoid = {"sealed futuristic dome", "generic rectangular box", "small-town football field", "resort aesthetic", "Mega City sci-fi language"},
-		IdentityAnchors = {"open stadium bowl", "partial roof canopy", "visible seating tiers", "repeated structural ribs", "large civic entrance", "scoreboard / stadium signage"},
+		IdentityAnchors = {"open stadium bowl", "partial roof canopy", "visible seating tiers", "repeated structural ribs", "large civic entrance", "scoreboard / stadium signage", "four tall pylons"},
+	},
+
+	TechnicalBreakdown = {
+		CoordinateSystem = {
+			Pivot = "Ground center of stadium footprint",
+			Front = "Local -Z faces main civic arrival plaza",
+			Rear = "Local +Z faces service side",
+			GroundY = 0,
+		},
+		Massing = {
+			OuterBowl = {Footprint = Vector2.new(222, 146), LowerHeight = 26, UpperHeight = 47},
+			PitchOpening = {Footprint = Vector2.new(108, 64), Center = Vector3.new(0, 0, 4)},
+			MainEntrance = {Footprint = Vector2.new(70, 18), Center = Vector3.new(0, 14, -72), Height = 30},
+			RearService = {Footprint = Vector2.new(82, 15), Center = Vector3.new(0, 9, 72), Height = 18},
+		},
+		Bowl = {
+			SegmentCount = 28,
+			LowerTierTopY = 24,
+			UpperTierTopY = 43,
+			ConcourseBandY = 18,
+			StructuralRibCount = 28,
+			Rule = "Use repeated modular wedge/rib segments to imply an oval bowl; avoid a single smooth cylinder or flat box wall.",
+		},
+		Roof = {
+			CanopyOuterFootprint = Vector2.new(218, 142),
+			CanopyInnerOpening = Vector2.new(128, 78),
+			CanopyY = 50,
+			CanopyThickness = 2.4,
+			Rule = "Roof remains visibly open over the pitch and is split into coherent destroyable canopy masses.",
+		},
+		Pylons = {
+			Height = 72,
+			BaseSize = Vector3.new(9, 12, 12),
+			TopSize = Vector3.new(4, 4, 5),
+			Positions = {
+				Vector3.new(-88, 36, -58), Vector3.new(88, 36, -58),
+				Vector3.new(-88, 36, 58), Vector3.new(88, 36, 58),
+			},
+			Rule = "Pylons taper subtly inward and connect visually to the roof canopy.",
+		},
+		Scoreboard = {Size = Vector3.new(48, 16, 2.2), Center = Vector3.new(0, 38, 50)},
+		FacadeModules = {
+			EntranceGlazingSpan = 48,
+			EntranceGlazingHeight = 18,
+			RibWidth = 2.4,
+			ConcourseGlassHeight = 7,
+			FacadeStandOff = 0.3,
+			Rule = "Glass and decorative overlays must stand clear of structural faces to avoid Z-fighting.",
+		},
+		LandscapeReferences = {PalmCount = 14, MainPlaza = Vector3.new(110, 0, 28), SidePlazaDepth = 16, Phase = 5},
+		PartBudget = {TargetVisibleParts = 650, MaximumVisibleParts = 900},
 	},
 
 	ProposedGameplayMetadata = {
@@ -44,27 +108,24 @@ local Specification = {
 		EnergyType = "Electric",
 		InstallerTag = "KaijuHouse",
 		ExternalCollapseIntegration = true,
-		Rationale = "Stadium is one of the largest Large City landmarks; Electric fits floodlights, scoreboards and stadium infrastructure.",
 	},
 
-	PlannedDestructionGroups = {"D1_MainEntrance", "D2_LowerBowl", "D3_UpperBowl", "D4_RoofCanopyWest", "D5_RoofCanopyEast", "D6_ScoreboardAndPylons", "D7_ServiceAndConcourse"},
-
-	Phase1Acceptance = {
-		"Silhouette reads immediately as a stadium from gameplay distance.",
-		"Asset fits inside the LC-50 250 x 170 stud plot without crowding Uptown Loop.",
-		"Open-bowl and partial-roof language is visually distinct from the Uptown Arena.",
-		"No modeled interior rooms are required; seating and concourse depth are exterior/structural illusions only.",
-		"Seven destruction groups can later map to large coherent physical masses.",
-		"Design remains buildable entirely in Roblox Studio with modular geometry.",
+	PlannedDestructionGroups = {
+		"D1_MainEntrance", "D2_LowerBowl", "D3_UpperBowl", "D4_RoofCanopyWest",
+		"D5_RoofCanopyEast", "D6_ScoreboardAndPylons", "D7_ServiceAndConcourse",
 	},
 
-	VisualTarget = {
-		Status = "InReview",
-		Revision = "LargeCityStadium-VisualTarget-v1",
-		TargetRead = "A tropical metropolitan open-bowl stadium with a sculptural partial roof, visible seating terraces, strong structural ribs, four landmark pylons, monumental entrance gates and palm-lined civic plazas.",
-		Camera = "Three-quarter aerial exterior view high enough to read the open bowl and roof opening, but low enough to judge facade rhythm and entrance scale.",
-		Lighting = "Bright sunny Large City daylight, warm tropical atmosphere, clean blue sky.",
-		NextGate = "Quality Gate A",
+	QualityGateA = {
+		Status = "Approved",
+		ApprovedTarget = "LargeCityStadium-VisualTarget-v1",
+	},
+
+	Phase3Acceptance = {
+		"Outer bowl, pitch opening, roof ring, pylons, entrance and rear service mass have deterministic dimensions.",
+		"Repeated modular ribs and seating tiers replace any generic box-only silhouette.",
+		"Seven destruction groups map cleanly to large coherent physical masses.",
+		"Golden Master target remains below 900 visible parts.",
+		"No modeled interior rooms are required.",
 	},
 }
 
