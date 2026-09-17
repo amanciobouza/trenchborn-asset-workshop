@@ -10,10 +10,30 @@ local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
 
 local guardianBuilder = require(packageFolder:WaitForChild("WardenShepherdGoldenMaster"))
 local guardianDressing = require(packageFolder:WaitForChild("WardenShepherdDressing"))
+local guardianGameplay = require(packageFolder:WaitForChild("WardenShepherdGameplay"))
+local guardianConfig = require(packageFolder:WaitForChild("WardenShepherdGameplayConfig"))
+local guardianRuntime = require(packageFolder:WaitForChild("WardenShepherdRuntimeController"))
 
 local hospital = workshop:WaitForChild("LargeCity_CentralHospital_L3_GoldenMaster", 30)
 if not hospital then
 	warn("[Guardian Demo] Central Hospital did not appear; demo not started")
+	return
+end
+
+-- The Hospital preview parents the model before all refinement/placement work is
+-- complete. Wait for the review target marker so snapshots and spawn placement are
+-- taken from the final Phase-4 geometry rather than the temporary origin state.
+local readyDeadline = os.clock() + 15
+repeat
+	task.wait(0.05)
+until (
+	hospital.PrimaryPart
+	and hospital:FindFirstChild("DestructionGroups")
+	and workshop:GetAttribute("GoldenMasterReviewTarget") == hospital.Name
+) or os.clock() >= readyDeadline
+
+if not hospital.PrimaryPart then
+	warn("[Guardian Demo] Hospital never reached a stable preview state")
 	return
 end
 
@@ -49,6 +69,9 @@ guardianDressing.Apply(guardian)
 guardian:SetAttribute("DemoControlled", true)
 guardian:SetAttribute("DemoRole", "PlayerGuardian")
 
+local gameplayApi = guardianGameplay.Attach(guardian, guardianConfig)
+local animationApi = guardianRuntime.Attach(guardian, gameplayApi)
+
 local hospitalPivot = hospital:GetPivot()
 local guardianGroundY = hospitalPivot.Position.Y + 21
 local guardianSpawnPosition = (hospitalPivot * CFrame.new(0, 0, -105)).Position
@@ -58,7 +81,8 @@ local guardianSpawnCFrame = CFrame.lookAt(
 )
 guardian:PivotTo(guardianSpawnCFrame)
 
--- Remove a stale static Warden that WorkshopBootstrap may create after this demo starts.
+-- WorkshopBootstrap can create a second static Warden. Remove it after bootstrap
+-- settles so the player-controlled machine is the only Warden in this scene.
 task.delay(2, function()
 	local staticWarden = workshop:FindFirstChild("Warden_I_Shepherd_GoldenMaster")
 	if staticWarden and staticWarden ~= guardian then
@@ -180,20 +204,15 @@ local function impactFlash(position, heavy)
 	flash.Color = heavy and Color3.fromRGB(255, 197, 82) or Color3.fromRGB(92, 231, 151)
 	flash.Transparency = 0.15
 	flash.Parent = workshop
-
-	local tween = TweenService:Create(
+	TweenService:Create(
 		flash,
 		TweenInfo.new(0.28, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-		{
-			Size = flash.Size * 2.2,
-			Transparency = 1,
-		}
-	)
-	tween:Play()
+		{Size = flash.Size * 2.2, Transparency = 1}
+	):Play()
 	Debris:AddItem(flash, 0.4)
 end
 
-local function breakGroup(groupName, impactPosition)
+local function breakGroup(groupName)
 	local state = groupState[groupName]
 	if not state or state.Destroyed then
 		return
@@ -207,11 +226,7 @@ local function breakGroup(groupName, impactPosition)
 	for index, part in ipairs(state.Parts) do
 		if part.Parent then
 			part.Anchored = false
-			if part.Material == Enum.Material.Glass then
-				part.CanCollide = false
-			else
-				part.CanCollide = true
-			end
+			part.CanCollide = part.Material ~= Enum.Material.Glass
 			local away = Vector3.new(part.Position.X - guardianPosition.X, 0, part.Position.Z - guardianPosition.Z)
 			if away.Magnitude < 0.1 then
 				away = guardian:GetPivot().LookVector
@@ -226,8 +241,6 @@ local function breakGroup(groupName, impactPosition)
 			)
 		end
 	end
-
-	impactFlash(impactPosition, true)
 end
 
 local function damageGroup(groupName, amount, hitPart, heavy)
@@ -237,12 +250,11 @@ local function damageGroup(groupName, amount, hitPart, heavy)
 	end
 	state.Health = math.max(0, state.Health - amount)
 	state.Folder:SetAttribute("Health", state.Health)
-
 	local hitPosition = hitPart and hitPart.Position or hospital:GetPivot().Position
 	impactFlash(hitPosition, heavy)
 
 	if state.Health <= 0 then
-		breakGroup(groupName, hitPosition)
+		breakGroup(groupName)
 		updateRuntime("SEKTOR ZERSTÖRT: " .. groupName, groupName)
 	else
 		updateRuntime(string.format("TREFFER %s  |  %d HP", groupName, state.Health), groupName)
@@ -251,7 +263,7 @@ local function damageGroup(groupName, amount, hitPart, heavy)
 end
 
 local function resetHospital()
-	for groupName, state in pairs(groupState) do
+	for _, state in pairs(groupState) do
 		state.Health = state.MaxHealth
 		state.Destroyed = false
 		state.Folder:SetAttribute("Health", state.MaxHealth)
@@ -274,21 +286,23 @@ local function resetHospital()
 		end
 	end
 	guardian:PivotTo(guardianSpawnCFrame)
+	animationApi.PlayAnimation("Idle")
 	updateRuntime("SPITAL ZURÜCKGESETZT", "")
 end
 
 local controllerPlayer = nil
-local inputState = {
-	Forward = 0,
-	Strafe = 0,
-	Turn = 0,
-	Sprint = false,
-}
+local inputState = {Forward = 0, Strafe = 0, Turn = 0, Sprint = false}
+local lastAttack = {Baton = 0, Slam = 0}
+local animationLockUntil = 0
+local locomotionAnimation = "Idle"
 
-local lastAttack = {
-	Baton = 0,
-	Slam = 0,
-}
+local function playLocomotion(name)
+	if os.clock() < animationLockUntil or name == locomotionAnimation then
+		return
+	end
+	locomotionAnimation = name
+	animationApi.PlayAnimation(name)
+end
 
 local function hideCharacter(character)
 	local humanoid = character:FindFirstChildOfClass("Humanoid")
@@ -299,9 +313,7 @@ local function hideCharacter(character)
 		humanoid.AutoRotate = false
 	end
 	local root = character:FindFirstChild("HumanoidRootPart")
-	if root then
-		root.Anchored = true
-	end
+	if root then root.Anchored = true end
 	for _, descendant in ipairs(character:GetDescendants()) do
 		if descendant:IsA("BasePart") then
 			descendant.Transparency = 1
@@ -313,14 +325,10 @@ local function hideCharacter(character)
 end
 
 local function setController(player)
-	if controllerPlayer then
-		return
-	end
+	if controllerPlayer then return end
 	controllerPlayer = player
 	runtime:SetAttribute("ControllerUserId", player.UserId)
-	if player.Character then
-		hideCharacter(player.Character)
-	end
+	if player.Character then hideCharacter(player.Character) end
 	player.CharacterAdded:Connect(hideCharacter)
 end
 
@@ -331,9 +339,7 @@ end
 Players.PlayerAdded:Connect(setController)
 
 inputEvent.OnServerEvent:Connect(function(player, payload)
-	if player ~= controllerPlayer or typeof(payload) ~= "table" then
-		return
-	end
+	if player ~= controllerPlayer or typeof(payload) ~= "table" then return end
 	inputState.Forward = math.clamp(tonumber(payload.Forward) or 0, -1, 1)
 	inputState.Strafe = math.clamp(tonumber(payload.Strafe) or 0, -1, 1)
 	inputState.Turn = math.clamp(tonumber(payload.Turn) or 0, -1, 1)
@@ -341,23 +347,20 @@ inputEvent.OnServerEvent:Connect(function(player, payload)
 end)
 
 attackEvent.OnServerEvent:Connect(function(player, attackName)
-	if player ~= controllerPlayer then
-		return
-	end
-
+	if player ~= controllerPlayer then return end
 	local now = os.clock()
 	local config
 	if attackName == "Slam" then
-		config = {Damage = 12000, Range = 52, Cooldown = 2.4, Heavy = true}
+		config = {Damage = 12000, Range = 52, Cooldown = 2.4, Heavy = true, Animation = "GroundSlam", Lock = 1.35}
 	else
 		attackName = "Baton"
-		config = {Damage = 7000, Range = 38, Cooldown = 0.65, Heavy = false}
+		config = {Damage = 7000, Range = 38, Cooldown = 0.65, Heavy = false, Animation = "ShockBaton", Lock = 0.9}
 	end
-
-	if now - (lastAttack[attackName] or 0) < config.Cooldown then
-		return
-	end
+	if now - (lastAttack[attackName] or 0) < config.Cooldown then return end
 	lastAttack[attackName] = now
+	animationLockUntil = now + config.Lock
+	locomotionAnimation = ""
+	animationApi.PlayAnimation(config.Animation)
 
 	local groupName, hitPart, distance = nearestTarget()
 	if not groupName or not hitPart then
@@ -368,21 +371,15 @@ attackEvent.OnServerEvent:Connect(function(player, attackName)
 		updateRuntime(string.format("ZU WEIT WEG  |  %.0f / %.0f", distance, config.Range), groupName)
 		return
 	end
-
 	damageGroup(groupName, config.Damage, hitPart, config.Heavy)
 end)
 
 resetEvent.OnServerEvent:Connect(function(player)
-	if player ~= controllerPlayer then
-		return
-	end
-	resetHospital()
+	if player == controllerPlayer then resetHospital() end
 end)
 
 RunService.Heartbeat:Connect(function(dt)
-	if not guardian.Parent then
-		return
-	end
+	if not guardian.Parent then return end
 	local pivot = guardian:GetPivot()
 	local turn = inputState.Turn
 	if math.abs(turn) > 0.01 then
@@ -390,9 +387,7 @@ RunService.Heartbeat:Connect(function(dt)
 	end
 
 	local move = pivot.LookVector * inputState.Forward + pivot.RightVector * inputState.Strafe
-	if move.Magnitude > 1 then
-		move = move.Unit
-	end
+	if move.Magnitude > 1 then move = move.Unit end
 	if move.Magnitude > 0.01 then
 		local speed = inputState.Sprint and 38 or 24
 		pivot += move * speed * dt
@@ -400,6 +395,20 @@ RunService.Heartbeat:Connect(function(dt)
 
 	local fixedPosition = Vector3.new(pivot.Position.X, guardianGroundY, pivot.Position.Z)
 	guardian:PivotTo(CFrame.fromMatrix(fixedPosition, pivot.XVector, pivot.YVector, pivot.ZVector))
+
+	if os.clock() >= animationLockUntil then
+		if inputState.Forward < -0.1 then
+			playLocomotion("WalkBackward")
+		elseif move.Magnitude > 0.1 then
+			playLocomotion(inputState.Sprint and "Run" or "Walk")
+		elseif turn > 0.1 then
+			playLocomotion("TurnRight")
+		elseif turn < -0.1 then
+			playLocomotion("TurnLeft")
+		else
+			playLocomotion("Idle")
+		end
+	end
 end)
 
 runtime:SetAttribute("GuardianName", "WARDEN-I")
@@ -408,5 +417,6 @@ workshop:SetAttribute("GuardianDemoMode", true)
 workshop:SetAttribute("QualityStatus", "Phase4_GuardianDestructionSandbox")
 workshop:SetAttribute("ReviewScene", "CentralHospital_PlayerGuardianDemolition")
 updateRuntime("WARDEN-I BEREIT", "")
+animationApi.PlayAnimation("Idle")
 
-print("[Trenchborn Asset Workshop] WARDEN-I demolition sandbox ready")
+print("[Trenchborn Asset Workshop] WARDEN-I playable demolition sandbox ready")
