@@ -166,7 +166,7 @@ local function addEntranceDressing(root)
 			area,
 			"Gate" .. gate.label,
 			Vector3.new(5.5, 2.4, 0.35),
-			Vector3.new(gate.x, 8.0, -59.0),
+			Vector3.new(gate.x, 8.0, -57.75),
 			COLORS.DarkGlass,
 			Enum.Material.Glass
 		)
@@ -375,12 +375,13 @@ function Dressing.Apply(model)
 	model:SetAttribute("AssetPhase", 5)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Approved")
-	model:SetAttribute("DressingRevision", "LargeCityUptownArena-Dressing-v3-GateAlignment")
+	model:SetAttribute("DressingRevision", "LargeCityUptownArena-Dressing-v4-RecessedGates")
 	model:SetAttribute("DressingStatus", "Review")
 	model:SetAttribute("TextScaledRule", true)
 	model:SetAttribute("FacadeFeatureBays", 8)
 	model:SetAttribute("RearServiceDressingVisible", true)
 	model:SetAttribute("GateSignsCenteredBetweenPiers", true)
+	model:SetAttribute("GateSignsBehindPierFace", true)
 	return model
 end
 
