@@ -61,11 +61,26 @@ function Pong.Attach(model)
 	local beep = Instance.new("Sound")
 	beep.Name = "PongBeep"
 	beep.SoundId = "rbxasset://sounds/electronicpingshort.wav"
-	beep.Volume = 0.18
-	beep.RollOffMaxDistance = 95
-	beep.RollOffMinDistance = 8
-	beep.RollOffMode = Enum.RollOffMode.Inverse
+	beep.Volume = 0.34
+	beep.PlaybackSpeed = 0.86
+	beep.RollOffMaxDistance = 260
+	beep.RollOffMinDistance = 24
+	beep.RollOffMode = Enum.RollOffMode.InverseTapered
 	beep.Parent = ball
+
+	-- Push the stock electronic ping toward the dry, narrow-band tone of an
+	-- early Pong/CRT set: little bass, strong upper-mid presence and a hint of buzz.
+	local eq = Instance.new("EqualizerSoundEffect")
+	eq.Name = "CRTEqualizer"
+	eq.LowGain = -18
+	eq.MidGain = 1
+	eq.HighGain = 7
+	eq.Parent = beep
+
+	local distortion = Instance.new("DistortionSoundEffect")
+	distortion.Name = "CRTBuzz"
+	distortion.Level = 0.11
+	distortion.Parent = beep
 
 	local stateX = 0
 	local stateZ = PITCH_CENTER_Z
@@ -75,10 +90,20 @@ function Pong.Attach(model)
 	local rightZ = PITCH_CENTER_Z
 	local bounceCount = 0
 
+	local beepGeneration = 0
 	local function playBeep(pitch)
+		beepGeneration += 1
+		local generation = beepGeneration
 		beep.PlaybackSpeed = pitch
 		beep.TimePosition = 0
 		beep:Play()
+
+		-- Classic Pong is a very short TV-like pip, not a lingering chime.
+		task.delay(0.075, function()
+			if beepGeneration == generation and beep.IsPlaying then
+				beep:Stop()
+			end
+		end)
 	end
 
 	local function updateVisibility()
@@ -116,7 +141,7 @@ function Pong.Attach(model)
 			stateZ = upperZ
 			velocityZ = -math.abs(velocityZ)
 			bounceCount += 1
-			playBeep(bounceCount % 2 == 0 and 1.06 or 0.96)
+			playBeep(bounceCount % 2 == 0 and 0.84 or 0.79)
 		elseif stateZ <= lowerZ then
 			stateZ = lowerZ
 			velocityZ = math.abs(velocityZ)
@@ -129,13 +154,13 @@ function Pong.Attach(model)
 			velocityX = -math.abs(velocityX)
 			velocityZ = math.clamp(velocityZ + math.sin(bounceCount * 1.7) * 3.2, -20, 20)
 			bounceCount += 1
-			playBeep(1.13)
+			playBeep(1.02)
 		elseif stateX <= -BALL_X_LIMIT then
 			stateX = -BALL_X_LIMIT
 			velocityX = math.abs(velocityX)
 			velocityZ = math.clamp(velocityZ + math.cos(bounceCount * 1.4) * 3.2, -20, 20)
 			bounceCount += 1
-			playBeep(1.0)
+			playBeep(0.94)
 		end
 
 		local targetLeft = math.clamp(stateZ + math.sin(bounceCount * 0.8) * 2.5, lowerZ + 6, upperZ - 6)
@@ -150,7 +175,7 @@ function Pong.Attach(model)
 	end)
 
 	model:SetAttribute("PongRuntimeAttached", true)
-	model:SetAttribute("PongSoundStyle", "electronicpingshort")
+	model:SetAttribute("PongSoundStyle", "CRT-Pong-Pip-v2")
 	folder:SetAttribute("DecorativeOnly", true)
 	folder:SetAttribute("Runtime", "ServerPreview")
 	return folder
