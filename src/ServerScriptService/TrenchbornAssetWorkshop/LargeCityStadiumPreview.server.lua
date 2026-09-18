@@ -5,7 +5,7 @@ local workshop = Workspace:WaitForChild("TrenchbornAssetWorkshop")
 local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
 
 local specification = require(packageFolder:WaitForChild("LargeCityStadiumSpecification"))
-local goldenMaster = require(packageFolder:WaitForChild("LargeCityStadiumGoldenMaster"))
+local goldenMaster = require(packageFolder:WaitForChild("LargeCityStadiumGoldenMaster"))\nlocal pong = require(packageFolder:WaitForChild("LargeCityStadiumPong"))
 
 local function getSpawnGroundPosition()
 	local spawn = Workspace:FindFirstChildWhichIsA("SpawnLocation", true)
@@ -32,7 +32,7 @@ end
 
 local spawnGround = getSpawnGroundPosition()
 local model = goldenMaster.Build(workshop)
-model:PivotTo(CFrame.new(spawnGround + Vector3.new(180, 0, 0)) * CFrame.Angles(0, math.rad(90), 0))
+model:PivotTo(CFrame.new(spawnGround + Vector3.new(180, 0, 0)) * CFrame.Angles(0, math.rad(90), 0))\nmodel:SetAttribute("PongEnabled", true)\npong.Attach(model)
 
 workshop:SetAttribute("CurrentAsset", specification.AssetId)
 workshop:SetAttribute("CurrentPhase", 4)
