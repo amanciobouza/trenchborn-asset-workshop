@@ -8,8 +8,8 @@ local Specification = {
 	City = "LargeCity",
 	District = "Uptown",
 	BuildingType = "High-Rise",
-	Phase = 3,
-	QualityGate = "A-Approved",
+	Phase = 4,
+	QualityGate = "B-Pending",
 	Branch = "largecity-summit-tower-l3",
 
 	StandaloneImport = {
@@ -245,6 +245,20 @@ local Specification = {
 		PartBudget = {
 			TargetVisibleParts = 620,
 			MaximumVisibleParts = 760,
+		},
+	},
+
+	Phase4Status = {
+		Status = "GoldenMasterReview",
+		GeometryRevision = "LargeCitySummitTower-v1-SteppedSkyGardens",
+		QualityGateB = "Pending",
+		ReviewFocus = {
+			"overall stepped silhouette",
+			"two readable sky-garden interruptions",
+			"facade verticality and fin rhythm",
+			"main lobby depth",
+			"asymmetric crown",
+			"rear service visibility",
 		},
 	},
 
