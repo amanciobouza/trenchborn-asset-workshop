@@ -250,35 +250,101 @@ end
 
 local function addFloodlights(root)
 	local area = folder(root, "Floodlights")
+	local fieldTarget = Vector3.new(0, 3, 4)
 	local mounts = {
-		Vector3.new(-84, 62, -54),
-		Vector3.new(84, 62, -54),
-		Vector3.new(-84, 62, 54),
-		Vector3.new(84, 62, 54),
+		Vector3.new(-84, 68, -54),
+		Vector3.new(84, 68, -54),
+		Vector3.new(-84, 68, 54),
+		Vector3.new(84, 68, 54),
 	}
 
 	for mountIndex, mount in ipairs(mounts) do
 		local bank = folder(area, "FloodlightBank" .. mountIndex)
-		block(bank, "Support", Vector3.new(9, 0.7, 1.0), mount, COLORS.Metal, Enum.Material.Metal)
-		for lamp = -2, 2 do
-			local lightPart = block(
+		local bankCF = CFrame.lookAt(mount, fieldTarget)
+
+		-- Large visible stadium rig: dark backing frame, twin supports and a
+		-- 6 x 3 lamp matrix aimed directly at the pitch.
+		local backing = part(
+			bank,
+			"FloodlightFrame",
+			Vector3.new(20.0, 11.0, 0.8),
+			bankCF,
+			COLORS.Dark,
+			Enum.Material.Metal
+		)
+		backing.CastShadow = true
+
+		part(
+			bank,
+			"UpperCrossbar",
+			Vector3.new(21.0, 0.7, 1.2),
+			bankCF * CFrame.new(0, 5.3, 0.45),
+			COLORS.Metal,
+			Enum.Material.Metal
+		)
+		part(
+			bank,
+			"LowerCrossbar",
+			Vector3.new(21.0, 0.7, 1.2),
+			bankCF * CFrame.new(0, -5.3, 0.45),
+			COLORS.Metal,
+			Enum.Material.Metal
+		)
+
+		for _, x in ipairs({-7.5, 7.5}) do
+			part(
 				bank,
-				"Lamp" .. tostring(lamp),
-				Vector3.new(1.25, 1.25, 0.38),
-				mount + Vector3.new(lamp * 1.55, 0, -0.7),
-				COLORS.Light,
-				Enum.Material.Neon
+				"RearSupport" .. tostring(x),
+				Vector3.new(1.0, 13.5, 1.0),
+				bankCF * CFrame.new(x, -6.0, 4.2) * CFrame.Angles(math.rad(-18), 0, 0),
+				COLORS.Metal,
+				Enum.Material.Metal
 			)
-			lightPart.CastShadow = false
-			local light = Instance.new("SurfaceLight")
-			light.Name = "FieldLight"
+		end
+
+		local centerLamp
+		for row = 1, 3 do
+			for column = 1, 6 do
+				local x = (column - 3.5) * 3.05
+				local y = (2 - row) * 3.0
+				local lamp = part(
+					bank,
+					string.format("Lamp_R%d_C%d", row, column),
+					Vector3.new(2.35, 2.15, 0.55),
+					bankCF * CFrame.new(x, y, -0.72),
+					COLORS.Light,
+					Enum.Material.Neon
+				)
+				lamp.CastShadow = false
+
+				local rim = part(
+					bank,
+					string.format("LampRim_R%d_C%d", row, column),
+					Vector3.new(2.75, 2.55, 0.24),
+					bankCF * CFrame.new(x, y, -0.48),
+					COLORS.Metal,
+					Enum.Material.Metal
+				)
+				rim.CastShadow = false
+
+				if row == 2 and column == 3 then
+					centerLamp = lamp
+				end
+			end
+		end
+
+		-- One strong spotlight per bank provides the actual night field illumination;
+		-- the visible lamp matrix supplies the stadium-scale visual read.
+		if centerLamp then
+			local light = Instance.new("SpotLight")
+			light.Name = "PitchFloodlight"
 			light.Face = Enum.NormalId.Front
-			light.Brightness = 0.7
-			light.Range = 22
-			light.Angle = 95
+			light.Brightness = 5.0
+			light.Range = 120
+			light.Angle = 72
 			light.Color = COLORS.Light
-			light.Shadows = false
-			light.Parent = lightPart
+			light.Shadows = true
+			light.Parent = centerLamp
 		end
 	end
 end
@@ -330,9 +396,12 @@ function Dressing.Apply(model)
 	model:SetAttribute("AssetPhase", 5)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Approved")
-	model:SetAttribute("DressingRevision", "LargeCityStadium-Dressing-v2")
+	model:SetAttribute("DressingRevision", "LargeCityStadium-Dressing-v3-Floodlights")
 	model:SetAttribute("DressingStatus", "Review")
 	model:SetAttribute("TextScaledRule", true)
+	model:SetAttribute("LargeStadiumFloodlights", true)
+	model:SetAttribute("FloodlightBankCount", 4)
+	model:SetAttribute("FloodlightLampCount", 72)
 	return model
 end
 
