@@ -6,6 +6,16 @@ workshop:SetAttribute("Pipeline", "Trenchborn-7-Phase")
 workshop:SetAttribute("QualityStatus", "Phase6_GameplaySimulation")
 
 local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
+
+-- Standalone Summit Tower review owns this branch. Disable the retired Guardian
+-- bootstrap before it requires or spawns unrelated workshop assets.
+local isolatedSummitTowerReview =
+	script.Parent:FindFirstChild("LargeCitySummitTowerPreview")
+	and packageFolder:FindFirstChild("LargeCitySummitTowerSpecification")
+if isolatedSummitTowerReview then
+	workshop:SetAttribute("LegacyWorkshopBootstrapDisabled", true)
+	return
+end
 local specification = require(packageFolder:WaitForChild("MarshalRoadblockSpecification"))
 local goldenMaster = require(packageFolder:WaitForChild("MarshalRoadblockGoldenMaster"))
 local dressing = require(packageFolder:WaitForChild("MarshalRoadblockDressing"))
