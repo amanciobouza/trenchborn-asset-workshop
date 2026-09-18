@@ -340,12 +340,45 @@ local function addFloodlights(root)
 			light.Name = "PitchFloodlight"
 			light.Face = Enum.NormalId.Front
 			light.Brightness = 5.0
-			light.Range = 120
+			light.Range = 60
 			light.Angle = 72
 			light.Color = COLORS.Light
 			light.Shadows = true
 			light.Parent = centerLamp
 		end
+	end
+
+	-- Roblox light range is limited, while the visual floodlight banks sit high
+	-- on the stadium structure. Four invisible spill proxies over the pitch
+	-- provide the broad night illumination that visually belongs to those banks.
+	local spillPositions = {
+		Vector3.new(-24, 38, -12),
+		Vector3.new(24, 38, -12),
+		Vector3.new(-24, 38, 20),
+		Vector3.new(24, 38, 20),
+	}
+	for index, position in ipairs(spillPositions) do
+		local target = Vector3.new(position.X * 0.35, 0.8, 4 + (position.Z - 4) * 0.25)
+		local proxy = part(
+			area,
+			"FieldSpillProxy" .. index,
+			Vector3.new(0.5, 0.5, 0.5),
+			CFrame.lookAt(position, target),
+			COLORS.Light,
+			Enum.Material.SmoothPlastic,
+			1
+		)
+		proxy.CastShadow = false
+
+		local spill = Instance.new("SpotLight")
+		spill.Name = "FieldSpill"
+		spill.Face = Enum.NormalId.Front
+		spill.Brightness = 2.4
+		spill.Range = 60
+		spill.Angle = 95
+		spill.Color = COLORS.Light
+		spill.Shadows = true
+		spill.Parent = proxy
 	end
 end
 
