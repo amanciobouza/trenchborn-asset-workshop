@@ -8,8 +8,8 @@ local Specification = {
 	City = "LargeCity",
 	District = "Uptown",
 	BuildingType = "High-Rise",
-	Phase = 2,
-	QualityGate = "A-Pending",
+	Phase = 3,
+	QualityGate = "A-Approved",
 	Branch = "largecity-summit-tower-l3",
 
 	StandaloneImport = {
@@ -134,7 +134,7 @@ local Specification = {
 	},
 
 	VisualTarget = {
-		Status = "InReview",
+		Status = "Approved",
 		Revision = "LargeCitySummitTower-VisualTarget-v1",
 		Brief = {
 			"tropical luxury high-rise in Singapore x Miami language",
@@ -147,6 +147,114 @@ local Specification = {
 			"daylight architectural concept board with front, three-quarter and rear cues",
 			"not cyberpunk, not a plain glass box",
 		},
+	},
+
+	QualityGateA = {
+		Status = "Approved",
+		ApprovedTarget = "LargeCitySummitTower-VisualTarget-v1",
+		Notes = "Approved tropical luxury stepped high-rise with two sky gardens, strong vertical fins, recessed lobby and asymmetric illuminated crown.",
+		NextPhase = 3,
+	},
+
+	TechnicalBreakdown = {
+		CoordinateSystem = {
+			Pivot = "ground center",
+			Front = "local -Z",
+			Rear = "local +Z",
+			LayoutYaw = 4,
+		},
+		Overall = {
+			TargetFootprint = Vector2.new(70, 64),
+			TargetHeight = 126,
+			GroundLevel = 0,
+		},
+		Podium = {
+			Footprint = Vector2.new(64, 58),
+			Center = Vector3.new(0, 9, 0),
+			Height = 18,
+			CornerChamfer = 5,
+			LobbyCutWidth = 30,
+			LobbyCutDepth = 5,
+		},
+		LowerTower = {
+			Footprint = Vector2.new(52, 46),
+			Center = Vector3.new(0, 38, 0),
+			Height = 40,
+			CornerRadiusApprox = 4,
+			FacadeBayCountPerLongFace = 7,
+			FacadeBayCountPerShortFace = 6,
+		},
+		SkyGardenOne = {
+			Y = 55,
+			Height = 5,
+			Depth = 6,
+			WrapCorner = "front-left",
+			VisibleGreeneryBand = true,
+		},
+		MidTower = {
+			Footprint = Vector2.new(46, 42),
+			Center = Vector3.new(-3, 75, 2),
+			Height = 34,
+			CornerRadiusApprox = 4,
+		},
+		SkyGardenTwo = {
+			Y = 89,
+			Height = 4.5,
+			Depth = 5,
+			WrapCorner = "rear-right",
+			VisibleGreeneryBand = true,
+		},
+		UpperTower = {
+			Footprint = Vector2.new(39, 36),
+			Center = Vector3.new(3, 104, -1),
+			Height = 24,
+			CornerRadiusApprox = 3.5,
+		},
+		Crown = {
+			BaseY = 116,
+			TopY = 126,
+			CoreFootprint = Vector2.new(30, 28),
+			PrimaryBladeHeight = 10,
+			SecondaryBladeHeight = 7,
+			AsymmetryOffset = Vector3.new(4, 0, -2),
+			LuminousPerimeter = true,
+		},
+		Facade = {
+			PrimaryGlassDepth = 0.7,
+			FrameDepth = 1.0,
+			VerticalFinDepth = 1.5,
+			VerticalFinWidth = 1.2,
+			VerticalFinSpacing = 7.0,
+			AccentBandHeight = 0.8,
+			Rule = "Use continuous facade fields with attached fins and frames; avoid a stack of disconnected floor boxes.",
+		},
+		Entrance = {
+			GlazingWidth = 28,
+			GlazingHeight = 13,
+			RecessDepth = 4.5,
+			CanopyWidth = 34,
+			CanopyDepth = 8,
+			CanopyY = 13.5,
+		},
+		RearService = {
+			DoorCount = 3,
+			DoorWidth = 8,
+			ServiceCanopy = true,
+			Rule = "Rear service access must be visibly placed on the true +Z exterior face, not hidden inside the podium mass.",
+		},
+		PartBudget = {
+			TargetVisibleParts = 620,
+			MaximumVisibleParts = 760,
+		},
+	},
+
+	Phase3Acceptance = {
+		"Podium, three tower masses and crown use deterministic dimensions tied to the LC-52 footprint and height.",
+		"Two setbacks and two sky-garden cuts remain visibly distinct in the Golden Master.",
+		"Facade treatment is continuous and vertical rather than a stack of unrelated boxes.",
+		"Main lobby and rear service access are both externally readable.",
+		"Seven destruction groups map to coherent architectural masses.",
+		"Golden Master target stays below 760 visible parts.",
 	},
 
 	Phase1Acceptance = {
