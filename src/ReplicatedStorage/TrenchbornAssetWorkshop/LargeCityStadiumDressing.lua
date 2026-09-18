@@ -143,7 +143,7 @@ local function addEntranceDressing(root)
 		area,
 		"StadiumWordmark",
 		Vector3.new(60, 4.2, 0.6),
-		Vector3.new(0, 24.0, -80.65),
+		Vector3.new(0, 24.0, -81.20),
 		COLORS.Dark,
 		Enum.Material.Metal
 	)
@@ -153,17 +153,18 @@ local function addEntranceDressing(root)
 	block(area, "EntranceAccent", Vector3.new(69, 0.8, 0.35), Vector3.new(0, 22.0, -80.75), COLORS.Cyan, Enum.Material.Neon)
 
 	local gates = {
-		{label = "A", x = -25.5},
-		{label = "B", x = -8.5},
-		{label = "C", x = 8.5},
-		{label = "D", x = 25.5},
+		-- Centers are aligned to the four actual entrance bays between the structural piers.
+		{label = "A", x = -24.5},
+		{label = "B", x = -12.0},
+		{label = "C", x = 12.0},
+		{label = "D", x = 24.5},
 	}
 	for _, gate in ipairs(gates) do
 		local plaque = block(
 			area,
 			"Gate" .. gate.label,
 			Vector3.new(6.5, 3.2, 0.42),
-			Vector3.new(gate.x, 8.5, -80.72),
+			Vector3.new(gate.x, 8.5, -81.00),
 			COLORS.Teal,
 			Enum.Material.SmoothPlastic
 		)
@@ -312,6 +313,15 @@ function Dressing.Apply(model)
 	if existing then existing:Destroy() end
 	local root = folder(model, "Dressing")
 
+	-- The Golden Master still contains the earlier unframed exterior screen set.
+	-- Phase 5 replaces those with the approved black-framed display modules, so
+	-- remove the lower duplicate set only while dressing is applied.
+	for _, item in ipairs(model:GetDescendants()) do
+		if item:IsA("BasePart") and item.Name:match("^ExteriorScreen%d+") then
+			item:Destroy()
+		end
+	end
+
 	addEntranceDressing(root)
 	addFacadeDressing(root)
 	addFloodlights(root)
@@ -320,7 +330,7 @@ function Dressing.Apply(model)
 	model:SetAttribute("AssetPhase", 5)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Approved")
-	model:SetAttribute("DressingRevision", "LargeCityStadium-Dressing-v1")
+	model:SetAttribute("DressingRevision", "LargeCityStadium-Dressing-v2")
 	model:SetAttribute("DressingStatus", "Review")
 	model:SetAttribute("TextScaledRule", true)
 	return model
