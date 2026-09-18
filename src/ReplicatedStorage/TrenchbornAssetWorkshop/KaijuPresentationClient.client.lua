@@ -3,6 +3,7 @@ local CollectionService=game:GetService("CollectionService")
 local RunService=game:GetService("RunService")
 local HttpService=game:GetService("HttpService")
 local Players=game:GetService("Players")
+local UserInputService=game:GetService("UserInputService")
 local player=Players.LocalPlayer
 local TAG="TrenchbornKaijuPresentation"
 local active,pending={},{}
@@ -59,6 +60,19 @@ end
 local added=CollectionService:GetInstanceAddedSignal(TAG):Connect(track)
 local removed=CollectionService:GetInstanceRemovedSignal(TAG):Connect(remove)
 for _,model in ipairs(CollectionService:GetTagged(TAG)) do track(model) end
+local previewInput
+if RunService:IsStudio() then
+ previewInput=UserInputService.InputBegan:Connect(function(input,processed)
+  if processed or UserInputService:GetFocusedTextBox() or input.KeyCode~=Enum.KeyCode.V then return end
+  for model in pairs(active) do
+   if player.Character and model:IsDescendantOf(player.Character) then
+    local remote=model:FindFirstChild("RequestVictory")
+    if remote and remote:IsA("RemoteEvent") then remote:FireServer();break end
+   end
+  end
+ end)
+end
+
 local elapsed=0
 local quality=RunService.Heartbeat:Connect(function(dt)
  elapsed=elapsed+dt;if elapsed<0.5 then return end;elapsed=0
@@ -77,6 +91,7 @@ local quality=RunService.Heartbeat:Connect(function(dt)
 end)
 script.Destroying:Connect(function()
  alive=false;added:Disconnect();removed:Disconnect();quality:Disconnect()
+ if previewInput then previewInput:Disconnect() end
  for model in pairs(active) do remove(model) end
  table.clear(pending)
 end)
