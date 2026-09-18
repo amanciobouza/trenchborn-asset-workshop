@@ -13,7 +13,8 @@ local COLORS = {
 	Dark = Color3.fromRGB(43, 50, 56),
 }
 
-local SEGMENTS = 48
+local SEGMENTS = 72
+local FIN_COUNT = 24
 
 local function folder(parent, name)
 	local item = Instance.new("Folder")
@@ -22,7 +23,7 @@ local function folder(parent, name)
 	return item
 end
 
-local function part(parent, name, size, cf, color, material, transparency)
+local function part(parent, name, size, cf, color, material, transparency, shape)
 	local item = Instance.new("Part")
 	item.Name = name
 	item.Size = size
@@ -30,6 +31,7 @@ local function part(parent, name, size, cf, color, material, transparency)
 	item.Color = color
 	item.Material = material or Enum.Material.SmoothPlastic
 	item.Transparency = transparency or 0
+	item.Shape = shape or Enum.PartType.Block
 	item.Anchored = true
 	item.CanCollide = true
 	item.CanQuery = true
@@ -60,39 +62,6 @@ local function tangentFrame(a, b, theta, y, segmentCount)
 	return CFrame.fromMatrix(position, tangent, up, back), (after - before).Magnitude
 end
 
-local function radialBandFrame(innerA, innerB, outerA, outerB, theta, y, segmentCount)
-	local inner = ellipsePoint(innerA, innerB, theta)
-	local outer = ellipsePoint(outerA, outerB, theta)
-	local mid = inner:Lerp(outer, 0.5)
-	local radial = outer - inner
-	local up = Vector3.yAxis
-	local back = radial.Unit
-	local right = up:Cross(back).Unit
-
-	local halfStep = math.pi / segmentCount
-	local midA = (innerA + outerA) * 0.5
-	local midB = (innerB + outerB) * 0.5
-	local before = ellipsePoint(midA, midB, theta - halfStep)
-	local after = ellipsePoint(midA, midB, theta + halfStep)
-	return CFrame.fromMatrix(mid + Vector3.new(0, y, 0), right, up, back), (after - before).Magnitude, radial.Magnitude
-end
-
-local function addBandRing(parent, prefix, innerA, innerB, outerA, outerB, y, height, count, color, material, overlap)
-	local step = math.pi * 2 / count
-	for index = 0, count - 1 do
-		local theta = index * step
-		local cf, chord, radialDepth = radialBandFrame(innerA, innerB, outerA, outerB, theta, y, count)
-		part(
-			parent,
-			prefix .. string.format("_%02d", index + 1),
-			Vector3.new(chord * (overlap or 1.13), height, radialDepth + 1.1),
-			cf,
-			color,
-			material
-		)
-	end
-end
-
 local function addSmoothRing(parent, prefix, a, b, y, height, depth, count, color, material, transparency, overlap)
 	local step = math.pi * 2 / count
 	for index = 0, count - 1 do
@@ -101,13 +70,62 @@ local function addSmoothRing(parent, prefix, a, b, y, height, depth, count, colo
 		part(
 			parent,
 			prefix .. string.format("_%02d", index + 1),
-			Vector3.new(chord * (overlap or 1.12), height, depth),
+			Vector3.new(chord * (overlap or 1.16), height, depth),
 			cf,
 			color,
 			material,
 			transparency
 		)
 	end
+end
+
+local function addSlopedRoofBand(parentWest, parentEast, prefix, outerA, outerB, outerY, innerA, innerB, innerY)
+	local step = math.pi * 2 / SEGMENTS
+	local midA = (outerA + innerA) * 0.5
+	local midB = (outerB + innerB) * 0.5
+
+	for index = 0, SEGMENTS - 1 do
+		local theta = index * step
+		local outer = ellipsePoint(outerA, outerB, theta) + Vector3.new(0, outerY, 0)
+		local inner = ellipsePoint(innerA, innerB, theta) + Vector3.new(0, innerY, 0)
+		local radial = inner - outer
+
+		local halfStep = step * 0.5
+		local before = ellipsePoint(midA, midB, theta - halfStep)
+		local after = ellipsePoint(midA, midB, theta + halfStep)
+		local right = (after - before).Unit
+
+		local back = radial - right * radial:Dot(right)
+		back = back.Unit
+		local up = back:Cross(right).Unit
+
+		local middle = outer:Lerp(inner, 0.5)
+		local cf = CFrame.fromMatrix(middle, right, up, back)
+		local chord = (after - before).Magnitude
+		local parent = middle.X < 0 and parentWest or parentEast
+
+		part(
+			parent,
+			prefix .. string.format("_%02d", index + 1),
+			Vector3.new(chord * 1.18, 2.2, radial.Magnitude + 1.5),
+			cf,
+			COLORS.Roof,
+			Enum.Material.Metal
+		)
+	end
+end
+
+local function addOvalCap(parent, name, centerY)
+	return part(
+		parent,
+		name,
+		Vector3.new(2.2, 12, 8),
+		CFrame.new(0, centerY, 0) * CFrame.Angles(0, 0, math.rad(90)),
+		COLORS.Roof,
+		Enum.Material.Metal,
+		0,
+		Enum.PartType.Cylinder
+	)
 end
 
 local function addMainEntrance(group)
@@ -133,26 +151,26 @@ local function addMainEntrance(group)
 end
 
 local function addFacade(lowerGroup, upperGroup, ribbonGroup)
-	-- Closed overlapping shells prevent the arena from reading as a ring of separated blocks.
-	addBandRing(lowerGroup, "LowerFacade", 52, 36, 68, 49, 12, 23, SEGMENTS, COLORS.Concrete, Enum.Material.Concrete, 1.14)
-	addBandRing(upperGroup, "UpperFacade", 47, 32, 66, 47, 33, 20, SEGMENTS, COLORS.ConcreteDark, Enum.Material.Concrete, 1.14)
+	-- v2 uses shallow tangent shells instead of deep radial blocks. With 72
+	-- overlapping segments the exterior reads as one flowing oval skin.
+	addSmoothRing(lowerGroup, "LowerFacade", 65.5, 46.5, 12.0, 23.0, 12.0, SEGMENTS, COLORS.Concrete, Enum.Material.Concrete, 0, 1.18)
+	addSmoothRing(upperGroup, "UpperFacade", 64.0, 45.0, 33.0, 20.0, 11.0, SEGMENTS, COLORS.ConcreteDark, Enum.Material.Concrete, 0, 1.18)
 
 	-- Continuous dark-glass concourse slot under the media ribbon.
-	addSmoothRing(lowerGroup, "ConcourseGlass", 67.2, 48.2, 22.5, 6.0, 1.2, SEGMENTS, COLORS.DarkGlass, Enum.Material.Glass, 0.08, 1.14)
+	addSmoothRing(lowerGroup, "ConcourseGlass", 66.2, 47.2, 22.5, 6.0, 1.25, SEGMENTS, COLORS.DarkGlass, Enum.Material.Glass, 0.08, 1.18)
 
-	-- Media ribbon is structural placement at Gate B; detailed content comes in Dressing.
-	addSmoothRing(ribbonGroup, "MediaRibbon", 69.0, 50.0, 29.0, 5.5, 0.75, SEGMENTS, COLORS.Teal, Enum.Material.Neon, 0, 1.13)
+	-- Media ribbon remains a thin continuous layer outside the smoother shell.
+	addSmoothRing(ribbonGroup, "MediaRibbon", 67.2, 48.2, 29.0, 5.5, 0.75, SEGMENTS, COLORS.Teal, Enum.Material.Neon, 0, 1.17)
 
-	-- Repeated vertical fins sit on the facade skin, not between open gaps.
-	local finCount = 24
-	local step = math.pi * 2 / finCount
-	for index = 0, finCount - 1 do
+	-- Vertical fins remain sparse surface rhythm instead of emphasizing every facet.
+	local step = math.pi * 2 / FIN_COUNT
+	for index = 0, FIN_COUNT - 1 do
 		local theta = index * step
-		local cf = tangentFrame(69.6, 50.6, theta, 30.0, finCount)
+		local cf = tangentFrame(67.8, 48.8, theta, 30.0, FIN_COUNT)
 		part(
 			upperGroup,
 			"VerticalFin" .. string.format("_%02d", index + 1),
-			Vector3.new(1.0, 26, 2.0),
+			Vector3.new(0.85, 25.0, 1.6),
 			cf,
 			COLORS.Metal,
 			Enum.Material.Metal
@@ -161,46 +179,17 @@ local function addFacade(lowerGroup, upperGroup, ribbonGroup)
 end
 
 local function addRoof(westGroup, eastGroup)
-	-- Four overlapping annular bands rise gently toward the center to create a
-	-- shallow enclosed crown without a sci-fi dome silhouette.
-	local bands = {
-		{innerA = 52, innerB = 36, outerA = 66, outerB = 47, y = 45.2},
-		{innerA = 38, innerB = 26, outerA = 54, outerB = 37.5, y = 49.0},
-		{innerA = 23, innerB = 15.5, outerA = 40, outerB = 27.5, y = 52.3},
-		{innerA = 8, innerB = 5.5, outerA = 25, outerB = 17.0, y = 54.8},
-	}
-	local step = math.pi * 2 / SEGMENTS
+	-- Three broad sloped annular bands form a continuous shallow crown.
+	-- Unlike v1, there are no horizontal staircase-like roof terraces.
+	addSlopedRoofBand(westGroup, eastGroup, "RoofOuter", 65.5, 46.5, 44.0, 45.0, 31.5, 47.4)
+	addSlopedRoofBand(westGroup, eastGroup, "RoofMiddle", 45.6, 32.0, 47.2, 24.0, 16.5, 51.6)
+	addSlopedRoofBand(westGroup, eastGroup, "RoofInner", 24.6, 17.0, 51.4, 5.5, 3.8, 54.5)
 
-	for bandIndex, band in ipairs(bands) do
-		for index = 0, SEGMENTS - 1 do
-			local theta = index * step
-			local cf, chord, radialDepth = radialBandFrame(
-				band.innerA,
-				band.innerB,
-				band.outerA,
-				band.outerB,
-				theta,
-				band.y,
-				SEGMENTS
-			)
-			local center = cf.Position
-			local parent = center.X < 0 and westGroup or eastGroup
-			part(
-				parent,
-				string.format("RoofBand%d_%02d", bandIndex, index + 1),
-				Vector3.new(chord * 1.14, 2.2, radialDepth + 1.2),
-				cf,
-				COLORS.Roof,
-				Enum.Material.Metal
-			)
-		end
-	end
+	addOvalCap(westGroup, "RoofCentralOvalCap", 54.8)
 
-	-- Small central crown closes the last opening.
-	block(westGroup, "RoofCrownWest", Vector3.new(9.5, 2.2, 12), Vector3.new(-4.6, 56.0, 0), COLORS.Roof, Enum.Material.Metal)
-	block(eastGroup, "RoofCrownEast", Vector3.new(9.5, 2.2, 12), Vector3.new(4.6, 56.0, 0), COLORS.Roof, Enum.Material.Metal)
-
-	addSmoothRing(westGroup, "RoofPerimeterWest", 66.5, 47.5, 44.0, 2.0, 1.5, SEGMENTS / 2, COLORS.Metal, Enum.Material.Metal, 0, 1.14)
+	-- Smooth perimeter ring hides the outer polygon joints and gives the roof
+	-- one clean continuous edge when viewed from street level.
+	addSmoothRing(westGroup, "RoofPerimeter", 65.8, 46.8, 43.7, 2.3, 1.6, SEGMENTS, COLORS.Metal, Enum.Material.Metal, 0, 1.18)
 end
 
 local function addRearService(group)
@@ -234,7 +223,7 @@ function Builder.Build(parent)
 	model:SetAttribute("AssetPhase", 4)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Pending")
-	model:SetAttribute("GeometryRevision", "LargeCityUptownArena-v1")
+	model:SetAttribute("GeometryRevision", "LargeCityUptownArena-v2-SmoothShellRoof")
 	model:SetAttribute("HasInterior", false)
 	model:SetAttribute("Style", specification.Style)
 	model:SetAttribute("MaxHealth", specification.ProposedGameplayMetadata.TargetMaxHealth)
@@ -244,6 +233,8 @@ function Builder.Build(parent)
 	model:SetAttribute("RoofSegmentCount", SEGMENTS)
 	model:SetAttribute("EnclosedArenaShell", true)
 	model:SetAttribute("EnclosedRoof", true)
+	model:SetAttribute("SmoothFacadeShell", true)
+	model:SetAttribute("SlopedContinuousRoof", true)
 	model.Parent = parent
 
 	local groups = folder(model, "DestructionGroups")
