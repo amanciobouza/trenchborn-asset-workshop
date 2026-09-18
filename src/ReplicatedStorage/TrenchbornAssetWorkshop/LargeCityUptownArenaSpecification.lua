@@ -2,8 +2,8 @@ local Specification = {
 	AssetId = "LargeCity_UptownArena_L3",
 	DisplayName = "Uptown Arena",
 	City = "LargeCity",
-	Phase = 2,
-	QualityGate = "A-Pending",
+	Phase = 3,
+	QualityGate = "A-Approved",
 	Style = "Singapore x Miami tropical metropolitan indoor arena",
 
 	AssetBrief = {
@@ -81,9 +81,10 @@ local Specification = {
 	},
 
 	VisualTarget = {
-		Status = "InReview",
+		Status = "Approved",
 		Revision = "LargeCityUptownArena-VisualTarget-v1",
-		TargetRead = "Elegant enclosed tropical metropolitan arena with a broad oval body, shallow segmented roof, continuous teal media ribbon, strong vertical fins and a recessed glazed civic entrance.",
+		Approved = true,
+		ApprovedRead = "Elegant enclosed tropical metropolitan arena with a broad oval body, shallow segmented roof, continuous teal media ribbon, strong vertical fins and a recessed glazed civic entrance.",
 		Front = "Large centered recessed glass portal beneath the media ribbon, broad stairs, arena wordmark and event-plaza arrival.",
 		Sides = "Layered horizontal facade bands with repeated vertical fins; smooth enclosed bowl rather than exposed stadium seating.",
 		Roof = "Low fully enclosed segmented roof with a soft crown, clean perimeter edge and no open pitch hole.",
@@ -91,7 +92,84 @@ local Specification = {
 		Landscape = "Palm-lined urban plaza with planters, queue bollards and drop-off edges; dense civic event atmosphere rather than resort landscaping.",
 		Camera = "Three-quarter aerial exterior view high enough to read the oval roof and footprint, but low enough to judge entrance scale and media ribbon continuity.",
 		Lighting = "Bright tropical Large City daylight with clean blue sky and strong material contrast.",
-		NextGate = "Quality Gate A",
+		NextGate = "Quality Gate B",
+	},
+
+	QualityGateA = {
+		Status = "Approved",
+		ApprovedTarget = "LargeCityUptownArena-VisualTarget-v1",
+	},
+
+	TechnicalBreakdown = {
+		CoordinateSystem = {
+			Pivot = "Ground center of arena footprint",
+			Front = "Local -Z faces main event plaza",
+			Rear = "Local +Z faces service/loading side",
+			GroundY = 0,
+		},
+		Massing = {
+			OuterArena = {Footprint = Vector2.new(136, 98), LowerHeight = 24, UpperHeight = 43},
+			MainEntrance = {Footprint = Vector2.new(64, 16), Center = Vector3.new(0, 13, -49), Height = 27},
+			RearService = {Footprint = Vector2.new(74, 16), Center = Vector3.new(0, 9, 48), Height = 18},
+		},
+		Facade = {
+			SegmentCount = 48,
+			LowerBandY = 14,
+			UpperBandY = 32,
+			MediaRibbonY = 28,
+			MediaRibbonHeight = 5.5,
+			VerticalFinCount = 24,
+			Rule = "Arena body reads as one continuous enclosed oval; overlapping shell segments prevent visible gaps while vertical fins remain surface rhythm rather than structural separators.",
+		},
+		Roof = {
+			SegmentCount = 48,
+			OuterFootprint = Vector2.new(132, 94),
+			CrownY = 56,
+			PerimeterY = 44,
+			Thickness = 2.2,
+			Rule = "Fully enclosed shallow segmented crown with overlapping wedges and a continuous perimeter ring; no open center and no futuristic dome silhouette.",
+		},
+		Entrance = {
+			GlazingSpan = 56,
+			GlazingHeight = 18,
+			RecessDepth = 4.5,
+			PortalPierCount = 6,
+			WordmarkStandOff = 0.45,
+			Rule = "Main portal remains broad, centered and visually recessed beneath the media ribbon.",
+		},
+		MediaRibbon = {
+			OuterA = 69,
+			OuterB = 50,
+			Y = 29,
+			Height = 5.5,
+			SegmentCount = 48,
+			FacadeStandOff = 0.45,
+			Rule = "Ribbon stays visibly outside the facade shell to avoid clipping or Z-fighting.",
+		},
+		Service = {
+			LoadingDoorCount = 4,
+			RearGlazingReduced = true,
+			Rule = "Back-of-house mass is integrated into the arena silhouette and never reads as a detached warehouse.",
+		},
+		LandscapeReferences = {
+			PalmCount = 8,
+			PlanterCount = 6,
+			QueueBollardCount = 10,
+			Phase = 5,
+		},
+		PartBudget = {
+			TargetVisibleParts = 520,
+			MaximumVisibleParts = 700,
+		},
+	},
+
+	Phase3Acceptance = {
+		"Continuous enclosed oval facade has deterministic dimensions and no large segment gaps.",
+		"Fully enclosed shallow roof is clearly distinct from the adjacent open stadium.",
+		"Media ribbon and entrance glazing stand clear of structural surfaces.",
+		"Seven destruction groups map to coherent architectural masses.",
+		"Golden Master remains below 700 visible parts.",
+		"No modeled interior rooms are required.",
 	},
 }
 
