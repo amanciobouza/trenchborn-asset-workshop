@@ -2,7 +2,7 @@ local Specification = {
 	AssetId = "LargeCity_Stadium_L3",
 	DisplayName = "Large City Stadium",
 	City = "LargeCity",
-	Phase = 5,
+	Phase = 6,
 	QualityGate = "B-Approved",
 	Style = "Singapore x Miami tropical metropolitan sports landmark",
 
@@ -168,8 +168,8 @@ local Specification = {
 	},
 
 	Phase5Status = {
-		Status = "InReview",
-		Revision = "LargeCityStadium-Dressing-v1",
+		Status = "Approved",
+		Revision = "LargeCityStadium-Dressing-v5-FloodlightPylonFit",
 		Includes = {
 			"Large City Stadium wordmark and Gate A-D signage",
 			"teal/cyan exterior accent band",
@@ -180,6 +180,14 @@ local Specification = {
 			"decorative Pong Easter egg with CRT-style beep",
 		},
 		QualityGateC = "Pending",
+		NextPhase = "ExternalGameTestPending",
+	},
+
+	Phase6Status = {
+		Status = "ExternalGameTestPending",
+		ExternalCollapseIntegration = true,
+		QualityGateC = "Pending",
+		Notes = "Workshop visual review approved; destruction/collapse behaviour remains deferred to the main game's shared collapse system.",
 	},
 
 	Phase3Acceptance = {
