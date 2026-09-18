@@ -194,10 +194,16 @@ end
 
 local function addRearService(group)
 	block(group, "RearServiceMass", Vector3.new(74, 18, 15), Vector3.new(0, 9, 48), COLORS.ConcreteDark, Enum.Material.Concrete)
+
+	-- Rear is local +Z. v1 placed the doors and canopy on the inner (-Z) face,
+	-- where the main arena shell hid them. Put the service elevation on the
+	-- actual outer rear face so it reads clearly from outside.
 	for _, x in ipairs({-27, -9, 9, 27}) do
-		block(group, "LoadingDoor" .. tostring(x), Vector3.new(12, 8, 0.5), Vector3.new(x, 5, 40.25), COLORS.Dark, Enum.Material.Metal)
+		block(group, "LoadingDoor" .. tostring(x), Vector3.new(12, 8, 0.5), Vector3.new(x, 5, 55.75), COLORS.Dark, Enum.Material.Metal)
 	end
-	block(group, "RearServiceCanopy", Vector3.new(78, 1.4, 8), Vector3.new(0, 17.5, 42), COLORS.Metal, Enum.Material.Metal)
+
+	block(group, "RearServiceCanopy", Vector3.new(78, 1.4, 8), Vector3.new(0, 17.5, 58.5), COLORS.Metal, Enum.Material.Metal)
+	block(group, "RearServiceApron", Vector3.new(84, 0.5, 18), Vector3.new(0, 0.25, 64), COLORS.Concrete, Enum.Material.Concrete)
 end
 
 local function countVisibleParts(model)
@@ -223,7 +229,7 @@ function Builder.Build(parent)
 	model:SetAttribute("AssetPhase", 4)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Approved")
-	model:SetAttribute("GeometryRevision", "LargeCityUptownArena-v2-SmoothShellRoof")
+	model:SetAttribute("GeometryRevision", "LargeCityUptownArena-v3-RearServiceVisible")
 	model:SetAttribute("HasInterior", false)
 	model:SetAttribute("Style", specification.Style)
 	model:SetAttribute("MaxHealth", specification.ProposedGameplayMetadata.TargetMaxHealth)
@@ -235,6 +241,7 @@ function Builder.Build(parent)
 	model:SetAttribute("EnclosedRoof", true)
 	model:SetAttribute("SmoothFacadeShell", true)
 	model:SetAttribute("SlopedContinuousRoof", true)
+	model:SetAttribute("RearServiceVisible", true)
 	model.Parent = parent
 
 	local groups = folder(model, "DestructionGroups")
