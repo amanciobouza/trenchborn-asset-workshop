@@ -6,6 +6,7 @@ local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
 
 local specification = require(packageFolder:WaitForChild("LargeCityStadiumSpecification"))
 local goldenMaster = require(packageFolder:WaitForChild("LargeCityStadiumGoldenMaster"))
+local dressing = require(packageFolder:WaitForChild("LargeCityStadiumDressing"))
 local pong = require(packageFolder:WaitForChild("LargeCityStadiumPong"))
 
 local function getSpawnReference()
@@ -70,6 +71,7 @@ local targetZ = spawnPosition.Z
 local groundY = getGroundYAt(targetX, targetZ, spawn)
 
 local model = goldenMaster.Build(workshop)
+dressing.Apply(model)
 model:PivotTo(CFrame.new(targetX, groundY, targetZ) * CFrame.Angles(0, math.rad(90), 0))
 
 -- Final contact correction is based on the actual lowest visible stadium part,
@@ -86,12 +88,12 @@ model:SetAttribute("PongEnabled", true)
 pong.Attach(model)
 
 workshop:SetAttribute("CurrentAsset", specification.AssetId)
-workshop:SetAttribute("CurrentPhase", 4)
-workshop:SetAttribute("QualityStatus", "Phase4_GoldenMasterApproved")
+workshop:SetAttribute("CurrentPhase", 5)
+workshop:SetAttribute("QualityStatus", "Phase5_DressingReview")
 workshop:SetAttribute("QualityGateA", "Approved")
 workshop:SetAttribute("QualityGateB", "Approved")
 workshop:SetAttribute("GoldenMasterReviewTarget", model.Name)
-workshop:SetAttribute("ReviewScene", "LargeCityStadium_Isolated_Phase4_Approved")
+workshop:SetAttribute("ReviewScene", "LargeCityStadium_Isolated_Phase5_DressingReview")
 
-print("[Trenchborn Asset Workshop] Large City Stadium Golden Master approved at Quality Gate B:", model:GetFullName())
+print("[Trenchborn Asset Workshop] Large City Stadium Phase 5 dressing ready for review:", model:GetFullName())
 print("[Trenchborn Asset Workshop] Stadium ground contact Y/correction:", groundY, model:GetAttribute("GroundContactCorrection"))
