@@ -78,12 +78,18 @@ end
 model:SetAttribute("GroundContactY", groundY)
 
 workshop:SetAttribute("CurrentAsset", specification.AssetId)
-workshop:SetAttribute("CurrentPhase", 5)
-workshop:SetAttribute("QualityStatus", "Phase5_DressingReview")
+workshop:SetAttribute("CurrentPhase", 6)
+workshop:SetAttribute("QualityStatus", "Phase6_ExternalGameplayTestPending")
 workshop:SetAttribute("QualityGateA", "Approved")
 workshop:SetAttribute("QualityGateB", "Approved")
+workshop:SetAttribute("QualityGateC", "Pending")
 workshop:SetAttribute("GoldenMasterReviewTarget", model.Name)
-workshop:SetAttribute("ReviewScene", "LargeCityUptownArena_Isolated_Phase5_DressingReview")
+workshop:SetAttribute("ReviewScene", "LargeCityUptownArena_Isolated_Phase6_IntegrationPending")
 
-print("[Trenchborn Asset Workshop] Uptown Arena Phase 5 dressing ready for review:", model:GetFullName())
+model:SetAttribute("Phase5DressingApproved", true)
+model:SetAttribute("Phase6Status", "ExternalGameTestPending")
+model:SetAttribute("QualityGateC", "Pending")
+model:SetAttribute("ExternalCollapseIntegration", true)
+
+print("[Trenchborn Asset Workshop] Uptown Arena Phase 5 approved; Phase 6 shared collapse integration pending:", model:GetFullName())
 print("[Trenchborn Asset Workshop] Arena ground contact Y/correction:", groundY, model:GetAttribute("GroundContactCorrection"))
