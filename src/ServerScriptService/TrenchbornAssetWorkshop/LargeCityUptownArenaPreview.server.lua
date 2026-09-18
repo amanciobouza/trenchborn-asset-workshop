@@ -76,12 +76,12 @@ end
 model:SetAttribute("GroundContactY", groundY)
 
 workshop:SetAttribute("CurrentAsset", specification.AssetId)
-workshop:SetAttribute("CurrentPhase", 4)
-workshop:SetAttribute("QualityStatus", "Phase4_GoldenMasterReview")
+workshop:SetAttribute("CurrentPhase", 5)
+workshop:SetAttribute("QualityStatus", "Phase4_GoldenMasterApproved")
 workshop:SetAttribute("QualityGateA", "Approved")
-workshop:SetAttribute("QualityGateB", "Pending")
+workshop:SetAttribute("QualityGateB", "Approved")
 workshop:SetAttribute("GoldenMasterReviewTarget", model.Name)
-workshop:SetAttribute("ReviewScene", "LargeCityUptownArena_Isolated_Phase4")
+workshop:SetAttribute("ReviewScene", "LargeCityUptownArena_Isolated_Phase4_Approved")
 
-print("[Trenchborn Asset Workshop] Built isolated Uptown Arena Golden Master for Quality Gate B review:", model:GetFullName())
+print("[Trenchborn Asset Workshop] Uptown Arena Golden Master approved at Quality Gate B:", model:GetFullName())
 print("[Trenchborn Asset Workshop] Arena ground contact Y/correction:", groundY, model:GetAttribute("GroundContactCorrection"))
