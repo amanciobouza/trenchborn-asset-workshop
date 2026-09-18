@@ -315,9 +315,18 @@ end
 
 local function addRearService(group)
 	block(group, "RearServiceMass", Vector3.new(82, 18, 14), Vector3.new(0, 9, 72), COLORS.ConcreteDark, Enum.Material.Concrete)
+
+	-- Rear is local +Z. The original openings were accidentally placed on the
+	-- inner (-Z) face at Z=64.7 and were hidden by the stadium body.
+	-- Move the complete service elevation to the visible outer rear face.
 	for _, x in ipairs({-30, -15, 0, 15, 30}) do
-		block(group, "RearServiceOpening" .. x, Vector3.new(10, 7, 0.5), Vector3.new(x, 7, 64.7), COLORS.Glass, Enum.Material.Glass, 0.14)
+		block(group, "RearServiceOpening" .. x, Vector3.new(10, 7, 0.5), Vector3.new(x, 7, 79.25), COLORS.Glass, Enum.Material.Glass, 0.14)
 	end
+
+	-- A shallow structural canopy gives the rear entrance a readable silhouette
+	-- before Phase 5 signage and loading-bay details are applied.
+	block(group, "RearServiceCanopy", Vector3.new(86, 1.4, 8), Vector3.new(0, 17.3, 82.5), COLORS.Metal, Enum.Material.Metal)
+	block(group, "RearServiceApron", Vector3.new(92, 0.5, 20), Vector3.new(0, 0.25, 86), COLORS.Concrete, Enum.Material.Concrete)
 end
 
 local function addPitch(group)
@@ -349,6 +358,8 @@ function Builder.Build(parent)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Approved")
 	model:SetAttribute("GeometryRevision", "LargeCityStadium-v3-FacadeScreens")
+	model:SetAttribute("RearServiceFixRevision", "LargeCityStadium-RearService-v1")
+	model:SetAttribute("RearServiceVisible", true)
 	model:SetAttribute("HasInterior", false)
 	model:SetAttribute("Style", specification.Style)
 	model:SetAttribute("MaxHealth", specification.ProposedGameplayMetadata.TargetMaxHealth)
