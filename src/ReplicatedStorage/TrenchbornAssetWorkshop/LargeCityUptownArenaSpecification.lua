@@ -2,8 +2,8 @@ local Specification = {
 	AssetId = "LargeCity_UptownArena_L3",
 	DisplayName = "Uptown Arena",
 	City = "LargeCity",
-	Phase = 1,
-	QualityGate = "Pre-A",
+	Phase = 2,
+	QualityGate = "A-Pending",
 	Style = "Singapore x Miami tropical metropolitan indoor arena",
 
 	AssetBrief = {
@@ -81,8 +81,17 @@ local Specification = {
 	},
 
 	VisualTarget = {
-		Status = "Pending",
-		NextPhase = 2,
+		Status = "InReview",
+		Revision = "LargeCityUptownArena-VisualTarget-v1",
+		TargetRead = "Elegant enclosed tropical metropolitan arena with a broad oval body, shallow segmented roof, continuous teal media ribbon, strong vertical fins and a recessed glazed civic entrance.",
+		Front = "Large centered recessed glass portal beneath the media ribbon, broad stairs, arena wordmark and event-plaza arrival.",
+		Sides = "Layered horizontal facade bands with repeated vertical fins; smooth enclosed bowl rather than exposed stadium seating.",
+		Roof = "Low fully enclosed segmented roof with a soft crown, clean perimeter edge and no open pitch hole.",
+		Rear = "Integrated service/loading elevation with reduced glazing and a quieter architectural treatment.",
+		Landscape = "Palm-lined urban plaza with planters, queue bollards and drop-off edges; dense civic event atmosphere rather than resort landscaping.",
+		Camera = "Three-quarter aerial exterior view high enough to read the oval roof and footprint, but low enough to judge entrance scale and media ribbon continuity.",
+		Lighting = "Bright tropical Large City daylight with clean blue sky and strong material contrast.",
+		NextGate = "Quality Gate A",
 	},
 }
 
