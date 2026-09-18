@@ -297,6 +297,36 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 		return sound
 	end
 	local function feedback(kind,source,soundOnly)
+		if kind=="VictoryRoar" then
+			-- A single pitched-down clip still reads too much like a human scream.
+			-- Build the city-break roar from three staggered layers: sub-throat rumble,
+			-- chest bellow and a harsher animal edge.
+			local layers={
+				{Asset=1040136448,Volume=0.72,Speed=0.42,Delay=0.00,Low=12,Mid=-8,High=-18,Distortion=0.10},
+				{Asset=71814605717939,Volume=1.20,Speed=0.38,Delay=0.06,Low=10,Mid=-3,High=-14,Distortion=0.24},
+				{Asset=71814605717939,Volume=0.62,Speed=0.72,Delay=0.17,Low=4,Mid=2,High=-7,Distortion=0.34},
+			}
+			for _,layer in ipairs(layers) do
+				task.delay(layer.Delay,function()
+					if stopped or not source or not source.Parent then return end
+					local roar=makeSound(layer.Asset,source,layer.Volume,
+						layer.Speed*audioRandom:NextNumber(0.97,1.03),false)
+					if not roar then return end
+					roar.Name="KaijuVictoryRoar"
+					roar.RollOffMinDistance=70*scale
+					roar.RollOffMaxDistance=320*scale
+					local eq=Instance.new("EqualizerSoundEffect")
+					eq.LowGain=layer.Low;eq.MidGain=layer.Mid;eq.HighGain=layer.High;eq.Parent=roar
+					local distortion=Instance.new("DistortionSoundEffect")
+					distortion.Level=layer.Distortion;distortion.Parent=roar
+					-- Fast attack prevents the low layers from sounding like a slow-motion sample.
+					local target=roar.Volume;roar.Volume=0
+					game:GetService("TweenService"):Create(roar,TweenInfo.new(0.08),{Volume=target}):Play()
+				end)
+			end
+			return
+		end
+
 		local definition=audioPresets[kind]
 		if not definition then return end
 		local sound=makeSound(definition[1],source,definition[2],definition[3]*audioRandom:NextNumber(0.96,1.04),false,kind=="Punch" and 0.12 or 0)
@@ -308,14 +338,7 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 			bass.LowGain=8;bass.MidGain=1;bass.HighGain=-1;bass.Parent=sound
 			sound.RollOffMinDistance=45*scale
 		end
-		if sound and kind=="VictoryRoar" then
-			local eq=Instance.new("EqualizerSoundEffect")
-			eq.LowGain=10;eq.MidGain=-2;eq.HighGain=-14;eq.Parent=sound
-			local distortion=Instance.new("DistortionSoundEffect")
-			distortion.Level=0.18;distortion.Parent=sound
-			sound.RollOffMinDistance=65*scale;sound.RollOffMaxDistance=280*scale
-		end
-		if sound and kind~="FocusFire" and kind~="Discharge" and kind~="JumpWhoosh" and kind~="Whoosh" and kind~="Punch" and kind~="Slam" and kind~="Finisher" and kind~="VictoryRoar" then
+		if sound and kind~="FocusFire" and kind~="Discharge" and kind~="JumpWhoosh" and kind~="Whoosh" and kind~="Punch" and kind~="Slam" and kind~="Finisher" then
 			local eq=Instance.new("EqualizerSoundEffect");local step=kind=="Step" or kind=="RunStep"
 			eq.LowGain=step and 9 or kind=="Land" and 6 or 3;eq.MidGain=step and -10 or -3;eq.HighGain=step and -22 or -12;eq.Parent=sound
 			if step then
