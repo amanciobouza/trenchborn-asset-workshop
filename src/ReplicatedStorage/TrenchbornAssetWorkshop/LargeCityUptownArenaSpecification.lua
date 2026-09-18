@@ -2,8 +2,8 @@ local Specification = {
 	AssetId = "LargeCity_UptownArena_L3",
 	DisplayName = "Uptown Arena",
 	City = "LargeCity",
-	Phase = 4,
-	QualityGate = "B-Pending",
+	Phase = 5,
+	QualityGate = "B-Approved",
 	Style = "Singapore x Miami tropical metropolitan indoor arena",
 
 	AssetBrief = {
@@ -164,9 +164,16 @@ local Specification = {
 	},
 
 	Phase4Status = {
-		Status = "GoldenMasterReview",
+		Status = "Approved",
 		GeometryRevision = "LargeCityUptownArena-v2-SmoothShellRoof",
-		QualityGateB = "Pending",
+		QualityGateB = "Approved",
+	},
+
+	QualityGateB = {
+		Status = "Approved",
+		ApprovedGeometry = "LargeCityUptownArena-v2-SmoothShellRoof",
+		Notes = "Flowing 72-segment oval shell and three-band sloped enclosed roof accepted.",
+		NextPhase = 5,
 	},
 
 	Phase3Acceptance = {
