@@ -8,6 +8,7 @@ local jumpAction="KaijuStageOneJump"
 local focusAction="KaijuStageOneFocus"
 local areaAction="KaijuStageOneArea"
 local runAction="KaijuStageOneRun"
+local victoryAction="KaijuCityBreakTriumph"
 local function controlledKaiju(character)
 	if not character then return nil end
 	return character:FindFirstChild("Stage_5_Geometry_Review") or character:FindFirstChild("Stage_4_Geometry_Review") or character:FindFirstChild("Stage_3_Rift_Stalker") or character:FindFirstChild("Stage_2_Storm_Hunter") or character:FindFirstChild("Stage_1_Primal_Beast")
@@ -48,6 +49,24 @@ CAS:BindAction(areaAction,function(_,state)
 end,true,Enum.KeyCode.R,Enum.KeyCode.ButtonY)
 CAS:SetTitle(areaAction,"Discharge")
 CAS:SetPosition(areaAction,UDim2.new(1,-240,1,-90))
+local lastVictory=-math.huge
+local function requestVictory()
+	if UIS:GetFocusedTextBox() or os.clock()-lastVictory<0.5 then return end
+	local character=player.Character
+	local model=controlledKaiju(character)
+	local remote=model and model:FindFirstChild("RequestVictory")
+	if remote and remote:IsA("RemoteEvent") then
+		lastVictory=os.clock()
+		remote:FireServer()
+	end
+end
+CAS:BindAction(victoryAction,function(_,state)
+	if UIS:GetFocusedTextBox() then return Enum.ContextActionResult.Pass end
+	if state==Enum.UserInputState.Begin then requestVictory() end
+	return Enum.ContextActionResult.Sink
+end,true,Enum.KeyCode.V,Enum.KeyCode.ButtonX)
+CAS:SetTitle(victoryAction,"Roar")
+CAS:SetPosition(victoryAction,UDim2.new(1,-330,1,-90))
 local lastFocus=-math.huge
 CAS:BindAction(focusAction,function(_,state)
 	if UIS:GetFocusedTextBox() then return Enum.ContextActionResult.Pass end
@@ -141,7 +160,7 @@ prompt.Parent=script.Parent
 local reactionPanel
 if RunService:IsStudio() then
 	reactionPanel=Instance.new("Frame");reactionPanel.Name="ReactionTests"
-	reactionPanel.Position=UDim2.new(0,12,0,120);reactionPanel.Size=UDim2.fromOffset(200,112)
+	reactionPanel.Position=UDim2.new(0,12,0,120);reactionPanel.Size=UDim2.fromOffset(200,154)
 	reactionPanel.BackgroundTransparency=0.25;reactionPanel.BackgroundColor3=Color3.fromRGB(25,30,40);reactionPanel.Parent=script.Parent
 	local title=Instance.new("TextLabel");title.Size=UDim2.new(1,0,0,28);title.BackgroundTransparency=1
 	title.Text="Reaction test";title.TextScaled=true;title.TextColor3=Color3.new(1,1,1);title.Parent=reactionPanel
@@ -157,6 +176,17 @@ if RunService:IsStudio() then
 			if remote then remote:FireServer(command) end
 		end)
 	end
+
+	local victoryButton=Instance.new("TextButton")
+	victoryButton.Name="VictoryRoar"
+	victoryButton.Size=UDim2.fromOffset(188,34)
+	victoryButton.Position=UDim2.fromOffset(6,108)
+	victoryButton.Text="VICTORY ROAR"
+	victoryButton.TextScaled=true
+	victoryButton.BackgroundColor3=Color3.fromRGB(95,80,35)
+	victoryButton.TextColor3=Color3.fromRGB(255,235,120)
+	victoryButton.Parent=reactionPanel
+	victoryButton.Activated:Connect(requestVictory)
 end
 local feedbackConnection,feedbackModel
 local cameraImpulses={}
@@ -248,7 +278,7 @@ local mouse = UIS.InputBegan:Connect(function(input, processed)
 	if not processed and input.UserInputType == Enum.UserInputType.MouseButton1 then attack() end
 end)
 task.spawn(function()
-	for _,name in ipairs({action,jumpAction,focusAction,areaAction,runAction}) do
+	for _,name in ipairs({action,jumpAction,focusAction,areaAction,runAction,victoryAction}) do
 		local button = CAS:GetButton(name)
 		if button then
 			for _, label in ipairs(button:GetDescendants()) do
@@ -278,4 +308,5 @@ script.Destroying:Connect(function()
 	CAS:UnbindAction(jumpAction)
 	CAS:UnbindAction(focusAction)
 	CAS:UnbindAction(areaAction)
+	CAS:UnbindAction(victoryAction)
 end)
