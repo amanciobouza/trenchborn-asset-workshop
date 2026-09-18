@@ -2,7 +2,7 @@ local Specification = {
 	AssetId = "LargeCity_Stadium_L3",
 	DisplayName = "Large City Stadium",
 	City = "LargeCity",
-	Phase = 4,
+	Phase = 5,
 	QualityGate = "B-Approved",
 	Style = "Singapore x Miami tropical metropolitan sports landmark",
 
@@ -165,6 +165,21 @@ local Specification = {
 		ApprovedGeometry = "LargeCityStadium-v3-FacadeScreens",
 		Notes = "Smooth oval bowl, continuous roof ring, restored exterior facade screens, full-span entrance glazing, verified ground contact and working Pong preview accepted.",
 		NextPhase = 5,
+	},
+
+	Phase5Status = {
+		Status = "InReview",
+		Revision = "LargeCityStadium-Dressing-v1",
+		Includes = {
+			"Large City Stadium wordmark and Gate A-D signage",
+			"teal/cyan exterior accent band",
+			"eight facade display panels",
+			"pylon floodlight banks",
+			"tropical entrance palms and planters",
+			"subtle football pitch markings",
+			"decorative Pong Easter egg with CRT-style beep",
+		},
+		QualityGateC = "Pending",
 	},
 
 	Phase3Acceptance = {
