@@ -6,6 +6,7 @@ local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
 
 local specification = require(packageFolder:WaitForChild("LargeCityUptownArenaSpecification"))
 local goldenMaster = require(packageFolder:WaitForChild("LargeCityUptownArenaGoldenMaster"))
+local dressing = require(packageFolder:WaitForChild("LargeCityUptownArenaDressing"))
 
 local function getSpawnReference()
 	local spawn = Workspace:FindFirstChildWhichIsA("SpawnLocation", true)
@@ -65,6 +66,7 @@ local targetZ = spawnPosition.Z
 local groundY = getGroundYAt(targetX, targetZ, spawn)
 
 local model = goldenMaster.Build(workshop)
+dressing.Apply(model)
 model:PivotTo(CFrame.new(targetX, groundY, targetZ) * CFrame.Angles(0, math.rad(90), 0))
 
 local minY = minimumVisibleY(model)
@@ -77,11 +79,11 @@ model:SetAttribute("GroundContactY", groundY)
 
 workshop:SetAttribute("CurrentAsset", specification.AssetId)
 workshop:SetAttribute("CurrentPhase", 5)
-workshop:SetAttribute("QualityStatus", "Phase4_GoldenMasterApproved")
+workshop:SetAttribute("QualityStatus", "Phase5_DressingReview")
 workshop:SetAttribute("QualityGateA", "Approved")
 workshop:SetAttribute("QualityGateB", "Approved")
 workshop:SetAttribute("GoldenMasterReviewTarget", model.Name)
-workshop:SetAttribute("ReviewScene", "LargeCityUptownArena_Isolated_Phase4_Approved")
+workshop:SetAttribute("ReviewScene", "LargeCityUptownArena_Isolated_Phase5_DressingReview")
 
-print("[Trenchborn Asset Workshop] Uptown Arena Golden Master approved at Quality Gate B:", model:GetFullName())
+print("[Trenchborn Asset Workshop] Uptown Arena Phase 5 dressing ready for review:", model:GetFullName())
 print("[Trenchborn Asset Workshop] Arena ground contact Y/correction:", groundY, model:GetAttribute("GroundContactCorrection"))
