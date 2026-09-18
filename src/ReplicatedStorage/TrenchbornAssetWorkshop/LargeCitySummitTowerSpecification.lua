@@ -8,8 +8,8 @@ local Specification = {
 	City = "LargeCity",
 	District = "Uptown",
 	BuildingType = "High-Rise",
-	Phase = 1,
-	QualityGate = "ConceptReview",
+	Phase = 2,
+	QualityGate = "A-Pending",
 	Branch = "largecity-summit-tower-l3",
 
 	StandaloneImport = {
@@ -131,6 +131,22 @@ local Specification = {
 		"D5_SkyGardens",
 		"D6_SummitCrown",
 		"D7_ServiceCore",
+	},
+
+	VisualTarget = {
+		Status = "InReview",
+		Revision = "LargeCitySummitTower-VisualTarget-v1",
+		Brief = {
+			"tropical luxury high-rise in Singapore x Miami language",
+			"softened rectangular shaft with two visible setbacks",
+			"two planted sky-garden cuts",
+			"dark blue-green glass with pale structural frames",
+			"strong vertical fins",
+			"recessed tall main lobby on the front",
+			"asymmetric illuminated summit crown",
+			"daylight architectural concept board with front, three-quarter and rear cues",
+			"not cyberpunk, not a plain glass box",
+		},
 	},
 
 	Phase1Acceptance = {
