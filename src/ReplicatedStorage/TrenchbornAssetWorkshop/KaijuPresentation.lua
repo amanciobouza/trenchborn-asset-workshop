@@ -5,6 +5,7 @@ local CollectionService = game:GetService("CollectionService")
 local POSE_TAG = "TrenchbornProceduralJoint"
 local Combo = require(script.Parent:WaitForChild("KaijuStageOneCombo"))
 local Jump = require(script.Parent:WaitForChild("KaijuStageOneJump"))
+local Triumph = require(script.Parent:WaitForChild("KaijuCityBreakTriumph"))
 local Rig = {}
 local STRIDE = 12.0
 local STANCE = 0.62 -- Longer swing; both feet still support the body during 24% of the cycle.
@@ -279,6 +280,7 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 		Finisher={71814605717939,0.7,1.0},Hit={9116684884,0.3,0.7},HeavyHit={9116684884,0.55,0.52},
 		Discharge={1040136448,2.0,1.0},
 		Defeat={9116684884,0.75,0.42},
+		VictoryRoar={71814605717939,1.15,0.46},
 	}
 	local audioRandom=Random.new()
 	local activeSounds={}
@@ -306,7 +308,14 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 			bass.LowGain=8;bass.MidGain=1;bass.HighGain=-1;bass.Parent=sound
 			sound.RollOffMinDistance=45*scale
 		end
-		if sound and kind~="FocusFire" and kind~="Discharge" and kind~="JumpWhoosh" and kind~="Whoosh" and kind~="Punch" and kind~="Slam" and kind~="Finisher" then
+		if sound and kind=="VictoryRoar" then
+			local eq=Instance.new("EqualizerSoundEffect")
+			eq.LowGain=10;eq.MidGain=-2;eq.HighGain=-14;eq.Parent=sound
+			local distortion=Instance.new("DistortionSoundEffect")
+			distortion.Level=0.18;distortion.Parent=sound
+			sound.RollOffMinDistance=65*scale;sound.RollOffMaxDistance=280*scale
+		end
+		if sound and kind~="FocusFire" and kind~="Discharge" and kind~="JumpWhoosh" and kind~="Whoosh" and kind~="Punch" and kind~="Slam" and kind~="Finisher" and kind~="VictoryRoar" then
 			local eq=Instance.new("EqualizerSoundEffect");local step=kind=="Step" or kind=="RunStep"
 			eq.LowGain=step and 9 or kind=="Land" and 6 or 3;eq.MidGain=step and -10 or -3;eq.HighGain=step and -22 or -12;eq.Parent=sound
 			if step then
@@ -352,7 +361,7 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 	local swimState=Enum.HumanoidStateType.Swimming
 	local swimEnabled=humanoid and humanoid:GetStateEnabled(swimState)
 	if humanoid then humanoid:SetStateEnabled(swimState,true) end
-	local hitReaction,defeat=nil,nil
+	local hitReaction,defeat,victory=nil,nil,nil
 	local strikeResistance=nil
 	local hitSide=1
 	local damageFlash=Instance.new("Highlight")
@@ -649,8 +658,79 @@ function Rig.Attach(model, movementRoot, humanoid, options)
  local landingBlend=1
  local bufferedJumpUntil=0
  local function restoreJump() end
+
+	local function emitVictoryShockwave()
+		if not fxEnabled or not movementRoot then return end
+		local TweenService=game:GetService("TweenService")
+		local Debris=game:GetService("Debris")
+		local origin=movementRoot.Position-Vector3.new(0,math.max(0,humanoid and humanoid.HipHeight or 0),0)
+
+		for ringIndex=1,2 do
+			local ring=Instance.new("Part")
+			ring.Name="VictoryRoarShockwave"
+			ring.Shape=Enum.PartType.Cylinder
+			ring.Size=Vector3.new(0.22*scale,4*scale,4*scale)
+			ring.CFrame=CFrame.new(origin+Vector3.new(0,0.28*scale,0))*CFrame.Angles(0,0,math.rad(90))
+			ring.Color=Color3.fromRGB(220,245,205)
+			ring.Material=Enum.Material.Neon
+			ring.Transparency=0.62
+			ring.Anchored=true;ring.CanCollide=false;ring.CanTouch=false;ring.CanQuery=false;ring.CastShadow=false
+			ring.Parent=effectsFolder
+			local delay=(ringIndex-1)*0.08
+			task.delay(delay,function()
+				if not ring.Parent then return end
+				TweenService:Create(ring,TweenInfo.new(0.68,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+					Size=Vector3.new(0.10*scale,(34+ringIndex*10)*scale,(34+ringIndex*10)*scale),
+					Transparency=1,
+				}):Play()
+			end)
+			Debris:AddItem(ring,0.9)
+		end
+
+		for i=1,12 do
+			local dust=Instance.new("Part")
+			dust.Name="VictoryRoarDust";dust.Shape=Enum.PartType.Ball
+			dust.Size=Vector3.new(1.4,0.55,1.4)*scale
+			dust.Position=origin+Vector3.new(0,0.35*scale,0)
+			dust.Color=Color3.fromRGB(105,100,88);dust.Material=Enum.Material.SmoothPlastic
+			dust.Transparency=0.45;dust.Anchored=true;dust.CanCollide=false;dust.CanTouch=false;dust.CanQuery=false;dust.CastShadow=false
+			dust.Parent=effectsFolder
+			local angle=(i/12)*math.pi*2
+			local outward=Vector3.new(math.cos(angle)*(7+i%3),0.7+0.15*(i%2),math.sin(angle)*(7+i%3))*scale
+			TweenService:Create(dust,TweenInfo.new(0.72,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+				Position=dust.Position+outward,
+				Size=Vector3.new(3.2,1.3,3.2)*scale,
+				Transparency=1,
+			}):Play()
+			Debris:AddItem(dust,0.8)
+		end
+	end
+
+	local function endVictoryView()
+		if not victory then return end
+		for p,color in pairs(victory.Colors or {}) do
+			if p.Parent then setEnergyColor(p,color) end
+		end
+		victory=nil
+		releaseSpecial()
+		presentationAttribute("VictoryState","Idle")
+	end
+
+	local function startVictory(started)
+		endArea();endFocus();jump:Cancel();combo:Cancel();hitReaction=nil;strikeResistance=nil
+		if victory then endVictoryView() end
+		victory={Started=started,Colors={},RoarPlayed=false,ShockwavePlayed=false}
+		for _,p in ipairs(specialEnergy) do
+			if p.Parent then victory.Colors[p]=energyColor(p) end
+		end
+		beginSpecial("Victory")
+		presentationAttribute("VictoryState","Playing")
+		presentationAttribute("AnimationPreview","CityBreakTriumph")
+	end
+
 	local function reset()
 		strikeResistance=nil
+		endVictoryView()
 		hitReaction=nil;damageFlash.FillTransparency=1
 		for sound in pairs(activeSounds) do sound:Destroy() end
 		soundContacts={}
@@ -917,6 +997,8 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 		local focusTime=focus and clock()-focus.Started
 		if area and (humanoid.Health<=0 or clock()-area.Started>=AREA_TIMING.Finish) then endArea() end
 		local areaTime=area and clock()-area.Started
+		local victoryTime=victory and clock()-victory.Started
+		local victorySample=victory and Triumph.Sample(victoryTime)
 		local areaCharge,areaRecover=0,0
 		if area then
 			areaCharge=math.clamp(areaTime/AREA_TIMING.Curl,0,1)
@@ -954,11 +1036,12 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 			landingBlend=math.min(landingBlend,1-math.clamp((clock()-jump.Started)/0.24,0,1))
 		end
 		if landing then landingWeight=landingBlend end
-		if swimming or (jumpPose and not landing) or isStaggered() then walking=false end
+		if swimming or (jumpPose and not landing) or isStaggered() or victory then walking=false end
 		if focus then walking=false;humanoid:Move(Vector3.zero,false) end
 		if area then walking=false;humanoid:Move(Vector3.zero,false) end
+		if victory then walking=false;humanoid:Move(Vector3.zero,false) end
 		local groundControl=not swimming and (jump.Phase=="Idle" or jump.Phase=="Landing" or jump.Phase=="Windup" or jump.Phase=="Air")
-		local runAllowed=not isStaggered() and not focus and not area and groundControl
+		local runAllowed=not isStaggered() and not focus and not area and not victory and groundControl
 			and humanoid and humanoid.Health>0
 		if humanoid and not focus and not area and groundControl and humanoid.Health>0 then
 			humanoid.WalkSpeed=isStaggered() and 0 or runRequested and runAllowed and RUN_SPEED or WALK_SPEED
@@ -992,8 +1075,8 @@ function Rig.Attach(model, movementRoot, humanoid, options)
    if event.Kind=="Whoosh" then feedback("Whoosh",event.Index==1 and bones.LeftHand or bones.RightHand,true)
    elseif event.Kind=="TearSound" and clock()-combo.Started<0.4 then feedback("Finisher",bones.Torso,true) end
   end
-		local special=swimming or jumpPose or focus or area or attackPose or isStaggered()
-		local mode=area and "Area" or focus and "Focus" or jumpPose and "Jump" or attackPose and "Attack" or running and "Run" or walking and "Walk" or "Idle"
+		local special=victory or swimming or jumpPose or focus or area or attackPose or isStaggered()
+		local mode=victory and "Victory" or area and "Area" or focus and "Focus" or jumpPose and "Jump" or attackPose and "Attack" or running and "Run" or walking and "Walk" or "Idle"
 		if mode~=previousMode then transitionLeft=0.22;previousMode=mode end
 		transitionLeft=math.max(0,transitionLeft-poseDt)
 		if special or walking or (humanoid and (humanoid.Health<=0 or humanoid.FloorMaterial==Enum.Material.Air)) then stopAge=nil
@@ -1018,6 +1101,7 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 			bob=-(1.7*math.min(focusTime/0.65,1)+0.65*kick)*scale*math.clamp((4.85-focusTime)/0.35,0,1)
 		end
 		if area then bob=-7.2*areaCharge*(1-areaRecover)*scale end
+		if victorySample then bob=victorySample.Bob*scale end
 		if isStaggered() then
 			bob=bob-0.9*math.sin(math.pi*math.clamp((clock()-hitReaction.Started)/0.65,0,1))*scale
 			humanoid:Move(Vector3.zero,false)
@@ -1351,6 +1435,42 @@ function Rig.Attach(model, movementRoot, humanoid, options)
 				if areaTime-AREA_TIMING.Discharge<0.5 then emitArea(area.Point) end
 			end
 		end
+		if victory and victorySample then
+			for name,angles in pairs(victorySample.Poses) do
+				if motors[name] then pose(name,angles[1],angles[2],angles[3]) end
+			end
+
+			-- Keep both feet planted while the pelvis settles and rises.
+			solveLeg("Left",0,0,actualBob)
+			solveLeg("Right",0,0,actualBob)
+
+			for i=1,tailCount do
+				local yaw=math.sin(victoryTime*1.85-i*0.42)*(0.7+i*0.12)*victorySample.TailMotion
+				local pitch=i==1 and victorySample.Poses.TailBase[1] or 0
+				pose("Tail"..i,pitch,yaw,0)
+			end
+
+			for p,color in pairs(victory.Colors) do
+				if p.Parent then
+					setEnergyColor(p,color:Lerp(Color3.new(1,1,1),0.58*victorySample.Energy))
+				end
+			end
+
+			if victoryTime>=Triumph.RoarAt and not victory.RoarPlayed then
+				victory.RoarPlayed=true
+				feedback("VictoryRoar",bones.Head,true)
+			end
+			if victoryTime>=Triumph.ShockwaveAt and not victory.ShockwavePlayed then
+				victory.ShockwavePlayed=true
+				emitVictoryShockwave()
+			end
+			presentationAttribute("VictoryState",victoryTime<Triumph.RoarAt and "Rising"
+				or victoryTime<3.10 and "Roaring"
+				or victoryTime<4.55 and "DominionHold"
+				or "Recovery")
+			presentationAttribute("AnimationPreview","CityBreakTriumph")
+		end
+
 		if hitReaction then
 			local age=clock()-hitReaction.Started
 			local duration=hitReaction.Heavy and 0.85 or 0.32
@@ -1458,6 +1578,12 @@ function Rig.Attach(model, movementRoot, humanoid, options)
   runRequested=snapshot.Run==true
   if snapshot.Defeat and not defeat then startDefeat(snapshot.Defeat) end
   if defeat then return end
+  if snapshot.VictoryStarted then
+   if not victory or victory.Started~=snapshot.VictoryStarted then startVictory(snapshot.VictoryStarted) end
+  elseif victory then
+   endVictoryView()
+  end
+  if victory then return end
   if not snapshot.FocusStarted then endFocus()
   elseif not focus and time-snapshot.FocusStarted<4.85 then
    requestFocus();focus.Started=snapshot.FocusStarted
