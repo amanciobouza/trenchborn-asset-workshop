@@ -2,8 +2,8 @@ local Specification = {
 	AssetId = "LargeCity_Stadium_L3",
 	DisplayName = "Large City Stadium",
 	City = "LargeCity",
-	Phase = 3,
-	QualityGate = "A-Approved",
+	Phase = 4,
+	QualityGate = "B-Approved",
 	Style = "Singapore x Miami tropical metropolitan sports landmark",
 
 	AssetBrief = {
@@ -93,7 +93,7 @@ local Specification = {
 		},
 		Scoreboard = {Size = Vector3.new(48, 16, 2.2), Center = Vector3.new(0, 38, 50)},
 		FacadeModules = {
-			EntranceGlazingSpan = 48,
+			EntranceGlazingSpan = 68,
 			EntranceGlazingHeight = 18,
 			RibWidth = 2.4,
 			ConcourseGlassHeight = 7,
@@ -158,6 +158,13 @@ local Specification = {
 	QualityGateA = {
 		Status = "Approved",
 		ApprovedTarget = "LargeCityStadium-VisualTarget-v1",
+	},
+
+	QualityGateB = {
+		Status = "Approved",
+		ApprovedGeometry = "LargeCityStadium-v3-FacadeScreens",
+		Notes = "Smooth oval bowl, continuous roof ring, restored exterior facade screens, full-span entrance glazing, verified ground contact and working Pong preview accepted.",
+		NextPhase = 5,
 	},
 
 	Phase3Acceptance = {
