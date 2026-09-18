@@ -37,7 +37,9 @@ function Triumph.Sample(time)
 
 	local poses = {
 		Torso = {-6 * settle + 8 * rise + 3 * roar + 0.7 * tremor, 0, 1.4 * breath},
-		Head = {8 * settle - 22 * tension - 5 * roar, 5 * asymmetry, -2 * asymmetry},
+		-- Positive local X raises the head on this rig. v1 used the opposite
+		-- sign and made the Kaiju stare at the ground during the roar.
+		Head = {-4 * settle + 24 * tension + 8 * roar, 5 * asymmetry, -2 * asymmetry},
 		Jaw = {-42 * roar - 12 * hold * (1 - recovery), 0, 0},
 		TailBase = {5 * dominance, 0, 0},
 	}
@@ -45,19 +47,19 @@ function Triumph.Sample(time)
 	for _, side in ipairs({"Left", "Right"}) do
 		local sign = side == "Left" and -1 or 1
 		poses[side .. "UpperArm"] = {
-			-6 * rise - 18 * roar - (side == "Left" and 5 or 0) * asymmetry,
-			sign * (5 * rise + 7 * roar),
-			-sign * (25 * rise + 20 * roar + 6 * asymmetry),
+			-5 * rise - 13 * roar - (side == "Left" and 4 or 0) * asymmetry,
+			-sign * (7 * rise + 11 * roar),
+			sign * (28 * rise + 24 * roar + 7 * asymmetry),
 		}
 		poses[side .. "Forearm"] = {
 			-8 * rise - (side == "Left" and 16 or 10) * roar,
-			0,
-			sign * (side == "Left" and 5 or 8) * asymmetry,
+			-sign * 4 * roar,
+			-sign * (side == "Left" and 5 or 8) * asymmetry,
 		}
 		poses[side .. "Hand"] = {
 			-5 * rise - 9 * roar,
-			sign * (5 * dominance + 4 * roar),
-			0,
+			-sign * (5 * dominance + 4 * roar),
+			sign * 3 * roar,
 		}
 	end
 
