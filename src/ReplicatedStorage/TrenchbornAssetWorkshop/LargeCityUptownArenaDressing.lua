@@ -233,6 +233,62 @@ local function addMediaRibbonDressing(root)
 	end
 end
 
+local function addFacadeVariation(root)
+	local area = folder(root, "FacadeVariation")
+
+	-- Break up the long concrete oval with larger dark-glass event bays.
+	-- These are deliberately sparse so the arena stays elegant rather than noisy.
+	local bays = {
+		{theta = math.rad(42), accent = COLORS.Cyan},
+		{theta = math.rad(72), accent = COLORS.Warm},
+		{theta = math.rad(108), accent = COLORS.Cyan},
+		{theta = math.rad(138), accent = COLORS.Warm},
+		{theta = math.rad(222), accent = COLORS.Cyan},
+		{theta = math.rad(252), accent = COLORS.Warm},
+		{theta = math.rad(288), accent = COLORS.Cyan},
+		{theta = math.rad(318), accent = COLORS.Warm},
+	}
+	local a, b = 68.3, 49.3
+
+	for index, bay in ipairs(bays) do
+		local theta = bay.theta
+		local position = Vector3.new(a * math.cos(theta), 17.5, b * math.sin(theta))
+		local tangent = Vector3.new(-a * math.sin(theta), 0, b * math.cos(theta)).Unit
+		local up = Vector3.yAxis
+		local back = tangent:Cross(up).Unit
+		local cf = CFrame.fromMatrix(position, tangent, up, back)
+
+		local frame = part(
+			area,
+			"FeatureBayFrame" .. index,
+			Vector3.new(10.5, 18.0, 0.8),
+			cf,
+			COLORS.Dark,
+			Enum.Material.Metal
+		)
+		local glass = part(
+			area,
+			"FeatureBayGlass" .. index,
+			Vector3.new(8.9, 15.8, 0.35),
+			cf * CFrame.new(0, 0, -0.58),
+			COLORS.DarkGlass,
+			Enum.Material.Glass,
+			0.08
+		)
+		local accent = part(
+			area,
+			"FeatureBayAccent" .. index,
+			Vector3.new(9.2, 0.65, 0.30),
+			cf * CFrame.new(0, 7.4, -0.78),
+			bay.accent,
+			Enum.Material.Neon
+		)
+		frame.CastShadow = true
+		glass.CastShadow = false
+		accent.CastShadow = false
+	end
+end
+
 local function addFacadeLighting(root)
 	local area = folder(root, "FacadeLighting")
 	local count = 18
@@ -254,15 +310,51 @@ end
 
 local function addRearDressing(root)
 	local area = folder(root, "RearDressing")
+
+	-- Rear is local +Z; keep all signage and dock dressing outside the rear wall.
 	local sign = block(
 		area,
 		"ServiceSign",
-		Vector3.new(26, 2.6, 0.35),
-		Vector3.new(0, 15.0, 40.0),
+		Vector3.new(30, 3.0, 0.35),
+		Vector3.new(0, 15.0, 55.95),
 		COLORS.Dark,
 		Enum.Material.Metal
 	)
 	addSurfaceText(area, sign, "EVENT LOADING", Enum.NormalId.Back, COLORS.White)
+
+	local crewSign = block(
+		area,
+		"CrewEntranceSign",
+		Vector3.new(14, 2.2, 0.30),
+		Vector3.new(28, 11.0, 55.98),
+		COLORS.Teal,
+		Enum.Material.Neon
+	)
+	addSurfaceText(area, crewSign, "CREW", Enum.NormalId.Back, COLORS.White)
+
+	for index, x in ipairs({-27, -9, 9, 27}) do
+		local dock = block(
+			area,
+			"DockNumber" .. index,
+			Vector3.new(4.6, 2.0, 0.28),
+			Vector3.new(x, 10.2, 56.02),
+			COLORS.DarkGlass,
+			Enum.Material.Glass
+		)
+		addSurfaceText(area, dock, string.format("%02d", index), Enum.NormalId.Back, COLORS.White)
+	end
+
+	-- Vehicle guidance makes the rear read as a real service entrance from distance.
+	for _, x in ipairs({-27, -9, 9, 27}) do
+		block(
+			area,
+			"LoadingLane" .. tostring(x),
+			Vector3.new(8, 0.10, 14),
+			Vector3.new(x, 0.55, 64),
+			COLORS.White,
+			Enum.Material.SmoothPlastic
+		)
+	end
 end
 
 function Dressing.Apply(model)
@@ -274,15 +366,18 @@ function Dressing.Apply(model)
 
 	addEntranceDressing(root)
 	addMediaRibbonDressing(root)
+	addFacadeVariation(root)
 	addFacadeLighting(root)
 	addRearDressing(root)
 
 	model:SetAttribute("AssetPhase", 5)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Approved")
-	model:SetAttribute("DressingRevision", "LargeCityUptownArena-Dressing-v1")
+	model:SetAttribute("DressingRevision", "LargeCityUptownArena-Dressing-v2-FacadeRear")
 	model:SetAttribute("DressingStatus", "Review")
 	model:SetAttribute("TextScaledRule", true)
+	model:SetAttribute("FacadeFeatureBays", 8)
+	model:SetAttribute("RearServiceDressingVisible", true)
 	return model
 end
 
