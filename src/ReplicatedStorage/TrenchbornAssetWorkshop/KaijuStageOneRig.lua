@@ -7,6 +7,7 @@ local Skeleton=require(script.Parent:WaitForChild("KaijuSkeleton"))
 local Bootstrap=require(script.Parent:WaitForChild("KaijuPresentationBootstrap"))
 local Combo=require(script.Parent:WaitForChild("KaijuStageOneCombo"))
 local Jump=require(script.Parent:WaitForChild("KaijuStageOneJump"))
+local Triumph=require(script.Parent:WaitForChild("KaijuCityBreakTriumph"))
 local Rig={}
 local registry=setmetatable({}, {__mode="k"})
 local TAG="TrenchbornKaijuPresentation"
@@ -22,6 +23,7 @@ function Rig.Attach(model,root,humanoid,combat)
  local owner=root and Players:GetPlayerFromCharacter(model.Parent)
  local feedback=Instance.new("RemoteEvent");feedback.Name="KaijuFeedback";feedback.Parent=model
  local impulse=Instance.new("RemoteEvent");impulse.Name="KaijuJumpImpulse";impulse.Parent=model
+ local victoryRemote=Instance.new("RemoteEvent");victoryRemote.Name="RequestVictory";victoryRemote.Parent=model
  for name,value in pairs({KaijuPoseProvider=script,KaijuRenderer=script.Parent:WaitForChild("KaijuPresentation")}) do
   local ref=Instance.new("ObjectValue");ref.Name=name;ref.Value=value;ref.Parent=model
  end
@@ -30,7 +32,7 @@ function Rig.Attach(model,root,humanoid,combat)
  local combo=Combo.new(combat and combat.PrepareFinisher,model:GetAttribute("EvolutionStage"))
  local jump=Jump.new()
  local stopped,runRequested=false,false
- local focus,area,lock,reaction,defeat
+ local focus,area,lock,reaction,defeat,victory
  local focusReady,areaReady,buffered=0,0,0
  local sequence,hitSequence,landingSequence=0,0,0
  local hitRecord,lastSnapshot,lastAim,landingAt
@@ -45,13 +47,14 @@ function Rig.Attach(model,root,humanoid,combat)
  local function publish()
   local key=table.concat({tostring(runRequested),tostring(combo.Active),combo.Index,combo.Started,
    jump.Phase,jump.Started,jump.Lead,tostring(jump.LeftGround),tostring(focus),tostring(area),
-   tostring(reaction),tostring(defeat),tostring(hitRecord),landingSequence},":")
+   tostring(reaction),tostring(defeat),tostring(victory),tostring(hitRecord),landingSequence},":")
   if key==lastSnapshot then return end
   lastSnapshot=key
   local state={Version=1,Run=runRequested,Combo=combo.Active and combo.Index or 0,ComboStarted=combo.Started,
    Jump=jump.Phase,JumpStarted=jump.Started,JumpLead=jump.Lead,JumpLeftGround=jump.LeftGround,
    FocusStarted=focus and focus.Started,AreaStarted=area and area.Started,AreaPoint=area and vec(area.Point),
    AreaRotation=area and {area.Ground.Rotation:GetComponents()},Reaction=reaction,Defeat=defeat,
+   VictoryStarted=victory and victory.Started,
    Hit=hitRecord,LandingSequence=landingSequence,LandingAt=landingAt}
   sequence=sequence+1;state.Sequence=sequence
   model:SetAttribute("KaijuPresentationState",HttpService:JSONEncode(state))
@@ -197,13 +200,26 @@ function Rig.Attach(model,root,humanoid,combat)
   if not alive() or staggered() or lock or (jump.Phase~="Idle" and jump.Phase~="Landing") or humanoid:GetState()==swim then return false end
   local accepted=combo:Request(now());if accepted then publish() end;return accepted
  end
+ local function requestVictory()
+  if not alive() or staggered() or lock or jump.Phase~="Idle" or humanoid:GetState()==swim
+   or humanoid.FloorMaterial==Enum.Material.Air then return false end
+  runRequested=false
+  begin("Victory")
+  victory={Started=now()}
+  attr("RunRequested",false);attr("Running",false)
+  attr("VictoryState","Playing");attr("AnimationPreview","CityBreakTriumph")
+  publish()
+  return true
+ end
  local function setRunning(enabled)
   if type(enabled)~="boolean" or not alive() then return false end
   runRequested=enabled;attr("RunRequested",enabled);publish();return true
  end
  local function stop()
   if stopped then return end
-  stopped=true;endSpecial();combo:Cancel();jump:Cancel();cancelCombat()
+  stopped=true
+  if victory then victory=nil;attr("VictoryState","Idle") end
+  endSpecial();combo:Cancel();jump:Cancel();cancelCombat()
   for _,c in ipairs(connections) do c:Disconnect() end
   if humanoid and humanoid.Parent then humanoid:SetStateEnabled(swim,swimEnabled) end
   CollectionService:RemoveTag(model,TAG);registry[model]=nil
@@ -214,6 +230,7 @@ function Rig.Attach(model,root,humanoid,combat)
    local damage=previous-health;previous=health
    if stopped or defeat or damage<=0 then return end
    if health<=0 then
+    if victory then victory=nil;attr("VictoryState","Idle") end
     endSpecial();combo:Cancel();jump:Cancel();cancelCombat();runRequested=false
     humanoid.WalkSpeed=0;humanoid.AutoRotate=false;humanoid:Move(Vector3.zero,false);root.Anchored=true
     local hit=workspace:Raycast(root.Position+Vector3.new(0,30*scale,0),Vector3.new(0,-150*scale,0),query)
@@ -267,6 +284,11 @@ function Rig.Attach(model,root,humanoid,combat)
 		end
 	end
 
+ if owner then
+  table.insert(connections,victoryRemote.OnServerEvent:Connect(function(player)
+   if player==owner then requestVictory() end
+  end))
+ end
  table.insert(connections,RunService.PreSimulation:Connect(hold))
  local accumulator=0
  table.insert(connections,RunService.Heartbeat:Connect(function(dt)
@@ -276,6 +298,12 @@ function Rig.Attach(model,root,humanoid,combat)
   if defeat then if now()-defeat.Started>=4.8 then attr("ReactionState","Defeated") end;return end
   if not alive() then return end
   local t=now()
+  if victory then
+   if t-victory.Started>=Triumph.Duration then
+    victory=nil;attr("VictoryState","Idle");release();publish()
+   end
+   return
+  end
   if reaction and t-reaction.Started>=(reaction.Heavy and 0.85 or 0.32) then reaction=nil;attr("ReactionState","Idle") end
   local swimming=not lock and humanoid:GetState()==swim;attr("Swimming",swimming)
   if swimming then jump:Cancel();combo:Cancel();buffered=0;cancelCombat()
@@ -330,7 +358,8 @@ function Rig.Attach(model,root,humanoid,combat)
  end))
  table.insert(connections,model.Destroying:Connect(stop))
  local api={Stop=stop,Motors=rig.Motors,RequestAttack=requestAttack,RequestJump=requestJump,
-  SetAirDirection=function() end,RequestFocus=requestFocus,RequestArea=requestArea,SetRunning=setRunning,GetCombatFrame=combatFrame}
+  SetAirDirection=function() end,RequestFocus=requestFocus,RequestArea=requestArea,RequestVictory=requestVictory,
+  SetRunning=setRunning,GetCombatFrame=combatFrame}
  registry[model]=api
  model:SetAttribute("PoseOwnershipRevision","ClientTransform_StateSync_01")
  model:SetAttribute("KaijuPresentationVersion",1)
