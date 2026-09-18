@@ -130,8 +130,8 @@ end
 
 local function addMainEntrance(group)
 	block(group, "EntranceMass", Vector3.new(66, 27, 15), Vector3.new(0, 13.5, -48.5), COLORS.Concrete, Enum.Material.Concrete)
-	block(group, "EntranceRecess", Vector3.new(58, 20, 4.5), Vector3.new(0, 13, -56.0), COLORS.Dark, Enum.Material.Metal)
-	block(group, "EntranceGlass", Vector3.new(56, 18, 0.55), Vector3.new(0, 13, -58.45), COLORS.Glass, Enum.Material.Glass, 0.10)
+	block(group, "EntranceRecess", Vector3.new(58, 20, 4.0), Vector3.new(0, 13, -55.5), COLORS.Dark, Enum.Material.Metal)
+	block(group, "EntranceGlass", Vector3.new(56, 18, 0.55), Vector3.new(0, 13, -57.35), COLORS.Glass, Enum.Material.Glass, 0.10)
 
 	for _, x in ipairs({-27, -17, -6, 6, 17, 27}) do
 		block(group, "PortalPier" .. tostring(x), Vector3.new(2.4, 28, 3.2), Vector3.new(x, 14, -56.5), COLORS.Metal, Enum.Material.Metal)
@@ -229,7 +229,7 @@ function Builder.Build(parent)
 	model:SetAttribute("AssetPhase", 4)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Approved")
-	model:SetAttribute("GeometryRevision", "LargeCityUptownArena-v3-RearServiceVisible")
+	model:SetAttribute("GeometryRevision", "LargeCityUptownArena-v4-RecessedEntrance")
 	model:SetAttribute("HasInterior", false)
 	model:SetAttribute("Style", specification.Style)
 	model:SetAttribute("MaxHealth", specification.ProposedGameplayMetadata.TargetMaxHealth)
@@ -242,6 +242,7 @@ function Builder.Build(parent)
 	model:SetAttribute("SmoothFacadeShell", true)
 	model:SetAttribute("SlopedContinuousRoof", true)
 	model:SetAttribute("RearServiceVisible", true)
+	model:SetAttribute("EntrancePiersProjectForward", true)
 	model.Parent = parent
 
 	local groups = folder(model, "DestructionGroups")
