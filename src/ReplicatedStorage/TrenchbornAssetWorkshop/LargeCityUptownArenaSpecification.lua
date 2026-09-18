@@ -2,7 +2,7 @@ local Specification = {
 	AssetId = "LargeCity_UptownArena_L3",
 	DisplayName = "Uptown Arena",
 	City = "LargeCity",
-	Phase = 5,
+	Phase = 6,
 	QualityGate = "B-Approved",
 	Style = "Singapore x Miami tropical metropolitan indoor arena",
 
@@ -177,8 +177,8 @@ local Specification = {
 	},
 
 	Phase5Status = {
-		Status = "InReview",
-		Revision = "LargeCityUptownArena-Dressing-v1",
+		Status = "Approved",
+		Revision = "LargeCityUptownArena-Dressing-v4-RecessedGates",
 		Includes = {
 			"Uptown Arena wordmark",
 			"Sports / Concerts / Events entrance strip",
@@ -189,6 +189,14 @@ local Specification = {
 			"rear event-loading signage",
 		},
 		QualityGateC = "Pending",
+		NextPhase = "ExternalGameTestPending",
+	},
+
+	Phase6Status = {
+		Status = "ExternalGameTestPending",
+		ExternalCollapseIntegration = true,
+		QualityGateC = "Pending",
+		Notes = "Workshop visual review approved; destruction and shared collapse behaviour remain deferred to the main game.",
 	},
 
 	Phase3Acceptance = {
