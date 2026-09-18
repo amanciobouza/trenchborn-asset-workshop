@@ -252,10 +252,10 @@ local function addFloodlights(root)
 	local area = folder(root, "Floodlights")
 	local fieldTarget = Vector3.new(0, 3, 4)
 	local mounts = {
-		Vector3.new(-77, 66, -49),
-		Vector3.new(77, 66, -49),
-		Vector3.new(-77, 66, 49),
-		Vector3.new(77, 66, 49),
+		Vector3.new(-77, 74, -49),
+		Vector3.new(77, 74, -49),
+		Vector3.new(-77, 74, 49),
+		Vector3.new(77, 74, 49),
 	}
 
 	for mountIndex, mount in ipairs(mounts) do
@@ -291,12 +291,23 @@ local function addFloodlights(root)
 			Enum.Material.Metal
 		)
 
-		for _, x in ipairs({-4.6, 4.6}) do
+		-- Connect the floodlight frame directly to the inner side of the large
+		-- stadium pylon. Using endpoint-to-endpoint beams keeps the braces touching
+		-- the light frame and prevents them from protruding outside the pylon.
+		local signX = mount.X < 0 and -1 or 1
+		local signZ = mount.Z < 0 and -1 or 1
+		local pylonInnerAnchor = Vector3.new(signX * 80.0, 59.0, signZ * 52.0)
+
+		for _, supportX in ipairs({-3.1, 3.1}) do
+			local upper = bankCF:PointToWorldSpace(Vector3.new(supportX, -4.55, 0.55))
+			local lower = pylonInnerAnchor + bankCF.RightVector * (supportX * 0.72)
+			local delta = upper - lower
+			local middle = lower:Lerp(upper, 0.5)
 			part(
 				bank,
-				"RearSupport" .. tostring(x),
-				Vector3.new(0.9, 12.0, 0.9),
-				bankCF * CFrame.new(x, -5.3, 3.5) * CFrame.Angles(math.rad(-16), 0, 0),
+				"RearSupport" .. tostring(supportX),
+				Vector3.new(0.95, 0.95, delta.Magnitude),
+				CFrame.lookAt(middle, upper),
 				COLORS.Metal,
 				Enum.Material.Metal
 			)
@@ -429,7 +440,7 @@ function Dressing.Apply(model)
 	model:SetAttribute("AssetPhase", 5)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Approved")
-	model:SetAttribute("DressingRevision", "LargeCityStadium-Dressing-v4-FloodlightFit")
+	model:SetAttribute("DressingRevision", "LargeCityStadium-Dressing-v5-FloodlightPylonFit")
 	model:SetAttribute("DressingStatus", "Review")
 	model:SetAttribute("TextScaledRule", true)
 	model:SetAttribute("LargeStadiumFloodlights", true)
@@ -437,6 +448,8 @@ function Dressing.Apply(model)
 	model:SetAttribute("FloodlightLampCount", 72)
 	model:SetAttribute("FloodlightsMovedInward", true)
 	model:SetAttribute("FloodlightSupportsAligned", true)
+	model:SetAttribute("FloodlightsRaised", true)
+	model:SetAttribute("FloodlightSupportsInnerAnchored", true)
 	return model
 end
 
