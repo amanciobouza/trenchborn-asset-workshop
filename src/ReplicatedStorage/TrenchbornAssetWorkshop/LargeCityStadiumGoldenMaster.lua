@@ -14,6 +14,10 @@ local COLORS = {
 	Dark = Color3.fromRGB(47, 55, 60),
 }
 
+local BOWL_SEGMENTS = 64
+local RIB_COUNT = 32
+local ROOF_SEGMENTS = 64
+
 local function folder(parent, name)
 	local item = Instance.new("Folder")
 	item.Name = name
@@ -44,30 +48,71 @@ local function block(parent, name, size, position, color, material, transparency
 	return part(parent, name, size, CFrame.new(position), color, material, transparency)
 end
 
-local function radialCF(x, y, z)
-	local position = Vector3.new(x, y, z)
-	return CFrame.lookAt(position, Vector3.new(0, y, 0))
-end
-
 local function ellipsePoint(a, b, theta)
-	return a * math.cos(theta), b * math.sin(theta)
+	return Vector3.new(a * math.cos(theta), 0, b * math.sin(theta))
 end
 
-local function ellipsePerimeterApprox(a, b)
-	return math.pi * (3 * (a + b) - math.sqrt((3 * a + b) * (a + 3 * b)))
+local function tangentFrame(a, b, theta, y)
+	local halfStep = math.pi / BOWL_SEGMENTS
+	local before = ellipsePoint(a, b, theta - halfStep)
+	local after = ellipsePoint(a, b, theta + halfStep)
+	local tangent = (after - before).Unit
+	local up = Vector3.yAxis
+	local back = tangent:Cross(up).Unit
+	local position = ellipsePoint(a, b, theta) + Vector3.new(0, y, 0)
+	return CFrame.fromMatrix(position, tangent, up, back), (after - before).Magnitude
 end
 
-local function addSegmentRing(parent, prefix, a, b, y, height, depth, count, color, material, widthScale)
-	local perimeter = ellipsePerimeterApprox(a, b)
-	local width = (perimeter / count) * (widthScale or 0.94)
+local function radialBandFrame(innerA, innerB, outerA, outerB, theta, y, segmentCount)
+	local inner = ellipsePoint(innerA, innerB, theta)
+	local outer = ellipsePoint(outerA, outerB, theta)
+	local mid = inner:Lerp(outer, 0.5)
+	local radial = outer - inner
+	local up = Vector3.yAxis
+	local back = radial.Unit
+	local right = up:Cross(back).Unit
+
+	local halfStep = math.pi / segmentCount
+	local midA = (innerA + outerA) * 0.5
+	local midB = (innerB + outerB) * 0.5
+	local before = ellipsePoint(midA, midB, theta - halfStep)
+	local after = ellipsePoint(midA, midB, theta + halfStep)
+
+	return CFrame.fromMatrix(mid + Vector3.new(0, y, 0), right, up, back), (after - before).Magnitude, radial.Magnitude
+end
+
+local function addSmoothRing(parent, prefix, a, b, y, height, depth, count, color, material, overlap)
+	local step = math.pi * 2 / count
+	local halfStep = step * 0.5
 	for index = 0, count - 1 do
-		local theta = (index / count) * math.pi * 2
-		local x, z = ellipsePoint(a, b, theta)
+		local theta = index * step
+		local before = ellipsePoint(a, b, theta - halfStep)
+		local after = ellipsePoint(a, b, theta + halfStep)
+		local tangent = (after - before).Unit
+		local up = Vector3.yAxis
+		local back = tangent:Cross(up).Unit
+		local position = ellipsePoint(a, b, theta) + Vector3.new(0, y, 0)
 		part(
 			parent,
 			prefix .. string.format("_%02d", index + 1),
-			Vector3.new(width, height, depth),
-			radialCF(x, y, z),
+			Vector3.new((after - before).Magnitude * (overlap or 1.10), height, depth),
+			CFrame.fromMatrix(position, tangent, up, back),
+			color,
+			material
+		)
+	end
+end
+
+local function addBandRing(parent, prefix, innerA, innerB, outerA, outerB, y, height, count, color, material)
+	local step = math.pi * 2 / count
+	for index = 0, count - 1 do
+		local theta = index * step
+		local cf, chord, radialDepth = radialBandFrame(innerA, innerB, outerA, outerB, theta, y, count)
+		part(
+			parent,
+			prefix .. string.format("_%02d", index + 1),
+			Vector3.new(chord * 1.13, height, radialDepth + 1.2),
+			cf,
 			color,
 			material
 		)
@@ -75,19 +120,51 @@ local function addSegmentRing(parent, prefix, a, b, y, height, depth, count, col
 end
 
 local function addSplitCanopy(westParent, eastParent)
-	local count = 28
-	local a, b = 88, 54
-	local width = (ellipsePerimeterApprox(a, b) / count) * 0.98
-	for index = 0, count - 1 do
-		local theta = (index / count) * math.pi * 2
-		local x, z = ellipsePoint(a, b, theta)
-		local parent = x < 0 and westParent or eastParent
+	local innerA, innerB = 65, 39
+	local outerA, outerB = 108, 70
+	local step = math.pi * 2 / ROOF_SEGMENTS
+
+	for index = 0, ROOF_SEGMENTS - 1 do
+		local theta = index * step
+		local cf, chord, radialDepth = radialBandFrame(innerA, innerB, outerA, outerB, theta, 50, ROOF_SEGMENTS)
+		local center = cf.Position
+		local parent = center.X < 0 and westParent or eastParent
+
 		part(
 			parent,
 			"RoofCanopySegment" .. string.format("_%02d", index + 1),
-			Vector3.new(width, 2.4, 38),
-			radialCF(x, 50, z),
+			Vector3.new(chord * 1.14, 2.4, radialDepth + 1.6),
+			cf,
 			COLORS.Roof,
+			Enum.Material.Metal
+		)
+	end
+
+	-- Thin edge fascias hide the polygon joints and make both roof edges read
+	-- as one continuous architectural ring instead of individual roof blocks.
+	for index = 0, ROOF_SEGMENTS - 1 do
+		local theta = index * step
+		local x = math.cos(theta)
+		local outerX = outerA * x
+		local parent = outerX < 0 and westParent or eastParent
+
+		local outerCf, outerChord = tangentFrame(outerA, outerB, theta, 48.6)
+		part(
+			parent,
+			"RoofOuterFascia" .. string.format("_%02d", index + 1),
+			Vector3.new(outerChord * 1.12, 3.0, 1.8),
+			outerCf,
+			COLORS.Metal,
+			Enum.Material.Metal
+		)
+
+		local innerCf, innerChord = tangentFrame(innerA, innerB, theta, 48.8)
+		part(
+			parent,
+			"RoofInnerFascia" .. string.format("_%02d", index + 1),
+			Vector3.new(innerChord * 1.12, 2.6, 1.6),
+			innerCf,
+			COLORS.Metal,
 			Enum.Material.Metal
 		)
 	end
@@ -126,25 +203,42 @@ local function addMainEntrance(group)
 	end
 end
 
+local function addSeatingTier(parent, prefix, a, b, y, depth)
+	addSmoothRing(parent, prefix, a, b, y, 3.6, depth, BOWL_SEGMENTS, COLORS.Seat, Enum.Material.SmoothPlastic, 1.11)
+end
+
 local function addBowl(lowerGroup, upperGroup, serviceGroup)
-	addSegmentRing(lowerGroup, "LowerBowl", 96, 59, 13, 20, 22, 28, COLORS.Concrete, Enum.Material.Concrete, 0.96)
-	addSegmentRing(upperGroup, "UpperBowl", 98, 61, 34, 20, 18, 28, COLORS.ConcreteDark, Enum.Material.Concrete, 0.95)
+	-- Filled overlapping bands create a continuous oval shell. The previous
+	-- version used isolated blocks around an ellipse, which left large visible gaps.
+	addBandRing(lowerGroup, "LowerBowl", 84, 48, 110, 70, 12.5, 21, BOWL_SEGMENTS, COLORS.Concrete, Enum.Material.Concrete)
+	addBandRing(upperGroup, "UpperBowl", 76, 43, 106, 68, 34, 21, BOWL_SEGMENTS, COLORS.ConcreteDark, Enum.Material.Concrete)
 
-	-- Visible seating bands just inside the structural bowl.
-	addSegmentRing(lowerGroup, "LowerSeatBand", 79, 44, 22, 5, 9, 28, COLORS.Seat, Enum.Material.SmoothPlastic, 0.94)
-	addSegmentRing(upperGroup, "UpperSeatBand", 76, 42, 42, 5, 8, 28, COLORS.Seat, Enum.Material.SmoothPlastic, 0.94)
+	-- Four stepped seating bands produce a readable two-tier interior without
+	-- modeling individual seats or creating a playable interior.
+	addSeatingTier(lowerGroup, "LowerSeatOuter", 79, 44, 19, 8.5)
+	addSeatingTier(lowerGroup, "LowerSeatInner", 73, 38, 23, 8.0)
+	addSeatingTier(upperGroup, "UpperSeatOuter", 77, 43, 36, 7.5)
+	addSeatingTier(upperGroup, "UpperSeatInner", 70, 36, 41, 7.0)
 
-	-- Exterior concourse glazing and repeated ribs are what keep the stadium from
-	-- reading as a smooth cylinder or generic box.
-	addSegmentRing(serviceGroup, "ConcourseGlass", 107, 68, 19, 7, 1.2, 28, COLORS.Glass, Enum.Material.Glass, 0.90)
-	for index = 0, 27 do
-		local theta = (index / 28) * math.pi * 2
-		local x, z = ellipsePoint(109, 70, theta)
+	-- Continuous concourse glazing sits outside the concrete bowl.
+	addSmoothRing(serviceGroup, "ConcourseGlass", 108, 69, 19, 7, 1.25, BOWL_SEGMENTS, COLORS.Glass, Enum.Material.Glass, 1.12)
+
+	-- Structural ribs are now accents over a closed facade, not the only thing
+	-- bridging large gaps between bowl blocks.
+	local step = math.pi * 2 / RIB_COUNT
+	for index = 0, RIB_COUNT - 1 do
+		local theta = index * step
+		local before = ellipsePoint(110, 71, theta - step * 0.5)
+		local after = ellipsePoint(110, 71, theta + step * 0.5)
+		local tangent = (after - before).Unit
+		local up = Vector3.yAxis
+		local back = tangent:Cross(up).Unit
+		local position = ellipsePoint(110, 71, theta) + Vector3.new(0, 25.5, 0)
 		part(
 			upperGroup,
 			"StructuralRib" .. string.format("_%02d", index + 1),
-			Vector3.new(2.4, 43, 3.2),
-			radialCF(x, 25.5, z),
+			Vector3.new(2.4, 43, 3.0),
+			CFrame.fromMatrix(position, tangent, up, back),
 			COLORS.Metal,
 			Enum.Material.Metal
 		)
@@ -200,9 +294,7 @@ local function addRearService(group)
 end
 
 local function addPitch(group)
-	block(group, "Pitch", Vector3.new(104, 0.7, 60), Vector3.new(0, 0.4, 4), COLORS.Pitch, Enum.Material.Grass)
 	block(group, "PitchPerimeter", Vector3.new(118, 0.35, 72), Vector3.new(0, 0.18, 4), COLORS.ConcreteDark, Enum.Material.Concrete)
-	-- Re-place pitch above the perimeter slab so the green surface remains visible.
 	block(group, "PitchSurface", Vector3.new(104, 0.45, 60), Vector3.new(0, 0.55, 4), COLORS.Pitch, Enum.Material.Grass)
 end
 
@@ -229,12 +321,16 @@ function Builder.Build(parent)
 	model:SetAttribute("AssetPhase", 4)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Pending")
-	model:SetAttribute("GeometryRevision", "LargeCityStadium-v1")
+	model:SetAttribute("GeometryRevision", "LargeCityStadium-v2-SmoothOval")
 	model:SetAttribute("HasInterior", false)
 	model:SetAttribute("Style", specification.Style)
 	model:SetAttribute("MaxHealth", specification.ProposedGameplayMetadata.TargetMaxHealth)
 	model:SetAttribute("EnergyType", specification.ProposedGameplayMetadata.EnergyType)
 	model:SetAttribute("InstallerTag", specification.ProposedGameplayMetadata.InstallerTag)
+	model:SetAttribute("BowlSegmentCount", BOWL_SEGMENTS)
+	model:SetAttribute("RoofSegmentCount", ROOF_SEGMENTS)
+	model:SetAttribute("BowlClosedShell", true)
+	model:SetAttribute("RoofContinuousRing", true)
 	model.Parent = parent
 
 	local groups = folder(model, "DestructionGroups")
