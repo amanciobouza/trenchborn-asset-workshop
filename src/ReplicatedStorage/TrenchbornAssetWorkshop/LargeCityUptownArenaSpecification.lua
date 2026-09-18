@@ -113,21 +113,21 @@ local Specification = {
 			RearService = {Footprint = Vector2.new(74, 16), Center = Vector3.new(0, 9, 48), Height = 18},
 		},
 		Facade = {
-			SegmentCount = 48,
+			SegmentCount = 72,
 			LowerBandY = 14,
 			UpperBandY = 32,
 			MediaRibbonY = 28,
 			MediaRibbonHeight = 5.5,
 			VerticalFinCount = 24,
-			Rule = "Arena body reads as one continuous enclosed oval; overlapping shell segments prevent visible gaps while vertical fins remain surface rhythm rather than structural separators.",
+			Rule = "Arena body uses shallow overlapping tangent-shell segments so the exterior reads as one flowing enclosed oval; vertical fins remain sparse surface rhythm rather than emphasizing facets.",
 		},
 		Roof = {
-			SegmentCount = 48,
+			SegmentCount = 72,
 			OuterFootprint = Vector2.new(132, 94),
 			CrownY = 56,
 			PerimeterY = 44,
 			Thickness = 2.2,
-			Rule = "Fully enclosed shallow segmented crown with overlapping wedges and a continuous perimeter ring; no open center and no futuristic dome silhouette.",
+			Rule = "Fully enclosed shallow crown uses three broad sloped annular bands plus a small oval cap and continuous perimeter ring; avoid horizontal roof terraces, visible stepping and futuristic dome language.",
 		},
 		Entrance = {
 			GlazingSpan = 56,
@@ -165,7 +165,7 @@ local Specification = {
 
 	Phase4Status = {
 		Status = "GoldenMasterReview",
-		GeometryRevision = "LargeCityUptownArena-v1",
+		GeometryRevision = "LargeCityUptownArena-v2-SmoothShellRoof",
 		QualityGateB = "Pending",
 	},
 
