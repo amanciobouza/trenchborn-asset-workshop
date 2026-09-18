@@ -176,6 +176,21 @@ local Specification = {
 		NextPhase = 5,
 	},
 
+	Phase5Status = {
+		Status = "InReview",
+		Revision = "LargeCityUptownArena-Dressing-v1",
+		Includes = {
+			"Uptown Arena wordmark",
+			"Sports / Concerts / Events entrance strip",
+			"Gate A-D entrance signage",
+			"eight framed media-ribbon event displays",
+			"facade accent lighting",
+			"event plaza palms, planters and queue bollards",
+			"rear event-loading signage",
+		},
+		QualityGateC = "Pending",
+	},
+
 	Phase3Acceptance = {
 		"Continuous enclosed oval facade has deterministic dimensions and no large segment gaps.",
 		"Fully enclosed shallow roof is clearly distinct from the adjacent open stadium.",
