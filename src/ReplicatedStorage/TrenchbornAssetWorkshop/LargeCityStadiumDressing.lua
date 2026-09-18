@@ -393,6 +393,74 @@ local function addFloodlights(root)
 	end
 end
 
+local function addRearServiceDressing(root)
+	local area = folder(root, "RearServiceDressing")
+
+	local header = block(
+		area,
+		"RearServiceHeader",
+		Vector3.new(44, 3.2, 0.45),
+		Vector3.new(0, 14.2, 79.65),
+		COLORS.Dark,
+		Enum.Material.Metal
+	)
+	addSurfaceText(area, header, "TEAM  •  SERVICE  •  DELIVERIES", Enum.NormalId.Back, COLORS.White)
+
+	for index, x in ipairs({-30, -15, 0, 15, 30}) do
+		block(
+			area,
+			"RearBayFrame" .. index,
+			Vector3.new(11.2, 8.2, 0.55),
+			Vector3.new(x, 7, 79.55),
+			COLORS.Dark,
+			Enum.Material.Metal
+		)
+
+		local bayNumber = block(
+			area,
+			"RearBayNumber" .. index,
+			Vector3.new(4.8, 2.0, 0.30),
+			Vector3.new(x, 12.0, 79.88),
+			index == 3 and COLORS.Cyan or COLORS.Teal,
+			Enum.Material.Neon
+		)
+		addSurfaceText(area, bayNumber, string.format("%02d", index), Enum.NormalId.Back, COLORS.White)
+	end
+
+	local crew = block(
+		area,
+		"CrewEntranceLabel",
+		Vector3.new(8.5, 1.8, 0.28),
+		Vector3.new(0, 3.0, 79.9),
+		COLORS.Cyan,
+		Enum.Material.Neon
+	)
+	addSurfaceText(area, crew, "CREW", Enum.NormalId.Back, COLORS.White)
+
+	for _, x in ipairs({-30, -15, 0, 15, 30}) do
+		block(
+			area,
+			"LoadingGuide" .. tostring(x),
+			Vector3.new(7.0, 0.10, 12.0),
+			Vector3.new(x, 0.56, 88),
+			COLORS.White,
+			Enum.Material.SmoothPlastic
+		)
+	end
+
+	for _, x in ipairs({-40, 40}) do
+		cylinder(
+			area,
+			"RearBollard" .. tostring(x),
+			Vector3.new(2.6, 0.42, 0.42),
+			Vector3.new(x, 1.3, 83.5),
+			COLORS.Metal,
+			Enum.Material.Metal,
+			Vector3.new(0, 0, 90)
+		)
+	end
+end
+
 local function addPitchDressing(root)
 	local area = folder(root, "PitchDressing")
 	local y = 0.82
@@ -435,12 +503,13 @@ function Dressing.Apply(model)
 	addEntranceDressing(root)
 	addFacadeDressing(root)
 	addFloodlights(root)
+	addRearServiceDressing(root)
 	addPitchDressing(root)
 
 	model:SetAttribute("AssetPhase", 5)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Approved")
-	model:SetAttribute("DressingRevision", "LargeCityStadium-Dressing-v5-FloodlightPylonFit")
+	model:SetAttribute("DressingRevision", "LargeCityStadium-Dressing-v6-RearServiceVisible")
 	model:SetAttribute("DressingStatus", "Approved")
 	model:SetAttribute("TextScaledRule", true)
 	model:SetAttribute("LargeStadiumFloodlights", true)
@@ -450,6 +519,8 @@ function Dressing.Apply(model)
 	model:SetAttribute("FloodlightSupportsAligned", true)
 	model:SetAttribute("FloodlightsRaised", true)
 	model:SetAttribute("FloodlightSupportsInnerAnchored", true)
+	model:SetAttribute("RearServiceDressingVisible", true)
+	model:SetAttribute("RearServiceBayCount", 5)
 	return model
 end
 
