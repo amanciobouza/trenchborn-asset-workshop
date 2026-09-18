@@ -172,7 +172,11 @@ local function addRearService(group)
 	block(group, "RearServiceHeader", Vector3.new(36, 4, 1.2), Vector3.new(0, 14.2, 29.8), COLORS.Dark, Enum.Material.Metal)
 	for index, x in ipairs({-12, 0, 12}) do
 		block(group, "RearServiceDoor_" .. index, Vector3.new(8, 8, 0.75), Vector3.new(x, 5.0, 29.55), COLORS.DarkGlass, Enum.Material.Metal)
-		block(group, "RearServiceFrame_" .. index, Vector3.new(9.4, 9.4, 0.45), Vector3.new(x, 5.0, 30.05), COLORS.Metal, Enum.Material.Metal)
+		-- Four slim strips frame the opening without covering the door.
+		block(group, "RearServiceFrameTop_" .. index, Vector3.new(9.4, 0.65, 0.45), Vector3.new(x, 9.35, 30.05), COLORS.Metal, Enum.Material.Metal)
+		block(group, "RearServiceFrameBottom_" .. index, Vector3.new(9.4, 0.65, 0.45), Vector3.new(x, 0.65, 30.05), COLORS.Metal, Enum.Material.Metal)
+		block(group, "RearServiceFrameLeft_" .. index, Vector3.new(0.65, 8.1, 0.45), Vector3.new(x - 4.35, 5.0, 30.05), COLORS.Metal, Enum.Material.Metal)
+		block(group, "RearServiceFrameRight_" .. index, Vector3.new(0.65, 8.1, 0.45), Vector3.new(x + 4.35, 5.0, 30.05), COLORS.Metal, Enum.Material.Metal)
 	end
 	block(group, "RearServiceCanopy", Vector3.new(42, 1.2, 7.0), Vector3.new(0, 15.0, 33.0), COLORS.StoneDark, Enum.Material.Metal)
 	block(group, "RearServiceApron", Vector3.new(48, 0.45, 13), Vector3.new(0, 0.23, 35.0), COLORS.StoneDark, Enum.Material.Concrete)
