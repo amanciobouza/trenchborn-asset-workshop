@@ -104,6 +104,45 @@ local Specification = {
 		PartBudget = {TargetVisibleParts = 760, MaximumVisibleParts = 900},
 	},
 
+	PlannedPhase5 = {
+		Facade = {
+			ExteriorScreens = "Restore rectangular exterior window/screen panels as visible overlays outside the continuous bowl shell.",
+			EntranceGlazing = "Widen the main entrance glass so the glazed facade spans the complete gate sector rather than only the central bays.",
+		},
+		PongEasterEgg = {
+			Status = "ApprovedForPhase5",
+			Purpose = "Small decorative stadium gag running on the football pitch; no gameplay reward or player interaction.",
+			Presentation = "Minimal classic Pong projected/placed flat just above the pitch surface.",
+			LeftPaddle = {Shape = "thin white bar", Size = Vector3.new(1.2, 0.25, 12)},
+			RightPaddle = {Shape = "thin white bar", Size = Vector3.new(1.2, 0.25, 12)},
+			Ball = {Shape = "small white square", Size = Vector3.new(2.2, 0.25, 2.2)},
+			Motion = {
+				Loop = true,
+				Deterministic = true,
+				HorizontalTravel = "Ball travels continuously between left and right paddles.",
+				VerticalTravel = "Small changing Z component creates classic diagonal Pong motion and top/bottom bounces.",
+				Paddles = "Paddles track the ball with deliberately simple smooth motion so the rally continues indefinitely.",
+			},
+			Audio = {
+				Enabled = true,
+				Style = "short simple retro Pong beep",
+				Events = {"paddle bounce", "top/bottom boundary bounce"},
+				Spatial = true,
+				MaxDistance = 95,
+				Volume = 0.18,
+				Rule = "Keep the beep subtle enough that it reads as a nearby stadium Easter egg rather than global ambience.",
+			},
+			Runtime = {
+				DecorativeOnly = true,
+				ServerAuthoritative = false,
+				PreferredExecution = "lightweight client/local visual animation when practical",
+				DisableAttribute = "PongEnabled",
+				DefaultEnabled = true,
+				CleanupWithAsset = true,
+			},
+		},
+	},
+
 	ProposedGameplayMetadata = {
 		TargetMaxHealth = 256000,
 		EnergyType = "Electric",
