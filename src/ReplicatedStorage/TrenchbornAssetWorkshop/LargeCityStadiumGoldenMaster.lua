@@ -186,7 +186,7 @@ end
 
 local function addMainEntrance(group)
 	block(group, "EntranceHallMass", Vector3.new(70, 28, 14), Vector3.new(0, 14, -73), COLORS.Concrete, Enum.Material.Concrete)
-	block(group, "EntranceGlass", Vector3.new(48, 18, 0.5), Vector3.new(0, 13.5, -80.25), COLORS.Glass, Enum.Material.Glass, 0.12)
+	block(group, "EntranceGlass", Vector3.new(68, 18, 0.5), Vector3.new(0, 13.5, -80.25), COLORS.Glass, Enum.Material.Glass, 0.12)
 	for _, x in ipairs({-31, -18, -6, 6, 18, 31}) do
 		block(group, "EntrancePier" .. tostring(x), Vector3.new(3.2, 30, 4), Vector3.new(x, 15, -79), COLORS.ConcreteDark, Enum.Material.Concrete)
 	end
@@ -200,6 +200,32 @@ local function addMainEntrance(group)
 			COLORS.Concrete,
 			Enum.Material.Concrete
 		)
+	end
+end
+
+local function addExteriorScreens(parent)
+	local count = 16
+	local a, b = 112.5, 72.5
+	local step = math.pi * 2 / count
+
+	for index = 0, count - 1 do
+		local theta = index * step
+		-- Keep the ceremonial front entrance visually clean; screens wrap the
+		-- sides and rear facade and sit clearly outside the closed bowl shell.
+		local frontDistance = math.abs(math.atan2(math.sin(theta + math.pi * 0.5), math.cos(theta + math.pi * 0.5)))
+		if frontDistance > math.rad(28) then
+			local cf, chord = tangentFrame(a, b, theta, 28)
+			local screen = part(
+				parent,
+				"ExteriorScreen" .. string.format("_%02d", index + 1),
+				Vector3.new(math.max(10.5, chord * 0.72), 7.5, 0.75),
+				cf,
+				COLORS.Glass,
+				Enum.Material.Glass,
+				0.04
+			)
+			screen:SetAttribute("FacadeStandOff", true)
+		end
 	end
 end
 
@@ -221,7 +247,7 @@ local function addBowl(lowerGroup, upperGroup, serviceGroup)
 	addSeatingTier(upperGroup, "UpperSeatInner", 70, 36, 41, 7.0)
 
 	-- Continuous concourse glazing sits outside the concrete bowl.
-	addSmoothRing(serviceGroup, "ConcourseGlass", 108, 69, 19, 7, 1.25, BOWL_SEGMENTS, COLORS.Glass, Enum.Material.Glass, 1.12)
+	addSmoothRing(serviceGroup, "ConcourseGlass", 108, 69, 19, 7, 1.25, BOWL_SEGMENTS, COLORS.Glass, Enum.Material.Glass, 1.12)\n\taddExteriorScreens(serviceGroup)
 
 	-- Structural ribs are now accents over a closed facade, not the only thing
 	-- bridging large gaps between bowl blocks.
@@ -321,7 +347,7 @@ function Builder.Build(parent)
 	model:SetAttribute("AssetPhase", 4)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Pending")
-	model:SetAttribute("GeometryRevision", "LargeCityStadium-v2-SmoothOval")
+	model:SetAttribute("GeometryRevision", "LargeCityStadium-v3-FacadeScreens")
 	model:SetAttribute("HasInterior", false)
 	model:SetAttribute("Style", specification.Style)
 	model:SetAttribute("MaxHealth", specification.ProposedGameplayMetadata.TargetMaxHealth)
@@ -330,7 +356,7 @@ function Builder.Build(parent)
 	model:SetAttribute("BowlSegmentCount", BOWL_SEGMENTS)
 	model:SetAttribute("RoofSegmentCount", ROOF_SEGMENTS)
 	model:SetAttribute("BowlClosedShell", true)
-	model:SetAttribute("RoofContinuousRing", true)
+	model:SetAttribute("RoofContinuousRing", true)\n\tmodel:SetAttribute("ExteriorScreensRestored", true)\n\tmodel:SetAttribute("EntranceGlazingFullSpan", true)
 	model.Parent = parent
 
 	local groups = folder(model, "DestructionGroups")
