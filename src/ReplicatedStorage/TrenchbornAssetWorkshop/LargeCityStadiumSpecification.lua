@@ -66,19 +66,20 @@ local Specification = {
 			RearService = {Footprint = Vector2.new(82, 15), Center = Vector3.new(0, 9, 72), Height = 18},
 		},
 		Bowl = {
-			SegmentCount = 28,
+			SegmentCount = 64,
 			LowerTierTopY = 24,
 			UpperTierTopY = 43,
 			ConcourseBandY = 18,
-			StructuralRibCount = 28,
-			Rule = "Use repeated modular wedge/rib segments to imply an oval bowl; avoid a single smooth cylinder or flat box wall.",
+			StructuralRibCount = 32,
+			Rule = "Use overlapping high-resolution shell segments so the bowl reads as one continuous oval; structural ribs remain a facade accent rather than bridging open gaps.",
 		},
 		Roof = {
 			CanopyOuterFootprint = Vector2.new(218, 142),
 			CanopyInnerOpening = Vector2.new(128, 78),
 			CanopyY = 50,
 			CanopyThickness = 2.4,
-			Rule = "Roof remains visibly open over the pitch and is split into coherent destroyable canopy masses.",
+			SegmentCount = 64,
+			Rule = "Roof remains visibly open over the pitch, uses overlapping high-resolution segments with continuous inner/outer fascias, and is split into coherent destroyable canopy masses.",
 		},
 		Pylons = {
 			Height = 72,
@@ -100,7 +101,7 @@ local Specification = {
 			Rule = "Glass and decorative overlays must stand clear of structural faces to avoid Z-fighting.",
 		},
 		LandscapeReferences = {PalmCount = 14, MainPlaza = Vector3.new(110, 0, 28), SidePlazaDepth = 16, Phase = 5},
-		PartBudget = {TargetVisibleParts = 650, MaximumVisibleParts = 900},
+		PartBudget = {TargetVisibleParts = 760, MaximumVisibleParts = 900},
 	},
 
 	ProposedGameplayMetadata = {
@@ -122,7 +123,7 @@ local Specification = {
 
 	Phase3Acceptance = {
 		"Outer bowl, pitch opening, roof ring, pylons, entrance and rear service mass have deterministic dimensions.",
-		"Repeated modular ribs and seating tiers replace any generic box-only silhouette.",
+		"Continuous overlapping oval shell, stepped seating tiers and structural ribs replace the previous gapped blockout read.",
 		"Seven destruction groups map cleanly to large coherent physical masses.",
 		"Golden Master target remains below 900 visible parts.",
 		"No modeled interior rooms are required.",
