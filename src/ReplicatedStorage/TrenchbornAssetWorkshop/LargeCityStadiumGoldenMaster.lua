@@ -247,7 +247,8 @@ local function addBowl(lowerGroup, upperGroup, serviceGroup)
 	addSeatingTier(upperGroup, "UpperSeatInner", 70, 36, 41, 7.0)
 
 	-- Continuous concourse glazing sits outside the concrete bowl.
-	addSmoothRing(serviceGroup, "ConcourseGlass", 108, 69, 19, 7, 1.25, BOWL_SEGMENTS, COLORS.Glass, Enum.Material.Glass, 1.12)\n\taddExteriorScreens(serviceGroup)
+	addSmoothRing(serviceGroup, "ConcourseGlass", 108, 69, 19, 7, 1.25, BOWL_SEGMENTS, COLORS.Glass, Enum.Material.Glass, 1.12)
+	addExteriorScreens(serviceGroup)
 
 	-- Structural ribs are now accents over a closed facade, not the only thing
 	-- bridging large gaps between bowl blocks.
@@ -356,7 +357,9 @@ function Builder.Build(parent)
 	model:SetAttribute("BowlSegmentCount", BOWL_SEGMENTS)
 	model:SetAttribute("RoofSegmentCount", ROOF_SEGMENTS)
 	model:SetAttribute("BowlClosedShell", true)
-	model:SetAttribute("RoofContinuousRing", true)\n\tmodel:SetAttribute("ExteriorScreensRestored", true)\n\tmodel:SetAttribute("EntranceGlazingFullSpan", true)
+	model:SetAttribute("RoofContinuousRing", true)
+	model:SetAttribute("ExteriorScreensRestored", true)
+	model:SetAttribute("EntranceGlazingFullSpan", true)
 	model.Parent = parent
 
 	local groups = folder(model, "DestructionGroups")
