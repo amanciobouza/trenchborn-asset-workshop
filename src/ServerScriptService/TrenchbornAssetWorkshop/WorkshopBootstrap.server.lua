@@ -6,6 +6,14 @@ workshop:SetAttribute("Pipeline", "Trenchborn-7-Phase")
 workshop:SetAttribute("QualityStatus", "Phase6_GameplaySimulation")
 
 local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
+
+-- This branch uses an isolated Large City Stadium preview. The legacy Guardian
+-- workshop bootstrap depends on LargeCity_Layout_Blockout, which the isolated
+-- building review intentionally removes. Exit before any layout-dependent setup.
+if script.Parent:FindFirstChild("LargeCityStadiumPreview") and packageFolder:FindFirstChild("LargeCityStadiumSpecification") then
+	workshop:SetAttribute("LegacyWorkshopBootstrapDisabled", true)
+	return
+end
 local specification = require(packageFolder:WaitForChild("MarshalRoadblockSpecification"))
 local goldenMaster = require(packageFolder:WaitForChild("MarshalRoadblockGoldenMaster"))
 local dressing = require(packageFolder:WaitForChild("MarshalRoadblockDressing"))
