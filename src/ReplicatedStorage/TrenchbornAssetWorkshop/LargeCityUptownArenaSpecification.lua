@@ -2,8 +2,8 @@ local Specification = {
 	AssetId = "LargeCity_UptownArena_L3",
 	DisplayName = "Uptown Arena",
 	City = "LargeCity",
-	Phase = 3,
-	QualityGate = "A-Approved",
+	Phase = 4,
+	QualityGate = "B-Pending",
 	Style = "Singapore x Miami tropical metropolitan indoor arena",
 
 	AssetBrief = {
@@ -161,6 +161,12 @@ local Specification = {
 			TargetVisibleParts = 520,
 			MaximumVisibleParts = 700,
 		},
+	},
+
+	Phase4Status = {
+		Status = "GoldenMasterReview",
+		GeometryRevision = "LargeCityUptownArena-v1",
+		QualityGateB = "Pending",
 	},
 
 	Phase3Acceptance = {
