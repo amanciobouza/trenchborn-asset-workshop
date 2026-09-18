@@ -252,10 +252,10 @@ local function addFloodlights(root)
 	local area = folder(root, "Floodlights")
 	local fieldTarget = Vector3.new(0, 3, 4)
 	local mounts = {
-		Vector3.new(-84, 68, -54),
-		Vector3.new(84, 68, -54),
-		Vector3.new(-84, 68, 54),
-		Vector3.new(84, 68, 54),
+		Vector3.new(-77, 66, -49),
+		Vector3.new(77, 66, -49),
+		Vector3.new(-77, 66, 49),
+		Vector3.new(77, 66, 49),
 	}
 
 	for mountIndex, mount in ipairs(mounts) do
@@ -267,7 +267,7 @@ local function addFloodlights(root)
 		local backing = part(
 			bank,
 			"FloodlightFrame",
-			Vector3.new(20.0, 11.0, 0.8),
+			Vector3.new(16.5, 10.0, 0.8),
 			bankCF,
 			COLORS.Dark,
 			Enum.Material.Metal
@@ -277,26 +277,26 @@ local function addFloodlights(root)
 		part(
 			bank,
 			"UpperCrossbar",
-			Vector3.new(21.0, 0.7, 1.2),
-			bankCF * CFrame.new(0, 5.3, 0.45),
+			Vector3.new(17.5, 0.7, 1.2),
+			bankCF * CFrame.new(0, 4.8, 0.45),
 			COLORS.Metal,
 			Enum.Material.Metal
 		)
 		part(
 			bank,
 			"LowerCrossbar",
-			Vector3.new(21.0, 0.7, 1.2),
-			bankCF * CFrame.new(0, -5.3, 0.45),
+			Vector3.new(17.5, 0.7, 1.2),
+			bankCF * CFrame.new(0, -4.8, 0.45),
 			COLORS.Metal,
 			Enum.Material.Metal
 		)
 
-		for _, x in ipairs({-7.5, 7.5}) do
+		for _, x in ipairs({-4.6, 4.6}) do
 			part(
 				bank,
 				"RearSupport" .. tostring(x),
-				Vector3.new(1.0, 13.5, 1.0),
-				bankCF * CFrame.new(x, -6.0, 4.2) * CFrame.Angles(math.rad(-18), 0, 0),
+				Vector3.new(0.9, 12.0, 0.9),
+				bankCF * CFrame.new(x, -5.3, 3.5) * CFrame.Angles(math.rad(-16), 0, 0),
 				COLORS.Metal,
 				Enum.Material.Metal
 			)
@@ -305,12 +305,12 @@ local function addFloodlights(root)
 		local centerLamp
 		for row = 1, 3 do
 			for column = 1, 6 do
-				local x = (column - 3.5) * 3.05
-				local y = (2 - row) * 3.0
+				local x = (column - 3.5) * 2.45
+				local y = (2 - row) * 2.65
 				local lamp = part(
 					bank,
 					string.format("Lamp_R%d_C%d", row, column),
-					Vector3.new(2.35, 2.15, 0.55),
+					Vector3.new(2.05, 1.95, 0.55),
 					bankCF * CFrame.new(x, y, -0.72),
 					COLORS.Light,
 					Enum.Material.Neon
@@ -320,7 +320,7 @@ local function addFloodlights(root)
 				local rim = part(
 					bank,
 					string.format("LampRim_R%d_C%d", row, column),
-					Vector3.new(2.75, 2.55, 0.24),
+					Vector3.new(2.42, 2.30, 0.24),
 					bankCF * CFrame.new(x, y, -0.48),
 					COLORS.Metal,
 					Enum.Material.Metal
@@ -429,12 +429,14 @@ function Dressing.Apply(model)
 	model:SetAttribute("AssetPhase", 5)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Approved")
-	model:SetAttribute("DressingRevision", "LargeCityStadium-Dressing-v3-Floodlights")
+	model:SetAttribute("DressingRevision", "LargeCityStadium-Dressing-v4-FloodlightFit")
 	model:SetAttribute("DressingStatus", "Review")
 	model:SetAttribute("TextScaledRule", true)
 	model:SetAttribute("LargeStadiumFloodlights", true)
 	model:SetAttribute("FloodlightBankCount", 4)
 	model:SetAttribute("FloodlightLampCount", 72)
+	model:SetAttribute("FloodlightsMovedInward", true)
+	model:SetAttribute("FloodlightSupportsAligned", true)
 	return model
 end
 
