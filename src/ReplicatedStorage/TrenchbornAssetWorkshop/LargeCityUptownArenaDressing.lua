@@ -154,10 +154,12 @@ local function addEntranceDressing(root)
 	addSurfaceText(area, eventStrip, "SPORTS   •   CONCERTS   •   EVENTS", Enum.NormalId.Front, COLORS.White)
 
 	local gates = {
-		{label = "A", x = -21},
-		{label = "B", x = -7},
-		{label = "C", x = 7},
-		{label = "D", x = 21},
+		-- Portal piers sit at -27, -17, -6, 6, 17 and 27.
+		-- Center each gate sign in a real bay between adjacent piers.
+		{label = "A", x = -22.0},
+		{label = "B", x = -11.5},
+		{label = "C", x = 11.5},
+		{label = "D", x = 22.0},
 	}
 	for _, gate in ipairs(gates) do
 		local sign = block(
@@ -373,11 +375,12 @@ function Dressing.Apply(model)
 	model:SetAttribute("AssetPhase", 5)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Approved")
-	model:SetAttribute("DressingRevision", "LargeCityUptownArena-Dressing-v2-FacadeRear")
+	model:SetAttribute("DressingRevision", "LargeCityUptownArena-Dressing-v3-GateAlignment")
 	model:SetAttribute("DressingStatus", "Review")
 	model:SetAttribute("TextScaledRule", true)
 	model:SetAttribute("FacadeFeatureBays", 8)
 	model:SetAttribute("RearServiceDressingVisible", true)
+	model:SetAttribute("GateSignsCenteredBetweenPiers", true)
 	return model
 end
 
