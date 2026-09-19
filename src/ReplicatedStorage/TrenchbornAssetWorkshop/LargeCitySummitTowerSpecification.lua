@@ -250,7 +250,7 @@ local Specification = {
 
 	Phase4Status = {
 		Status = "GoldenMasterReview",
-		GeometryRevision = "LargeCitySummitTower-v3-ExposedCrownBlades",
+		GeometryRevision = "LargeCitySummitTower-v4-RaisedCrownAlignedFins",
 		QualityGateB = "Pending",
 		ReviewFocus = {
 			"overall stepped silhouette",
@@ -260,7 +260,9 @@ local Specification = {
 			"asymmetric crown",
 			"rear service visibility",
 			"roof and crown free of coplanar surface flicker / Z-fighting",
-			"all three crown blades fully exposed above the rooftop plinth",
+			"all three crown blades fully exposed above the raised rooftop crown",
+			"facade fins aligned to window mullions",
+			"sky gardens read as balconies/canopies without an unexplained black overlay across the glazing",
 		},
 	},
 
