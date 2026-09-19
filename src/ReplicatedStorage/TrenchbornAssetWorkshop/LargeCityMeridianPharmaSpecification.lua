@@ -295,9 +295,11 @@ local Specification = {
 	Phase5Status = {
 		Status = "DressingReview",
 		QualityGateB = "Approved",
-		DressingRevision = "LargeCityMeridianPharma-Dressing-v1",
+		DressingRevision = "LargeCityMeridianPharma-Dressing-v2-StandOffSignage",
 		Scope = {
 			"building signage and Meridian BioWorks identity",
+			"cleanroom production sign is mounted clear of the full-height facade struts",
+			"rooftop process labels are bracket-mounted in front of equipment screens rather than coplanar with them",
 			"visitor-entry landscape and sterile plaza detailing",
 			"controlled process-zone safety graphics",
 			"subtle rooftop and bioreactor service detailing",
