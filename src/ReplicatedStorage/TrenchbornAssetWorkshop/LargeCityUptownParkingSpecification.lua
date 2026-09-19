@@ -1,0 +1,165 @@
+-- Phase 1 concept/specification for LC-55 Uptown Parking.
+-- Standalone building branch: no dependency on other Large City building branches.
+
+local Specification = {
+	AssetId = "LargeCity_UptownParking_L3",
+	DisplayName = "Uptown Parking",
+	LayoutId = "LC-55",
+	City = "LargeCity",
+	District = "Uptown",
+	BuildingType = "Parking Tower",
+	Phase = 1,
+	QualityGate = "A-Pending",
+	Branch = "largecity-uptown-parking-l3",
+
+	StandaloneImport = {
+		Required = true,
+		Rule = "This branch must remain independently importable into another project without depending on Stadium, Arena, Hospital, Resort, Summit Tower, Uptown Residences, Stadium Hotel, or any other building branch.",
+	},
+
+	LayoutReference = {
+		Position = Vector3.new(340, 24, 555),
+		Footprint = Vector2.new(70, 60),
+		Height = 54,
+		Yaw = 0,
+	},
+
+	Style = "Singapore mobility hub x Miami event-district parking architecture",
+	Role = "Premium event-district mobility hub serving Stadium, Arena and nearby Uptown towers",
+
+	Concept = {
+		Name = "Verdant Mobility Deck",
+		Read = "A compact sculptural parking tower wrapped in a breathable vertical screen, with a visible corner ramp, planted facade cuts, EV-charging identity and a lightweight rooftop mobility canopy.",
+		DoNotReadAs = {
+			"plain concrete parking garage",
+			"warehouse",
+			"office building",
+			"generic multi-storey car park",
+			"cyberpunk structure",
+			"solid featureless box",
+		},
+	},
+
+	Massing = {
+		Base = {
+			Footprint = Vector2.new(68, 58),
+			Height = 10,
+			Rule = "Ground-level mobility lobby and vehicle entrance with clearly readable in/out lanes, EV signage and pedestrian access.",
+		},
+		MainDecks = {
+			Footprint = Vector2.new(66, 56),
+			FromY = 10,
+			ToY = 44,
+			Rule = "Six parking levels form the main mass, but the exterior is broken by screened voids, planted cuts and a visible corner ramp.",
+		},
+		RooftopMobilityDeck = {
+			Footprint = Vector2.new(62, 52),
+			FromY = 44,
+			ToY = 54,
+			Rule = "Open rooftop mobility deck with solar/pergola canopy and planted edge, keeping the skyline light.",
+		},
+	},
+
+	SignatureFeatures = {
+		{
+			Name = "VerticalScreenVeil",
+			Description = "Alternating pale-metal and warm-bronze vertical fins wrap the garage, hiding parked cars while keeping the structure visibly ventilated.",
+		},
+		{
+			Name = "ExpressedCornerRamp",
+			Face = "front-right",
+			Description = "A diagonal/spiral-like ramp language is expressed on one corner through sloped slabs and screen breaks, making the building legible as parking.",
+		},
+		{
+			Name = "GreenBreathingCuts",
+			Description = "Two broad planted facade voids interrupt the screen and create visible tropical green pockets rather than a monotonous parking box.",
+		},
+		{
+			Name = "EVHub",
+			Face = "-Z",
+			Description = "Ground-level EV charging / mobility bay with teal lighting and a clearly readable vehicle entrance.",
+		},
+		{
+			Name = "RooftopSolarCanopy",
+			Y = 46,
+			Description = "A lightweight solar/pergola canopy with open edges gives the roof a distinctive but practical silhouette.",
+		},
+		{
+			Name = "PedestrianCore",
+			Face = "front-left",
+			Description = "Glass stair/elevator tower creates a clear human-scale entrance and adds vertical contrast to the horizontal parking decks.",
+		},
+	},
+
+	Facade = {
+		Primary = "Warm pale concrete parking slabs",
+		Secondary = "Pale metal vertical screen fins",
+		Accent = "Warm bronze fins plus restrained teal EV lighting",
+		Openings = "Dark ventilated gaps between slab edges",
+		Rule = "Facade must remain visibly ventilated and layered. Fins sit outside the deck edges and align with structural bays; no decorative elements buried inside the parking mass.",
+	},
+
+	Roof = {
+		Rule = "Open rooftop mobility deck with solar/pergola structure and planting. Avoid a solid enclosed crown.",
+	},
+
+	Landscape = {
+		Phase = 5,
+		Includes = {
+			"entry palms",
+			"ground-level bioswale planters",
+			"planted facade cuts",
+			"rooftop edge planting",
+			"EV charging signage",
+			"pedestrian bollards",
+		},
+	},
+
+	ProposedGameplayMetadata = {
+		TargetMaxHealth = 64000,
+		EnergyType = "Electric",
+		InstallerTag = "KaijuHouse",
+		ExternalCollapseIntegration = true,
+	},
+
+	PlannedDestructionGroups = {
+		"D1_VehicleEntryAndEVHub",
+		"D2_LowerParkingDecks",
+		"D3_UpperParkingDecks",
+		"D4_ExpressedRamp",
+		"D5_ScreenVeilAndGreenCuts",
+		"D6_RooftopMobilityDeck",
+		"D7_PedestrianCoreAndService",
+	},
+
+	VisualTarget = {
+		Status = "Draft",
+		Revision = "LargeCityUptownParking-VisualTarget-v1",
+		Brief = {
+			"premium event-district parking tower in Singapore x Miami language",
+			"70x60 footprint and 54-stud height",
+			"clearly readable as multi-storey parking rather than office or apartment building",
+			"breathable facade with alternating vertical metal/bronze fins",
+			"dark open parking gaps visible behind the screen",
+			"one expressed corner ramp with sloped geometry",
+			"two planted facade breathing cuts",
+			"glass pedestrian stair/elevator core",
+			"strong vehicle entry and EV charging identity",
+			"light rooftop solar/pergola canopy with planted edge",
+			"daylight architectural concept board with front, three-quarter, side and rear cues",
+			"not cyberpunk, not warehouse, not plain concrete garage",
+		},
+	},
+
+	Phase1Acceptance = {
+		"Building reads immediately as premium parking / mobility infrastructure.",
+		"Vertical screen veil and expressed corner ramp create a distinctive silhouette at Kaiju gameplay distance.",
+		"At least two planted breathing cuts break the parking mass and connect it to Large City's tropical identity.",
+		"Vehicle entry, EV hub and pedestrian core are clearly identifiable from the front.",
+		"Facade remains visibly ventilated rather than reading as a sealed office curtain wall.",
+		"Rooftop canopy adds interest without competing with nearby hotel and tower crowns.",
+		"Footprint and height remain compatible with LC-55.",
+	},
+}
+
+return Specification
