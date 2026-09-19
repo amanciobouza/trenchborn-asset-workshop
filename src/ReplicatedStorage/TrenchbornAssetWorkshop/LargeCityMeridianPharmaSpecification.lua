@@ -8,8 +8,8 @@ local Specification = {
 	City = "LargeCity",
 	District = "MedicalTech",
 	BuildingType = "Pharma Plant",
-	Phase = 4,
-	QualityGate = "B-Pending",
+	Phase = 5,
+	QualityGate = "B-Approved",
 	Branch = "largecity-meridian-pharma-l3",
 
 	StandaloneImport = {
@@ -267,9 +267,10 @@ local Specification = {
 
 
 	Phase4Status = {
-		Status = "GoldenMasterReview",
+		Status = "Approved",
 		GeometryRevision = "LargeCityMeridianPharma-v7-AlignedCleanroomFacadeGrid",
-		QualityGateB = "Pending",
+		QualityGateB = "Approved",
+		NextPhase = 5,
 		ReviewFocus = {
 			"immediate pharmaceutical / biotech production readability",
 			"clear research headhouse versus cleanroom hall hierarchy",
@@ -293,7 +294,7 @@ local Specification = {
 
 
 	Phase5Status = {
-		Status = "BlockedUntilQualityGateBReapproved",
+		Status = "DressingPending",
 		QualityGateB = "Approved",
 		Scope = {
 			"building signage and Meridian BioWorks identity",
