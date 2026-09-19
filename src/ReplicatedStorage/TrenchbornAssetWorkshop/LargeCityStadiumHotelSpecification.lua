@@ -8,8 +8,8 @@ local Specification = {
 	City = "LargeCity",
 	District = "Uptown",
 	BuildingType = "Hotel",
-	Phase = 3,
-	QualityGate = "A-Approved",
+	Phase = 4,
+	QualityGate = "B-Pending",
 	Branch = "largecity-stadium-hotel-l3",
 
 	StandaloneImport = {
@@ -254,6 +254,24 @@ local Specification = {
 			"visible rooftop pool deck and pergola",
 			"clear distinction from Uptown Residences and Waterfront Resort",
 			"rear hotel service court integrated into massing",
+		},
+	},
+
+
+	Phase4Status = {
+		Status = "GoldenMasterReview",
+		GeometryRevision = "LargeCityStadiumHotel-v1-GrandstandHotel",
+		QualityGateB = "Pending",
+		ReviewFocus = {
+			"overall premium event-hotel silhouette",
+			"gently bowed guest-room facade",
+			"regular room-window and shallow balcony rhythm",
+			"clear porte-cochere and recessed lobby",
+			"sky-lounge terrace visibly projected outside the facade",
+			"rooftop pool deck reads clearly from street and elevated views",
+			"rooftop pergola remains light and open",
+			"rear service court is visibly on true +Z exterior",
+			"no balcony, pool-deck or roof Z-fighting",
 		},
 	},
 
