@@ -8,8 +8,8 @@ local Specification = {
 	City = "LargeCity",
 	District = "MedicalTech",
 	BuildingType = "Power Utility",
-	Phase = 3,
-	QualityGate = "A-Approved",
+	Phase = 4,
+	QualityGate = "B-Pending",
 	Branch = "largecity-power-utility-l3",
 
 	StandaloneImport = {
@@ -220,11 +220,11 @@ local Specification = {
 			Rule = "Taller hall must clearly step above the switchgear hall and carry the stronger power-conversion identity.",
 		},
 		ControlSpine = {
-			Center = Vector3.new(-2, 26, -18),
+			Center = Vector3.new(-2, 27, -36),
 			Size = Vector3.new(18, 20, 12),
 			Glazing = true,
 			EntryBelow = true,
-			Rule = "The glazed control spine must visibly sit between the two halls, project beyond the facade plane and remain readable as a distinct bridge/control volume.",
+			Rule = "The glazed control spine sits between the two halls and projects to the front facade plane so it remains a visible bridge/control volume rather than buried interior geometry."
 		},
 		TransformerCourt = {
 			Face = "+Z",
@@ -278,6 +278,26 @@ local Specification = {
 		Status = "TechnicalBreakdownApproved",
 		QualityGateA = "Approved",
 		NextPhase = 4,
+	},
+
+
+	Phase4Status = {
+		Status = "GoldenMasterReview",
+		GeometryRevision = "LargeCityPowerUtility-v1-AurelineGridworks",
+		QualityGateB = "Pending",
+		ReviewFocus = {
+			"power utility is immediately recognizable from silhouette and equipment",
+			"switchgear hall and converter hall have a clear stepped hierarchy",
+			"control spine visibly projects at the public facade instead of being buried inside the halls",
+			"four large transformers remain unobstructed in the true rear +Z court",
+			"transformer cooling fins and ceramic bushings read clearly at gameplay distance",
+			"busbar gantries read as rigid electrical conductors carried by insulators, not as pipes",
+			"rooftop cooling modules and three vent stacks are grounded on visible plinths and stay below 56 studs",
+			"cyan and amber accents remain restrained and physically attached to plausible electrical elements",
+			"no loading stations or unrelated service clutter block the transformer court",
+			"no facade, gantry, transformer or rooftop Z-fighting",
+			"visible part count stays below 900",
+		},
 	},
 
 	Phase3Acceptance = {
