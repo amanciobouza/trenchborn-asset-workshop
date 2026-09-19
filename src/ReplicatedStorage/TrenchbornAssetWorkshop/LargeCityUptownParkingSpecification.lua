@@ -8,7 +8,7 @@ local Specification = {
 	City = "LargeCity",
 	District = "Uptown",
 	BuildingType = "Parking Tower",
-	Phase = 5,
+	Phase = 6,
 	QualityGate = "B-Approved",
 	Branch = "largecity-uptown-parking-l3",
 
@@ -299,7 +299,7 @@ local Specification = {
 	},
 
 	Phase5Status = {
-		Status = "InReview",
+		Status = "Approved",
 		Revision = "LargeCityUptownParking-Dressing-v2-NoEV",
 		Includes = {
 			"Uptown Parking identity and parking wayfinding signage",
@@ -309,6 +309,15 @@ local Specification = {
 			"rear service signage and bay markers",
 		},
 		QualityGateC = "Pending",
+		NextPhase = "ExternalGameTestPending",
+	},
+
+
+	Phase6Status = {
+		Status = "ExternalGameTestPending",
+		ExternalCollapseIntegration = true,
+		QualityGateC = "Pending",
+		Notes = "Workshop visual review approved after pedestrian-core Z-fighting and no-EV wayfinding refinements; destruction/collapse behaviour remains deferred to the main game's shared collapse system.",
 	},
 
 	Phase3Acceptance = {
