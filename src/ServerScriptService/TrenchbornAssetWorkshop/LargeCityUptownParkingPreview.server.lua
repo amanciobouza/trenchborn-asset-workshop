@@ -68,16 +68,16 @@ if minY < math.huge then
 end
 
 model:SetAttribute("GroundContactY", groundY)
-model:SetAttribute("ReviewScene", "LargeCityUptownParking_Isolated_Phase5_DressingReview")
+model:SetAttribute("ReviewScene", "LargeCityUptownParking_Isolated_Phase6_ExternalGameTestPending")
 
 workshop:SetAttribute("Pipeline", "Trenchborn-7-Phase")
 workshop:SetAttribute("CurrentAsset", specification.AssetId)
-workshop:SetAttribute("CurrentPhase", 5)
-workshop:SetAttribute("QualityStatus", "Phase5_DressingReview")
+workshop:SetAttribute("CurrentPhase", 6)
+workshop:SetAttribute("QualityStatus", "Phase6_ExternalGameTestPending")
 workshop:SetAttribute("QualityGateA", "Approved")
 workshop:SetAttribute("QualityGateB", "Approved")
 workshop:SetAttribute("GoldenMasterReviewTarget", model.Name)
 workshop:SetAttribute("StandaloneBuildingBranch", true)
 
-print("[Trenchborn Asset Workshop] Uptown Parking Phase 5 dressing ready for review:", model:GetFullName())
+print("[Trenchborn Asset Workshop] Uptown Parking visual review approved; external game test pending:", model:GetFullName())
 print("[Trenchborn Asset Workshop] Uptown Parking ground contact Y/correction:", groundY, model:GetAttribute("GroundContactCorrection"))
