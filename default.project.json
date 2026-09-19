@@ -19,6 +19,9 @@
         },
         "LargeCityUptownParkingGoldenMaster": {
           "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityUptownParkingGoldenMaster.lua"
+        },
+        "LargeCityUptownParkingDressing": {
+          "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityUptownParkingDressing.lua"
         }
       }
     },
