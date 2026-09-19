@@ -8,7 +8,7 @@ local Specification = {
 	City = "LargeCity",
 	District = "Uptown",
 	BuildingType = "High-Rise",
-	Phase = 5,
+	Phase = 6,
 	QualityGate = "B-Approved",
 	Branch = "largecity-summit-tower-l3",
 
@@ -275,7 +275,7 @@ local Specification = {
 	},
 
 	Phase5Status = {
-		Status = "InReview",
+		Status = "Approved",
 		Revision = "LargeCitySummitTower-Dressing-v3-ServiceCanopySign",
 		Includes = {
 			"Summit Tower entrance wordmark and teal lobby accent",
@@ -286,6 +286,14 @@ local Specification = {
 			"service identity mounted on the visible outer canopy fascia",
 		},
 		QualityGateC = "Pending",
+		NextPhase = "ExternalGameTestPending",
+	},
+
+	Phase6Status = {
+		Status = "ExternalGameTestPending",
+		ExternalCollapseIntegration = true,
+		QualityGateC = "Pending",
+		Notes = "Workshop visual review approved; destruction/collapse behaviour remains deferred to the main game's shared collapse system.",
 	},
 
 	Phase3Acceptance = {
