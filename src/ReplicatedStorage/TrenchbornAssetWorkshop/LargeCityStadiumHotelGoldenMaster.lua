@@ -89,11 +89,15 @@ local function bowOffset(x, halfWidth, depth)
 end
 
 local function bowTangentYaw(x, halfWidth, depth, front)
+	-- Convert the facade slope dz/dx into Roblox yaw. A Part's local +X axis
+	-- gains -Z when yaw is positive, so the visual yaw is the negative of the
+	-- geometric slope angle. v1 omitted this sign inversion and made the
+	-- convex facade windows read as if they curved inward.
 	local derivative = -2 * depth * x / (halfWidth * halfWidth)
 	if front then
 		derivative = -derivative
 	end
-	return math.atan(derivative)
+	return -math.atan(derivative)
 end
 
 local function addCurvedGuestFacade(parent, prefix, center, width, depth, height, bays, floors)
@@ -325,14 +329,15 @@ function Builder.Build(parent)
 	model:SetAttribute("DisplayName", specification.DisplayName)
 	model:SetAttribute("AssetPhase", 4)
 	model:SetAttribute("QualityGateA", "Approved")
-	model:SetAttribute("QualityGateB", "Approved")
-	model:SetAttribute("GeometryRevision", "LargeCityStadiumHotel-v1-GrandstandHotel")
+	model:SetAttribute("QualityGateB", "Pending")
+	model:SetAttribute("GeometryRevision", "LargeCityStadiumHotel-v2-CorrectConvexYaw")
 	model:SetAttribute("MaxHealth", specification.ProposedGameplayMetadata.TargetMaxHealth)
 	model:SetAttribute("EnergyType", specification.ProposedGameplayMetadata.EnergyType)
 	model:SetAttribute("InstallerTag", specification.ProposedGameplayMetadata.InstallerTag)
 	model:SetAttribute("StandaloneImport", true)
 	model:SetAttribute("HasInterior", false)
 	model:SetAttribute("CurvedGuestRoomFacade", true)
+	model:SetAttribute("ConvexFacadeYawCorrected", true)
 	model:SetAttribute("RooftopPoolVisible", true)
 	model:SetAttribute("SkyLoungeTerraceProjected", true)
 	model:SetAttribute("RearServiceVisible", true)
