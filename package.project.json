@@ -1,6 +1,12 @@
 {
-  "name": "TrenchbornAssetWorkshop",
+  "name": "LargeCityUptownResidencesPackage",
   "tree": {
-    "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop"
+    "$className": "Folder",
+    "LargeCityUptownResidencesSpecification": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityUptownResidencesSpecification.lua"
+    },
+    "LargeCityUptownResidencesGoldenMaster": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityUptownResidencesGoldenMaster.lua"
+    }
   }
 }
