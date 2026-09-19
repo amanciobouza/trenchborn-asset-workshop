@@ -9,7 +9,7 @@ local Specification = {
 	District = "Uptown",
 	BuildingType = "Hotel",
 	Phase = 6,
-	QualityGate = "B-Approved",
+	QualityGate = "C-Pending",
 	Branch = "largecity-stadium-hotel-l3",
 
 	StandaloneImport = {
@@ -127,6 +127,8 @@ local Specification = {
 		EnergyType = "Thermal",
 		InstallerTag = "KaijuHouse",
 		ExternalCollapseIntegration = true,
+		IntegrationPackageVersion = 1,
+		FinalInstallerReady = false,
 	},
 
 	PlannedDestructionGroups = {
@@ -259,9 +261,9 @@ local Specification = {
 
 
 	Phase4Status = {
-		Status = "GoldenMasterReview",
+		Status = "Approved",
 		GeometryRevision = "LargeCityStadiumHotel-v4-StiltedRoofBlade",
-		QualityGateB = "Pending",
+		QualityGateB = "Approved",
 		ReviewFocus = {
 			"overall premium event-hotel silhouette",
 			"gently bowed guest-room facade",
