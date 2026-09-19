@@ -8,8 +8,8 @@ local Specification = {
 	City = "LargeCity",
 	District = "Uptown",
 	BuildingType = "Luxury Apartment",
-	Phase = 4,
-	QualityGate = "B-Pending",
+	Phase = 5,
+	QualityGate = "B-Approved",
 	Branch = "largecity-uptown-residences-l3",
 
 	StandaloneImport = {
@@ -289,9 +289,9 @@ local Specification = {
 
 
 	Phase4Status = {
-		Status = "GoldenMasterReview",
+		Status = "Approved",
 		GeometryRevision = "LargeCityUptownResidences-v1-VerdantCascade",
-		QualityGateB = "Pending",
+		QualityGateB = "Approved",
 		ReviewFocus = {
 			"residential silhouette and twin-wing read",
 			"strong horizontal balcony rhythm",
@@ -303,6 +303,28 @@ local Specification = {
 			"rear service access remains visible on true +Z exterior",
 			"no coplanar roof or balcony Z-fighting",
 		},
+	},
+
+
+	QualityGateB = {
+		Status = "Approved",
+		ApprovedGeometry = "LargeCityUptownResidences-v1-VerdantCascade",
+		Notes = "Twin-wing residential silhouette, projected balcony rhythm, open central garden slot, transfer terrace, upper resident terrace, porte-cochere and rooftop pavilion accepted.",
+		NextPhase = 5,
+	},
+
+	Phase5Status = {
+		Status = "InReview",
+		Revision = "LargeCityUptownResidences-Dressing-v1",
+		Includes = {
+			"Uptown Residences entrance wordmark and warm lobby accent",
+			"arrival palms, planters and bollards",
+			"central garden-slot vegetation",
+			"transfer and upper sky-terrace planting",
+			"rooftop resident-deck greenery",
+			"rear resident-service signage and bay numbers",
+		},
+		QualityGateC = "Pending",
 	},
 
 	Phase3Acceptance = {
