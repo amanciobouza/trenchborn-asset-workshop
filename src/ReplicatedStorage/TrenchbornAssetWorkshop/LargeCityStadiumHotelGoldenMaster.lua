@@ -277,6 +277,8 @@ local function addRooftopPoolDeck(group)
 		end
 	end
 	block(group, "PergolaCanopy", Vector3.new(40, 0.7, 20), Vector3.new(0, 78.7, 10), COLORS.Stone, Enum.Material.Metal)
+	-- Solid front fascia connects rooftop signage visibly to the pergola structure.
+	block(group, "PergolaFrontFascia", Vector3.new(40, 2.4, 0.6), Vector3.new(0, 77.15, 0.3), COLORS.Dark, Enum.Material.Metal)
 
 	-- Asymmetric event-hotel roof blade gives the deck a recognisable skyline edge.
 	block(group, "RoofBlade", Vector3.new(4.0, 8.0, 17), Vector3.new(24, 78.0, -8), COLORS.Stone, Enum.Material.Metal)
@@ -338,6 +340,7 @@ function Builder.Build(parent)
 	model:SetAttribute("HasInterior", false)
 	model:SetAttribute("CurvedGuestRoomFacade", true)
 	model:SetAttribute("ConvexFacadeYawCorrected", true)
+	model:SetAttribute("PergolaFrontFascia", true)
 	model:SetAttribute("RooftopPoolVisible", true)
 	model:SetAttribute("SkyLoungeTerraceProjected", true)
 	model:SetAttribute("RearServiceVisible", true)
