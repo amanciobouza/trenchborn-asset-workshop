@@ -1,0 +1,24 @@
+{
+  "name": "LargeCityCentralHospitalPackage",
+  "tree": {
+    "$className": "Folder",
+    "LargeCityCentralHospitalDressing": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityCentralHospitalDressing.lua"
+    },
+    "LargeCityCentralHospitalGeometryRefinement": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityCentralHospitalGeometryRefinement.lua"
+    },
+    "LargeCityCentralHospitalGoldenMaster": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityCentralHospitalGoldenMaster.lua"
+    },
+    "LargeCityCentralHospitalInstaller": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityCentralHospitalInstaller.lua"
+    },
+    "LargeCityCentralHospitalRoofFix": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityCentralHospitalRoofFix.lua"
+    },
+    "LargeCityCentralHospitalSpecification": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityCentralHospitalSpecification.lua"
+    }
+  }
+}

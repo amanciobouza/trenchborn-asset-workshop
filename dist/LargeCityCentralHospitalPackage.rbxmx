@@ -1,0 +1,1195 @@
+<roblox version="4">
+  <Item class="Folder" referent="0">
+    <Properties>
+      <string name="Name">LargeCityCentralHospitalPackage</string>
+    </Properties>
+    <Item class="ModuleScript" referent="1">
+      <Properties>
+        <string name="Name">LargeCityCentralHospitalDressing</string>
+        <string name="Source"><![CDATA[local Dressing = {}
+
+local COLORS = {
+	Teal = Color3.fromRGB(54, 154, 157),
+	DarkGlass = Color3.fromRGB(43, 78, 89),
+	MedicalRed = Color3.fromRGB(195, 52, 55),
+	White = Color3.fromRGB(242, 244, 241),
+	Metal = Color3.fromRGB(145, 154, 157),
+	Concrete = Color3.fromRGB(211, 212, 202),
+	Wood = Color3.fromRGB(124, 92, 62),
+	Leaf = Color3.fromRGB(58, 124, 73),
+	Soil = Color3.fromRGB(76, 61, 45),
+}
+
+local function folder(parent, name)
+	local existing = parent:FindFirstChild(name)
+	if existing then existing:Destroy() end
+	local item = Instance.new("Folder")
+	item.Name = name
+	item.Parent = parent
+	return item
+end
+
+local function part(parent, name, size, cf, color, material, transparency, shape)
+	local item = Instance.new("Part")
+	item.Name = name
+	item.Size = size
+	item.CFrame = cf
+	item.Color = color
+	item.Material = material or Enum.Material.SmoothPlastic
+	item.Transparency = transparency or 0
+	item.Shape = shape or Enum.PartType.Block
+	item.Anchored = true
+	item.CanCollide = false
+	item.CanTouch = false
+	item.CanQuery = false
+	item.CastShadow = true
+	item.TopSurface = Enum.SurfaceType.Smooth
+	item.BottomSurface = Enum.SurfaceType.Smooth
+	item.Parent = parent
+	return item
+end
+
+local function block(parent, name, size, position, color, material, rotation, transparency)
+	local cf = CFrame.new(position)
+	if rotation then
+		cf *= CFrame.Angles(math.rad(rotation.X), math.rad(rotation.Y), math.rad(rotation.Z))
+	end
+	return part(parent, name, size, cf, color, material, transparency)
+end
+
+local function cylinder(parent, name, size, position, color, material, rotation, transparency)
+	local r = rotation or Vector3.zero
+	return part(
+		parent,
+		name,
+		size,
+		CFrame.new(position) * CFrame.Angles(math.rad(r.X), math.rad(r.Y), math.rad(r.Z)),
+		color,
+		material,
+		transparency,
+		Enum.PartType.Cylinder
+	)
+end
+
+local function addSurfaceText(parent, adornee, text, face, color)
+	local gui = Instance.new("SurfaceGui")
+	gui.Name = adornee.Name .. "Surface"
+	gui.Adornee = adornee
+	gui.Face = face or Enum.NormalId.Front
+	gui.AlwaysOnTop = false
+	gui.LightInfluence = 0.25
+	gui.PixelsPerStud = 36
+	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	gui.Parent = parent
+
+	local label = Instance.new("TextLabel")
+	label.Name = "Label"
+	label.Size = UDim2.fromScale(1, 1)
+	label.BackgroundTransparency = 1
+	label.Text = text
+	label.TextColor3 = color or COLORS.White
+	label.TextStrokeTransparency = 0.78
+	label.Font = Enum.Font.GothamBold
+	label.TextScaled = true
+	label.TextWrapped = true
+	label.Parent = gui
+end
+
+local function addPalm(parent, name, position, height, yaw)
+	local palm = folder(parent, name)
+	local h = height or 10
+	cylinder(palm, "Trunk", Vector3.new(h, 0.85, 0.85), position + Vector3.new(0, h * 0.5, 0), COLORS.Wood, Enum.Material.Wood, Vector3.new(0, 0, 90))
+	local crown = position + Vector3.new(0, h, 0)
+	for index = 1, 7 do
+		local angle = math.rad((index - 1) * (360 / 7) + (yaw or 0))
+		local dx = math.cos(angle)
+		local dz = math.sin(angle)
+		block(
+			palm,
+			"Leaf" .. index,
+			Vector3.new(0.7, 0.25, 5.0),
+			crown + Vector3.new(dx * 1.7, 0.2, dz * 1.7),
+			COLORS.Leaf,
+			Enum.Material.Grass,
+			Vector3.new(-15, math.deg(angle), 0)
+		)
+	end
+end
+
+local function addPlanter(parent, name, position, size)
+	local planter = folder(parent, name)
+	block(planter, "Box", size, position, COLORS.Concrete, Enum.Material.Concrete)
+	block(planter, "Soil", size - Vector3.new(0.5, 0.65, 0.5), position + Vector3.new(0, 0.55, 0), COLORS.Soil, Enum.Material.Ground)
+	for x = -1, 1 do
+		local shrub = part(
+			planter,
+			"Shrub" .. x,
+			Vector3.new(1.5, 1.5, 1.5),
+			CFrame.new(position + Vector3.new(x * 1.8, 1.45, 0)),
+			COLORS.Leaf,
+			Enum.Material.Grass,
+			0,
+			Enum.PartType.Ball
+		)
+		shrub.CastShadow = true
+	end
+end
+
+local function addBench(parent, name, position, yaw)
+	local bench = folder(parent, name)
+	local r = Vector3.new(0, yaw or 0, 0)
+	block(bench, "Seat", Vector3.new(4.5, 0.35, 1.4), position + Vector3.new(0, 1.2, 0), COLORS.Wood, Enum.Material.Wood, r)
+	block(bench, "Back", Vector3.new(4.5, 1.4, 0.3), position + Vector3.new(0, 1.95, 0.55), COLORS.Wood, Enum.Material.Wood, r)
+	for _, x in ipairs({-1.7, 1.7}) do
+		block(bench, "Leg" .. x, Vector3.new(0.28, 1.2, 0.7), position + Vector3.new(x, 0.6, 0), COLORS.Metal, Enum.Material.Metal, r)
+	end
+end
+
+local function addBollards(parent, prefix, xs, z)
+	for index, x in ipairs(xs) do
+		cylinder(parent, prefix .. index, Vector3.new(2.4, 0.38, 0.38), Vector3.new(x, 1.2, z), COLORS.Metal, Enum.Material.Metal, Vector3.new(0, 0, 90))
+	end
+end
+
+local function addMainEntranceDressing(root)
+	local area = folder(root, "MainEntranceDressing")
+
+	local sign = block(area, "CentralHospitalSign", Vector3.new(25, 3.2, 0.45), Vector3.new(5, 11.6, -13.55), COLORS.DarkGlass, Enum.Material.Glass)
+	addSurfaceText(area, sign, "CENTRAL HOSPITAL", Enum.NormalId.Front, COLORS.White)
+
+	-- Canopy bottom is Y=6.6. Keep the glass doors clearly below it so the doors
+	-- read as being under the canopy rather than cutting through the slab.
+	for _, x in ipairs({-4.5, 2.0, 8.5, 15.0}) do
+		block(area, "LobbyDoor" .. tostring(x), Vector3.new(5.0, 5.4, 0.22), Vector3.new(x, 3.85, -13.47), COLORS.DarkGlass, Enum.Material.Glass, nil, 0.12)
+	end
+
+	addPlanter(area, "MainPlanterLeft", Vector3.new(-18, 0.85, -25.5), Vector3.new(8, 1.3, 3.0))
+	addPlanter(area, "MainPlanterRight", Vector3.new(28, 0.85, -25.5), Vector3.new(8, 1.3, 3.0))
+	addPalm(area, "MainPalmLeft", Vector3.new(-24, 0, -30), 10, 15)
+	addPalm(area, "MainPalmRight", Vector3.new(34, 0, -30), 10, -15)
+	addBench(area, "BenchLeft", Vector3.new(-11, 0, -28.5), 180)
+	addBench(area, "BenchRight", Vector3.new(21, 0, -28.5), 180)
+	addBollards(area, "MainBollard", {-8, -2, 4, 10, 16}, -31)
+end
+
+local function addEmergencyDressing(root)
+	local area = folder(root, "EmergencyDressing")
+	local sign = block(area, "EmergencyWordmark", Vector3.new(23, 2.3, 0.42), Vector3.new(-43, 12.3, -18.98), COLORS.MedicalRed, Enum.Material.SmoothPlastic)
+	addSurfaceText(area, sign, "EMERGENCY", Enum.NormalId.Front, COLORS.White)
+
+	for _, x in ipairs({-51, -43, -35}) do
+		block(area, "AmbulanceBayStripe" .. tostring(x), Vector3.new(4.8, 0.12, 10), Vector3.new(x, 0.6, -31), COLORS.White, Enum.Material.SmoothPlastic)
+	end
+	block(area, "AmbulanceLane", Vector3.new(30, 0.13, 1.2), Vector3.new(-43, 0.62, -38), COLORS.MedicalRed, Enum.Material.SmoothPlastic)
+	addBollards(area, "EmergencyBollard", {-57, -52, -34, -29}, -36)
+end
+
+local function addSecondaryWingDressing(root)
+	local area = folder(root, "SecondaryWingDressing")
+	local sign = block(area, "DiagnosticsSign", Vector3.new(22, 2.6, 0.4), Vector3.new(47, 18.0, -6.95), COLORS.Teal, Enum.Material.SmoothPlastic)
+	addSurfaceText(area, sign, "DIAGNOSTICS\nOUTPATIENT", Enum.NormalId.Front, COLORS.White)
+
+	addPlanter(area, "SecondaryPlanter", Vector3.new(57, 0.85, -12.5), Vector3.new(10, 1.3, 3.0))
+	addPalm(area, "SecondaryPalmA", Vector3.new(65, 0, -18), 9, 0)
+	addPalm(area, "SecondaryPalmB", Vector3.new(52, 0, -20), 8.5, 25)
+end
+
+local function addHelipadDressing(root)
+	local area = folder(root, "HelipadDressing")
+
+	-- Thin surface markings with explicit Y separation avoid Z-fighting with the pad.
+	local field = cylinder(area, "HelipadRedField", Vector3.new(0.16, 19.0, 19.0), Vector3.new(-3, 76.26, 8.5), COLORS.MedicalRed, Enum.Material.SmoothPlastic, Vector3.new(0, 0, 90))
+	field.CastShadow = false
+
+	local ring = cylinder(area, "HelipadWhiteRing", Vector3.new(0.18, 15.0, 15.0), Vector3.new(-3, 76.36, 8.5), COLORS.White, Enum.Material.SmoothPlastic, Vector3.new(0, 0, 90))
+	ring.CastShadow = false
+	local inner = cylinder(area, "HelipadRingCutout", Vector3.new(0.20, 12.7, 12.7), Vector3.new(-3, 76.41, 8.5), COLORS.MedicalRed, Enum.Material.SmoothPlastic, Vector3.new(0, 0, 90))
+	inner.CastShadow = false
+
+	-- Real H: two longitudinal legs plus one horizontal connector.
+	block(area, "HelipadHLeft", Vector3.new(1.7, 0.16, 7.4), Vector3.new(-6.0, 76.48, 8.5), COLORS.White, Enum.Material.SmoothPlastic)
+	block(area, "HelipadHRight", Vector3.new(1.7, 0.16, 7.4), Vector3.new(0.0, 76.48, 8.5), COLORS.White, Enum.Material.SmoothPlastic)
+	block(area, "HelipadHCrossbar", Vector3.new(7.7, 0.16, 1.7), Vector3.new(-3.0, 76.50, 8.5), COLORS.White, Enum.Material.SmoothPlastic)
+end
+
+function Dressing.Apply(model)
+	assert(model and model:IsA("Model"), "LargeCityCentralHospitalDressing.Apply expects a Model")
+
+	local existing = model:FindFirstChild("Dressing")
+	if existing then existing:Destroy() end
+	local root = folder(model, "Dressing")
+
+	local oldReferences = model:FindFirstChild("LandscapeReferences")
+	if oldReferences then oldReferences:Destroy() end
+
+	addMainEntranceDressing(root)
+	addEmergencyDressing(root)
+	addSecondaryWingDressing(root)
+	addHelipadDressing(root)
+
+	model:SetAttribute("AssetPhase", 5)
+	model:SetAttribute("QualityGateA", "Approved")
+	model:SetAttribute("QualityGateB", "Approved")
+	model:SetAttribute("DressingRevision", "CentralHospital-Dressing-v2")
+	model:SetAttribute("DressingStatus", "Review")
+	return model
+end
+
+return Dressing
+]]></string>
+      </Properties>
+    </Item>
+    <Item class="ModuleScript" referent="2">
+      <Properties>
+        <string name="Name">LargeCityCentralHospitalGeometryRefinement</string>
+        <string name="Source"><![CDATA[local Refinement = {}
+
+local function requirePart(model, name)
+	local item = model:FindFirstChild(name, true)
+	assert(item and item:IsA("BasePart"), "Missing hospital geometry part: " .. name)
+	return item
+end
+
+local function movePart(part, position)
+	local rotation = part.CFrame - part.CFrame.Position
+	part.CFrame = CFrame.new(position) * rotation
+end
+
+local function setDepth(part, depth)
+	part.Size = Vector3.new(part.Size.X, part.Size.Y, depth)
+end
+
+local function ensureMullion(parent, name, position, height, z, template)
+	local item = parent:FindFirstChild(name)
+	if not item then
+		item = template:Clone()
+		item.Name = name
+		item.Parent = parent
+	end
+	item.Size = Vector3.new(0.32, height, 0.30)
+	movePart(item, Vector3.new(position, item.Position.Y, z))
+	return item
+end
+
+function Refinement.Apply(model)
+	assert(model and model:IsA("Model"), "LargeCityCentralHospitalGeometryRefinement.Apply expects a Model")
+
+	-- The main tower already has complete structural side walls. Remove the old
+	-- decorative caps so there is never a second almost-coplanar wall surface.
+	for _, name in ipairs({"TowerLowerLeftCap", "TowerLowerRightCap"}) do
+		local cap = model:FindFirstChild(name, true)
+		if cap then cap:Destroy() end
+	end
+
+	-- Centre the atrium on the tower masses and keep the glass visibly outside
+	-- the structural facade. The lower central spine reaches to about Z=-10.70;
+	-- use a deliberate ~0.19 stud rear-face clearance so the glazing cannot read
+	-- as buried inside the concrete from grazing camera angles.
+	local lowerAtrium = requirePart(model, "LowerVerticalAtrium")
+	setDepth(lowerAtrium, 0.42)
+	movePart(lowerAtrium, Vector3.new(0, lowerAtrium.Position.Y, -11.10))
+
+	local lowerLeft = requirePart(model, "LowerAtriumMullion-3")
+	local lowerRight = requirePart(model, "LowerAtriumMullion1")
+	setDepth(lowerLeft, 0.30)
+	setDepth(lowerRight, 0.30)
+	-- Mullions sit immediately in front of the glazing, not through it.
+	movePart(lowerLeft, Vector3.new(-2.6, 27, -11.47))
+	movePart(lowerRight, Vector3.new(2.6, 27, -11.47))
+
+	-- The stepped upper tower spine reaches to about Z=-7.60. Give this glazing
+	-- even more clearance because the medical cross is layered in front of it.
+	local upperAtrium = requirePart(model, "UpperVerticalAtrium")
+	setDepth(upperAtrium, 0.42)
+	movePart(upperAtrium, Vector3.new(2, upperAtrium.Position.Y, -8.02))
+
+	local upperGroup = upperAtrium.Parent
+	local upperLeft = ensureMullion(upperGroup, "UpperAtriumMullionLeft", -0.4, 26, -8.39, lowerLeft)
+	movePart(upperLeft, Vector3.new(-0.4, 59, -8.39))
+	local upperRight = ensureMullion(upperGroup, "UpperAtriumMullionRight", 4.4, 26, -8.39, lowerRight)
+	movePart(upperRight, Vector3.new(4.4, 59, -8.39))
+
+	-- Keep the medical cross as the outermost layer: concrete -> glass -> mullion
+	-- -> cross. This preserves the facade-mounted read without intersections.
+	local towerVertical = requirePart(model, "TowerCrossVertical")
+	setDepth(towerVertical, 0.32)
+	movePart(towerVertical, Vector3.new(2, 61, -8.76))
+	towerVertical.CanCollide = false
+
+	local towerHorizontal = requirePart(model, "TowerCrossHorizontal")
+	setDepth(towerHorizontal, 0.24)
+	movePart(towerHorizontal, Vector3.new(2, 61, -8.84))
+	towerHorizontal.CanCollide = false
+
+	-- The Emergency cross stays above the canopy and close to the facade.
+	local emergencyVertical = requirePart(model, "EmergencyCrossVertical")
+	setDepth(emergencyVertical, 0.30)
+	movePart(emergencyVertical, Vector3.new(-57, 10.95, -18.75))
+	emergencyVertical.CanCollide = false
+
+	local emergencyHorizontal = requirePart(model, "EmergencyCrossHorizontal")
+	setDepth(emergencyHorizontal, 0.24)
+	movePart(emergencyHorizontal, Vector3.new(-57, 10.95, -18.83))
+	emergencyHorizontal.CanCollide = false
+
+	model:SetAttribute("GeometryRevision", "CentralHospital-v10-AtriumClearFacade")
+	model:SetAttribute("FacadeStandOffPass", true)
+	model:SetAttribute("LowerTowerSideCapsRemoved", true)
+	model:SetAttribute("AtriumCenteredOnTower", true)
+	model:SetAttribute("AtriumMullionsSymmetric", true)
+	model:SetAttribute("AtriumGlassOutsideStructure", true)
+	model:SetAttribute("TowerCrossFreestanding", false)
+	model:SetAttribute("TowerCrossFacadeMounted", true)
+	model:SetAttribute("EmergencyCrossClearOfCanopy", true)
+	model:SetAttribute("EmergencyCrossFacadeMounted", true)
+	return model
+end
+
+return Refinement
+]]></string>
+      </Properties>
+    </Item>
+    <Item class="ModuleScript" referent="3">
+      <Properties>
+        <string name="Name">LargeCityCentralHospitalGoldenMaster</string>
+        <string name="Source"><![CDATA[local specification = require(script.Parent:WaitForChild("LargeCityCentralHospitalSpecification"))
+
+local Builder = {}
+
+local COLORS = {
+	Concrete = Color3.fromRGB(229, 231, 226),
+	Limestone = Color3.fromRGB(211, 212, 202),
+	Glass = Color3.fromRGB(83, 151, 168),
+	DarkGlass = Color3.fromRGB(43, 78, 89),
+	Metal = Color3.fromRGB(164, 174, 177),
+	MedicalRed = Color3.fromRGB(195, 52, 55),
+	Teal = Color3.fromRGB(54, 154, 157),
+	Roof = Color3.fromRGB(190, 195, 191),
+	Landscape = Color3.fromRGB(69, 126, 78),
+}
+
+local function folder(parent, name)
+	local item = Instance.new("Folder")
+	item.Name = name
+	item.Parent = parent
+	return item
+end
+
+local function part(parent, name, size, cf, color, material, transparency, shape)
+	local item = Instance.new("Part")
+	item.Name = name
+	item.Size = size
+	item.CFrame = cf
+	item.Color = color
+	item.Material = material or Enum.Material.SmoothPlastic
+	item.Transparency = transparency or 0
+	item.Shape = shape or Enum.PartType.Block
+	item.Anchored = true
+	item.CanCollide = true
+	item.CastShadow = true
+	item.TopSurface = Enum.SurfaceType.Smooth
+	item.BottomSurface = Enum.SurfaceType.Smooth
+	item.Parent = parent
+	return item
+end
+
+local function block(parent, name, size, position, color, material, rotation, transparency)
+	local cf = CFrame.new(position)
+	if rotation then
+		cf *= CFrame.Angles(math.rad(rotation.X), math.rad(rotation.Y), math.rad(rotation.Z))
+	end
+	return part(parent, name, size, cf, color, material, transparency)
+end
+
+local function glass(parent, name, size, position, rotation, transparency)
+	local item = block(parent, name, size, position, COLORS.Glass, Enum.Material.Glass, rotation, transparency or 0.18)
+	item.Reflectance = 0.025
+	return item
+end
+
+local function addMedicalCross(parent, prefix, position, scale, depth)
+	local s = scale or 1
+	local d = depth or 0.5
+	block(parent, prefix .. "CrossVertical", Vector3.new(2.3 * s, 7.2 * s, d), position, COLORS.MedicalRed, Enum.Material.SmoothPlastic)
+	block(parent, prefix .. "CrossHorizontal", Vector3.new(7.2 * s, 2.3 * s, d + 0.02), position - Vector3.new(0, 0, 0.02), COLORS.MedicalRed, Enum.Material.SmoothPlastic)
+end
+
+local function addWindowRow(parent, prefix, y, z, xCenters, width, rear)
+	for index, x in ipairs(xCenters) do
+		local window = glass(
+			parent,
+			prefix .. "Window" .. index,
+			Vector3.new(width, 2.15, 0.36),
+			Vector3.new(x, y, z),
+			nil,
+			0.16
+		)
+		window.CanCollide = false
+	end
+
+	local spanMin = xCenters[1] - width * 0.5
+	local spanMax = xCenters[#xCenters] + width * 0.5
+	block(
+		parent,
+		prefix .. "FacadeLedge",
+		Vector3.new(spanMax - spanMin + 1.2, 0.28, 0.72),
+		Vector3.new((spanMin + spanMax) * 0.5, y - 1.45, z + (rear and -0.12 or 0.12)),
+		COLORS.Limestone,
+		Enum.Material.Concrete
+	)
+end
+
+local function addTowerFacade(groupLower, groupUpper)
+	-- Lower tower: broad patient-room rhythm with a central solid medical spine.
+	for floorIndex = 1, 8 do
+		local y = 14.5 + (floorIndex - 1) * 4.0
+		addWindowRow(groupLower, "LowerFrontF" .. floorIndex .. "_", y, -10.22, {-15.2, -9.8, 8.8, 14.2}, 4.4, false)
+		addWindowRow(groupLower, "LowerRearF" .. floorIndex .. "_", y, 24.22, {-15.2, -9.8, 8.8, 14.2}, 4.4, true)
+	end
+
+	-- Strong glazed vertical circulation slot keeps the hospital silhouette distinct.
+	glass(groupLower, "LowerVerticalAtrium", Vector3.new(5.2, 30.0, 0.42), Vector3.new(-1.0, 27.0, -10.28), nil, 0.13)
+	for _, x in ipairs({-3.0, 1.0}) do
+		block(groupLower, "LowerAtriumMullion" .. tostring(x), Vector3.new(0.32, 30, 0.65), Vector3.new(x, 27, -10.52), COLORS.Metal, Enum.Material.Metal)
+	end
+
+	-- Upper tower steps back slightly but preserves the same clinical rhythm.
+	for floorIndex = 1, 7 do
+		local y = 45.5 + (floorIndex - 1) * 4.0
+		addWindowRow(groupUpper, "UpperFrontF" .. floorIndex .. "_", y, -7.22, {-12.8, -7.8, 8.8, 13.8}, 4.0, false)
+		addWindowRow(groupUpper, "UpperRearF" .. floorIndex .. "_", y, 24.22, {-12.8, -7.8, 8.8, 13.8}, 4.0, true)
+	end
+	glass(groupUpper, "UpperVerticalAtrium", Vector3.new(4.8, 26, 0.42), Vector3.new(0, 59, -7.28), nil, 0.13)
+end
+
+local function addMainTower(groupLower, groupUpper)
+	block(groupLower, "TowerLowerMass", Vector3.new(46, 34, 34), Vector3.new(0, 27, 7), COLORS.Concrete, Enum.Material.Concrete)
+	block(groupLower, "TowerLowerSpine", Vector3.new(8.5, 35.5, 35.4), Vector3.new(1.5, 27.5, 7), COLORS.Limestone, Enum.Material.Concrete)
+	block(groupLower, "TowerLowerLeftCap", Vector3.new(4.0, 33, 35.0), Vector3.new(-21, 27, 7), COLORS.Limestone, Enum.Material.Concrete)
+	block(groupLower, "TowerLowerRightCap", Vector3.new(4.0, 33, 35.0), Vector3.new(21, 27, 7), COLORS.Limestone, Enum.Material.Concrete)
+
+	block(groupUpper, "TowerUpperMass", Vector3.new(40, 30, 31), Vector3.new(2, 59, 8.5), COLORS.Concrete, Enum.Material.Concrete)
+	block(groupUpper, "TowerUpperSpine", Vector3.new(8.0, 31.5, 32.2), Vector3.new(2, 59.5, 8.5), COLORS.Limestone, Enum.Material.Concrete)
+	block(groupUpper, "TowerUpperRoofBand", Vector3.new(42, 1.2, 32.5), Vector3.new(2, 74.2, 8.5), COLORS.Roof, Enum.Material.Concrete)
+
+	addTowerFacade(groupLower, groupUpper)
+	addMedicalCross(groupUpper, "Tower", Vector3.new(2, 61, -7.35), 0.92, 0.5)
+end
+
+local function addDiagnosticPodium(group)
+	block(group, "DiagnosticPodiumMass", Vector3.new(78, 14, 42), Vector3.new(5, 8, 8), COLORS.Limestone, Enum.Material.Concrete)
+	block(group, "PodiumRoofSlab", Vector3.new(80, 0.9, 44), Vector3.new(5, 15.15, 8), COLORS.Roof, Enum.Material.Concrete)
+
+	glass(group, "MainLobbyGlass", Vector3.new(32, 6.2, 0.42), Vector3.new(5, 7.2, -13.22), nil, 0.12)
+	for _, x in ipairs({-9, -4.5, 0, 4.5, 9, 13.5, 18}) do
+		block(group, "LobbyMullion" .. tostring(x), Vector3.new(0.32, 6.2, 0.62), Vector3.new(x, 7.2, -13.48), COLORS.Metal, Enum.Material.Metal)
+	end
+
+	-- Horizontal clinical glazing on both sides of the entrance.
+	for floorIndex = 1, 2 do
+		local y = 5.0 + (floorIndex - 1) * 4.1
+		glass(group, "PodiumLeftGlass" .. floorIndex, Vector3.new(18, 2.2, 0.38), Vector3.new(-24, y, -13.24), nil, 0.17)
+		glass(group, "PodiumRightGlass" .. floorIndex, Vector3.new(18, 2.2, 0.38), Vector3.new(34, y, -13.24), nil, 0.17)
+	end
+
+	block(group, "MainEntranceCanopy", Vector3.new(29, 0.8, 9), Vector3.new(5, 7.0, -18.0), COLORS.Concrete, Enum.Material.Concrete)
+	for _, x in ipairs({-6, 16}) do
+		block(group, "MainEntranceColumn" .. tostring(x), Vector3.new(0.8, 6.3, 0.8), Vector3.new(x, 3.3, -18.0), COLORS.Metal, Enum.Material.Metal)
+	end
+
+	block(group, "MainForecourt", Vector3.new(61, 0.55, 13), Vector3.new(5, 0.35, -25), COLORS.Limestone, Enum.Material.Concrete)
+end
+
+local function addEmergencyWing(group, canopyGroup)
+	block(group, "EmergencyWingMass", Vector3.new(38, 13, 29), Vector3.new(-43, 7.5, -4), COLORS.Concrete, Enum.Material.Concrete)
+	block(group, "EmergencyRoofBand", Vector3.new(40, 0.9, 31), Vector3.new(-43, 14.45, -4), COLORS.Roof, Enum.Material.Concrete)
+
+	for floorIndex = 1, 2 do
+		local y = 5.1 + (floorIndex - 1) * 4.1
+		glass(group, "EmergencyFrontGlass" .. floorIndex, Vector3.new(24, 2.2, 0.38), Vector3.new(-43, y, -18.72), nil, 0.16)
+	end
+	addMedicalCross(group, "Emergency", Vector3.new(-57, 8.0, -18.76), 0.58, 0.46)
+
+	block(canopyGroup, "EmergencyCanopy", Vector3.new(34, 1.0, 16), Vector3.new(-43, 7.8, -27), COLORS.Concrete, Enum.Material.Concrete)
+	block(canopyGroup, "EmergencyCanopyAccent", Vector3.new(27, 0.45, 2.0), Vector3.new(-43, 8.55, -34.1), COLORS.MedicalRed, Enum.Material.SmoothPlastic)
+	for _, x in ipairs({-56, -47.5, -38.5, -30}) do
+		block(canopyGroup, "EmergencyColumn" .. tostring(x), Vector3.new(0.75, 6.9, 0.75), Vector3.new(x, 3.45, -26.5), COLORS.Metal, Enum.Material.Metal)
+	end
+	block(canopyGroup, "AmbulanceApron", Vector3.new(39, 0.5, 20), Vector3.new(-43, 0.3, -31), Color3.fromRGB(116, 122, 123), Enum.Material.Concrete)
+end
+
+local function addSecondaryWing(group)
+	block(group, "SecondaryWingMass", Vector3.new(42, 23, 31), Vector3.new(47, 12.5, 9), COLORS.Concrete, Enum.Material.Concrete)
+	block(group, "SecondaryWingRoofBand", Vector3.new(44, 0.9, 33), Vector3.new(47, 24.45, 9), COLORS.Roof, Enum.Material.Concrete)
+
+	for floorIndex = 1, 5 do
+		local y = 4.8 + (floorIndex - 1) * 4.1
+		glass(group, "SecondaryFrontGlass" .. floorIndex, Vector3.new(31, 2.15, 0.38), Vector3.new(47, y, -6.72), nil, 0.16)
+		block(group, "SecondaryFrontLedge" .. floorIndex, Vector3.new(33, 0.28, 0.7), Vector3.new(47, y - 1.45, -6.45), COLORS.Limestone, Enum.Material.Concrete)
+	end
+
+	glass(group, "SecondaryCornerGlass", Vector3.new(0.38, 17.5, 15), Vector3.new(68.22, 12.5, 4), nil, 0.17)
+end
+
+local function addHelipadAndPlant(group)
+	block(group, "HelipadDeck", Vector3.new(31, 1.0, 31), Vector3.new(2, 75.2, 8.5), COLORS.Roof, Enum.Material.Concrete)
+	block(group, "HelipadRaisedPad", Vector3.new(25, 0.45, 25), Vector3.new(2, 75.95, 8.5), Color3.fromRGB(145, 151, 150), Enum.Material.Concrete)
+
+	-- Perimeter rails are physical silhouette geometry; painted H/ring waits for Dressing.
+	for _, x in ipairs({-12.5, 16.5}) do
+		block(group, "HelipadRailX" .. tostring(x), Vector3.new(0.35, 1.2, 29), Vector3.new(x, 76.6, 8.5), COLORS.Metal, Enum.Material.Metal)
+	end
+	for _, z in ipairs({-6, 23}) do
+		block(group, "HelipadRailZ" .. tostring(z), Vector3.new(29, 1.2, 0.35), Vector3.new(2, 76.6, z), COLORS.Metal, Enum.Material.Metal)
+	end
+
+	block(group, "HelipadAccessCore", Vector3.new(8, 5, 7), Vector3.new(-17, 76.5, 13), COLORS.Concrete, Enum.Material.Concrete)
+
+	local plantData = {
+		{-22, 75.8, 1}, {-22, 75.8, 8}, {24, 75.8, 4}, {24, 75.8, 12}, {19, 75.8, 20},
+	}
+	for index, data in ipairs(plantData) do
+		local x, y, z = table.unpack(data)
+		block(group, "HVACUnit" .. index, Vector3.new(6, 2.4, 5), Vector3.new(x, y, z), COLORS.Metal, Enum.Material.Metal)
+		block(group, "HVACCap" .. index, Vector3.new(4.5, 0.35, 3.5), Vector3.new(x, y + 1.35, z), COLORS.DarkGlass, Enum.Material.Metal)
+	end
+
+	for index, x in ipairs({-25, -20, 22, 27}) do
+		local vent = part(
+			group,
+			"VentStack" .. index,
+			Vector3.new(4.5, 0.75, 0.75),
+			CFrame.new(x, 78.2, 19) * CFrame.Angles(0, 0, math.rad(90)),
+			COLORS.Metal,
+			Enum.Material.Metal,
+			0,
+			Enum.PartType.Cylinder
+		)
+		vent.CanCollide = false
+	end
+end
+
+local function addLandscapeReferences(model)
+	local landscape = folder(model, "LandscapeReferences")
+	for index, position in ipairs({
+		Vector3.new(-48, 4, -42), Vector3.new(-31, 4, -43), Vector3.new(-8, 4, -37), Vector3.new(22, 4, -37),
+		Vector3.new(45, 4, -34), Vector3.new(57, 4, -25), Vector3.new(-55, 4, 21), Vector3.new(60, 4, 27),
+	}) do
+		block(landscape, "PalmPlaceholder" .. index, Vector3.new(1.0, 8, 1.0), position, COLORS.Landscape, Enum.Material.SmoothPlastic)
+	end
+	landscape:SetAttribute("Phase5ReplaceWithDressedPalms", true)
+end
+
+local function countVisibleParts(model)
+	local count = 0
+	for _, item in ipairs(model:GetDescendants()) do
+		if item:IsA("BasePart") and item.Transparency < 1 then
+			count += 1
+		end
+	end
+	model:SetAttribute("VisiblePartCount", count)
+	model:SetAttribute("VisiblePartBudget", 750)
+	model:SetAttribute("VisiblePartBudgetPassed", count <= 750)
+end
+
+function Builder.Build(parent)
+	local existing = parent:FindFirstChild("LargeCity_CentralHospital_L3_GoldenMaster")
+	if existing then existing:Destroy() end
+
+	local model = Instance.new("Model")
+	model.Name = "LargeCity_CentralHospital_L3_GoldenMaster"
+	model:SetAttribute("AssetId", specification.AssetId)
+	model:SetAttribute("DisplayName", specification.DisplayName)
+	model:SetAttribute("AssetPhase", 4)
+	model:SetAttribute("QualityGateA", "Approved")
+	model:SetAttribute("QualityGateB", "Pending")
+	model:SetAttribute("GeometryRevision", "CentralHospital-v1")
+	model:SetAttribute("HasInterior", false)
+	model:SetAttribute("Style", specification.Style)
+	model.Parent = parent
+
+	local groups = folder(model, "DestructionGroups")
+	local d1 = folder(groups, "D1_EmergencyCanopy")
+	local d2 = folder(groups, "D2_DiagnosticPodium")
+	local d3 = folder(groups, "D3_EmergencyWing")
+	local d4 = folder(groups, "D4_SecondaryWing")
+	local d5 = folder(groups, "D5_MainTowerLower")
+	local d6 = folder(groups, "D6_MainTowerUpper")
+	local d7 = folder(groups, "D7_HelipadRoofPlant")
+
+	addDiagnosticPodium(d2)
+	addEmergencyWing(d3, d1)
+	addSecondaryWing(d4)
+	addMainTower(d5, d6)
+	addHelipadAndPlant(d7)
+	addLandscapeReferences(model)
+
+	local pivot = part(model, "GroundPivot", Vector3.new(1, 1, 1), CFrame.new(0, 0.5, 0), Color3.new(1, 1, 1), Enum.Material.SmoothPlastic, 1)
+	pivot.CanCollide = false
+	pivot.CanQuery = false
+	pivot.CastShadow = false
+	model.PrimaryPart = pivot
+	model:PivotTo(CFrame.new())
+
+	countVisibleParts(model)
+	return model
+end
+
+return Builder
+]]></string>
+      </Properties>
+    </Item>
+    <Item class="ModuleScript" referent="4">
+      <Properties>
+        <string name="Name">LargeCityCentralHospitalInstaller</string>
+        <string name="Source"><![CDATA[local CollectionService = game:GetService("CollectionService")
+
+local packageFolder = script.Parent
+
+local specification = require(packageFolder:WaitForChild("LargeCityCentralHospitalSpecification"))
+local goldenMaster = require(packageFolder:WaitForChild("LargeCityCentralHospitalGoldenMaster"))
+local roofFix = require(packageFolder:WaitForChild("LargeCityCentralHospitalRoofFix"))
+local geometryRefinement = require(packageFolder:WaitForChild("LargeCityCentralHospitalGeometryRefinement"))
+local dressing = require(packageFolder:WaitForChild("LargeCityCentralHospitalDressing"))
+
+local Installer = {}
+
+local MODEL_NAME = specification.AssetId
+local GOLDEN_MASTER_NAME = "LargeCity_CentralHospital_L3_GoldenMaster"
+local PACKAGE_VERSION = 1
+local MAX_HEALTH = specification.GameplayMetadata.TargetMaxHealth
+local ENERGY_TYPE = specification.GameplayMetadata.EnergyType
+local BUILDING_TAG = specification.GameplayMetadata.InstallerTag
+
+local function validateDestructionGroups(model)
+	local groups = model:FindFirstChild("DestructionGroups")
+	assert(groups and groups:IsA("Folder"), "Central Hospital installer requires a DestructionGroups folder")
+
+	for _, groupName in ipairs(specification.PlannedDestructionGroups) do
+		local group = groups:FindFirstChild(groupName)
+		assert(group and group:IsA("Folder"), "Central Hospital is missing destruction group: " .. groupName)
+	end
+
+	return groups
+end
+
+local function lowestVisibleY(model)
+	local minimumY = math.huge
+	for _, item in ipairs(model:GetDescendants()) do
+		if item:IsA("BasePart") and item.Transparency < 1 then
+			local halfSize = item.Size * 0.5
+			local verticalExtent =
+				math.abs(item.CFrame.XVector.Y) * halfSize.X
+				+ math.abs(item.CFrame.YVector.Y) * halfSize.Y
+				+ math.abs(item.CFrame.ZVector.Y) * halfSize.Z
+			minimumY = math.min(minimumY, item.Position.Y - verticalExtent)
+		end
+	end
+	return minimumY
+end
+
+local function placeModel(model, options)
+	if options.CFrame then
+		assert(typeof(options.CFrame) == "CFrame", "Central Hospital options.CFrame must be a CFrame")
+		model:PivotTo(options.CFrame)
+		return
+	end
+
+	local groundCFrame = options.GroundCFrame or CFrame.new()
+	assert(typeof(groundCFrame) == "CFrame", "Central Hospital options.GroundCFrame must be a CFrame")
+	model:PivotTo(groundCFrame)
+
+	if options.AlignToGround == false then
+		return
+	end
+
+	local minimumY = lowestVisibleY(model)
+	if minimumY < math.huge then
+		local correction = groundCFrame.Position.Y - minimumY
+		model:PivotTo(model:GetPivot() + Vector3.new(0, correction, 0))
+		model:SetAttribute("GroundContactCorrection", correction)
+		model:SetAttribute("GroundContactY", groundCFrame.Position.Y)
+	end
+end
+
+local function applyIntegrationMetadata(model)
+	model.Name = MODEL_NAME
+	model:SetAttribute("AssetId", specification.AssetId)
+	model:SetAttribute("DisplayName", specification.DisplayName)
+	model:SetAttribute("City", specification.City)
+	model:SetAttribute("BuildingType", "Hospital")
+	model:SetAttribute("CityTier", 4)
+	model:SetAttribute("MaxHealth", MAX_HEALTH)
+	model:SetAttribute("EnergyType", ENERGY_TYPE)
+	model:SetAttribute("AssetPhase", 6)
+	model:SetAttribute("PipelinePhase", 6)
+	model:SetAttribute("QualityGateA", "Approved")
+	model:SetAttribute("QualityGateB", "Approved")
+	model:SetAttribute("QualityGateC", "Pending")
+	model:SetAttribute("Phase6Status", "ExternalGameTestPending")
+	model:SetAttribute("DressingStatus", "Approved")
+	model:SetAttribute("PackageId", "LargeCityCentralHospitalPackage")
+	model:SetAttribute("IntegrationPackageVersion", PACKAGE_VERSION)
+	model:SetAttribute("IntegrationPackageReady", true)
+	model:SetAttribute("InstallerReady", true)
+	model:SetAttribute("FinalInstallerReady", false)
+	model:SetAttribute("WorkshopOnly", false)
+	model:SetAttribute("HasInterior", false)
+	model:SetAttribute("DestructionGroupCount", #specification.PlannedDestructionGroups)
+	model:SetAttribute("ExternalCollapseIntegration", true)
+	model:SetAttribute("UsesSharedMainGameDestruction", true)
+
+	if not CollectionService:HasTag(model, BUILDING_TAG) then
+		CollectionService:AddTag(model, BUILDING_TAG)
+	end
+end
+
+function Installer.Validate(model)
+	assert(model and model:IsA("Model"), "LargeCityCentralHospitalInstaller.Validate requires a Model")
+	validateDestructionGroups(model)
+	assert(model:GetAttribute("MaxHealth") == MAX_HEALTH, "Central Hospital MaxHealth metadata is invalid")
+	assert(model:GetAttribute("EnergyType") == ENERGY_TYPE, "Central Hospital EnergyType metadata is invalid")
+	assert(CollectionService:HasTag(model, BUILDING_TAG), "Central Hospital is missing tag: " .. BUILDING_TAG)
+	return true
+end
+
+function Installer.Install(parent, options)
+	assert(typeof(parent) == "Instance", "LargeCityCentralHospitalInstaller.Install requires a parent Instance")
+	options = options or {}
+	assert(typeof(options) == "table", "LargeCityCentralHospitalInstaller.Install options must be a table")
+
+	local existing = parent:FindFirstChild(MODEL_NAME)
+	if existing then
+		existing:Destroy()
+	end
+
+	local oldGoldenMaster = parent:FindFirstChild(GOLDEN_MASTER_NAME)
+	if oldGoldenMaster then
+		oldGoldenMaster:Destroy()
+	end
+
+	local model = goldenMaster.Build(parent)
+	roofFix.Apply(model)
+	geometryRefinement.Apply(model)
+	dressing.Apply(model)
+	validateDestructionGroups(model)
+	applyIntegrationMetadata(model)
+	placeModel(model, options)
+	Installer.Validate(model)
+
+	return model
+end
+
+function Installer.Uninstall(parent)
+	assert(typeof(parent) == "Instance", "LargeCityCentralHospitalInstaller.Uninstall requires a parent Instance")
+	local model = parent:FindFirstChild(MODEL_NAME)
+	if not model then
+		return false
+	end
+	model:Destroy()
+	return true
+end
+
+Installer.ModelName = MODEL_NAME
+Installer.PackageVersion = PACKAGE_VERSION
+Installer.MaxHealth = MAX_HEALTH
+Installer.EnergyType = ENERGY_TYPE
+Installer.RequiredTag = BUILDING_TAG
+Installer.QualityGateC = "Pending"
+
+return Installer
+]]></string>
+      </Properties>
+    </Item>
+    <Item class="ModuleScript" referent="5">
+      <Properties>
+        <string name="Name">LargeCityCentralHospitalRoofFix</string>
+        <string name="Source"><![CDATA[local RoofFix = {}
+
+local COLORS = {
+	Concrete = Color3.fromRGB(211, 212, 202),
+}
+
+local function requireRoof(model)
+	local groups = model:FindFirstChild("DestructionGroups")
+	return groups and groups:FindFirstChild("D7_HelipadRoofPlant")
+end
+
+local function createBlock(parent, name, size, position, color, material)
+	local existing = parent:FindFirstChild(name)
+	if existing then
+		existing:Destroy()
+	end
+
+	local item = Instance.new("Part")
+	item.Name = name
+	item.Size = size
+	item.Position = position
+	item.Color = color
+	item.Material = material or Enum.Material.Concrete
+	item.Anchored = true
+	item.CanCollide = true
+	item.TopSurface = Enum.SurfaceType.Smooth
+	item.BottomSurface = Enum.SurfaceType.Smooth
+	item.Parent = parent
+	return item
+end
+
+local function findPart(parent, name)
+	local item = parent:FindFirstChild(name)
+	return item and item:IsA("BasePart") and item or nil
+end
+
+function RoofFix.Apply(model)
+	assert(model and model:IsA("Model"), "LargeCityCentralHospitalRoofFix.Apply expects a Model")
+
+	local roof = requireRoof(model)
+	if not roof then
+		return model
+	end
+
+	-- Main upper-tower roof footprint is approximately X=-19..23 and Z=-7.75..24.75.
+	-- Keep every rooftop object inside that footprint so nothing appears to float
+	-- beyond the building edge.
+
+	-- Shift and slightly shrink the helipad to the left to create a supported
+	-- mechanical-service strip on the right side of the same roof.
+	local deck = findPart(roof, "HelipadDeck")
+	if deck then
+		deck.Size = Vector3.new(27, 1.0, 27)
+		deck.Position = Vector3.new(-3, 75.2, 8.5)
+	end
+
+	local raisedPad = findPart(roof, "HelipadRaisedPad")
+	if raisedPad then
+		raisedPad.Size = Vector3.new(21, 0.45, 21)
+		raisedPad.Position = Vector3.new(-3, 75.95, 8.5)
+	end
+
+	-- Dedicated service plinth fully supported by the main upper roof.
+	local plinth = createBlock(
+		roof,
+		"RoofPlantServicePlinth",
+		Vector3.new(10, 0.6, 26),
+		Vector3.new(17, 75.1, 8.5),
+		COLORS.Concrete,
+		Enum.Material.Concrete
+	)
+	plinth:SetAttribute("RoofSupport", "MainTowerUpperRoof")
+
+	-- Five compact HVAC units, all inside the plinth footprint.
+	local hvacPositions = {
+		Vector3.new(14.5, 76.6, 0),
+		Vector3.new(19.5, 76.6, 0),
+		Vector3.new(14.5, 76.6, 8),
+		Vector3.new(19.5, 76.6, 8),
+		Vector3.new(17, 76.6, 16),
+	}
+	for index, position in ipairs(hvacPositions) do
+		local unit = findPart(roof, "HVACUnit" .. index)
+		local cap = findPart(roof, "HVACCap" .. index)
+		if unit then
+			unit.Size = Vector3.new(4, 2.4, 3.5)
+			unit.Position = position
+			unit:SetAttribute("RoofSupport", "RoofPlantServicePlinth")
+		end
+		if cap then
+			cap.Size = Vector3.new(3.2, 0.3, 2.7)
+			cap.Position = position + Vector3.new(0, 1.35, 0)
+			cap:SetAttribute("RoofSupport", "HVACUnit" .. index)
+		end
+	end
+
+	-- Vent stacks also sit on the same service plinth.
+	local ventPositions = {
+		Vector3.new(14, 77.65, -3),
+		Vector3.new(20, 77.65, -3),
+		Vector3.new(14, 77.65, 19),
+		Vector3.new(20, 77.65, 19),
+	}
+	for index, position in ipairs(ventPositions) do
+		local vent = findPart(roof, "VentStack" .. index)
+		if vent then
+			vent.Size = Vector3.new(4.5, 0.7, 0.7)
+			vent.CFrame = CFrame.new(position) * CFrame.Angles(0, 0, math.rad(90))
+			vent:SetAttribute("RoofSupport", "RoofPlantServicePlinth")
+		end
+	end
+
+	-- Compact rooftop service core on the same supported strip.
+	local access = findPart(roof, "RooftopServiceCore") or findPart(roof, "HelipadAccessCore")
+	if access then
+		access.Name = "RooftopServiceCore"
+		access.Size = Vector3.new(5, 4.5, 5)
+		access.Position = Vector3.new(17, 77.55, 20)
+		access:SetAttribute("RoofSupport", "RoofPlantServicePlinth")
+	end
+
+	-- Match perimeter bars to the shifted helipad and keep them touching the deck.
+	local railSpecs = {
+		["HelipadRailX-12.5"] = {
+			Size = Vector3.new(0.35, 1.2, 27),
+			Position = Vector3.new(-16.5, 76.3, 8.5),
+		},
+		["HelipadRailX16.5"] = {
+			Size = Vector3.new(0.35, 1.2, 27),
+			Position = Vector3.new(10.5, 76.3, 8.5),
+		},
+		["HelipadRailZ-6"] = {
+			Size = Vector3.new(27, 1.2, 0.35),
+			Position = Vector3.new(-3, 76.3, -5),
+		},
+		["HelipadRailZ23"] = {
+			Size = Vector3.new(27, 1.2, 0.35),
+			Position = Vector3.new(-3, 76.3, 22),
+		},
+	}
+	for name, spec in pairs(railSpecs) do
+		local rail = findPart(roof, name)
+		if rail then
+			rail.Size = spec.Size
+			rail.Position = spec.Position
+			rail:SetAttribute("RoofSupport", "HelipadDeck")
+		end
+	end
+
+	model:SetAttribute("GeometryRevision", "CentralHospital-v5-RoofPlantOnMainRoof")
+	model:SetAttribute("RoofPlantIntegrated", true)
+	model:SetAttribute("RoofPlantInsideMainRoofFootprint", true)
+	model:SetAttribute("FreestandingRoofGeometryRemoved", false)
+	return model
+end
+
+return RoofFix
+]]></string>
+      </Properties>
+    </Item>
+    <Item class="ModuleScript" referent="6">
+      <Properties>
+        <string name="Name">LargeCityCentralHospitalSpecification</string>
+        <string name="Source"><![CDATA[local Specification = {
+	AssetId = "LargeCity_CentralHospital_L3",
+	DisplayName = "Central Hospital",
+	City = "LargeCity",
+	Phase = 6,
+	QualityGate = "C-Pending",
+	Style = "Singapore x Miami tropical metropolitan healthcare landmark",
+
+	AssetBrief = {
+		Purpose = "Major Large City civic landmark and high-value destruction target.",
+		Role = "Central hospital complex for the tropical coastal metropolis; clearly distinct from hotel, office and mall silhouettes.",
+		Scale = "Large L3 civic complex with one dominant clinical tower, lower diagnostic/emergency wings and rooftop medical infrastructure.",
+		GameplayRead = "Readable from kaiju distance: hospital cross/medical identity, emergency entrance, helipad and stepped tower massing.",
+		NoInterior = true,
+	},
+
+	VisualTarget = {
+		Approved = true,
+		Revision = "CentralHospital-VisualTarget-v1",
+		ApprovedRead = "Modern tropical hospital campus with broad clinical tower, strong emergency canopy, asymmetric diagnostic wing, rooftop helipad and visible medical identity.",
+		Front = "Main entrance centered under glazed diagnostic podium; emergency wing offset left; diagnostics/service volume offset right.",
+		Roof = "Large readable helipad plus mechanical plant, parapets and service equipment.",
+		Rear = "Service/loading volumes and technical access; intentionally more functional than the public front.",
+		Landscape = "Palm-lined civic forecourt and planted edges; functional, clean and tropical rather than resort-like.",
+	},
+
+	Architecture = {
+		MainTower = "12-16 floor clinical tower, broad and slightly stepped rather than slender office skyscraper.",
+		Podium = "Wide 3-4 floor diagnostic and treatment podium with strong horizontal glazing bands.",
+		EmergencyWing = "Clearly visible lower emergency wing with ambulance canopy and dedicated road-facing entrance.",
+		SecondaryWing = "Lower inpatient/diagnostic wing offset from the tower to create an asymmetrical campus silhouette.",
+		Helipad = "Rooftop helipad integrated into a lower roof volume; must read clearly from above and street level.",
+		RoofPlant = "Mechanical plant, ventilation stacks and service volumes appropriate for a hospital.",
+		Landscape = "Tropical planting, shaded pedestrian forecourt and palms; cleaner and more civic than the resort.",
+	},
+
+	VisualLanguage = {
+		PrimaryMaterials = {"light concrete", "white limestone", "blue-green medical glass", "brushed metal"},
+		Accent = "restrained teal/cyan healthcare accent",
+		Avoid = {"luxury resort vibe", "generic office tower", "futuristic mega-city look", "box-only silhouette"},
+		IdentityAnchors = {
+			"large emergency canopy",
+			"rooftop helipad",
+			"medical cross / hospital signage",
+			"layered clinical tower",
+			"horizontal patient-room window rhythm",
+		},
+	},
+
+	ProposedDimensions = {
+		Footprint = Vector3.new(105, 0, 82),
+		MainTower = Vector3.new(44, 66, 34),
+		Podium = Vector3.new(88, 15, 50),
+		EmergencyWing = Vector3.new(42, 14, 30),
+		SecondaryWing = Vector3.new(48, 24, 32),
+	},
+
+	TechnicalBreakdown = {
+		CoordinateSystem = {
+			Pivot = "Ground center of complete hospital campus",
+			Front = "Local -Z faces public boulevard / main entrance",
+			Rear = "Local +Z faces service/loading side",
+			GroundY = 0,
+		},
+
+		Massing = {
+			MainTowerLower = {
+				Size = Vector3.new(46, 34, 34),
+				Center = Vector3.new(0, 27, 7),
+				Purpose = "Lower inpatient tower and main vertical mass",
+			},
+			MainTowerUpper = {
+				Size = Vector3.new(40, 30, 31),
+				Center = Vector3.new(2, 59, 8.5),
+				Purpose = "Stepped upper patient tower",
+			},
+			DiagnosticPodium = {
+				Size = Vector3.new(78, 14, 42),
+				Center = Vector3.new(5, 8, 8),
+				Purpose = "Main entrance, diagnostics and treatment base",
+			},
+			EmergencyWing = {
+				Size = Vector3.new(38, 13, 29),
+				Center = Vector3.new(-43, 7.5, -4),
+				Purpose = "Emergency department and ambulance arrival",
+			},
+			SecondaryWing = {
+				Size = Vector3.new(42, 23, 31),
+				Center = Vector3.new(47, 12.5, 9),
+				Purpose = "Diagnostics / outpatient clinical wing",
+			},
+		},
+
+		FacadeModules = {
+			TowerFloorHeight = 4.0,
+			TowerWindowBandHeight = 2.1,
+			TowerWindowBandDepth = 0.35,
+			TowerVerticalMullionWidth = 0.3,
+			PodiumGlassHeight = 5.5,
+			EmergencyCanopyClearHeight = 5.2,
+			FacadeStandOff = 0.25,
+			Rule = "All glass and facade overlays must stand clear of structural faces to avoid Z-fighting.",
+		},
+
+		EmergencyArrival = {
+			CanopySize = Vector3.new(34, 1.0, 16),
+			CanopyCenter = Vector3.new(-43, 7.8, -22),
+			DriveThroughWidth = 26,
+			Columns = 4,
+			AmbulanceBays = 2,
+			VisualAnchor = "EMERGENCY sign above canopy plus medical cross on wing",
+		},
+
+		MainEntrance = {
+			CanopySize = Vector3.new(28, 0.8, 9),
+			CanopyCenter = Vector3.new(5, 7.0, -18),
+			DoorSpan = 18,
+			ForecourtDepth = 13,
+			VisualAnchor = "Tall glazed lobby slot and directional hospital signage",
+		},
+
+		Helipad = {
+			DeckSize = Vector3.new(31, 1.0, 31),
+			DeckCenter = Vector3.new(0, 75, 9),
+			PadDiameter = 24,
+			ParapetHeight = 1.2,
+			AccessCore = Vector3.new(8, 5, 7),
+			Marking = "White H in circle on strong red landing field during Dressing phase",
+		},
+
+		RoofPlant = {
+			HVACUnits = 5,
+			VentStacks = 4,
+			ServiceCoreCount = 2,
+			Rule = "Keep plant clustered away from helipad flight area and clearly subordinate to tower silhouette.",
+		},
+
+		LandscapeReferences = {
+			PalmCount = 8,
+			PlanterZones = 5,
+			PublicForecourt = Vector3.new(62, 0, 18),
+			EmergencyBuffer = Vector3.new(42, 0, 11),
+			Phase = 5,
+		},
+
+		PartBudget = {
+			TargetVisibleParts = 560,
+			MaximumVisibleParts = 750,
+			GoldenMasterOnly = "Structural massing, physical window rhythms, canopy geometry, helipad deck, roof plant massing and deterministic pivot.",
+			DressingOnly = "Signs, cross symbols, helipad paint, palms, benches, bollards, small fixtures, window illumination and surface accents.",
+		},
+	},
+
+	PlannedDestructionGroups = {
+		"D1_EmergencyCanopy",
+		"D2_DiagnosticPodium",
+		"D3_EmergencyWing",
+		"D4_SecondaryWing",
+		"D5_MainTowerLower",
+		"D6_MainTowerUpper",
+		"D7_HelipadRoofPlant",
+	},
+
+	GameplayMetadata = {
+		TargetMaxHealth = 64000,
+		EnergyType = "Chemical",
+		InstallerTag = "KaijuHouse",
+		ExternalCollapseIntegration = true,
+	},
+
+	QualityGateA = {
+		Status = "Approved",
+		ApprovedTarget = "CentralHospital-VisualTarget-v1",
+		Acceptance = {
+			"Hospital identity is immediate from gameplay distance.",
+			"Tower, podium, emergency wing and diagnostic wing create an asymmetric civic campus silhouette.",
+			"Helipad and emergency canopy are mandatory and visually dominant anchors.",
+			"Tropical Large City identity is present without reading as a resort.",
+			"Design can be built entirely in Roblox Studio without modeled interior geometry.",
+		},
+	},
+
+	QualityGateB = {
+		Status = "Approved",
+		ReviewRevision = "CentralHospital-v10-AtriumFacadeClearance",
+		ApprovedGeometry = true,
+	},
+
+	Phase5 = {
+		Status = "Approved",
+		DressingRevision = "CentralHospital-Dressing-v2",
+		ApprovedRead = "Hospital signage, emergency identity, helipad markings, doors and tropical civic dressing approved.",
+	},
+
+	Phase6 = {
+		Status = "ExternalGameTestPending",
+		Integration = "Use the shared building/component damage and collapse controller in the main game; do not add a workshop-local Guardian destruction controller.",
+		RequiredChecks = {
+			"All seven destruction groups are targetable by the shared building damage controller.",
+			"MaxHealth resolves to 64000 and EnergyType resolves to Chemical.",
+			"Collapse order preserves readable hospital chunks and does not explode into unbounded physics debris.",
+			"Dressing follows or is removed with its owning structural group during destruction.",
+			"Respawn/reset restores geometry, dressing, metadata and collision state correctly.",
+		},
+	},
+
+	QualityGateC = {
+		Status = "Pending",
+		Reason = "Requires in-game shared collapse integration test.",
+	},
+
+	Phase3Acceptance = {
+		"All major visual-target masses have deterministic dimensions and centers.",
+		"Facade modules use real geometry and explicit anti-Z-fighting stand-off.",
+		"Helipad, emergency arrival and main entrance have buildable dimensions.",
+		"Seven destruction groups map cleanly to physical building masses.",
+		"Golden Master part budget remains below 750 visible parts.",
+	},
+}
+
+return Specification
+]]></string>
+      </Properties>
+    </Item>
+  </Item>
+</roblox>
