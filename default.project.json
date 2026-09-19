@@ -1,5 +1,5 @@
 {
-  "name": "TrenchbornAssetWorkshop",
+  "name": "LargeCityMeridianPharmaWorkshop",
   "servePort": 34872,
   "tree": {
     "$className": "DataModel",
@@ -7,21 +7,28 @@
       "$className": "Workspace",
       "TrenchbornAssetWorkshop": {
         "$className": "Folder",
-        "$path": "src/Workspace/TrenchbornAssetWorkshop"
+        "$ignoreUnknownInstances": true
       }
     },
     "ReplicatedStorage": {
       "$className": "ReplicatedStorage",
       "TrenchbornAssetWorkshop": {
         "$className": "Folder",
-        "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop"
+        "LargeCityMeridianPharmaSpecification": {
+          "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityMeridianPharmaSpecification.lua"
+        },
+        "LargeCityMeridianPharmaGoldenMaster": {
+          "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityMeridianPharmaGoldenMaster.lua"
+        }
       }
     },
     "ServerScriptService": {
       "$className": "ServerScriptService",
       "TrenchbornAssetWorkshop": {
         "$className": "Folder",
-        "$path": "src/ServerScriptService/TrenchbornAssetWorkshop"
+        "LargeCityMeridianPharmaPreview": {
+          "$path": "src/ServerScriptService/TrenchbornAssetWorkshop/LargeCityMeridianPharmaPreview.server.lua"
+        }
       }
     }
   }
