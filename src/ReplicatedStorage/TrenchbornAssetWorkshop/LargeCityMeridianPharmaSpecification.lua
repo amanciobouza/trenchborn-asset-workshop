@@ -8,8 +8,8 @@ local Specification = {
 	City = "LargeCity",
 	District = "MedicalTech",
 	BuildingType = "Pharma Plant",
-	Phase = 5,
-	QualityGate = "B-Approved",
+	Phase = 6,
+	QualityGate = "C-Pending",
 	Branch = "largecity-meridian-pharma-l3",
 
 	StandaloneImport = {
@@ -293,7 +293,7 @@ local Specification = {
 
 
 	Phase5Status = {
-		Status = "DressingReview",
+		Status = "Approved",
 		QualityGateB = "Approved",
 		DressingRevision = "LargeCityMeridianPharma-Dressing-v2-StandOffSignage",
 		Scope = {
@@ -304,6 +304,26 @@ local Specification = {
 			"controlled process-zone safety graphics",
 			"subtle rooftop and bioreactor service detailing",
 			"no changes to the approved Phase 4 massing",
+		},
+	},
+
+
+	QualityGateC = {
+		Status = "Pending",
+		Requirement = "External game test in the target project before final installer/package approval.",
+	},
+
+	Phase6Status = {
+		Status = "ExternalGameTestPending",
+		QualityGateC = "Pending",
+		ApprovedDressingRevision = "LargeCityMeridianPharma-Dressing-v2-StandOffSignage",
+		TestFocus = {
+			"spawn and ground contact in the target game",
+			"collision and traversal around research entrance and process court",
+			"destruction-group integration",
+			"MaxHealth 48000 and Chemical energy metadata",
+			"signage readability at gameplay distance",
+			"no runtime errors or missing dependencies after standalone import",
 		},
 	},
 
