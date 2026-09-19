@@ -8,7 +8,7 @@ local Specification = {
 	City = "LargeCity",
 	District = "MedicalTech",
 	BuildingType = "Pharma Plant",
-	Phase = 1,
+	Phase = 2,
 	QualityGate = "A-Pending",
 	Branch = "largecity-meridian-pharma-l3",
 
@@ -131,7 +131,7 @@ local Specification = {
 	},
 
 	VisualTarget = {
-		Status = "Draft",
+		Status = "InReview",
 		Revision = "LargeCityMeridianPharma-VisualTarget-v1",
 		Brief = {
 			"premium pharmaceutical production campus in MedicalTech district",
@@ -145,6 +145,23 @@ local Specification = {
 			"clear main visitor entrance and separate service/loading side",
 			"daylight architectural concept board with front, three-quarter, side, rear and process-detail cues",
 			"not refinery, not warehouse, not hospital annex",
+		},
+	},
+
+
+	Phase2Status = {
+		Status = "VisualTargetReview",
+		TargetRevision = "LargeCityMeridianPharma-VisualTarget-v1",
+		QualityGateA = "Pending",
+		ReviewFocus = {
+			"immediate pharma / biotech production read",
+			"clear research headhouse versus cleanroom hall hierarchy",
+			"sterile glazed visitor/research entrance",
+			"elevated enclosed process bridge",
+			"rear bioreactor/service court",
+			"organized rooftop process modules and ducts",
+			"restrained chemical-magenta safety accents",
+			"clear distinction from hospital, warehouse and refinery architecture",
 		},
 	},
 
