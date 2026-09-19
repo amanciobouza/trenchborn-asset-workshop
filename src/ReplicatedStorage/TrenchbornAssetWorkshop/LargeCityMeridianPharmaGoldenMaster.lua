@@ -277,7 +277,9 @@ local function addBioreactorCourt(group)
 		block(group, "BioreactorSafetyStripe_" .. index, Vector3.new(8.4, 0.5, 0.35), Vector3.new(vessel.x, vessel.height * 0.62, 47.2), index % 2 == 0 and COLORS.Chemical or COLORS.Teal, Enum.Material.Neon)
 	end
 
-	-- Service gantry now runs on the OUTER side of the tanks. In the previous revision\n\t-- the gantry posts and teal line sat inside the cleanroom rear wall and looked like\n\t-- floating cyan/pink bars behind columns.
+	-- Service gantry now runs on the OUTER side of the tanks. In the previous revision
+	-- the gantry posts and teal line sat inside the cleanroom rear wall and looked like
+	-- floating cyan/pink bars behind columns.
 	block(group, "BioreactorGantry", Vector3.new(46, 1.0, 2.0), Vector3.new(20.5, 21.0, 48.0), COLORS.Dark, Enum.Material.Metal)
 	for _, x in ipairs({0, 11, 22, 33, 44}) do
 		block(group, "GantryPost_" .. tostring(x), Vector3.new(0.7, 21, 0.7), Vector3.new(x, 10.5, 48.0), COLORS.Metal, Enum.Material.Metal)
