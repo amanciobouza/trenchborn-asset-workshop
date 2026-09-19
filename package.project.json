@@ -1,6 +1,12 @@
 {
-  "name": "TrenchbornAssetWorkshop",
+  "name": "LargeCityUptownParkingPackage",
   "tree": {
-    "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop"
+    "$className": "Folder",
+    "LargeCityUptownParkingSpecification": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityUptownParkingSpecification.lua"
+    },
+    "LargeCityUptownParkingGoldenMaster": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityUptownParkingGoldenMaster.lua"
+    }
   }
 }
