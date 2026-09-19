@@ -1,0 +1,21 @@
+{
+  "name": "LargeCityStadiumPackage",
+  "tree": {
+    "$className": "Folder",
+    "LargeCityStadiumDressing": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityStadiumDressing.lua"
+    },
+    "LargeCityStadiumGoldenMaster": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityStadiumGoldenMaster.lua"
+    },
+    "LargeCityStadiumInstaller": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityStadiumInstaller.lua"
+    },
+    "LargeCityStadiumPong": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityStadiumPong.lua"
+    },
+    "LargeCityStadiumSpecification": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityStadiumSpecification.lua"
+    }
+  }
+}

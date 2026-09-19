@@ -7,9 +7,9 @@ workshop:SetAttribute("QualityStatus", "Phase6_GameplaySimulation")
 
 local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
 
--- This branch uses an isolated Large City Central Hospital preview. Stop the
--- legacy multi-asset workshop bootstrap before it spawns unrelated assets.
-if script.Parent:FindFirstChild("LargeCityCentralHospitalPreview") and packageFolder:FindFirstChild("LargeCityCentralHospitalSpecification") then
+-- This branch uses an isolated Large City Stadium preview. Stop the legacy
+-- multi-asset workshop bootstrap before it spawns unrelated review assets.
+if script.Parent:FindFirstChild("LargeCityStadiumPreview") and packageFolder:FindFirstChild("LargeCityStadiumSpecification") then
 	workshop:SetAttribute("LegacyWorkshopBootstrapDisabled", true)
 	return
 end

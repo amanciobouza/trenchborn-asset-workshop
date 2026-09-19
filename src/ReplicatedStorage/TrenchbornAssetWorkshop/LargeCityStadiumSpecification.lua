@@ -3,7 +3,7 @@ local Specification = {
 	DisplayName = "Large City Stadium",
 	City = "LargeCity",
 	Phase = 6,
-	QualityGate = "B-Approved",
+	QualityGate = "C-Pending",
 	Style = "Singapore x Miami tropical metropolitan sports landmark",
 
 	AssetBrief = {
@@ -147,6 +147,8 @@ local Specification = {
 		TargetMaxHealth = 256000,
 		EnergyType = "Electric",
 		InstallerTag = "KaijuHouse",
+		IntegrationPackageVersion = 1,
+		FinalInstallerReady = false,
 		ExternalCollapseIntegration = true,
 	},
 
@@ -169,7 +171,7 @@ local Specification = {
 
 	Phase5Status = {
 		Status = "Approved",
-		Revision = "LargeCityStadium-Dressing-v5-FloodlightPylonFit",
+		Revision = "LargeCityStadium-Dressing-v6-RearServiceVisible",
 		Includes = {
 			"Large City Stadium wordmark and Gate A-D signage",
 			"teal/cyan exterior accent band",
@@ -178,9 +180,17 @@ local Specification = {
 			"tropical entrance palms and planters",
 			"subtle football pitch markings",
 			"decorative Pong Easter egg with CRT-style beep",
+			"visible rear team/service/loading entrance with five numbered bays",
 		},
 		QualityGateC = "Pending",
 		NextPhase = "ExternalGameTestPending",
+	},
+
+	RearServiceFix = {
+		Status = "Approved",
+		GeometryRevision = "LargeCityStadium-RearService-v1",
+		DressingRevision = "LargeCityStadium-Dressing-v6-RearServiceVisible",
+		Notes = "Previously hidden rear service openings were moved to the true exterior +Z face; canopy, apron, team/service signage, five bays, crew entrance and loading guides accepted.",
 	},
 
 	Phase6Status = {
