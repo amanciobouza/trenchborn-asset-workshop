@@ -1,0 +1,18 @@
+{
+  "name": "LargeCityUptownParkingPackage",
+  "tree": {
+    "$className": "Folder",
+    "LargeCityUptownParkingDressing": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityUptownParkingDressing.lua"
+    },
+    "LargeCityUptownParkingGoldenMaster": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityUptownParkingGoldenMaster.lua"
+    },
+    "LargeCityUptownParkingInstaller": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityUptownParkingInstaller.lua"
+    },
+    "LargeCityUptownParkingSpecification": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityUptownParkingSpecification.lua"
+    }
+  }
+}

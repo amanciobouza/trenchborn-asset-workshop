@@ -9,7 +9,7 @@ local Specification = {
 	District = "Uptown",
 	BuildingType = "Parking Tower",
 	Phase = 6,
-	QualityGate = "B-Approved",
+	QualityGate = "C-Pending",
 	Branch = "largecity-uptown-parking-l3",
 
 	StandaloneImport = {
@@ -120,10 +120,12 @@ local Specification = {
 		EnergyType = "Electric",
 		InstallerTag = "KaijuHouse",
 		ExternalCollapseIntegration = true,
+		IntegrationPackageVersion = 1,
+		FinalInstallerReady = false,
 	},
 
 	PlannedDestructionGroups = {
-		"D1_VehicleEntryAndVehicleEntry",
+		"D1_VehicleEntry",
 		"D2_LowerParkingDecks",
 		"D3_UpperParkingDecks",
 		"D4_ExpressedRamp",
@@ -335,7 +337,7 @@ local Specification = {
 		"Building reads immediately as premium parking / mobility infrastructure.",
 		"Vertical screen veil and expressed corner ramp create a distinctive silhouette at Kaiju gameplay distance.",
 		"At least two planted breathing cuts break the parking mass and connect it to Large City's tropical identity.",
-		"Vehicle entry, vehicle entry and pedestrian core are clearly identifiable from the front.",
+		"Vehicle entry, parking wayfinding and pedestrian core are clearly identifiable from the front.",
 		"Facade remains visibly ventilated rather than reading as a sealed office curtain wall.",
 		"Rooftop canopy adds interest without competing with nearby hotel and tower crowns.",
 		"Footprint and height remain compatible with LC-55.",
