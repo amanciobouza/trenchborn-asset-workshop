@@ -117,6 +117,8 @@ local Specification = {
 		EnergyType = "Chemical",
 		InstallerTag = "KaijuHouse",
 		ExternalCollapseIntegration = true,
+		IntegrationPackageVersion = 1,
+		FinalInstallerReady = false,
 	},
 
 	PlannedDestructionGroups = {
