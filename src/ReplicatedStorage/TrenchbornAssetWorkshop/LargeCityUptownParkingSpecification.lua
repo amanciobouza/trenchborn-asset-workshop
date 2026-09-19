@@ -8,8 +8,8 @@ local Specification = {
 	City = "LargeCity",
 	District = "Uptown",
 	BuildingType = "Parking Tower",
-	Phase = 4,
-	QualityGate = "B-Pending",
+	Phase = 5,
+	QualityGate = "B-Approved",
 	Branch = "largecity-uptown-parking-l3",
 
 	StandaloneImport = {
@@ -272,9 +272,9 @@ local Specification = {
 
 
 	Phase4Status = {
-		Status = "GoldenMasterReview",
+		Status = "Approved",
 		GeometryRevision = "LargeCityUptownParking-v2-FreestandingPedestrianCore",
-		QualityGateB = "Pending",
+		QualityGateB = "Approved",
 		ReviewFocus = {
 			"immediate parking / mobility-hub readability",
 			"open six-level deck structure and visible ventilation gaps",
@@ -288,6 +288,27 @@ local Specification = {
 			"rear service remains visible on true +Z exterior",
 			"no coplanar deck or facade Z-fighting",
 		},
+	},
+
+
+	QualityGateB = {
+		Status = "Approved",
+		ApprovedGeometry = "LargeCityUptownParking-v2-FreestandingPedestrianCore",
+		Notes = "Ventilated parking decks, screen veil, expressed ramp, green breathing cuts, EV hub, freestanding pedestrian core and rooftop mobility canopy accepted.",
+		NextPhase = 5,
+	},
+
+	Phase5Status = {
+		Status = "InReview",
+		Revision = "LargeCityUptownParking-Dressing-v1",
+		Includes = {
+			"Uptown Parking identity and EV charging signage",
+			"high-contrast EV bay markers",
+			"green breathing-cut vegetation",
+			"rooftop planting and mobility-deck sign",
+			"rear service signage and bay markers",
+		},
+		QualityGateC = "Pending",
 	},
 
 	Phase3Acceptance = {
