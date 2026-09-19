@@ -276,13 +276,14 @@ local Specification = {
 
 	Phase5Status = {
 		Status = "InReview",
-		Revision = "LargeCitySummitTower-Dressing-v2-ProjectedSkyGardens",
+		Revision = "LargeCitySummitTower-Dressing-v3-ServiceCanopySign",
 		Includes = {
 			"Summit Tower entrance wordmark and teal lobby accent",
 			"entry palms, planters and bollards",
 			"vegetation on both sky gardens",
 			"sparse teal facade accents",
 			"rear service and delivery signage",
+			"service identity mounted on the visible outer canopy fascia",
 		},
 		QualityGateC = "Pending",
 	},
