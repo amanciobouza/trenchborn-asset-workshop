@@ -8,8 +8,8 @@ local Specification = {
 	City = "LargeCity",
 	District = "Uptown",
 	BuildingType = "Luxury Apartment",
-	Phase = 3,
-	QualityGate = "A-Approved",
+	Phase = 4,
+	QualityGate = "B-Pending",
 	Branch = "largecity-uptown-residences-l3",
 
 	StandaloneImport = {
@@ -209,15 +209,15 @@ local Specification = {
 		},
 		LeftWing = {
 			Footprint = Vector2.new(27, 45),
-			Center = Vector3.new(-15, 67, 1),
-			Height = 34,
+			Center = Vector3.new(-17.5, 67.5, 1),
+			Height = 33,
 			BalconyBandCount = 6,
 			BalconyProjection = 2.8,
 		},
 		RightWing = {
 			Footprint = Vector2.new(27, 45),
-			Center = Vector3.new(15, 67, -2),
-			Height = 34,
+			Center = Vector3.new(17.5, 67.5, -2),
+			Height = 33,
 			BalconyBandCount = 6,
 			BalconyProjection = 2.8,
 		},
@@ -284,6 +284,24 @@ local Specification = {
 			"residential porte-cochere and lobby",
 			"light rooftop residents pavilion",
 			"clear distinction from Summit Tower and Stadium Hotel",
+		},
+	},
+
+
+	Phase4Status = {
+		Status = "GoldenMasterReview",
+		GeometryRevision = "LargeCityUptownResidences-v1-VerdantCascade",
+		QualityGateB = "Pending",
+		ReviewFocus = {
+			"residential silhouette and twin-wing read",
+			"strong horizontal balcony rhythm",
+			"central vertical garden slot remains visibly open",
+			"transfer sky terrace projects cleanly around the tower",
+			"upper asymmetric resident terrace is fully outside the facade",
+			"porte-cochere and recessed lobby read clearly from the front",
+			"rooftop residents pavilion feels light rather than like an office crown",
+			"rear service access remains visible on true +Z exterior",
+			"no coplanar roof or balcony Z-fighting",
 		},
 	},
 
