@@ -159,12 +159,26 @@ local function addTowerTier(parent, prefix, center, width, depth, height, radius
 	addFacadeFace(parent, prefix, center, width, height, depth, "Right", shortBays, floors)
 end
 
-local function addVerticalFins(parent, prefix, center, width, depth, height)
+local function addVerticalFins(parent, prefix, center, width, depth, height, longBays)
 	local frontZ = center.Z - depth / 2 - 0.9
 	local rearZ = center.Z + depth / 2 + 0.9
-	for _, x in ipairs({-width * 0.34, -width * 0.12, width * 0.12, width * 0.34}) do
-		block(parent, prefix .. "_FrontFin_" .. tostring(x), Vector3.new(1.15, height + 3, 1.5), Vector3.new(center.X + x, center.Y, frontZ), COLORS.Stone, Enum.Material.Metal)
-		block(parent, prefix .. "_RearFin_" .. tostring(x), Vector3.new(1.15, height + 3, 1.5), Vector3.new(center.X + x, center.Y, rearZ), COLORS.Stone, Enum.Material.Metal)
+	local glassWidth = width - 4
+
+	-- Strong facade fins must sit directly on window mullions. v1 positioned
+	-- them as fractions of the tower width, so they drifted across the glazing.
+	local indices
+	if longBays >= 7 then
+		indices = {1, 2, longBays - 2, longBays - 1}
+	elseif longBays == 6 then
+		indices = {1, 2, 4, 5}
+	else
+		indices = {1, 2, longBays - 2, longBays - 1}
+	end
+
+	for _, index in ipairs(indices) do
+		local x = -glassWidth / 2 + glassWidth * index / longBays
+		block(parent, prefix .. "_FrontFin_" .. index, Vector3.new(1.15, height + 3, 1.5), Vector3.new(center.X + x, center.Y, frontZ), COLORS.Stone, Enum.Material.Metal)
+		block(parent, prefix .. "_RearFin_" .. index, Vector3.new(1.15, height + 3, 1.5), Vector3.new(center.X + x, center.Y, rearZ), COLORS.Stone, Enum.Material.Metal)
 	end
 end
 
@@ -182,40 +196,43 @@ local function addPodium(group)
 end
 
 local function addSkyGardens(group)
-	-- Lower garden wraps the front-left corner and visibly interrupts the vertical shaft.
+	-- Lower sky garden reads as a real projecting balcony. The former dark
+	-- "recess" block sat directly across the curtain wall and looked like an
+	-- unexplained black bar covering windows.
 	block(group, "SkyGardenOneTerrace", Vector3.new(33, 1.3, 15), Vector3.new(-9.0, 57.8, -15.0), COLORS.Stone, Enum.Material.Concrete)
-	block(group, "SkyGardenOneRecess", Vector3.new(29, 4.8, 4.0), Vector3.new(-8.0, 55.1, -22.0), COLORS.Dark, Enum.Material.Metal)
+	block(group, "SkyGardenOneCanopy", Vector3.new(29, 0.9, 6.0), Vector3.new(-8.0, 61.1, -19.5), COLORS.StoneDark, Enum.Material.Metal)
+	block(group, "SkyGardenOneRevealLeft", Vector3.new(0.9, 4.0, 4.5), Vector3.new(-22.0, 59.2, -20.0), COLORS.StoneDark, Enum.Material.Metal)
+	block(group, "SkyGardenOneRevealRight", Vector3.new(0.9, 4.0, 4.5), Vector3.new(6.0, 59.2, -20.0), COLORS.StoneDark, Enum.Material.Metal)
 	block(group, "SkyGardenOneBed", Vector3.new(27, 0.8, 5.0), Vector3.new(-9.0, 58.8, -17.2), COLORS.PlantBed, Enum.Material.Ground)
 	block(group, "SkyGardenOneAccent", Vector3.new(31, 0.65, 1.0), Vector3.new(-9.0, 59.2, -22.3), COLORS.Teal, Enum.Material.Neon)
 
-	-- Upper garden wraps the rear-right corner.
+	-- Upper garden uses the same readable balcony language on the rear-right.
 	block(group, "SkyGardenTwoTerrace", Vector3.new(25, 1.2, 13), Vector3.new(8.0, 92.4, 15.2), COLORS.Stone, Enum.Material.Concrete)
-	block(group, "SkyGardenTwoRecess", Vector3.new(21, 4.2, 4.0), Vector3.new(8.0, 89.8, 21.0), COLORS.Dark, Enum.Material.Metal)
+	block(group, "SkyGardenTwoCanopy", Vector3.new(21, 0.8, 5.0), Vector3.new(8.0, 95.2, 19.0), COLORS.StoneDark, Enum.Material.Metal)
+	block(group, "SkyGardenTwoRevealLeft", Vector3.new(0.8, 3.4, 4.0), Vector3.new(-2.0, 93.6, 19.3), COLORS.StoneDark, Enum.Material.Metal)
+	block(group, "SkyGardenTwoRevealRight", Vector3.new(0.8, 3.4, 4.0), Vector3.new(18.0, 93.6, 19.3), COLORS.StoneDark, Enum.Material.Metal)
 	block(group, "SkyGardenTwoBed", Vector3.new(20, 0.75, 4.5), Vector3.new(8.0, 93.25, 17.2), COLORS.PlantBed, Enum.Material.Ground)
 	block(group, "SkyGardenTwoAccent", Vector3.new(23, 0.65, 1.0), Vector3.new(8.0, 93.5, 21.2), COLORS.Teal, Enum.Material.Neon)
 end
 
 local function addCrown(group)
-	-- The crown core is a low rooftop plinth. In v2 it was 10 studs tall, so all
-	-- three crown blades were mostly embedded inside it and appeared to vanish
-	-- into the building. Keep the plinth low and place every blade fully above it.
-	local center = Vector3.new(7, 117.5, -3)
-	addChamferedMass(group, "CrownCore", center, 28, 24, 3, 2.8, COLORS.DarkGlass, Enum.Material.SmoothPlastic)
+	-- Restore the more interesting raised rooftop volume from the earlier review,
+	-- but keep all three crown blades entirely above it instead of embedding them.
+	local center = Vector3.new(7, 119.5, -3)
+	addChamferedMass(group, "CrownCore", center, 28, 24, 7, 2.8, COLORS.DarkGlass, Enum.Material.SmoothPlastic)
 
-	-- All three blades start at Y=119 (the top of the plinth) and step down
-	-- asymmetrically while the tallest blade preserves the 126-stud target height.
-	block(group, "CrownBladePrimary", Vector3.new(4.0, 7.0, 7.0), Vector3.new(13.0, 122.5, -5.0), COLORS.Stone, Enum.Material.Metal)
-	block(group, "CrownBladeSecondary", Vector3.new(3.0, 5.5, 6.0), Vector3.new(4.0, 121.75, -8.0), COLORS.Stone, Enum.Material.Metal)
-	block(group, "CrownBladeTertiary", Vector3.new(3.0, 4.5, 5.5), Vector3.new(-2.0, 121.25, 3.0), COLORS.StoneDark, Enum.Material.Metal)
+	-- Raised stepped blades. They intentionally extend slightly above the nominal
+	-- plot height because they are lightweight crown features, not occupied floors.
+	block(group, "CrownBladePrimary", Vector3.new(4.0, 6.0, 7.0), Vector3.new(13.0, 126.0, -5.0), COLORS.Stone, Enum.Material.Metal)
+	block(group, "CrownBladeSecondary", Vector3.new(3.0, 5.0, 6.0), Vector3.new(4.0, 125.5, -8.0), COLORS.Stone, Enum.Material.Metal)
+	block(group, "CrownBladeTertiary", Vector3.new(3.0, 4.0, 5.5), Vector3.new(-2.0, 125.0, 3.0), COLORS.StoneDark, Enum.Material.Metal)
 
-	-- The luminous ring now hugs the plinth perimeter instead of floating through
-	-- the former tall crown volume.
-	block(group, "CrownLightFront", Vector3.new(28, 0.75, 0.8), Vector3.new(7, 118.7, -15.4), COLORS.Teal, Enum.Material.Neon)
-	block(group, "CrownLightRear", Vector3.new(28, 0.75, 0.8), Vector3.new(7, 118.7, 9.4), COLORS.Teal, Enum.Material.Neon)
-	block(group, "CrownLightLeft", Vector3.new(0.8, 0.75, 24), Vector3.new(-7.4, 118.7, -3), COLORS.Teal, Enum.Material.Neon)
-	block(group, "CrownLightRight", Vector3.new(0.8, 0.75, 24), Vector3.new(21.4, 118.7, -3), COLORS.Teal, Enum.Material.Neon)
+	-- Light band sits on the upper edge of the raised crown core.
+	block(group, "CrownLightFront", Vector3.new(28, 0.75, 0.8), Vector3.new(7, 122.8, -15.4), COLORS.Teal, Enum.Material.Neon)
+	block(group, "CrownLightRear", Vector3.new(28, 0.75, 0.8), Vector3.new(7, 122.8, 9.4), COLORS.Teal, Enum.Material.Neon)
+	block(group, "CrownLightLeft", Vector3.new(0.8, 0.75, 24), Vector3.new(-7.4, 122.8, -3), COLORS.Teal, Enum.Material.Neon)
+	block(group, "CrownLightRight", Vector3.new(0.8, 0.75, 24), Vector3.new(21.4, 122.8, -3), COLORS.Teal, Enum.Material.Neon)
 end
-
 local function addRearService(group)
 	-- Rear is true +Z and is deliberately placed outside the podium mass.
 	block(group, "RearServiceHeader", Vector3.new(36, 4, 1.2), Vector3.new(0, 14.2, 29.8), COLORS.Dark, Enum.Material.Metal)
@@ -254,7 +271,7 @@ function Builder.Build(parent)
 	model:SetAttribute("AssetPhase", 4)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Pending")
-	model:SetAttribute("GeometryRevision", "LargeCitySummitTower-v3-ExposedCrownBlades")
+	model:SetAttribute("GeometryRevision", "LargeCitySummitTower-v4-RaisedCrownAlignedFins")
 	model:SetAttribute("MaxHealth", specification.ProposedGameplayMetadata.TargetMaxHealth)
 	model:SetAttribute("EnergyType", specification.ProposedGameplayMetadata.EnergyType)
 	model:SetAttribute("InstallerTag", specification.ProposedGameplayMetadata.InstallerTag)
@@ -264,6 +281,8 @@ function Builder.Build(parent)
 	model:SetAttribute("SetbackCount", 2)
 	model:SetAttribute("RoofZFightingFix", true)
 	model:SetAttribute("CrownBladesFullyExposed", true)
+	model:SetAttribute("FacadeFinsAlignedToMullions", true)
+	model:SetAttribute("SkyGardenBlackOverlayRemoved", true)
 	model.Parent = parent
 
 	local groups = folder(model, "DestructionGroups")
@@ -278,13 +297,13 @@ function Builder.Build(parent)
 	addPodium(d1)
 
 	addTowerTier(d2, "LowerTower", Vector3.new(0, 38, 0), 52, 46, 40, 4.0, 7, 6, 8)
-	addVerticalFins(d2, "LowerTower", Vector3.new(0, 38, 0), 52, 46, 40)
+	addVerticalFins(d2, "LowerTower", Vector3.new(0, 38, 0), 52, 46, 40, 7)
 
 	addTowerTier(d3, "MidTower", Vector3.new(-3, 75, 2), 46, 42, 34, 4.0, 6, 5, 7)
-	addVerticalFins(d3, "MidTower", Vector3.new(-3, 75, 2), 46, 42, 34)
+	addVerticalFins(d3, "MidTower", Vector3.new(-3, 75, 2), 46, 42, 34, 6)
 
 	addTowerTier(d4, "UpperTower", Vector3.new(3, 104, -1), 39, 36, 24, 3.5, 5, 5, 5)
-	addVerticalFins(d4, "UpperTower", Vector3.new(3, 104, -1), 39, 36, 24)
+	addVerticalFins(d4, "UpperTower", Vector3.new(3, 104, -1), 39, 36, 24, 5)
 
 	addSkyGardens(d5)
 	addCrown(d6)
