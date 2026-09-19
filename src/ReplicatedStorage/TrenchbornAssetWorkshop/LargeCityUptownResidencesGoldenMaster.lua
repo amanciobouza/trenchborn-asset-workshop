@@ -183,7 +183,7 @@ local function addTransferTerrace(group)
 end
 
 local function addUpperWing(group, prefix, center)
-	local width, depth, height = 27, 45, 32
+	local width, depth, height = 27, 45, 33
 	addRoundedMass(group, prefix .. "Mass", center, width, depth, height, 3.5, COLORS.DarkGlass, Enum.Material.SmoothPlastic)
 	addFrontRearGlass(group, prefix, center, width, depth, height, 4)
 	addSideGlass(group, prefix, center, width, depth, height, 5)
@@ -295,8 +295,8 @@ function Builder.Build(parent)
 
 	addPodium(d1)
 	addLowerResidence(d2)
-	addUpperWing(d3, "LeftWing", Vector3.new(-17.5, 67, 1))
-	addUpperWing(d4, "RightWing", Vector3.new(17.5, 67, -2))
+	addUpperWing(d3, "LeftWing", Vector3.new(-17.5, 67.5, 1))
+	addUpperWing(d4, "RightWing", Vector3.new(17.5, 67.5, -2))
 	addTransferTerrace(d5)
 	addVerticalGardenSlot(d5)
 	addUpperSkyTerrace(d5)
