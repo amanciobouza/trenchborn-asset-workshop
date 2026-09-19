@@ -273,7 +273,7 @@ local Specification = {
 
 	Phase4Status = {
 		Status = "GoldenMasterReview",
-		GeometryRevision = "LargeCityUptownParking-v1-VerdantMobilityDeck",
+		GeometryRevision = "LargeCityUptownParking-v2-FreestandingPedestrianCore",
 		QualityGateB = "Pending",
 		ReviewFocus = {
 			"immediate parking / mobility-hub readability",
@@ -283,6 +283,7 @@ local Specification = {
 			"two green breathing cuts remain visibly open",
 			"EV vehicle entry is prominent and unobstructed",
 			"glass pedestrian core projects clearly outside the screen",
+			"pedestrian glass core clears the concrete deck envelope with no black/concrete surface overlap or Z-fighting",
 			"rooftop solar/pergola canopy remains light and open",
 			"rear service remains visible on true +Z exterior",
 			"no coplanar deck or facade Z-fighting",
