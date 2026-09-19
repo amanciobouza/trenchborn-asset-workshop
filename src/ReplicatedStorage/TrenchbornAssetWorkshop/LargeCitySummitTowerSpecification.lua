@@ -8,8 +8,8 @@ local Specification = {
 	City = "LargeCity",
 	District = "Uptown",
 	BuildingType = "High-Rise",
-	Phase = 4,
-	QualityGate = "B-Pending",
+	Phase = 5,
+	QualityGate = "B-Approved",
 	Branch = "largecity-summit-tower-l3",
 
 	StandaloneImport = {
@@ -249,9 +249,9 @@ local Specification = {
 	},
 
 	Phase4Status = {
-		Status = "GoldenMasterReview",
+		Status = "Approved",
 		GeometryRevision = "LargeCitySummitTower-v4-RaisedCrownAlignedFins",
-		QualityGateB = "Pending",
+		QualityGateB = "Approved",
 		ReviewFocus = {
 			"overall stepped silhouette",
 			"two readable sky-garden interruptions",
@@ -264,6 +264,26 @@ local Specification = {
 			"facade fins aligned to window mullions",
 			"sky gardens read as balconies/canopies without an unexplained black overlay across the glazing",
 		},
+	},
+
+	QualityGateB = {
+		Status = "Approved",
+		ApprovedGeometry = "LargeCitySummitTower-v4-RaisedCrownAlignedFins",
+		Notes = "Raised crown, exposed crown blades, window-aligned facade fins, clarified sky-garden balconies and clean roof surfaces accepted.",
+		NextPhase = 5,
+	},
+
+	Phase5Status = {
+		Status = "InReview",
+		Revision = "LargeCitySummitTower-Dressing-v1",
+		Includes = {
+			"Summit Tower entrance wordmark and teal lobby accent",
+			"entry palms, planters and bollards",
+			"vegetation on both sky gardens",
+			"sparse teal facade accents",
+			"rear service and delivery signage",
+		},
+		QualityGateC = "Pending",
 	},
 
 	Phase3Acceptance = {
