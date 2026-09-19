@@ -1,0 +1,1282 @@
+<roblox version="4">
+  <Item class="Folder" referent="0">
+    <Properties>
+      <string name="Name">LargeCityWaterfrontResortPackage</string>
+    </Properties>
+    <Item class="ModuleScript" referent="1">
+      <Properties>
+        <string name="Name">LargeCityWaterfrontResortDressing</string>
+        <string name="Source"><![CDATA[local specification = require(script.Parent:WaitForChild("LargeCityWaterfrontResortSpecification"))
+
+local Dressing = {}
+local COLORS = specification.Palette
+
+local function folder(parent, name)
+	local item = Instance.new("Folder")
+	item.Name = name
+	item.Parent = parent
+	return item
+end
+
+local function part(parent, name, size, cf, color, material, transparency, shape)
+	local item = Instance.new("Part")
+	item.Name = name
+	item.Size = size
+	item.CFrame = cf
+	item.Color = color
+	item.Material = material or Enum.Material.SmoothPlastic
+	item.Transparency = transparency or 0
+	item.Shape = shape or Enum.PartType.Block
+	item.Anchored = true
+	item.CanCollide = false
+	item.CanQuery = false
+	item.CastShadow = true
+	item.TopSurface = Enum.SurfaceType.Smooth
+	item.BottomSurface = Enum.SurfaceType.Smooth
+	item.Parent = parent
+	return item
+end
+
+local function block(parent, name, size, position, color, material, rotation, transparency)
+	local cf = CFrame.new(position)
+	if rotation then
+		cf *= CFrame.Angles(math.rad(rotation.X), math.rad(rotation.Y), math.rad(rotation.Z))
+	end
+	return part(parent, name, size, cf, color, material, transparency)
+end
+
+local function cylinder(parent, name, size, position, color, material, rotation, transparency)
+	local cf = CFrame.new(position)
+	local r = rotation or Vector3.zero
+	cf *= CFrame.Angles(math.rad(r.X), math.rad(r.Y), math.rad(r.Z))
+	return part(parent, name, size, cf, color, material, transparency, Enum.PartType.Cylinder)
+end
+
+local function addSurfaceSign(parent, adornee, text)
+	local gui = Instance.new("SurfaceGui")
+	gui.Name = "SignSurface"
+	gui.Face = Enum.NormalId.Front
+	gui.AlwaysOnTop = false
+	gui.LightInfluence = 0.3
+	gui.PixelsPerStud = 40
+	gui.Adornee = adornee
+	gui.Parent = parent
+
+	local label = Instance.new("TextLabel")
+	label.Name = "Label"
+	label.Size = UDim2.fromScale(1, 1)
+	label.BackgroundTransparency = 1
+	label.Text = text
+	label.TextColor3 = Color3.fromRGB(244, 239, 224)
+	label.TextStrokeTransparency = 0.8
+	label.Font = Enum.Font.GothamMedium
+	label.TextScaled = true
+	label.Parent = gui
+end
+
+local function addPalm(parent, name, position, height, yaw)
+	local palm = folder(parent, name)
+	local trunkColor = Color3.fromRGB(118, 88, 58)
+	local leafColor = Color3.fromRGB(56, 118, 69)
+	local h = height or 10
+
+	cylinder(
+		palm,
+		"Trunk",
+		Vector3.new(h, 0.9, 0.9),
+		position + Vector3.new(0, h * 0.5, 0),
+		trunkColor,
+		Enum.Material.Wood,
+		Vector3.new(0, 0, 90)
+	)
+
+	local crown = position + Vector3.new(0, h, 0)
+	for index = 1, 7 do
+		local angle = math.rad((index - 1) * (360 / 7) + (yaw or 0))
+		local dx = math.cos(angle)
+		local dz = math.sin(angle)
+		local leaf = block(
+			palm,
+			"Leaf" .. index,
+			Vector3.new(0.8, 0.28, 5.8),
+			crown + Vector3.new(dx * 1.9, 0.15 + (index % 2) * 0.18, dz * 1.9),
+			leafColor,
+			Enum.Material.Grass,
+			Vector3.new(-12 - (index % 3) * 4, math.deg(angle), 0)
+		)
+		leaf.CanCollide = false
+	end
+
+	return palm
+end
+
+local function addPlanter(parent, name, position, size)
+	local planter = folder(parent, name)
+	block(planter, "Box", size or Vector3.new(6, 1.2, 2.5), position, COLORS.Limestone, Enum.Material.Concrete)
+	local soilSize = (size or Vector3.new(6, 1.2, 2.5)) - Vector3.new(0.5, 0.6, 0.5)
+	block(planter, "Soil", soilSize, position + Vector3.new(0, 0.65, 0), Color3.fromRGB(74, 61, 44), Enum.Material.Ground)
+	for offset = -2, 2, 2 do
+		local shrub = part(
+			planter,
+			"Shrub_" .. tostring(offset),
+			Vector3.new(1.6, 1.6, 1.6),
+			CFrame.new(position + Vector3.new(offset, 1.65, 0)),
+			Color3.fromRGB(61, 126, 73),
+			Enum.Material.Grass,
+			0,
+			Enum.PartType.Ball
+		)
+		shrub.CastShadow = true
+	end
+end
+
+local function addLounger(parent, name, position, yaw)
+	local lounge = folder(parent, name)
+	local r = Vector3.new(0, yaw or 0, 0)
+	block(lounge, "Base", Vector3.new(2.4, 0.35, 5.2), position + Vector3.new(0, 0.45, 0), COLORS.Concrete, Enum.Material.SmoothPlastic, r)
+	block(lounge, "Cushion", Vector3.new(2.1, 0.28, 3.5), position + Vector3.new(0, 0.72, 0.55), Color3.fromRGB(232, 239, 237), Enum.Material.Fabric, r)
+	block(lounge, "Back", Vector3.new(2.1, 0.28, 2.4), position + Vector3.new(0, 1.4, -1.55), Color3.fromRGB(232, 239, 237), Enum.Material.Fabric, Vector3.new(28, yaw or 0, 0))
+end
+
+local function addUmbrella(parent, name, position)
+	local umbrella = folder(parent, name)
+	cylinder(umbrella, "Pole", Vector3.new(4.7, 0.22, 0.22), position + Vector3.new(0, 2.35, 0), COLORS.Metal, Enum.Material.Metal, Vector3.new(0, 0, 90))
+	cylinder(umbrella, "Canopy", Vector3.new(0.35, 5.8, 5.8), position + Vector3.new(0, 4.75, 0), Color3.fromRGB(239, 232, 211), Enum.Material.Fabric, Vector3.new(0, 0, 90))
+end
+
+local function addCabana(parent, name, position, yaw)
+	local cabana = folder(parent, name)
+	local y = yaw or 0
+	for _, dx in ipairs({-3.2, 3.2}) do
+		for _, dz in ipairs({-2.0, 2.0}) do
+			local p = CFrame.new(position) * CFrame.Angles(0, math.rad(y), 0) * CFrame.new(dx, 2.6, dz)
+			part(cabana, "Post_" .. dx .. "_" .. dz, Vector3.new(0.35, 5.2, 0.35), p, COLORS.Wood, Enum.Material.Wood)
+		end
+	end
+	block(cabana, "Roof", Vector3.new(7.4, 0.45, 5.0), position + Vector3.new(0, 5.3, 0), Color3.fromRGB(225, 216, 195), Enum.Material.Fabric, Vector3.new(0, y, 0))
+	block(cabana, "Daybed", Vector3.new(5.6, 0.55, 3.6), position + Vector3.new(0, 0.7, 0), Color3.fromRGB(224, 235, 232), Enum.Material.Fabric, Vector3.new(0, y, 0))
+end
+
+local function addBench(parent, name, position, yaw)
+	local bench = folder(parent, name)
+	local r = Vector3.new(0, yaw or 0, 0)
+	block(bench, "Seat", Vector3.new(4.6, 0.35, 1.5), position + Vector3.new(0, 1.25, 0), COLORS.Wood, Enum.Material.Wood, r)
+	block(bench, "Back", Vector3.new(4.6, 1.5, 0.3), position + Vector3.new(0, 2.0, 0.6), COLORS.Wood, Enum.Material.Wood, r)
+	for _, x in ipairs({-1.8, 1.8}) do
+		block(bench, "Leg" .. x, Vector3.new(0.3, 1.3, 0.8), position + Vector3.new(x, 0.65, 0), COLORS.Metal, Enum.Material.Metal, r)
+	end
+end
+
+local function addFacadeDressing(root)
+	local facade = folder(root, "Facade")
+
+	-- Pool-facing central tower glazing. These are thin external layers with a
+	-- deliberate stand-off from the approved Golden Master geometry.
+	local rearGlass = {
+		{"RearLowerGlass", Vector3.new(20, 18, 0.35), Vector3.new(0, 25, 19.25)},
+		{"RearUpperGlass", Vector3.new(17, 21, 0.35), Vector3.new(0, 49, 19.35)},
+	}
+	for _, def in ipairs(rearGlass) do
+		block(facade, def[1], def[2], def[3], COLORS.DarkGlass, Enum.Material.Glass, nil, 0.18)
+	end
+
+	for _, x in ipairs({-8, -4, 0, 4, 8}) do
+		block(facade, "RearLowerMullion_" .. x, Vector3.new(0.28, 18, 0.5), Vector3.new(x, 25, 19.48), COLORS.Metal, Enum.Material.Metal)
+	end
+	for _, x in ipairs({-7.2, -3.6, 0, 3.6, 7.2}) do
+		block(facade, "RearUpperMullion_" .. x, Vector3.new(0.28, 21, 0.5), Vector3.new(x, 49, 19.28), COLORS.Metal, Enum.Material.Metal)
+	end
+
+	-- Rear window bands on both guest wings. Rotation follows each wing.
+	for _, side in ipairs({-1, 1}) do
+		local x = side * 29
+		local yaw = side * -12
+		for floorIndex = 1, 5 do
+			local y = 10 + (floorIndex - 1) * 4
+			local cf = CFrame.new(x, y, 8) * CFrame.Angles(0, math.rad(yaw), 0) * CFrame.new(0, 0, 12.35)
+			part(facade, (side < 0 and "Left" or "Right") .. "RearWindowBand" .. floorIndex, Vector3.new(27, 2.0, 0.35), cf, COLORS.DarkGlass, Enum.Material.Glass, 0.18)
+		end
+		for floorIndex = 6, 7 do
+			local y = 10 + (floorIndex - 1) * 4
+			local upperX = x - side * 1.5
+			local cf = CFrame.new(upperX, y, 9) * CFrame.Angles(0, math.rad(yaw), 0) * CFrame.new(0, 0, 10.85)
+			part(facade, (side < 0 and "Left" or "Right") .. "RearUpperWindowBand" .. floorIndex, Vector3.new(23, 2.0, 0.35), cf, COLORS.DarkGlass, Enum.Material.Glass, 0.18)
+		end
+	end
+
+	-- Warm interior illusion behind the pool-facing lobby glazing.
+	block(facade, "PoolLobbyWarmPanel", Vector3.new(34, 4.8, 0.22), Vector3.new(0, 7.6, 28.35), Color3.fromRGB(239, 185, 108), Enum.Material.Neon, nil, 0.45)
+end
+
+local function addEntranceDressing(root)
+	local entrance = folder(root, "Entrance")
+	addPlanter(entrance, "LeftArrivalPlanter", Vector3.new(-18, 0.9, -30), Vector3.new(8, 1.2, 3))
+	addPlanter(entrance, "RightArrivalPlanter", Vector3.new(18, 0.9, -30), Vector3.new(8, 1.2, 3))
+	addPalm(entrance, "ArrivalPalmLeft", Vector3.new(-21, 0, -17), 10, 15)
+	addPalm(entrance, "ArrivalPalmRight", Vector3.new(21, 0, -17), 10, -15)
+
+	local sign = block(entrance, "ResortNameSign", Vector3.new(18, 2.2, 0.45), Vector3.new(0, 10.3, -25.6), COLORS.DarkGlass, Enum.Material.Glass)
+	addSurfaceSign(entrance, sign, "TRENCHBORN BAY RESORT")
+
+	for _, x in ipairs({-5.2, 0, 5.2}) do
+		block(entrance, "LobbyDoor_" .. x, Vector3.new(4.2, 5.8, 0.3), Vector3.new(x, 6.0, -13.45), COLORS.DarkGlass, Enum.Material.Glass, nil, 0.12)
+	end
+end
+
+local function addPoolDressing(root)
+	local pool = folder(root, "PoolDeck")
+
+	for index, x in ipairs({-19, -13, -7, 7, 13, 19}) do
+		addLounger(pool, "Lounger" .. index, Vector3.new(x, 1.6, 50.2), 180)
+	end
+	for index, x in ipairs({-16, -10, 10, 16}) do
+		addUmbrella(pool, "Umbrella" .. index, Vector3.new(x, 1.45, 54.0))
+	end
+
+	addCabana(pool, "CabanaLeft", Vector3.new(-36, 1.4, 49), 0)
+	addCabana(pool, "CabanaRight", Vector3.new(36, 1.4, 49), 0)
+
+	-- Pool bar details layered onto the Phase 4 pavilion.
+	block(pool, "PoolBarCounter", Vector3.new(8, 1.0, 1.4), Vector3.new(-32, 3.2, 29.3), COLORS.Wood, Enum.Material.Wood)
+	for index, x in ipairs({-35, -32, -29}) do
+		cylinder(pool, "PoolBarStoolStem" .. index, Vector3.new(1.5, 0.2, 0.2), Vector3.new(x, 2.35, 27.8), COLORS.Metal, Enum.Material.Metal, Vector3.new(0, 0, 90))
+		cylinder(pool, "PoolBarStoolSeat" .. index, Vector3.new(0.25, 1.2, 1.2), Vector3.new(x, 3.15, 27.8), COLORS.Wood, Enum.Material.Wood, Vector3.new(0, 0, 90))
+	end
+
+	addPlanter(pool, "PoolPlanterLeft", Vector3.new(-40, 1.65, 40), Vector3.new(4.5, 1.2, 12))
+	addPlanter(pool, "PoolPlanterRight", Vector3.new(40, 1.65, 40), Vector3.new(4.5, 1.2, 12))
+	addPalm(pool, "PoolPalmLeft", Vector3.new(-40, 2.3, 41), 9, 20)
+	addPalm(pool, "PoolPalmRight", Vector3.new(40, 2.3, 41), 9, -20)
+end
+
+local function addPromenadeDressing(root)
+	local promenade = folder(root, "Promenade")
+	for index, x in ipairs({-30, -15, 0, 15, 30}) do
+		addBench(promenade, "Bench" .. index, Vector3.new(x, 0.8, 58), 0)
+	end
+	for index, x in ipairs({-39, -26, -13, 13, 26, 39}) do
+		local post = block(promenade, "Bollard" .. index, Vector3.new(0.35, 2.2, 0.35), Vector3.new(x, 1.5, 60.5), COLORS.Metal, Enum.Material.Metal)
+		local cap = block(promenade, "BollardGlow" .. index, Vector3.new(0.5, 0.3, 0.5), Vector3.new(x, 2.65, 60.5), Color3.fromRGB(239, 214, 159), Enum.Material.Neon)
+		post.CanCollide = false
+		cap.CanCollide = false
+	end
+end
+
+local function addRoofDressing(root)
+	local roof = folder(root, "Roof")
+	for index, x in ipairs({-9, -3, 3, 9}) do
+		block(roof, "HVAC" .. index, Vector3.new(4.2, 1.8, 3.2), Vector3.new(x, 67.2, 11.5), Color3.fromRGB(158, 164, 166), Enum.Material.Metal)
+		block(roof, "HVACVent" .. index, Vector3.new(2.8, 0.35, 0.18), Vector3.new(x, 67.6, 9.85), COLORS.DarkGlass, Enum.Material.Metal)
+	end
+	cylinder(roof, "ServiceAntenna", Vector3.new(5.0, 0.18, 0.18), Vector3.new(12.5, 70.2, 10), COLORS.Metal, Enum.Material.Metal, Vector3.new(0, 0, 90))
+end
+
+local function countDressingParts(root)
+	local count = 0
+	for _, item in ipairs(root:GetDescendants()) do
+		if item:IsA("BasePart") then
+			count += 1
+		elseif item:IsA("TextLabel") then
+			item.TextScaled = true
+		end
+	end
+	return count
+end
+
+function Dressing.Apply(model)
+	assert(model and model:IsA("Model"), "LargeCityWaterfrontResortDressing.Apply expects a Model")
+
+	local existing = model:FindFirstChild("Dressing")
+	if existing then existing:Destroy() end
+
+	local root = folder(model, "Dressing")
+	addFacadeDressing(root)
+	addEntranceDressing(root)
+	addPoolDressing(root)
+	addPromenadeDressing(root)
+	addRoofDressing(root)
+
+	local count = countDressingParts(root)
+	model:SetAttribute("PipelinePhase", 5)
+	model:SetAttribute("DressingApplied", true)
+	model:SetAttribute("DressingRevision", "WaterfrontResort-v1")
+	model:SetAttribute("DressingPartCount", count)
+	model:SetAttribute("DressingPermanentLights", 0)
+	model:SetAttribute("DressingPermanentEmitters", 0)
+	model:SetAttribute("TextLabelsScaled", true)
+	return model
+end
+
+return Dressing
+]]></string>
+      </Properties>
+    </Item>
+    <Item class="ModuleScript" referent="2">
+      <Properties>
+        <string name="Name">LargeCityWaterfrontResortDressingRefinement</string>
+        <string name="Source"><![CDATA[local Refinement = {}
+
+local function folder(parent, name)
+	local item = Instance.new("Folder")
+	item.Name = name
+	item.Parent = parent
+	return item
+end
+
+local function part(parent, name, size, cf, color, material, transparency, shape)
+	local item = Instance.new("Part")
+	item.Name = name
+	item.Size = size
+	item.CFrame = cf
+	item.Color = color
+	item.Material = material or Enum.Material.SmoothPlastic
+	item.Transparency = transparency or 0
+	item.Shape = shape or Enum.PartType.Block
+	item.Anchored = true
+	item.CanCollide = false
+	item.CanQuery = false
+	item.CastShadow = true
+	item.TopSurface = Enum.SurfaceType.Smooth
+	item.BottomSurface = Enum.SurfaceType.Smooth
+	item.Parent = parent
+	return item
+end
+
+local function block(parent, name, size, position, color, material, rotation, transparency)
+	local cf = CFrame.new(position)
+	if rotation then
+		cf *= CFrame.Angles(math.rad(rotation.X), math.rad(rotation.Y), math.rad(rotation.Z))
+	end
+	return part(parent, name, size, cf, color, material, transparency)
+end
+
+local function cylinder(parent, name, size, position, color, material, rotation, transparency)
+	local cf = CFrame.new(position)
+	local r = rotation or Vector3.zero
+	cf *= CFrame.Angles(math.rad(r.X), math.rad(r.Y), math.rad(r.Z))
+	return part(parent, name, size, cf, color, material, transparency, Enum.PartType.Cylinder)
+end
+
+local function addCompactPalm(parent, name, position, height, yaw)
+	local palm = folder(parent, name)
+	local h = height or 8
+	cylinder(palm, "Trunk", Vector3.new(h, 0.7, 0.7), position + Vector3.new(0, h * 0.5, 0), Color3.fromRGB(113, 82, 55), Enum.Material.Wood, Vector3.new(0, 0, 90))
+	local crown = position + Vector3.new(0, h, 0)
+	for index = 1, 6 do
+		local angle = math.rad((index - 1) * 60 + (yaw or 0))
+		block(
+			palm,
+			"Leaf" .. index,
+			Vector3.new(0.55, 0.22, 4.4),
+			crown + Vector3.new(math.cos(angle) * 1.45, 0.05, math.sin(angle) * 1.45),
+			Color3.fromRGB(49, 112, 67),
+			Enum.Material.Grass,
+			Vector3.new(-15, math.deg(angle), 0)
+		)
+	end
+end
+
+local function addPoolsideLounge(parent)
+	local lounge = folder(parent, "PergolaLounge")
+	block(lounge, "SofaLeft", Vector3.new(5.4, 1.0, 2.2), Vector3.new(29.4, 2.0, 33.0), Color3.fromRGB(232, 235, 228), Enum.Material.Fabric)
+	block(lounge, "SofaRight", Vector3.new(5.4, 1.0, 2.2), Vector3.new(34.6, 2.0, 33.0), Color3.fromRGB(232, 235, 228), Enum.Material.Fabric)
+	block(lounge, "BackLeft", Vector3.new(5.4, 1.4, 0.45), Vector3.new(29.4, 2.8, 34.0), Color3.fromRGB(217, 223, 217), Enum.Material.Fabric)
+	block(lounge, "BackRight", Vector3.new(5.4, 1.4, 0.45), Vector3.new(34.6, 2.8, 34.0), Color3.fromRGB(217, 223, 217), Enum.Material.Fabric)
+	block(lounge, "CoffeeTable", Vector3.new(3.4, 0.35, 2.1), Vector3.new(32.0, 1.7, 30.3), Color3.fromRGB(128, 92, 63), Enum.Material.Wood)
+end
+
+local function addPoolDeckDetails(parent)
+	local details = folder(parent, "PoolDeckDetails")
+
+	-- Small side tables and folded towels make the sun deck read as an active hotel pool.
+	for index, x in ipairs({-16, -10, 10, 16}) do
+		cylinder(details, "SideTableStem" .. index, Vector3.new(1.0, 0.18, 0.18), Vector3.new(x, 2.0, 49.3), Color3.fromRGB(175, 181, 182), Enum.Material.Metal, Vector3.new(0, 0, 90))
+		cylinder(details, "SideTableTop" .. index, Vector3.new(0.2, 1.5, 1.5), Vector3.new(x, 2.55, 49.3), Color3.fromRGB(205, 198, 181), Enum.Material.SmoothPlastic, Vector3.new(0, 0, 90))
+		block(details, "FoldedTowel" .. index, Vector3.new(1.5, 0.15, 0.9), Vector3.new(x, 2.78, 49.3), Color3.fromRGB(240, 243, 238), Enum.Material.Fabric)
+	end
+
+	-- Two low planters frame the main descent from the hotel without blocking sightlines.
+	for _, x in ipairs({-19.5, 19.5}) do
+		block(details, "TerracePlanterBox" .. tostring(x), Vector3.new(7.5, 1.1, 2.4), Vector3.new(x, 2.75, 25.0), Color3.fromRGB(214, 204, 186), Enum.Material.Concrete)
+		block(details, "TerracePlanterGreen" .. tostring(x), Vector3.new(6.8, 0.55, 1.8), Vector3.new(x, 3.55, 25.0), Color3.fromRGB(62, 124, 72), Enum.Material.Grass)
+	end
+
+	-- Discreet pool-edge markers use emissive material but no permanent Light instances.
+	for index, x in ipairs({-23, -11.5, 11.5, 23}) do
+		block(details, "PoolMarkerPost" .. index, Vector3.new(0.34, 1.5, 0.34), Vector3.new(x, 1.9, 46.8), Color3.fromRGB(169, 176, 178), Enum.Material.Metal)
+		block(details, "PoolMarkerGlow" .. index, Vector3.new(0.46, 0.22, 0.46), Vector3.new(x, 2.7, 46.8), Color3.fromRGB(237, 210, 154), Enum.Material.Neon)
+	end
+
+	addPoolsideLounge(details)
+end
+
+local function addPoolBarDetails(parent)
+	local bar = folder(parent, "PoolBarRefinement")
+	block(bar, "BackBarShelf", Vector3.new(7.0, 2.2, 0.35), Vector3.new(-32, 4.6, 32.0), Color3.fromRGB(118, 86, 61), Enum.Material.Wood)
+	for index, x in ipairs({-34, -32, -30}) do
+		block(bar, "BottleGlow" .. index, Vector3.new(0.35, 0.9, 0.35), Vector3.new(x, 4.8, 31.75), Color3.fromRGB(104, 190, 183), Enum.Material.Glass, nil, 0.12)
+	end
+	block(bar, "CounterAccent", Vector3.new(8.4, 0.14, 1.55), Vector3.new(-32, 3.72, 29.3), Color3.fromRGB(232, 218, 188), Enum.Material.SmoothPlastic)
+end
+
+local function addPromenadeDetails(parent)
+	local promenade = folder(parent, "PromenadeRefinement")
+
+	-- Palm-and-planter clusters create a clear resort promenade rhythm between benches.
+	for index, x in ipairs({-38, -22, 22, 38}) do
+		block(promenade, "Planter" .. index, Vector3.new(5.0, 1.0, 2.8), Vector3.new(x, 1.1, 56.2), Color3.fromRGB(214, 204, 186), Enum.Material.Concrete)
+		block(promenade, "PlanterGreen" .. index, Vector3.new(4.3, 0.5, 2.1), Vector3.new(x, 1.85, 56.2), Color3.fromRGB(57, 119, 70), Enum.Material.Grass)
+		addCompactPalm(promenade, "PromenadePalm" .. index, Vector3.new(x, 1.6, 56.2), 7.5, index * 17)
+	end
+
+	-- Wood inlay gives the waterfront edge a warmer Miami/Singapore resort character.
+	for index, x in ipairs({-30, -18, -6, 6, 18, 30}) do
+		block(promenade, "WoodInlay" .. index, Vector3.new(8.0, 0.12, 2.2), Vector3.new(x, 0.86, 58.6), Color3.fromRGB(133, 98, 67), Enum.Material.Wood)
+	end
+end
+
+function Refinement.Apply(model)
+	assert(model and model:IsA("Model"), "LargeCityWaterfrontResortDressingRefinement.Apply expects a Model")
+
+	local dressing = model:FindFirstChild("Dressing")
+	assert(dressing, "Dressing must exist before refinement")
+
+	local existing = dressing:FindFirstChild("Refinement")
+	if existing then existing:Destroy() end
+	local root = folder(dressing, "Refinement")
+
+	addPoolDeckDetails(root)
+	addPoolBarDetails(root)
+	addPromenadeDetails(root)
+
+	model:SetAttribute("DressingRevision", "WaterfrontResort-v2-PoolPromenade")
+	model:SetAttribute("PoolPromenadeRefinement", true)
+	return model
+end
+
+return Refinement
+]]></string>
+      </Properties>
+    </Item>
+    <Item class="ModuleScript" referent="3">
+      <Properties>
+        <string name="Name">LargeCityWaterfrontResortGoldenMaster</string>
+        <string name="Source"><![CDATA[local specification = require(script.Parent:WaitForChild("LargeCityWaterfrontResortSpecification"))
+
+local Builder = {}
+local COLORS = specification.Palette
+
+local function folder(parent, name)
+	local item = Instance.new("Folder")
+	item.Name = name
+	item.Parent = parent
+	return item
+end
+
+local function part(parent, name, size, cf, color, material, transparency)
+	local item = Instance.new("Part")
+	item.Name = name
+	item.Size = size
+	item.CFrame = cf
+	item.Color = color
+	item.Material = material or Enum.Material.SmoothPlastic
+	item.Transparency = transparency or 0
+	item.Anchored = true
+	item.CanCollide = true
+	item.CastShadow = true
+	item.TopSurface = Enum.SurfaceType.Smooth
+	item.BottomSurface = Enum.SurfaceType.Smooth
+	item.Parent = parent
+	return item
+end
+
+local function block(parent, name, size, position, color, material, rotation)
+	local cf = CFrame.new(position)
+	if rotation then
+		cf *= CFrame.Angles(math.rad(rotation.X), math.rad(rotation.Y), math.rad(rotation.Z))
+	end
+	return part(parent, name, size, cf, color, material)
+end
+
+local function glass(parent, name, size, position, rotation, transparency)
+	local item = block(parent, name, size, position, COLORS.Glass, Enum.Material.Glass, rotation)
+	item.Transparency = transparency or 0.22
+	item.Reflectance = 0.04
+	return item
+end
+
+local function localToWorld(center, yawDegrees, localPosition)
+	local cf = CFrame.new(center) * CFrame.Angles(0, math.rad(yawDegrees), 0) * CFrame.new(localPosition)
+	return cf.Position
+end
+
+local function addBalconyRow(parent, prefix, center, y, localFrontZ, width, count, yawDegrees, depth)
+	local spacing = width / count
+	local balconyDepth = depth or 3.2
+	for index = 1, count do
+		local localX = -width / 2 + spacing * (index - 0.5)
+		local slabPosition = localToWorld(Vector3.new(center.X, y, center.Z), yawDegrees or 0, Vector3.new(localX, 0, localFrontZ))
+		local slab = block(
+			parent,
+			prefix .. "BalconySlab" .. index,
+			Vector3.new(spacing * 0.90, 0.5, balconyDepth),
+			slabPosition,
+			COLORS.Concrete,
+			Enum.Material.Concrete,
+			Vector3.new(0, yawDegrees or 0, 0)
+		)
+		local railPosition = localToWorld(Vector3.new(center.X, y + 1.0, center.Z), yawDegrees or 0, Vector3.new(localX, 0, localFrontZ - balconyDepth / 2 + 0.1))
+		local rail = glass(
+			parent,
+			prefix .. "BalconyRail" .. index,
+			Vector3.new(spacing * 0.78, 1.5, 0.18),
+			railPosition,
+			Vector3.new(0, yawDegrees or 0, 0),
+			0.16
+		)
+		rail.CanCollide = false
+		slab.CanCollide = true
+	end
+end
+
+local function addFacadeRibs(parent, prefix, xMin, xMax, yMin, yMax, z, count)
+	for index = 0, count do
+		local alpha = index / count
+		local x = xMin + (xMax - xMin) * alpha
+		local rib = block(
+			parent,
+			prefix .. "Rib" .. index,
+			Vector3.new(0.38, yMax - yMin, 0.6),
+			Vector3.new(x, (yMin + yMax) / 2, z),
+			COLORS.Metal,
+			Enum.Material.Metal
+		)
+		rib.CanCollide = false
+	end
+end
+
+local function addTower(groupLower, groupUpper)
+	block(groupLower, "TowerLowerCore", Vector3.new(42, 24, 28), Vector3.new(0, 24, 5), COLORS.Concrete, Enum.Material.Concrete)
+	block(groupLower, "TowerLowerLeftShoulder", Vector3.new(9, 22, 31), Vector3.new(-16.5, 25, 4), COLORS.Limestone, Enum.Material.Concrete)
+	block(groupLower, "TowerLowerRightShoulder", Vector3.new(9, 22, 31), Vector3.new(16.5, 25, 4), COLORS.Limestone, Enum.Material.Concrete)
+	glass(groupLower, "TowerLowerGlass", Vector3.new(20, 20, 0.5), Vector3.new(0, 25, -9.25))
+	addFacadeRibs(groupLower, "Lower", -10, 10, 15, 35, -9.65, 6)
+
+	block(groupUpper, "TowerUpperCore", Vector3.new(34, 27, 25), Vector3.new(0, 49, 6.5), COLORS.Concrete, Enum.Material.Concrete)
+	block(groupUpper, "UpperCrownSetback", Vector3.new(27, 5, 22), Vector3.new(0, 64, 7.5), COLORS.Limestone, Enum.Material.Concrete)
+	glass(groupUpper, "TowerUpperGlass", Vector3.new(18, 23, 0.5), Vector3.new(0, 49, -6.25))
+	addFacadeRibs(groupUpper, "Upper", -9, 9, 37, 60.5, -6.65, 6)
+
+	-- Lower central core is 28 studs deep: local front face is Z=-14.
+	-- Put the balcony center beyond that face so the full slab projects outside.
+	for floorIndex = 1, 5 do
+		local y = 17 + (floorIndex - 1) * 4.4
+		addBalconyRow(groupLower, "LowerF" .. floorIndex .. "_", Vector3.new(0, y, 5), y, -15.75, 34, 7, 0, 3.4)
+	end
+	-- Upper central core is 25 studs deep: local front face is Z=-12.5.
+	for floorIndex = 1, 6 do
+		local y = 38 + (floorIndex - 1) * 3.8
+		addBalconyRow(groupUpper, "UpperF" .. floorIndex .. "_", Vector3.new(0, y, 6.5), y, -14.05, 28, 6, 0, 3.0)
+	end
+
+	for _, x in ipairs({-17.5, 17.5}) do
+		block(groupUpper, "VerticalFin_" .. tostring(x), Vector3.new(1.1, 51, 3.2), Vector3.new(x, 39.5, -5.2), COLORS.Limestone, Enum.Material.Concrete)
+	end
+end
+
+local function addGuestWing(group, side)
+	local sign = side == "Left" and -1 or 1
+	local x = sign * 29
+	local yaw = sign * -12
+	local lowerCenter = Vector3.new(x, 0, 8)
+	local upperCenter = Vector3.new(x - sign * 1.5, 0, 9)
+
+	block(group, side .. "WingLowerMass", Vector3.new(34, 22, 24), Vector3.new(x, 15, 8), COLORS.Concrete, Enum.Material.Concrete, Vector3.new(0, yaw, 0))
+	block(group, side .. "WingUpperMass", Vector3.new(29, 12, 21), Vector3.new(x - sign * 1.5, 32, 9), COLORS.Limestone, Enum.Material.Concrete, Vector3.new(0, yaw, 0))
+
+	local outerGlassPos = localToWorld(Vector3.new(x, 23, 8), yaw, Vector3.new(sign * -15.8, 0, 0))
+	glass(group, side .. "OuterGlassSpine", Vector3.new(0.5, 27, 15), outerGlassPos, Vector3.new(0, yaw, 0), 0.20)
+
+	-- Lower wing depth is 24 studs, so the front face is local Z=-12.
+	-- Place balcony centers beyond that face so the slabs project out of the building.
+	for floorIndex = 1, 5 do
+		local y = 9.5 + (floorIndex - 1) * 4.0
+		addBalconyRow(group, side .. "LowerF" .. floorIndex .. "_", lowerCenter, y, -13.75, 31, 6, yaw, 3.1)
+	end
+
+	-- Upper wing is stepped back and 21 studs deep, front face at local Z=-10.5.
+	for floorIndex = 6, 7 do
+		local y = 9.5 + (floorIndex - 1) * 4.0
+		addBalconyRow(group, side .. "UpperF" .. floorIndex .. "_", upperCenter, y, -12.15, 26, 6, yaw, 3.0)
+	end
+
+	block(group, side .. "RoofBand", Vector3.new(30, 1.5, 22), Vector3.new(x - sign * 1.5, 38.4, 9), COLORS.Limestone, Enum.Material.Concrete, Vector3.new(0, yaw, 0))
+	block(group, side .. "PodiumConnector", Vector3.new(13, 6, 16), Vector3.new(sign * 20.5, 9.5, 8), COLORS.Limestone, Enum.Material.Concrete, Vector3.new(0, sign * -5, 0))
+	glass(group, side .. "ConnectorGlass", Vector3.new(9, 4.2, 0.4), Vector3.new(sign * 20.5, 9.8, -0.15), Vector3.new(0, sign * -5, 0), 0.18)
+end
+
+local function addPodium(group)
+	block(group, "MainPodium", Vector3.new(70, 10, 38), Vector3.new(0, 7, 9), COLORS.Limestone, Enum.Material.Concrete)
+	block(group, "PodiumUpperTerrace", Vector3.new(58, 1.0, 34), Vector3.new(0, 12.4, 10), COLORS.Concrete, Enum.Material.Concrete)
+	glass(group, "LobbyGlassFront", Vector3.new(38, 6.5, 0.5), Vector3.new(0, 8.2, -10.25), nil, 0.16)
+	block(group, "LobbyRoofBand", Vector3.new(48, 1.1, 5), Vector3.new(0, 12.1, -8.5), COLORS.Concrete, Enum.Material.Concrete)
+	block(group, "LobbyRecess", Vector3.new(24, 7, 3), Vector3.new(0, 7.2, -11.4), COLORS.Metal, Enum.Material.Metal)
+	glass(group, "LobbyRecessGlass", Vector3.new(20, 5.5, 0.35), Vector3.new(0, 7.2, -13.0), nil, 0.14)
+
+	for x = -28, 28, 8 do
+		block(group, "PodiumColumn_" .. tostring(x), Vector3.new(1.1, 9, 1.1), Vector3.new(x, 5.5, -9.5), COLORS.Concrete, Enum.Material.Concrete)
+	end
+end
+
+local function addEntrance(group)
+	block(group, "ArrivalCanopyMain", Vector3.new(36, 1.1, 14), Vector3.new(0, 7.6, -23), COLORS.Concrete, Enum.Material.Concrete)
+	block(group, "ArrivalCanopyBlade", Vector3.new(24, 1.0, 18), Vector3.new(0, 9.0, -21.5), COLORS.Limestone, Enum.Material.Concrete)
+	for x = -13, 13, 6.5 do
+		block(group, "ArrivalColumn_" .. tostring(x), Vector3.new(1.0, 7.2, 1.0), Vector3.new(x, 3.6, -23), COLORS.Limestone, Enum.Material.Concrete)
+	end
+	block(group, "ArrivalDeck", Vector3.new(48, 0.8, 20), Vector3.new(0, 0.4, -23), COLORS.Limestone, Enum.Material.Concrete)
+	block(group, "ArrivalMedian", Vector3.new(13, 0.65, 4), Vector3.new(0, 0.75, -31), COLORS.Concrete, Enum.Material.Concrete)
+end
+
+local function addSkyBar(group)
+	block(group, "SkyBarBase", Vector3.new(25, 1.0, 18), Vector3.new(0, 67.0, 7.5), COLORS.Limestone, Enum.Material.Concrete)
+	glass(group, "SkyBarGlass", Vector3.new(19, 4.8, 12), Vector3.new(0, 69.8, 7.5), nil, 0.15)
+	block(group, "SkyBarRoof", Vector3.new(30, 0.9, 21), Vector3.new(0, 72.7, 7.5), COLORS.Concrete, Enum.Material.Concrete)
+	block(group, "SkyBarFloatingBlade", Vector3.new(18, 0.7, 24), Vector3.new(0, 74.0, 8.5), COLORS.Limestone, Enum.Material.Concrete, Vector3.new(0, 0, 2))
+	for x = -10, 10, 5 do
+		block(group, "SkyBarColumn_" .. tostring(x), Vector3.new(0.75, 5.0, 0.75), Vector3.new(x, 69.8, 1.5), COLORS.Metal, Enum.Material.Metal)
+	end
+end
+
+local function addPoolTerrace(group)
+	block(group, "UpperPoolTerrace", Vector3.new(72, 0.9, 12), Vector3.new(0, 2.2, 27), COLORS.Limestone, Enum.Material.Concrete)
+	block(group, "MainPoolDeckLeft", Vector3.new(14, 0.8, 24), Vector3.new(-32, 1.1, 38), COLORS.Limestone, Enum.Material.Concrete)
+	block(group, "MainPoolDeckRight", Vector3.new(14, 0.8, 24), Vector3.new(32, 1.1, 38), COLORS.Limestone, Enum.Material.Concrete)
+	block(group, "MainPoolDeckFront", Vector3.new(78, 0.8, 4), Vector3.new(0, 1.1, 48), COLORS.Limestone, Enum.Material.Concrete)
+	block(group, "MainPoolDeckBack", Vector3.new(78, 0.8, 7), Vector3.new(0, 1.1, 28.5), COLORS.Limestone, Enum.Material.Concrete)
+	block(group, "LowerSunDeck", Vector3.new(82, 0.65, 8), Vector3.new(0, 0.55, 52), COLORS.Concrete, Enum.Material.Concrete)
+
+	local pool = block(group, "InfinityPool", Vector3.new(49, 0.35, 13), Vector3.new(0, 0.92, 39), COLORS.Pool, Enum.Material.Glass)
+	pool.Transparency = 0.16
+	pool.CanCollide = false
+	block(group, "PoolEdgeFront", Vector3.new(53, 1.3, 1.0), Vector3.new(0, 1.05, 46), COLORS.Concrete, Enum.Material.Concrete)
+	block(group, "PoolEdgeLeft", Vector3.new(1.0, 1.3, 15), Vector3.new(-26, 1.05, 39), COLORS.Concrete, Enum.Material.Concrete)
+	block(group, "PoolEdgeRight", Vector3.new(1.0, 1.3, 15), Vector3.new(26, 1.05, 39), COLORS.Concrete, Enum.Material.Concrete)
+
+	for step = 1, 3 do
+		block(group, "TerraceStep" .. step, Vector3.new(18 + step * 5, 0.55, 2.4), Vector3.new(0, 2.0 - step * 0.45, 27.5 + step * 2.0), COLORS.Limestone, Enum.Material.Concrete)
+	end
+end
+
+local function addPoolArchitecture(group)
+	-- Left-side pool bar pavilion gives the waterfront elevation a strong built anchor.
+	block(group, "PoolBarPlinth", Vector3.new(16, 0.8, 10), Vector3.new(-32, 1.75, 31.5), COLORS.Concrete, Enum.Material.Concrete)
+	block(group, "PoolBarCore", Vector3.new(10, 4.8, 5), Vector3.new(-32, 4.5, 32.5), COLORS.Limestone, Enum.Material.Concrete)
+	glass(group, "PoolBarFrontGlass", Vector3.new(8, 3.2, 0.35), Vector3.new(-32, 4.6, 29.82), nil, 0.16)
+	block(group, "PoolBarRoof", Vector3.new(18, 0.7, 12), Vector3.new(-32, 7.25, 31.5), COLORS.Concrete, Enum.Material.Concrete)
+	for _, x in ipairs({-39, -25}) do
+		block(group, "PoolBarColumn_" .. tostring(x), Vector3.new(0.75, 5.2, 0.75), Vector3.new(x, 4.35, 27.8), COLORS.Metal, Enum.Material.Metal)
+	end
+
+	-- Right-side pergola balances the pavilion without closing the pool view.
+	for _, x in ipairs({27.5, 36.5}) do
+		for _, z in ipairs({29.5, 36.5}) do
+			block(group, "PergolaColumn_" .. tostring(x) .. "_" .. tostring(z), Vector3.new(0.65, 5.3, 0.65), Vector3.new(x, 4.15, z), COLORS.Limestone, Enum.Material.Concrete)
+		end
+	end
+	for index, z in ipairs({29.5, 31.25, 33, 34.75, 36.5}) do
+		block(group, "PergolaBeam" .. index, Vector3.new(11, 0.42, 0.7), Vector3.new(32, 6.85, z), COLORS.Concrete, Enum.Material.Concrete)
+	end
+	block(group, "PergolaHeaderFront", Vector3.new(0.7, 0.7, 8.4), Vector3.new(27.5, 6.85, 33), COLORS.Concrete, Enum.Material.Concrete)
+	block(group, "PergolaHeaderRear", Vector3.new(0.7, 0.7, 8.4), Vector3.new(36.5, 6.85, 33), COLORS.Concrete, Enum.Material.Concrete)
+
+	-- Raised spa pool creates a second water feature and breaks up the empty right deck.
+	block(group, "SpaPlinth", Vector3.new(13, 0.8, 9), Vector3.new(32, 1.75, 43.5), COLORS.Concrete, Enum.Material.Concrete)
+	block(group, "SpaEdgeFront", Vector3.new(13, 1.1, 0.8), Vector3.new(32, 2.65, 47.6), COLORS.Limestone, Enum.Material.Concrete)
+	block(group, "SpaEdgeBack", Vector3.new(13, 1.1, 0.8), Vector3.new(32, 2.65, 39.4), COLORS.Limestone, Enum.Material.Concrete)
+	block(group, "SpaEdgeLeft", Vector3.new(0.8, 1.1, 7.4), Vector3.new(25.9, 2.65, 43.5), COLORS.Limestone, Enum.Material.Concrete)
+	block(group, "SpaEdgeRight", Vector3.new(0.8, 1.1, 7.4), Vector3.new(38.1, 2.65, 43.5), COLORS.Limestone, Enum.Material.Concrete)
+	local spaWater = block(group, "SpaWater", Vector3.new(10.6, 0.3, 6.8), Vector3.new(32, 2.72, 43.5), COLORS.Pool, Enum.Material.Glass)
+	spaWater.Transparency = 0.14
+	spaWater.CanCollide = false
+
+	-- Wide side stairs connect both hotel wings down into the pool terrace.
+	for _, sign in ipairs({-1, 1}) do
+		for step = 1, 4 do
+			block(
+				group,
+				(sign < 0 and "LeftWingPoolStep" or "RightWingPoolStep") .. step,
+				Vector3.new(12, 0.55, 2.6),
+				Vector3.new(sign * 30.5, 3.15 - step * 0.5, 20.5 + step * 2.0),
+				COLORS.Limestone,
+				Enum.Material.Concrete
+			)
+		end
+	end
+
+	-- Low planter walls are structural placeholders; foliage itself remains Phase 5 dressing.
+	for _, x in ipairs({-39.5, 39.5}) do
+		block(group, "PoolPlanterWall_" .. tostring(x), Vector3.new(5, 1.5, 16), Vector3.new(x, 1.65, 40), COLORS.Concrete, Enum.Material.Concrete)
+	end
+	group:SetAttribute("Phase5AddFoliageAndFurniture", true)
+end
+
+local function addPromenade(group)
+	block(group, "WaterfrontPromenade", Vector3.new(86, 0.8, 8), Vector3.new(0, 0.4, 58), COLORS.Limestone, Enum.Material.Concrete)
+	block(group, "PromenadeSeaWall", Vector3.new(88, 2.2, 1.2), Vector3.new(0, -0.15, 62), COLORS.Concrete, Enum.Material.Concrete)
+	for x = -38, 38, 6 do
+		local rail = block(group, "PromenadeRail_" .. tostring(x), Vector3.new(4.8, 1.6, 0.18), Vector3.new(x, 1.4, 61.2), COLORS.Metal, Enum.Material.Metal)
+		rail.CanCollide = false
+	end
+end
+
+local function addLandscapeMassing(parent)
+	local landscape = folder(parent, "LandscapeReferences")
+	for index, x in ipairs({-37, -31, 31, 37}) do
+		block(landscape, "PalmPlaceholder" .. index, Vector3.new(1.2, 8, 1.2), Vector3.new(x, 4, 29), COLORS.Landscape, Enum.Material.SmoothPlastic)
+	end
+	landscape:SetAttribute("Phase5ReplaceWithDressedPalms", true)
+end
+
+local function countGeometry(model)
+	local visible = 0
+	for _, item in ipairs(model:GetDescendants()) do
+		if item:IsA("BasePart") and item.Transparency < 1 then
+			visible += 1
+		end
+	end
+	model:SetAttribute("VisiblePartCount", visible)
+	model:SetAttribute("VisiblePartBudget", specification.GoldenMaster.MaxVisibleParts)
+	model:SetAttribute("VisiblePartBudgetPassed", visible <= specification.GoldenMaster.MaxVisibleParts)
+end
+
+function Builder.Build(parent)
+	local existing = parent:FindFirstChild("LargeCity_LuxuryWaterfrontResort_L3_GoldenMaster")
+	if existing then
+		existing:Destroy()
+	end
+
+	local model = Instance.new("Model")
+	model.Name = "LargeCity_LuxuryWaterfrontResort_L3_GoldenMaster"
+	model:SetAttribute("AssetId", specification.AssetId)
+	model:SetAttribute("AssetPhase", 4)
+	model:SetAttribute("QualityGate", "B")
+	model:SetAttribute("GeometryRevision", "ResortArchitecture-v6-PoolsideArchitecture")
+	model:SetAttribute("HasInterior", false)
+	model:SetAttribute("Style", specification.Style)
+	model.Parent = parent
+
+	local groups = folder(model, "DestructionGroups")
+	local d1 = folder(groups, "D1_EntranceCanopy")
+	local d2 = folder(groups, "D2_PodiumLobby")
+	local d3 = folder(groups, "D3_LeftGuestWing")
+	local d4 = folder(groups, "D4_RightGuestWing")
+	local d5 = folder(groups, "D5_CentralTowerLower")
+	local d6 = folder(groups, "D6_CentralTowerUpper")
+	local d7 = folder(groups, "D7_RooftopSkyBar")
+	local terrace = folder(model, "PoolTerrace")
+	local poolArchitecture = folder(model, "PoolArchitecture")
+	local promenade = folder(model, "Promenade")
+
+	addEntrance(d1)
+	addPodium(d2)
+	addGuestWing(d3, "Left")
+	addGuestWing(d4, "Right")
+	addTower(d5, d6)
+	addSkyBar(d7)
+	addPoolTerrace(terrace)
+	addPoolArchitecture(poolArchitecture)
+	addPromenade(promenade)
+	addLandscapeMassing(model)
+
+	local pivot = part(model, "GroundPivot", Vector3.new(1, 1, 1), CFrame.new(0, 0.5, 0), Color3.new(1, 1, 1), Enum.Material.SmoothPlastic, 1)
+	pivot.CanCollide = false
+	pivot.CanQuery = false
+	pivot.CastShadow = false
+	model.PrimaryPart = pivot
+	model:PivotTo(CFrame.new(0, 0, 0))
+
+	countGeometry(model)
+	return model
+end
+
+return Builder
+]]></string>
+      </Properties>
+    </Item>
+    <Item class="ModuleScript" referent="4">
+      <Properties>
+        <string name="Name">LargeCityWaterfrontResortInstaller</string>
+        <string name="Source"><![CDATA[local CollectionService = game:GetService("CollectionService")
+
+local packageFolder = script.Parent
+
+local specification = require(packageFolder:WaitForChild("LargeCityWaterfrontResortSpecification"))
+local goldenMaster = require(packageFolder:WaitForChild("LargeCityWaterfrontResortGoldenMaster"))
+local poolFacade = require(packageFolder:WaitForChild("LargeCityWaterfrontResortPoolFacade"))
+local dressing = require(packageFolder:WaitForChild("LargeCityWaterfrontResortDressing"))
+local signDressing = require(packageFolder:WaitForChild("LargeCityWaterfrontResortSignDressing"))
+local dressingRefinement = require(packageFolder:WaitForChild("LargeCityWaterfrontResortDressingRefinement"))
+
+local Installer = {}
+
+local MODEL_NAME = specification.Installer.ModelName
+local GOLDEN_MASTER_NAME = "LargeCity_LuxuryWaterfrontResort_L3_GoldenMaster"
+local PACKAGE_VERSION = specification.Installer.IntegrationPackageVersion
+local MAX_HEALTH = specification.Installer.MaxHealth
+local ENERGY_TYPE = specification.Installer.EnergyType
+local HOUSE_TAG = specification.Installer.RequiredTag
+
+local function removeDuplicateFacade(model)
+	local dressingFolder = model:FindFirstChild("Dressing")
+	if not dressingFolder then return end
+	local duplicateFacade = dressingFolder:FindFirstChild("Facade")
+	if duplicateFacade then
+		duplicateFacade:Destroy()
+	end
+end
+
+local function validateDestructionGroups(model)
+	local groups = model:FindFirstChild("DestructionGroups")
+	assert(groups and groups:IsA("Folder"), "Waterfront Resort installer requires a DestructionGroups folder")
+	for _, groupName in ipairs(specification.DestructionGroups) do
+		local group = groups:FindFirstChild(groupName)
+		assert(group and group:IsA("Folder"), "Waterfront Resort is missing destruction group: " .. groupName)
+	end
+	return groups
+end
+
+local function lowestVisibleY(model)
+	local minimumY = math.huge
+	for _, item in ipairs(model:GetDescendants()) do
+		if item:IsA("BasePart") and item.Transparency < 1 then
+			local halfSize = item.Size * 0.5
+			local verticalExtent =
+				math.abs(item.CFrame.XVector.Y) * halfSize.X
+				+ math.abs(item.CFrame.YVector.Y) * halfSize.Y
+				+ math.abs(item.CFrame.ZVector.Y) * halfSize.Z
+			minimumY = math.min(minimumY, item.Position.Y - verticalExtent)
+		end
+	end
+	return minimumY
+end
+
+local function placeModel(model, options)
+	if options.CFrame then
+		assert(typeof(options.CFrame) == "CFrame", "Waterfront Resort options.CFrame must be a CFrame")
+		model:PivotTo(options.CFrame)
+		return
+	end
+
+	local groundCFrame = options.GroundCFrame or CFrame.new()
+	assert(typeof(groundCFrame) == "CFrame", "Waterfront Resort options.GroundCFrame must be a CFrame")
+	model:PivotTo(groundCFrame)
+
+	if options.AlignToGround == false then
+		return
+	end
+
+	local minimumY = lowestVisibleY(model)
+	if minimumY < math.huge then
+		local correction = groundCFrame.Position.Y - minimumY
+		model:PivotTo(model:GetPivot() + Vector3.new(0, correction, 0))
+		model:SetAttribute("GroundContactCorrection", correction)
+		model:SetAttribute("GroundContactY", groundCFrame.Position.Y)
+	end
+end
+
+local function applyIntegrationMetadata(model)
+	model.Name = MODEL_NAME
+	model:SetAttribute("AssetId", specification.AssetId)
+	model:SetAttribute("DisplayName", specification.DisplayName)
+	model:SetAttribute("City", specification.City)
+	model:SetAttribute("BuildingType", specification.Installer.BuildingType)
+	model:SetAttribute("CityTier", specification.Installer.CityTier)
+	model:SetAttribute("MaxHealth", MAX_HEALTH)
+	model:SetAttribute("EnergyType", ENERGY_TYPE)
+	model:SetAttribute("AssetPhase", 6)
+	model:SetAttribute("PipelinePhase", 6)
+	model:SetAttribute("QualityGateA", "Approved")
+	model:SetAttribute("QualityGateB", "Approved")
+	model:SetAttribute("QualityGateC", "Pending")
+	model:SetAttribute("Phase6Status", "ExternalGameTestPending")
+	model:SetAttribute("PackageId", "LargeCityWaterfrontResortPackage")
+	model:SetAttribute("IntegrationPackageVersion", PACKAGE_VERSION)
+	model:SetAttribute("IntegrationPackageReady", true)
+	model:SetAttribute("InstallerReady", true)
+	model:SetAttribute("FinalInstallerReady", false)
+	model:SetAttribute("WorkshopOnly", false)
+	model:SetAttribute("HasInterior", false)
+	model:SetAttribute("DestructionGroupCount", #specification.DestructionGroups)
+	model:SetAttribute("ExternalCollapseIntegration", true)
+	model:SetAttribute("UsesSharedMainGameDestruction", true)
+
+	if not CollectionService:HasTag(model, HOUSE_TAG) then
+		CollectionService:AddTag(model, HOUSE_TAG)
+	end
+end
+
+function Installer.Validate(model)
+	assert(model and model:IsA("Model"), "LargeCityWaterfrontResortInstaller.Validate requires a Model")
+	validateDestructionGroups(model)
+	assert(model:GetAttribute("MaxHealth") == MAX_HEALTH, "Waterfront Resort MaxHealth metadata is invalid")
+	assert(model:GetAttribute("EnergyType") == ENERGY_TYPE, "Waterfront Resort EnergyType metadata is invalid")
+	assert(CollectionService:HasTag(model, HOUSE_TAG), "Waterfront Resort is missing tag: " .. HOUSE_TAG)
+	return true
+end
+
+function Installer.Install(parent, options)
+	assert(typeof(parent) == "Instance", "LargeCityWaterfrontResortInstaller.Install requires a parent Instance")
+	options = options or {}
+	assert(typeof(options) == "table", "LargeCityWaterfrontResortInstaller.Install options must be a table")
+
+	local existing = parent:FindFirstChild(MODEL_NAME)
+	if existing then
+		existing:Destroy()
+	end
+	local oldGoldenMaster = parent:FindFirstChild(GOLDEN_MASTER_NAME)
+	if oldGoldenMaster then
+		oldGoldenMaster:Destroy()
+	end
+
+	local model = goldenMaster.Build(parent)
+	poolFacade.Apply(model)
+	dressing.Apply(model)
+	signDressing.Apply(model)
+	dressingRefinement.Apply(model)
+	removeDuplicateFacade(model)
+	validateDestructionGroups(model)
+	applyIntegrationMetadata(model)
+	placeModel(model, options)
+	Installer.Validate(model)
+
+	return model
+end
+
+function Installer.Uninstall(parent)
+	assert(typeof(parent) == "Instance", "LargeCityWaterfrontResortInstaller.Uninstall requires a parent Instance")
+	local model = parent:FindFirstChild(MODEL_NAME)
+	if not model then return false end
+	model:Destroy()
+	return true
+end
+
+Installer.ModelName = MODEL_NAME
+Installer.PackageVersion = PACKAGE_VERSION
+Installer.MaxHealth = MAX_HEALTH
+Installer.EnergyType = ENERGY_TYPE
+Installer.RequiredTag = HOUSE_TAG
+Installer.QualityGateC = "Pending"
+
+return Installer
+]]></string>
+      </Properties>
+    </Item>
+    <Item class="ModuleScript" referent="5">
+      <Properties>
+        <string name="Name">LargeCityWaterfrontResortPoolFacade</string>
+        <string name="Source"><![CDATA[local specification = require(script.Parent:WaitForChild("LargeCityWaterfrontResortSpecification"))
+
+local PoolFacade = {}
+local COLORS = specification.Palette
+
+local GLASS_DEPTH = 0.35
+local STANDOFF = 0.22
+
+local function part(parent, name, size, cf, color, material, transparency)
+	local item = Instance.new("Part")
+	item.Name = name
+	item.Size = size
+	item.CFrame = cf
+	item.Color = color
+	item.Material = material or Enum.Material.SmoothPlastic
+	item.Transparency = transparency or 0
+	item.Anchored = true
+	item.CanCollide = false
+	item.CastShadow = true
+	item.TopSurface = Enum.SurfaceType.Smooth
+	item.BottomSurface = Enum.SurfaceType.Smooth
+	item.Parent = parent
+	return item
+end
+
+local function block(parent, name, size, position, color, material, rotation)
+	local cf = CFrame.new(position)
+	if rotation then
+		cf *= CFrame.Angles(math.rad(rotation.X), math.rad(rotation.Y), math.rad(rotation.Z))
+	end
+	return part(parent, name, size, cf, color, material)
+end
+
+local function glass(parent, name, size, position, rotation)
+	local item = block(parent, name, size, position, COLORS.Glass, Enum.Material.Glass, rotation)
+	item.Transparency = 0.18
+	item.Reflectance = 0.04
+	return item
+end
+
+local function localToWorld(center, yawDegrees, localPosition)
+	return (CFrame.new(center) * CFrame.Angles(0, math.rad(yawDegrees), 0) * CFrame.new(localPosition)).Position
+end
+
+local function resetFolder(parent)
+	local existing = parent:FindFirstChild("PoolsideFacade")
+	if existing then
+		existing:Destroy()
+	end
+	local folder = Instance.new("Folder")
+	folder.Name = "PoolsideFacade"
+	folder.Parent = parent
+	return folder
+end
+
+local function addBands(parent, prefix, center, yaw, localRearZ, width, yLevels, height)
+	for index, y in ipairs(yLevels) do
+		local p = localToWorld(Vector3.new(center.X, y, center.Z), yaw, Vector3.new(0, 0, localRearZ + STANDOFF))
+		glass(parent, prefix .. "GlassBand" .. index, Vector3.new(width, height, GLASS_DEPTH), p, Vector3.new(0, yaw, 0))
+
+		-- A shallow ledge gives the pool elevation depth without adding full balconies.
+		local ledge = localToWorld(Vector3.new(center.X, y - height * 0.5 - 0.28, center.Z), yaw, Vector3.new(0, 0, localRearZ + 0.62))
+		block(parent, prefix .. "Ledge" .. index, Vector3.new(width + 1.0, 0.32, 1.15), ledge, COLORS.Limestone, Enum.Material.Concrete, Vector3.new(0, yaw, 0))
+	end
+end
+
+local function addMullions(parent, prefix, center, yaw, localRearZ, width, yMin, yMax, count)
+	for index = 0, count do
+		local localX = -width / 2 + width * (index / count)
+		local p = localToWorld(Vector3.new(center.X, (yMin + yMax) / 2, center.Z), yaw, Vector3.new(localX, 0, localRearZ + STANDOFF + 0.08))
+		block(parent, prefix .. "Mullion" .. index, Vector3.new(0.30, yMax - yMin, 0.48), p, COLORS.Metal, Enum.Material.Metal, Vector3.new(0, yaw, 0))
+	end
+end
+
+local function countGeometry(model)
+	local visible = 0
+	for _, item in ipairs(model:GetDescendants()) do
+		if item:IsA("BasePart") and item.Transparency < 1 then
+			visible += 1
+		end
+	end
+	model:SetAttribute("VisiblePartCount", visible)
+	if specification.GoldenMaster and specification.GoldenMaster.MaxVisibleParts then
+		model:SetAttribute("VisiblePartBudget", specification.GoldenMaster.MaxVisibleParts)
+		model:SetAttribute("VisiblePartBudgetPassed", visible <= specification.GoldenMaster.MaxVisibleParts)
+	end
+end
+
+function PoolFacade.Apply(model)
+	local groups = model:WaitForChild("DestructionGroups")
+	local podium = resetFolder(groups:WaitForChild("D2_PodiumLobby"))
+	local leftWing = resetFolder(groups:WaitForChild("D3_LeftGuestWing"))
+	local rightWing = resetFolder(groups:WaitForChild("D4_RightGuestWing"))
+	local lowerTower = resetFolder(groups:WaitForChild("D5_CentralTowerLower"))
+	local upperTower = resetFolder(groups:WaitForChild("D6_CentralTowerUpper"))
+
+	-- Pool-facing lobby at the rear of the podium (rear face is Z=28).
+	glass(podium, "PoolLobbyGlass", Vector3.new(42, 6.0, GLASS_DEPTH), Vector3.new(0, 8.0, 28 + STANDOFF))
+	for x = -18, 18, 6 do
+		block(podium, "PoolLobbyMullion_" .. tostring(x), Vector3.new(0.32, 6.2, 0.48), Vector3.new(x, 8.0, 28 + STANDOFF + 0.08), COLORS.Metal, Enum.Material.Metal)
+	end
+
+	-- Central tower. Both rear faces end at world Z=19.
+	addBands(lowerTower, "LowerPool_", Vector3.new(0, 0, 5), 0, 14.0, 29, {18.0, 22.4, 26.8, 31.2}, 2.5)
+	addMullions(lowerTower, "LowerPool_", Vector3.new(0, 0, 5), 0, 14.0, 29, 16.5, 33.0, 6)
+	addBands(upperTower, "UpperPool_", Vector3.new(0, 0, 6.5), 0, 12.5, 25, {39.5, 43.3, 47.1, 50.9, 54.7, 58.5}, 2.35)
+	addMullions(upperTower, "UpperPool_", Vector3.new(0, 0, 6.5), 0, 12.5, 25, 38.0, 60.0, 5)
+
+	local function wingFacade(parent, side)
+		local sign = side == "Left" and -1 or 1
+		local x = sign * 29
+		local yaw = sign * -12
+		addBands(parent, side .. "LowerPool_", Vector3.new(x, 0, 8), yaw, 12.0, 27, {10.5, 14.5, 18.5, 22.5}, 2.35)
+		addMullions(parent, side .. "LowerPool_", Vector3.new(x, 0, 8), yaw, 12.0, 27, 9.0, 24.5, 5)
+		addBands(parent, side .. "UpperPool_", Vector3.new(x - sign * 1.5, 0, 9), yaw, 10.5, 23, {30.5, 34.5}, 2.25)
+		addMullions(parent, side .. "UpperPool_", Vector3.new(x - sign * 1.5, 0, 9), yaw, 10.5, 23, 29.0, 36.0, 4)
+	end
+
+	wingFacade(leftWing, "Left")
+	wingFacade(rightWing, "Right")
+
+	model:SetAttribute("PoolsideFacadeRevision", "PoolsideFacade-v1")
+	countGeometry(model)
+	return model
+end
+
+return PoolFacade
+]]></string>
+      </Properties>
+    </Item>
+    <Item class="ModuleScript" referent="6">
+      <Properties>
+        <string name="Name">LargeCityWaterfrontResortSignDressing</string>
+        <string name="Source"><![CDATA[local SignDressing = {}
+
+local SIGN_TEXT = "TRENCHBORN BAY\nRESORT"
+
+local function findSign(model)
+	local dressing = model:FindFirstChild("Dressing")
+	if not dressing then return nil end
+	local entrance = dressing:FindFirstChild("Entrance")
+	if not entrance then return nil end
+	return entrance:FindFirstChild("ResortNameSign")
+end
+
+local function removeOldSignGuis(sign)
+	local entrance = sign.Parent
+	if not entrance then return end
+
+	-- Older dressing versions parented SignSurface to the Entrance folder while
+	-- setting Adornee to ResortNameSign. Newer versions parent it to the sign.
+	-- Remove both variants so only one text layer can render.
+	for _, item in ipairs(entrance:GetDescendants()) do
+		if item:IsA("SurfaceGui") then
+			local isOurSignGui = item.Name == "SignSurface" or item.Adornee == sign
+			if isOurSignGui then
+				item:Destroy()
+			end
+		end
+	end
+end
+
+function SignDressing.Apply(model)
+	assert(model and model:IsA("Model"), "LargeCityWaterfrontResortSignDressing.Apply expects a Model")
+
+	local sign = findSign(model)
+	assert(sign and sign:IsA("BasePart"), "ResortNameSign not found after dressing")
+
+	-- The original one-line sign forced TextScaled to fit a very wide phrase into
+	-- a shallow panel. Keep TextScaled (Trenchborn UI standard), but give the sign
+	-- a better aspect ratio and use a deliberate two-line lockup.
+	sign.Size = Vector3.new(22, 3.4, 0.45)
+	removeOldSignGuis(sign)
+
+	local gui = Instance.new("SurfaceGui")
+	gui.Name = "SignSurface"
+	gui.Face = Enum.NormalId.Front
+	gui.AlwaysOnTop = false
+	gui.LightInfluence = 0.25
+	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	gui.PixelsPerStud = 50
+	gui.Adornee = sign
+	gui.Parent = sign
+
+	local label = Instance.new("TextLabel")
+	label.Name = "Label"
+	label.Size = UDim2.fromScale(1, 1)
+	label.BackgroundTransparency = 1
+	label.Text = SIGN_TEXT
+	label.TextColor3 = Color3.fromRGB(244, 239, 224)
+	label.TextStrokeTransparency = 0.82
+	label.Font = Enum.Font.GothamBold
+	label.TextScaled = true
+	label.TextWrapped = true
+	label.TextXAlignment = Enum.TextXAlignment.Center
+	label.TextYAlignment = Enum.TextYAlignment.Center
+	label.LineHeight = 0.9
+	label.Parent = gui
+
+	local padding = Instance.new("UIPadding")
+	padding.PaddingLeft = UDim.new(0.055, 0)
+	padding.PaddingRight = UDim.new(0.055, 0)
+	padding.PaddingTop = UDim.new(0.08, 0)
+	padding.PaddingBottom = UDim.new(0.08, 0)
+	padding.Parent = label
+
+	local textSize = Instance.new("UITextSizeConstraint")
+	textSize.MinTextSize = 18
+	textSize.MaxTextSize = 46
+	textSize.Parent = label
+
+	model:SetAttribute("ResortSignRevision", "TwoLineAspectSafe-v3-Deduplicated")
+	model:SetAttribute("TextLabelsScaled", true)
+	return sign
+end
+
+return SignDressing
+]]></string>
+      </Properties>
+    </Item>
+    <Item class="ModuleScript" referent="7">
+      <Properties>
+        <string name="Name">LargeCityWaterfrontResortSpecification</string>
+        <string name="Source"><![CDATA[local Specification = {
+	AssetId = "LargeCity_LuxuryWaterfrontResort_L3",
+	DisplayName = "Luxury Waterfront Resort",
+	City = "LargeCity",
+	Phase = 6,
+	QualityGate = "C-Pending",
+	Style = "Singapore x Miami tropical luxury metropolis",
+
+	Dimensions = {
+		Footprint = Vector3.new(85, 0, 65),
+		MainTower = Vector3.new(42, 64, 34),
+		GuestWing = Vector3.new(38, 38, 26),
+		Podium = Vector3.new(70, 12, 45),
+	},
+
+	Palette = {
+		Concrete = Color3.fromRGB(232, 229, 220),
+		Limestone = Color3.fromRGB(214, 204, 186),
+		Glass = Color3.fromRGB(92, 164, 184),
+		DarkGlass = Color3.fromRGB(45, 81, 93),
+		Metal = Color3.fromRGB(185, 191, 194),
+		Wood = Color3.fromRGB(133, 98, 67),
+		Pool = Color3.fromRGB(57, 189, 211),
+		Landscape = Color3.fromRGB(72, 124, 76),
+	},
+
+	GoldenMaster = {
+		TargetVisibleParts = 520,
+		MaxVisibleParts = 700,
+		RequireRealBalconies = true,
+		RequireRealFacadeRibs = true,
+		RequireEntranceCanopy = true,
+		RequireSkyBarCrown = true,
+		RequirePoolTerrace = true,
+		RequirePromenade = true,
+		RequireNoInterior = true,
+	},
+
+	DestructionGroups = {
+		"D1_EntranceCanopy",
+		"D2_PodiumLobby",
+		"D3_LeftGuestWing",
+		"D4_RightGuestWing",
+		"D5_CentralTowerLower",
+		"D6_CentralTowerUpper",
+		"D7_RooftopSkyBar",
+	},
+
+	Installer = {
+		ModelName = "LargeCity_LuxuryWaterfrontResort_L3",
+		RequiredTag = "KaijuHouse",
+		MaxHealth = 64000,
+		EnergyType = "Thermal",
+		BuildingType = "Hotel",
+		CityTier = 4,
+		IntegrationPackageVersion = 1,
+		QualityGateA = "Approved",
+		QualityGateB = "Approved",
+		QualityGateC = "Pending",
+		Phase6Status = "ExternalGameTestPending",
+		FinalInstallerReady = false,
+		UsesSharedMainGameDestruction = true,
+	},
+
+	VisualReviewCriteria = {
+		"Reads immediately as a tropical luxury waterfront resort, not an office tower.",
+		"Central tower is clearly dominant and flanked by two lower guest wings.",
+		"The silhouette opens toward the waterfront and feels resort-like rather than blocky.",
+		"Balconies and facade ribs are physical geometry, not texture-only decoration.",
+		"Entrance canopy, pool terrace and rooftop crown are visible from kaiju gameplay distance.",
+		"Architecture is modern and premium but not futuristic enough to compete with Mega City.",
+		"No unintended gaps, overlaps or z-fighting appear between repeated modules.",
+		"Pivot is deterministic and located at ground center of the whole resort complex.",
+	},
+}
+
+return Specification
+]]></string>
+      </Properties>
+    </Item>
+  </Item>
+</roblox>
