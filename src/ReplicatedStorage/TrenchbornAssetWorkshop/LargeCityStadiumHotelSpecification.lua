@@ -8,8 +8,8 @@ local Specification = {
 	City = "LargeCity",
 	District = "Uptown",
 	BuildingType = "Hotel",
-	Phase = 4,
-	QualityGate = "B-Pending",
+	Phase = 5,
+	QualityGate = "B-Approved",
 	Branch = "largecity-stadium-hotel-l3",
 
 	StandaloneImport = {
@@ -259,9 +259,9 @@ local Specification = {
 
 
 	Phase4Status = {
-		Status = "GoldenMasterReview",
+		Status = "Approved",
 		GeometryRevision = "LargeCityStadiumHotel-v1-GrandstandHotel",
-		QualityGateB = "Pending",
+		QualityGateB = "Approved",
 		ReviewFocus = {
 			"overall premium event-hotel silhouette",
 			"gently bowed guest-room facade",
@@ -273,6 +273,28 @@ local Specification = {
 			"rear service court is visibly on true +Z exterior",
 			"no balcony, pool-deck or roof Z-fighting",
 		},
+	},
+
+
+	QualityGateB = {
+		Status = "Approved",
+		ApprovedGeometry = "LargeCityStadiumHotel-v1-GrandstandHotel",
+		Notes = "Curved guest-room facade, shallow hotel balcony rhythm, porte-cochere arrival, projected sky lounge, rooftop pool deck and rear service court accepted.",
+		NextPhase = 5,
+	},
+
+	Phase5Status = {
+		Status = "InReview",
+		Revision = "LargeCityStadiumHotel-Dressing-v1",
+		Includes = {
+			"Stadium Hotel wordmark on visible porte-cochere fascia",
+			"warm arrival accent, palms, planters and bollards",
+			"sky-lounge terrace planting",
+			"rooftop pool planting and loungers",
+			"high-contrast rooftop pool signage",
+			"rear hotel-service signage and bay numbers",
+		},
+		QualityGateC = "Pending",
 	},
 
 	Phase3Acceptance = {
