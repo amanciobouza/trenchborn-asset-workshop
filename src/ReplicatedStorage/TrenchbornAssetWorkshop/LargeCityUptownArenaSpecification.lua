@@ -177,7 +177,7 @@ local Specification = {
 	},
 
 	Phase5Status = {
-		Status = "InReview",
+		Status = "Approved",
 		Revision = "LargeCityUptownArena-Dressing-v6-HighContrastNeonText",
 		Includes = {
 			"Uptown Arena wordmark",
@@ -194,7 +194,7 @@ local Specification = {
 
 
 	FacadeVisibilityFix = {
-		Status = "InReview",
+		Status = "Approved",
 		GeometryRevision = "LargeCityUptownArena-v5-ProjectedFacadeDetails",
 		DressingRevision = "LargeCityUptownArena-Dressing-v6-HighContrastNeonText",
 		Notes = "Continuous cyan media ribbon, framed event screens, feature bays, sparse facade lights and vertical fins were moved outward so they sit visibly on the exterior skin instead of being buried in the shell. Bright cyan/warm neon signs use dark lettering for readable contrast.",
@@ -204,7 +204,7 @@ local Specification = {
 		Status = "ExternalGameTestPending",
 		ExternalCollapseIntegration = true,
 		QualityGateC = "Pending",
-		Notes = "External collapse test remains pending. Facade visibility correction is currently under visual review.",
+		Notes = "Workshop visual review approved after facade visibility and neon-text contrast corrections; destruction and shared collapse behaviour remain deferred to the main game.",
 	},
 
 	Phase3Acceptance = {
