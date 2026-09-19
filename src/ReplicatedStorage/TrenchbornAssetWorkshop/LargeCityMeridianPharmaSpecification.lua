@@ -44,7 +44,7 @@ local Specification = {
 		ResearchHeadhouse = {
 			Footprint = Vector2.new(42, 72),
 			Height = 32,
-			Offset = Vector3.new(-38, 0, -4),
+			Offset = Vector3.new(-42, 0, -4),
 			Rule = "A glazed research/admin headhouse gives Meridian a high-tech medical identity and establishes the public-facing entrance.",
 		},
 		CleanroomHall = {
@@ -171,7 +171,7 @@ local Specification = {
 		},
 		ResearchHeadhouse = {
 			Footprint = Vector2.new(42, 72),
-			Center = Vector3.new(-39, 16, -4),
+			Center = Vector3.new(-43, 16, -4),
 			Height = 32,
 			CornerRadiusApprox = 3.5,
 			FrontAtriumWidth = 28,
@@ -188,11 +188,11 @@ local Specification = {
 			Rule = "Use long clean horizontal observation bands separated by sterile wall panels; avoid office-style full-height curtain wall.",
 		},
 		ProcessBridge = {
-			Center = Vector3.new(-16, 24, -19),
-			Size = Vector3.new(18, 7, 8),
+			Center = Vector3.new(-20, 24, -19),
+			Size = Vector3.new(8, 7, 8),
 			Glazing = true,
 			TealUndersideAccent = true,
-			Rule = "Bridge must visibly connect headhouse and production hall above ground level without being buried inside either mass.",
+			Rule = "A real 4-stud open seam separates headhouse and production hall; the short bridge spans that seam and only overlaps each facade slightly."
 		},
 		BioreactorCourt = {
 			Face = "+Z",
@@ -268,7 +268,7 @@ local Specification = {
 
 	Phase4Status = {
 		Status = "GoldenMasterReview",
-		GeometryRevision = "LargeCityMeridianPharma-v4-RearBioreactors-NoLoadingBays",
+		GeometryRevision = "LargeCityMeridianPharma-v5-VisibleResearchSeamBridge",
 		QualityGateB = "Pending",
 		ReviewFocus = {
 			"immediate pharmaceutical / biotech production readability",
@@ -276,6 +276,7 @@ local Specification = {
 			"visitor atrium and canopy read clearly from the front",
 			"cleanroom observation bands remain horizontal and production-like",
 			"process bridge is visibly external and elevated",
+			"research spine sits visibly in the open seam instead of intersecting either building mass",
 			"rear bioreactor court is organized and not refinery-like",
 			"no loading stations compete visually or physically with the four tanks",
 			"rooftop process modules and ducts form a deliberate technical silhouette",
