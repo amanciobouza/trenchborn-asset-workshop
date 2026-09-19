@@ -274,15 +274,15 @@ local function addBioreactorCourt(group)
 		local centerY = vessel.height / 2
 		cylinderY(group, "Bioreactor_" .. index, vessel.height, 8, Vector3.new(vessel.x, centerY, 43), COLORS.Silver, Enum.Material.Metal)
 		cylinderY(group, "BioreactorTop_" .. index, 1.0, 8.5, Vector3.new(vessel.x, vessel.height + 0.5, 43), COLORS.Metal, Enum.Material.Metal)
-		block(group, "BioreactorSafetyStripe_" .. index, Vector3.new(8.4, 0.5, 0.35), Vector3.new(vessel.x, vessel.height * 0.62, 38.8), index % 2 == 0 and COLORS.Chemical or COLORS.Teal, Enum.Material.Neon)
+		block(group, "BioreactorSafetyStripe_" .. index, Vector3.new(8.4, 0.5, 0.35), Vector3.new(vessel.x, vessel.height * 0.62, 47.2), index % 2 == 0 and COLORS.Chemical or COLORS.Teal, Enum.Material.Neon)
 	end
 
-	-- Service gantry reads as one organized pharma process system.
-	block(group, "BioreactorGantry", Vector3.new(46, 1.0, 4), Vector3.new(20.5, 21.0, 38.0), COLORS.Dark, Enum.Material.Metal)
+	-- Service gantry now runs on the OUTER side of the tanks. In the previous revision\n\t-- the gantry posts and teal line sat inside the cleanroom rear wall and looked like\n\t-- floating cyan/pink bars behind columns.
+	block(group, "BioreactorGantry", Vector3.new(46, 1.0, 2.0), Vector3.new(20.5, 21.0, 48.0), COLORS.Dark, Enum.Material.Metal)
 	for _, x in ipairs({0, 11, 22, 33, 44}) do
-		block(group, "GantryPost_" .. tostring(x), Vector3.new(0.7, 21, 0.7), Vector3.new(x, 10.5, 38.0), COLORS.Metal, Enum.Material.Metal)
+		block(group, "GantryPost_" .. tostring(x), Vector3.new(0.7, 21, 0.7), Vector3.new(x, 10.5, 48.0), COLORS.Metal, Enum.Material.Metal)
 	end
-	block(group, "GantryTealLine", Vector3.new(44, 0.35, 0.35), Vector3.new(20.5, 21.7, 36.0), COLORS.Teal, Enum.Material.Neon)
+	block(group, "GantryTealLine", Vector3.new(44, 0.35, 0.35), Vector3.new(20.5, 21.7, 49.2), COLORS.Teal, Enum.Material.Neon)
 end
 local function addProcessServiceInfrastructure(group)
 	-- No loading stations on this asset. Keep only a small chemical safety
@@ -313,7 +313,7 @@ function Builder.Build(parent)
 	model:SetAttribute("AssetPhase", 4)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Pending")
-	model:SetAttribute("GeometryRevision", "LargeCityMeridianPharma-v5-VisibleResearchSeamBridge")
+	model:SetAttribute("GeometryRevision", "LargeCityMeridianPharma-v6-ExternalProcessLighting")
 	model:SetAttribute("MaxHealth", specification.ProposedGameplayMetadata.TargetMaxHealth)
 	model:SetAttribute("EnergyType", specification.ProposedGameplayMetadata.EnergyType)
 	model:SetAttribute("InstallerTag", specification.ProposedGameplayMetadata.InstallerTag)
@@ -331,7 +331,7 @@ function Builder.Build(parent)
 	model:SetAttribute("ExhaustClusterDuctConnected", true)
 	model:SetAttribute("RearLoadingVisible", false)
 	model:SetAttribute("LoadingBayCount", 0)
-	model:SetAttribute("BioreactorCourtRear", true)
+	model:SetAttribute("BioreactorCourtRear", true)\n\tmodel:SetAttribute("BioreactorSafetyBandsExternal", true)\n\tmodel:SetAttribute("BioreactorGantryOutsideHall", true)
 	model.Parent = parent
 
 	local groups = folder(model, "DestructionGroups")
