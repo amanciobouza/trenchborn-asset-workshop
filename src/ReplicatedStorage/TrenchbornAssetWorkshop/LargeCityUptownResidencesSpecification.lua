@@ -9,7 +9,7 @@ local Specification = {
 	District = "Uptown",
 	BuildingType = "Luxury Apartment",
 	Phase = 6,
-	QualityGate = "B-Approved",
+	QualityGate = "C-Pending",
 	Branch = "largecity-uptown-residences-l3",
 
 	StandaloneImport = {
@@ -131,6 +131,8 @@ local Specification = {
 		EnergyType = "Electric",
 		InstallerTag = "KaijuHouse",
 		ExternalCollapseIntegration = true,
+		IntegrationPackageVersion = 1,
+		FinalInstallerReady = false,
 	},
 
 	PlannedDestructionGroups = {
