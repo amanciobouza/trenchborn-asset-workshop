@@ -9,7 +9,7 @@ local Specification = {
 	District = "Uptown",
 	BuildingType = "Hotel",
 	Phase = 5,
-	QualityGate = "B-Approved",
+	QualityGate = "B-Pending",
 	Branch = "largecity-stadium-hotel-l3",
 
 	StandaloneImport = {
@@ -259,9 +259,9 @@ local Specification = {
 
 
 	Phase4Status = {
-		Status = "Approved",
-		GeometryRevision = "LargeCityStadiumHotel-v1-GrandstandHotel",
-		QualityGateB = "Approved",
+		Status = "GoldenMasterReview",
+		GeometryRevision = "LargeCityStadiumHotel-v2-CorrectConvexYaw",
+		QualityGateB = "Pending",
 		ReviewFocus = {
 			"overall premium event-hotel silhouette",
 			"gently bowed guest-room facade",
@@ -277,10 +277,17 @@ local Specification = {
 
 
 	QualityGateB = {
-		Status = "Approved",
-		ApprovedGeometry = "LargeCityStadiumHotel-v1-GrandstandHotel",
-		Notes = "Curved guest-room facade, shallow hotel balcony rhythm, porte-cochere arrival, projected sky lounge, rooftop pool deck and rear service court accepted.",
+		Status = "Pending",
+		ApprovedGeometry = "LargeCityStadiumHotel-v2-CorrectConvexYaw",
+		Notes = "Convex guest-room facade yaw corrected after review found the window/balcony tangents visually bending inward. Recheck front and rear curvature before re-approval.",
 		NextPhase = 5,
+	},
+
+
+	FacadeCurveOrientationFix = {
+		Status = "InReview",
+		GeometryRevision = "LargeCityStadiumHotel-v2-CorrectConvexYaw",
+		Notes = "Window, balcony slab and balustrade yaw now follow the outward/convex guest-room bow instead of visually suggesting a concave facade.",
 	},
 
 	Phase5Status = {
