@@ -196,18 +196,24 @@ local function addSkyGardens(group)
 end
 
 local function addCrown(group)
-	local center = Vector3.new(7, 121, -3)
-	addChamferedMass(group, "CrownCore", center, 28, 24, 10, 2.8, COLORS.DarkGlass, Enum.Material.SmoothPlastic)
+	-- The crown core is a low rooftop plinth. In v2 it was 10 studs tall, so all
+	-- three crown blades were mostly embedded inside it and appeared to vanish
+	-- into the building. Keep the plinth low and place every blade fully above it.
+	local center = Vector3.new(7, 117.5, -3)
+	addChamferedMass(group, "CrownCore", center, 28, 24, 3, 2.8, COLORS.DarkGlass, Enum.Material.SmoothPlastic)
 
-	-- Asymmetric vertical blades reproduce the approved stepped summit silhouette.
-	block(group, "CrownBladePrimary", Vector3.new(4.0, 18, 7.0), Vector3.new(13.0, 121.0, -5.0), COLORS.Stone, Enum.Material.Metal)
-	block(group, "CrownBladeSecondary", Vector3.new(3.0, 14, 6.0), Vector3.new(4.0, 119.0, -8.0), COLORS.Stone, Enum.Material.Metal)
-	block(group, "CrownBladeTertiary", Vector3.new(3.0, 11, 5.5), Vector3.new(-2.0, 117.5, 3.0), COLORS.StoneDark, Enum.Material.Metal)
+	-- All three blades start at Y=119 (the top of the plinth) and step down
+	-- asymmetrically while the tallest blade preserves the 126-stud target height.
+	block(group, "CrownBladePrimary", Vector3.new(4.0, 7.0, 7.0), Vector3.new(13.0, 122.5, -5.0), COLORS.Stone, Enum.Material.Metal)
+	block(group, "CrownBladeSecondary", Vector3.new(3.0, 5.5, 6.0), Vector3.new(4.0, 121.75, -8.0), COLORS.Stone, Enum.Material.Metal)
+	block(group, "CrownBladeTertiary", Vector3.new(3.0, 4.5, 5.5), Vector3.new(-2.0, 121.25, 3.0), COLORS.StoneDark, Enum.Material.Metal)
 
-	block(group, "CrownLightFront", Vector3.new(28, 0.75, 0.8), Vector3.new(7, 124.8, -15.4), COLORS.Teal, Enum.Material.Neon)
-	block(group, "CrownLightRear", Vector3.new(28, 0.75, 0.8), Vector3.new(7, 124.8, 9.4), COLORS.Teal, Enum.Material.Neon)
-	block(group, "CrownLightLeft", Vector3.new(0.8, 0.75, 24), Vector3.new(-7.4, 124.8, -3), COLORS.Teal, Enum.Material.Neon)
-	block(group, "CrownLightRight", Vector3.new(0.8, 0.75, 24), Vector3.new(21.4, 124.8, -3), COLORS.Teal, Enum.Material.Neon)
+	-- The luminous ring now hugs the plinth perimeter instead of floating through
+	-- the former tall crown volume.
+	block(group, "CrownLightFront", Vector3.new(28, 0.75, 0.8), Vector3.new(7, 118.7, -15.4), COLORS.Teal, Enum.Material.Neon)
+	block(group, "CrownLightRear", Vector3.new(28, 0.75, 0.8), Vector3.new(7, 118.7, 9.4), COLORS.Teal, Enum.Material.Neon)
+	block(group, "CrownLightLeft", Vector3.new(0.8, 0.75, 24), Vector3.new(-7.4, 118.7, -3), COLORS.Teal, Enum.Material.Neon)
+	block(group, "CrownLightRight", Vector3.new(0.8, 0.75, 24), Vector3.new(21.4, 118.7, -3), COLORS.Teal, Enum.Material.Neon)
 end
 
 local function addRearService(group)
@@ -248,7 +254,7 @@ function Builder.Build(parent)
 	model:SetAttribute("AssetPhase", 4)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Pending")
-	model:SetAttribute("GeometryRevision", "LargeCitySummitTower-v2-NonOverlappingRoofMasses")
+	model:SetAttribute("GeometryRevision", "LargeCitySummitTower-v3-ExposedCrownBlades")
 	model:SetAttribute("MaxHealth", specification.ProposedGameplayMetadata.TargetMaxHealth)
 	model:SetAttribute("EnergyType", specification.ProposedGameplayMetadata.EnergyType)
 	model:SetAttribute("InstallerTag", specification.ProposedGameplayMetadata.InstallerTag)
@@ -257,6 +263,7 @@ function Builder.Build(parent)
 	model:SetAttribute("SkyGardenCount", 2)
 	model:SetAttribute("SetbackCount", 2)
 	model:SetAttribute("RoofZFightingFix", true)
+	model:SetAttribute("CrownBladesFullyExposed", true)
 	model.Parent = parent
 
 	local groups = folder(model, "DestructionGroups")
