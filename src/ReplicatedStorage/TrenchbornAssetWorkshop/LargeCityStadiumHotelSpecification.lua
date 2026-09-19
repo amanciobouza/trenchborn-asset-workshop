@@ -285,7 +285,7 @@ local Specification = {
 
 	Phase5Status = {
 		Status = "InReview",
-		Revision = "LargeCityStadiumHotel-Dressing-v1",
+		Revision = "LargeCityStadiumHotel-Dressing-v2-SurfaceAnchored",
 		Includes = {
 			"Stadium Hotel wordmark on visible porte-cochere fascia",
 			"warm arrival accent, palms, planters and bollards",
@@ -293,6 +293,7 @@ local Specification = {
 			"rooftop pool planting and loungers",
 			"high-contrast rooftop pool signage",
 			"rear hotel-service signage and bay numbers",
+			"landscaping and pool-deck dressing sit directly on their supporting surfaces",
 		},
 		QualityGateC = "Pending",
 	},
