@@ -331,7 +331,9 @@ function Builder.Build(parent)
 	model:SetAttribute("ExhaustClusterDuctConnected", true)
 	model:SetAttribute("RearLoadingVisible", false)
 	model:SetAttribute("LoadingBayCount", 0)
-	model:SetAttribute("BioreactorCourtRear", true)\n\tmodel:SetAttribute("BioreactorSafetyBandsExternal", true)\n\tmodel:SetAttribute("BioreactorGantryOutsideHall", true)
+	model:SetAttribute("BioreactorCourtRear", true)
+	model:SetAttribute("BioreactorSafetyBandsExternal", true)
+	model:SetAttribute("BioreactorGantryOutsideHall", true)
 	model.Parent = parent
 
 	local groups = folder(model, "DestructionGroups")
