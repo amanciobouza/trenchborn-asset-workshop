@@ -8,8 +8,8 @@ local Specification = {
 	City = "LargeCity",
 	District = "MedicalTech",
 	BuildingType = "Pharma Plant",
-	Phase = 2,
-	QualityGate = "A-Pending",
+	Phase = 3,
+	QualityGate = "A-Approved",
 	Branch = "largecity-meridian-pharma-l3",
 
 	StandaloneImport = {
@@ -131,7 +131,7 @@ local Specification = {
 	},
 
 	VisualTarget = {
-		Status = "InReview",
+		Status = "Approved",
 		Revision = "LargeCityMeridianPharma-VisualTarget-v1",
 		Brief = {
 			"premium pharmaceutical production campus in MedicalTech district",
@@ -149,10 +149,111 @@ local Specification = {
 	},
 
 
+
+	QualityGateA = {
+		Status = "Approved",
+		ApprovedTarget = "LargeCityMeridianPharma-VisualTarget-v1",
+		Notes = "Approved Meridian BioWorks concept with glazed research headhouse, cleanroom production hall, enclosed process bridge, organized rooftop modules and rear bioreactor court.",
+		NextPhase = 3,
+	},
+
+	TechnicalBreakdown = {
+		CoordinateSystem = {
+			Pivot = "ground center",
+			Front = "local -Z",
+			Rear = "local +Z",
+			LayoutYaw = 4,
+		},
+		Overall = {
+			TargetFootprint = Vector2.new(132, 92),
+			TargetHeight = 48,
+			GroundLevel = 0,
+		},
+		ResearchHeadhouse = {
+			Footprint = Vector2.new(42, 72),
+			Center = Vector3.new(-39, 16, -4),
+			Height = 32,
+			CornerRadiusApprox = 3.5,
+			FrontAtriumWidth = 28,
+			FrontAtriumHeight = 23,
+			FacadeBayCount = 6,
+		},
+		CleanroomHall = {
+			Footprint = Vector2.new(76, 74),
+			Center = Vector3.new(20, 14, 2),
+			Height = 28,
+			ObservationBandHeight = 4.5,
+			PanelBayCountLongFace = 9,
+			PanelBayCountShortFace = 6,
+			Rule = "Use long clean horizontal observation bands separated by sterile wall panels; avoid office-style full-height curtain wall.",
+		},
+		ProcessBridge = {
+			Center = Vector3.new(-16, 24, -19),
+			Size = Vector3.new(18, 7, 8),
+			Glazing = true,
+			TealUndersideAccent = true,
+			Rule = "Bridge must visibly connect headhouse and production hall above ground level without being buried inside either mass.",
+		},
+		BioreactorCourt = {
+			Face = "+Z",
+			CourtCenter = Vector3.new(28, 0, 43),
+			VesselCount = 4,
+			VesselDiameter = 8,
+			VesselHeights = {24, 28, 26, 22},
+			GantryHeight = 21,
+			ServiceClearance = 4,
+			Rule = "Cylindrical vessel housings remain grouped and organized; they must not read as an oil-refinery tank farm.",
+		},
+		RooftopProcess = {
+			BaseY = 28,
+			MaximumY = 48,
+			ModuleCount = 3,
+			ModuleFootprints = {
+				Vector2.new(20, 14),
+				Vector2.new(18, 12),
+				Vector2.new(16, 11),
+			},
+			DuctDiameter = 1.4,
+			ExhaustStackCount = 3,
+			ScreenHeight = 6,
+			Rule = "Equipment groups are deliberately spaced and connected by clean duct runs; no random rooftop clutter.",
+		},
+		Facade = {
+		PanelDepth = 0.7,
+		GlassDepth = 0.65,
+		FrameDepth = 0.85,
+		ObservationBandStandOff = 0.25,
+		SafetyAccentDepth = 0.28,
+		Rule = "All glazing, safety bands and process screens sit visibly outside their base wall surfaces to avoid clipping or Z-fighting.",
+		},
+		Entrance = {
+		AtriumWidth = 28,
+		AtriumHeight = 23,
+		RecessDepth = 4.0,
+		CanopyWidth = 34,
+		CanopyDepth = 9,
+		CanopyY = 12.5,
+		PlazaDepth = 12,
+		Rule = "Research entrance must read as a high-tech visitor/research entry, not a loading bay.",
+		},
+		RearService = {
+		LoadingDoorCount = 4,
+		DoorWidth = 8,
+		LoadingCanopyWidth = 44,
+		ServiceApronDepth = 16,
+		SafetyBollards = true,
+		Rule = "Loading and process-service access stays visibly on the true +Z exterior and remains separate from the research entrance.",
+		},
+		PartBudget = {
+			TargetVisibleParts = 620,
+			MaximumVisibleParts = 820,
+		},
+	},
+
 	Phase2Status = {
-		Status = "VisualTargetReview",
+		Status = "Approved",
 		TargetRevision = "LargeCityMeridianPharma-VisualTarget-v1",
-		QualityGateA = "Pending",
+		QualityGateA = "Approved",
 		ReviewFocus = {
 			"immediate pharma / biotech production read",
 			"clear research headhouse versus cleanroom hall hierarchy",
@@ -163,6 +264,18 @@ local Specification = {
 			"restrained chemical-magenta safety accents",
 			"clear distinction from hospital, warehouse and refinery architecture",
 		},
+	},
+
+	Phase3Acceptance = {
+		"Research headhouse, cleanroom hall, process bridge, bioreactor court and rooftop process modules use deterministic dimensions tied to LC-43.",
+		"Public research frontage and production/service frontage remain visually distinct but clearly belong to one facility.",
+		"Cleanroom observation bands read as controlled production rather than office curtain wall.",
+		"Process bridge is visibly elevated and external to both primary masses.",
+		"Bioreactor court uses a small organized vessel group rather than refinery-like clutter.",
+		"Rooftop modules and ducts form a deliberate technical silhouette below the 48-stud target height.",
+		"Rear loading/service remains clearly separated from the front visitor entrance.",
+		"Seven destruction groups map to coherent architectural/process masses.",
+		"Golden Master target remains below 820 visible parts.",
 	},
 
 	Phase1Acceptance = {
