@@ -160,13 +160,13 @@ local function addFacade(lowerGroup, upperGroup, ribbonGroup)
 	addSmoothRing(lowerGroup, "ConcourseGlass", 66.2, 47.2, 22.5, 6.0, 1.25, SEGMENTS, COLORS.DarkGlass, Enum.Material.Glass, 0.08, 1.18)
 
 	-- Media ribbon remains a thin continuous layer outside the smoother shell.
-	addSmoothRing(ribbonGroup, "MediaRibbon", 67.2, 48.2, 29.0, 5.5, 0.75, SEGMENTS, COLORS.Teal, Enum.Material.Neon, 0, 1.17)
+	addSmoothRing(ribbonGroup, "MediaRibbon", 70.8, 51.8, 29.0, 5.5, 0.75, SEGMENTS, COLORS.Teal, Enum.Material.Neon, 0, 1.17)
 
 	-- Vertical fins remain sparse surface rhythm instead of emphasizing every facet.
 	local step = math.pi * 2 / FIN_COUNT
 	for index = 0, FIN_COUNT - 1 do
 		local theta = index * step
-		local cf = tangentFrame(67.8, 48.8, theta, 30.0, FIN_COUNT)
+		local cf = tangentFrame(70.4, 51.4, theta, 30.0, FIN_COUNT)
 		part(
 			upperGroup,
 			"VerticalFin" .. string.format("_%02d", index + 1),
@@ -229,7 +229,7 @@ function Builder.Build(parent)
 	model:SetAttribute("AssetPhase", 4)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Approved")
-	model:SetAttribute("GeometryRevision", "LargeCityUptownArena-v4-RecessedEntrance")
+	model:SetAttribute("GeometryRevision", "LargeCityUptownArena-v5-ProjectedFacadeDetails")
 	model:SetAttribute("HasInterior", false)
 	model:SetAttribute("Style", specification.Style)
 	model:SetAttribute("MaxHealth", specification.ProposedGameplayMetadata.TargetMaxHealth)
@@ -243,6 +243,8 @@ function Builder.Build(parent)
 	model:SetAttribute("SlopedContinuousRoof", true)
 	model:SetAttribute("RearServiceVisible", true)
 	model:SetAttribute("EntrancePiersProjectForward", true)
+	model:SetAttribute("MediaRibbonProjectedOutsideShell", true)
+	model:SetAttribute("FacadeFinsProjectedOutsideShell", true)
 	model.Parent = parent
 
 	local groups = folder(model, "DestructionGroups")
