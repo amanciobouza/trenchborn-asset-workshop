@@ -1,5 +1,5 @@
 {
-  "name": "TrenchbornAssetWorkshop",
+  "name": "LargeCityPowerUtilityWorkshop",
   "servePort": 34872,
   "tree": {
     "$className": "DataModel",
@@ -7,21 +7,16 @@
       "$className": "Workspace",
       "TrenchbornAssetWorkshop": {
         "$className": "Folder",
-        "$path": "src/Workspace/TrenchbornAssetWorkshop"
+        "$ignoreUnknownInstances": true
       }
     },
     "ReplicatedStorage": {
       "$className": "ReplicatedStorage",
       "TrenchbornAssetWorkshop": {
         "$className": "Folder",
-        "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop"
-      }
-    },
-    "ServerScriptService": {
-      "$className": "ServerScriptService",
-      "TrenchbornAssetWorkshop": {
-        "$className": "Folder",
-        "$path": "src/ServerScriptService/TrenchbornAssetWorkshop"
+        "LargeCityPowerUtilitySpecification": {
+          "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityPowerUtilitySpecification.lua"
+        }
       }
     }
   }
