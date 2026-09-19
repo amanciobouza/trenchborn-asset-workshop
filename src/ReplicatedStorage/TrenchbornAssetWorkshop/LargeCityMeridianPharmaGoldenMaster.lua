@@ -252,46 +252,61 @@ local function addRooftopProcess(group)
 	cylinderZ(group, "ExhaustManifold_Z", 10, 1.4, Vector3.new(20, 33.0, 6), COLORS.Silver, Enum.Material.Metal)
 end
 local function addBioreactorCourt(group)
-	-- Four organized vessel housings at the true rear process side.
+	-- Keep the four large vessel housings, but move them out of the loading-door
+	-- approach. The process court now runs along the cleanroom hall's right side,
+	-- while the rear face remains a clear logistics zone.
 	local vessels = {
-		{x = 4, height = 24},
-		{x = 15, height = 28},
-		{x = 26, height = 26},
-		{x = 37, height = 22},
+		{z = -20, height = 24},
+		{z = -7, height = 28},
+		{z = 6, height = 26},
+		{z = 19, height = 22},
 	}
+	local vesselX = 62.0
 
 	for index, vessel in ipairs(vessels) do
 		local centerY = vessel.height / 2
-		cylinderY(group, "Bioreactor_" .. index, vessel.height, 8, Vector3.new(vessel.x, centerY, 43), COLORS.Silver, Enum.Material.Metal)
-		cylinderY(group, "BioreactorTop_" .. index, 1.0, 8.5, Vector3.new(vessel.x, vessel.height + 0.5, 43), COLORS.Metal, Enum.Material.Metal)
-		block(group, "BioreactorSafetyStripe_" .. index, Vector3.new(8.4, 0.5, 0.35), Vector3.new(vessel.x, vessel.height * 0.62, 38.8), index % 2 == 0 and COLORS.Chemical or COLORS.Teal, Enum.Material.Neon)
+		cylinderY(group, "Bioreactor_" .. index, vessel.height, 8, Vector3.new(vesselX, centerY, vessel.z), COLORS.Silver, Enum.Material.Metal)
+		cylinderY(group, "BioreactorTop_" .. index, 1.0, 8.5, Vector3.new(vesselX, vessel.height + 0.5, vessel.z), COLORS.Metal, Enum.Material.Metal)
+		block(
+			group,
+			"BioreactorSafetyStripe_" .. index,
+			Vector3.new(0.35, 0.5, 8.4),
+			Vector3.new(57.8, vessel.height * 0.62, vessel.z),
+			index % 2 == 0 and COLORS.Chemical or COLORS.Teal,
+			Enum.Material.Neon
+		)
 	end
 
-	-- Service gantry reads as one organized process system.
-	block(group, "BioreactorGantry", Vector3.new(46, 1.0, 4), Vector3.new(20.5, 21.0, 38.0), COLORS.Dark, Enum.Material.Metal)
-	for _, x in ipairs({0, 11, 22, 33, 44}) do
-		block(group, "GantryPost_" .. tostring(x), Vector3.new(0.7, 21, 0.7), Vector3.new(x, 10.5, 38.0), COLORS.Metal, Enum.Material.Metal)
+	-- Long side gantry ties the vessels together as one organized pharma process
+	-- court without blocking any rear loading bay.
+	block(group, "BioreactorGantry", Vector3.new(4, 1.0, 50), Vector3.new(57.5, 21.0, 0), COLORS.Dark, Enum.Material.Metal)
+	for _, z in ipairs({-22, -10, 2, 14, 26}) do
+		block(group, "GantryPost_" .. tostring(z), Vector3.new(0.7, 21, 0.7), Vector3.new(57.5, 10.5, z), COLORS.Metal, Enum.Material.Metal)
 	end
-	block(group, "GantryTealLine", Vector3.new(44, 0.35, 0.35), Vector3.new(20.5, 21.7, 36.0), COLORS.Teal, Enum.Material.Neon)
+	block(group, "GantryTealLine", Vector3.new(0.35, 0.35, 48), Vector3.new(55.5, 21.7, 0), COLORS.Teal, Enum.Material.Neon)
+
+	-- A clean feed manifold connects the process court back toward the hall.
+	cylinderZ(group, "BioreactorFeedMain", 42, 1.4, Vector3.new(56.0, 18.5, 0), COLORS.Silver, Enum.Material.Metal)
+	cylinderX(group, "BioreactorFeedLink", 12, 1.4, Vector3.new(50.0, 18.5, 0), COLORS.Silver, Enum.Material.Metal)
 end
-
 local function addServiceLoading(group)
-	-- Rear loading doors sit on true +Z exterior of the cleanroom hall.
-	for index, x in ipairs({-8, 8, 24, 40}) do
+	-- Rear face is now dedicated to logistics. All four loading doors sit in one
+	-- unobstructed left/central service zone with a continuous canopy and apron.
+	for index, x in ipairs({-10, 4, 18, 32}) do
 		block(group, "LoadingDoor_" .. index, Vector3.new(8, 7.5, 0.6), Vector3.new(x, 4.2, 39.75), COLORS.DarkGlass, Enum.Material.Metal)
 		block(group, "LoadingFrameTop_" .. index, Vector3.new(9, 0.55, 0.4), Vector3.new(x, 8.25, 40.1), COLORS.Metal, Enum.Material.Metal)
 		block(group, "LoadingFrameLeft_" .. index, Vector3.new(0.55, 7.7, 0.4), Vector3.new(x - 4.25, 4.2, 40.1), COLORS.Metal, Enum.Material.Metal)
 		block(group, "LoadingFrameRight_" .. index, Vector3.new(0.55, 7.7, 0.4), Vector3.new(x + 4.25, 4.2, 40.1), COLORS.Metal, Enum.Material.Metal)
 	end
 
-	block(group, "LoadingCanopy", Vector3.new(58, 1.1, 8), Vector3.new(16, 10.5, 44.0), COLORS.SterileDark, Enum.Material.Metal)
-	block(group, "LoadingApron", Vector3.new(68, 0.45, 16), Vector3.new(16, 0.23, 49.0), COLORS.SterileDark, Enum.Material.Concrete)
+	block(group, "LoadingCanopy", Vector3.new(58, 1.1, 8), Vector3.new(11, 10.5, 44.0), COLORS.SterileDark, Enum.Material.Metal)
+	block(group, "LoadingApron", Vector3.new(62, 0.45, 16), Vector3.new(11, 0.23, 49.0), COLORS.SterileDark, Enum.Material.Concrete)
 
-	-- Dark service screen keeps the process yard distinct from the visitor side.
-	block(group, "ServiceScreen", Vector3.new(2.0, 12, 26), Vector3.new(59.5, 6, 31), COLORS.Dark, Enum.Material.Metal)
-	block(group, "ChemicalZoneMarker", Vector3.new(0.5, 9, 20), Vector3.new(60.6, 5.0, 31), COLORS.Chemical, Enum.Material.Neon)
+	-- A narrow process-yard divider marks the transition to the side bioreactor
+	-- court without obscuring the vessels or blocking vehicle access.
+	block(group, "ProcessCourtDivider", Vector3.new(1.0, 8, 18), Vector3.new(52.0, 4.0, 30), COLORS.Dark, Enum.Material.Metal)
+	block(group, "ChemicalZoneMarker", Vector3.new(0.28, 6.5, 15), Vector3.new(51.4, 4.0, 30), COLORS.Chemical, Enum.Material.Neon)
 end
-
 local function countVisibleParts(model)
 	local count = 0
 	for _, item in ipairs(model:GetDescendants()) do
@@ -315,7 +330,7 @@ function Builder.Build(parent)
 	model:SetAttribute("AssetPhase", 4)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Pending")
-	model:SetAttribute("GeometryRevision", "LargeCityMeridianPharma-v2-RooftopProcessAnchored")
+	model:SetAttribute("GeometryRevision", "LargeCityMeridianPharma-v3-SeparatedProcessAndLoading")
 	model:SetAttribute("MaxHealth", specification.ProposedGameplayMetadata.TargetMaxHealth)
 	model:SetAttribute("EnergyType", specification.ProposedGameplayMetadata.EnergyType)
 	model:SetAttribute("InstallerTag", specification.ProposedGameplayMetadata.InstallerTag)
@@ -330,6 +345,8 @@ function Builder.Build(parent)
 	model:SetAttribute("ExhaustStacksOnUtilityPlinth", true)
 	model:SetAttribute("ExhaustClusterDuctConnected", true)
 	model:SetAttribute("RearLoadingVisible", true)
+	model:SetAttribute("BioreactorCourtSideSeparated", true)
+	model:SetAttribute("LoadingDoorsUnobstructed", true)
 	model.Parent = parent
 
 	local groups = folder(model, "DestructionGroups")
