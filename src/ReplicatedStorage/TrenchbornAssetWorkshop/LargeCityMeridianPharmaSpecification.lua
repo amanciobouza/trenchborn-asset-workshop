@@ -76,8 +76,8 @@ local Specification = {
 		},
 		{
 			Name = "BioreactorCourt",
-			Face = "+Z",
-			Description = "Rear-side process court with several tall cylindrical vessel housings, service gantry and guarded loading area.",
+			Face = "+X",
+			Description = "Right-side process court with several tall cylindrical vessel housings and service gantry, physically separated from the rear loading zone.",
 		},
 		{
 			Name = "RooftopProcessModules",
@@ -196,13 +196,13 @@ local Specification = {
 		},
 		BioreactorCourt = {
 			Face = "+Z",
-			CourtCenter = Vector3.new(28, 0, 43),
+			CourtCenter = Vector3.new(62, 0, 0),
 			VesselCount = 4,
 			VesselDiameter = 8,
 			VesselHeights = {24, 28, 26, 22},
 			GantryHeight = 21,
 			ServiceClearance = 4,
-			Rule = "Cylindrical vessel housings remain grouped and organized; they must not read as an oil-refinery tank farm.",
+			Rule = "Cylindrical vessel housings remain grouped and organized in a dedicated side court; they must not block loading doors or read as an oil-refinery tank farm.",
 		},
 		RooftopProcess = {
 			BaseY = 28,
@@ -242,7 +242,7 @@ local Specification = {
 		LoadingCanopyWidth = 44,
 		ServiceApronDepth = 16,
 		SafetyBollards = true,
-		Rule = "Loading and process-service access stays visibly on the true +Z exterior and remains separate from the research entrance.",
+		Rule = "Rear loading access stays visibly on the true +Z exterior with all four bays unobstructed; the bioreactor process court is separated to the +X side.",
 		},
 		PartBudget = {
 			TargetVisibleParts = 620,
@@ -269,7 +269,7 @@ local Specification = {
 
 	Phase4Status = {
 		Status = "GoldenMasterReview",
-		GeometryRevision = "LargeCityMeridianPharma-v2-RooftopProcessAnchored",
+		GeometryRevision = "LargeCityMeridianPharma-v3-SeparatedProcessAndLoading",
 		QualityGateB = "Pending",
 		ReviewFocus = {
 			"immediate pharmaceutical / biotech production readability",
@@ -277,7 +277,8 @@ local Specification = {
 			"visitor atrium and canopy read clearly from the front",
 			"cleanroom observation bands remain horizontal and production-like",
 			"process bridge is visibly external and elevated",
-			"rear bioreactor court is organized and not refinery-like",
+			"side bioreactor court is organized and not refinery-like",
+			"four loading doors remain fully unobstructed with a dedicated rear service apron",
 			"rooftop process modules and ducts form a deliberate technical silhouette",
 			"rooftop process modules sit on visible equipment plinths rather than intersecting the hall mass",
 			"three exhaust stacks rise from one shared rooftop utility plinth and visibly connect to the process duct network",
