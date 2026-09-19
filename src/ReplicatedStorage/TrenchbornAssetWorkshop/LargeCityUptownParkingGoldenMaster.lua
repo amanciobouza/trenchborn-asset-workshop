@@ -71,11 +71,11 @@ local function addBase(group)
 		block(group, "RearColumn_" .. x, Vector3.new(1.4, 9, 1.4), Vector3.new(x, 5, 26.5), COLORS.ConcreteDark, Enum.Material.Concrete)
 	end
 
-	-- Vehicle portal and EV bay canopy on front.
+	-- Vehicle portal and vehicle-entry canopy on front.
 	block(group, "VehiclePortalBeam", Vector3.new(30, 2.0, 2.0), Vector3.new(7, 8.0, -29.2), COLORS.Dark, Enum.Material.Metal)
-	block(group, "EVCanopy", Vector3.new(28, 1.0, 8), Vector3.new(7, 8.8, -33.0), COLORS.Metal, Enum.Material.Metal)
+	block(group, "VehicleCanopy", Vector3.new(28, 1.0, 8), Vector3.new(7, 8.8, -33.0), COLORS.Metal, Enum.Material.Metal)
 	for _, x in ipairs({-5, 19}) do
-		block(group, "EVCanopyPost_" .. x, Vector3.new(0.9, 8.0, 0.9), Vector3.new(x, 4.0, -36.3), COLORS.Metal, Enum.Material.Metal)
+		block(group, "VehicleCanopyPost_" .. x, Vector3.new(0.9, 8.0, 0.9), Vector3.new(x, 4.0, -36.3), COLORS.Metal, Enum.Material.Metal)
 	end
 
 	-- Pedestrian entry is separated from cars and tied to the glass core.
@@ -270,10 +270,11 @@ function Builder.Build(parent)
 	model:SetAttribute("RearServiceVisible", true)
 	model:SetAttribute("PedestrianCoreClearsDeckEnvelope", true)
 	model:SetAttribute("PedestrianCoreZFightingFix", true)
+	model:SetAttribute("EVChargingIdentity", false)
 	model.Parent = parent
 
 	local groups = folder(model, "DestructionGroups")
-	local d1 = folder(groups, "D1_VehicleEntryAndEVHub")
+	local d1 = folder(groups, "D1_VehicleEntry")
 	local d2 = folder(groups, "D2_LowerParkingDecks")
 	local d3 = folder(groups, "D3_UpperParkingDecks")
 	local d4 = folder(groups, "D4_ExpressedRamp")
