@@ -128,27 +128,27 @@ local function addEntryDressing(root)
 	)
 	addSurfaceText(area, parkingSign, "UPTOWN  P", Enum.NormalId.Front, COLORS.White)
 
-	-- EV canopy front edge is at local Z=-37; mount signage on the fascia.
-	local evSign = block(
+	-- Generic parking wayfinding only; no EV-charging identity.
+	local entrySign = block(
 		area,
-		"EVHubSign",
+		"VehicleEntrySign",
 		Vector3.new(20, 2.0, 0.30),
 		Vector3.new(7, 8.8, -37.15),
 		COLORS.Teal,
 		Enum.Material.Neon
 	)
-	addSurfaceText(area, evSign, "EV  •  CHARGE", Enum.NormalId.Front, COLORS.Dark)
+	addSurfaceText(area, entrySign, "ENTRY  •  EXIT", Enum.NormalId.Front, COLORS.Dark)
 
 	for index, x in ipairs({-1, 5, 11, 17}) do
 		local bay = block(
 			area,
-			"EVBay_" .. index,
+			"ParkingBayMarker_" .. index,
 			Vector3.new(4.2, 1.7, 0.25),
 			Vector3.new(x, 5.6, -37.18),
 			index % 2 == 0 and COLORS.Bronze or COLORS.Teal,
 			Enum.Material.Neon
 		)
-		addSurfaceText(area, bay, string.format("%02d", index), Enum.NormalId.Front, COLORS.Dark)
+		addSurfaceText(area, bay, string.format("P%d", index), Enum.NormalId.Front, COLORS.Dark)
 	end
 
 	for _, x in ipairs({-29, -25, -21}) do
@@ -247,12 +247,12 @@ function Dressing.Apply(model)
 	model:SetAttribute("AssetPhase", 5)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Approved")
-	model:SetAttribute("DressingRevision", "LargeCityUptownParking-Dressing-v1")
+	model:SetAttribute("DressingRevision", "LargeCityUptownParking-Dressing-v2-NoEV")
 	model:SetAttribute("DressingStatus", "Review")
 	model:SetAttribute("StandaloneImport", true)
 	model:SetAttribute("GreenCutVegetation", true)
 	model:SetAttribute("RooftopVegetation", true)
-	model:SetAttribute("EVHubDressing", true)
+	model:SetAttribute("GenericParkingWayfinding", true)
 	model:SetAttribute("HighContrastNeonText", true)
 	return model
 end
