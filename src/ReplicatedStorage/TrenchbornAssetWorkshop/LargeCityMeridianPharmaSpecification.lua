@@ -8,8 +8,8 @@ local Specification = {
 	City = "LargeCity",
 	District = "MedicalTech",
 	BuildingType = "Pharma Plant",
-	Phase = 4,
-	QualityGate = "B-Pending",
+	Phase = 5,
+	QualityGate = "B-Approved",
 	Branch = "largecity-meridian-pharma-l3",
 
 	StandaloneImport = {
@@ -267,9 +267,10 @@ local Specification = {
 
 
 	Phase4Status = {
-		Status = "GoldenMasterReview",
+		Status = "Approved",
 		GeometryRevision = "LargeCityMeridianPharma-v6-ExternalProcessLighting",
-		QualityGateB = "Pending",
+		QualityGateB = "Approved",
+		NextPhase = 5,
 		ReviewFocus = {
 			"immediate pharmaceutical / biotech production readability",
 			"clear research headhouse versus cleanroom hall hierarchy",
@@ -287,6 +288,19 @@ local Specification = {
 			"no facade, roof or process-equipment Z-fighting",
 			"cyan/magenta tank safety bands are mounted on the outward tank faces rather than inside the hall",
 			"bioreactor gantry and teal gantry line sit outside the cleanroom envelope",
+		},
+	},
+
+
+	Phase5Status = {
+		Status = "DressingPending",
+		QualityGateB = "Approved",
+		Scope = {
+			"building signage and Meridian BioWorks identity",
+			"visitor-entry landscape and sterile plaza detailing",
+			"controlled process-zone safety graphics",
+			"subtle rooftop and bioreactor service detailing",
+			"no changes to the approved Phase 4 massing",
 		},
 	},
 
