@@ -177,8 +177,8 @@ local Specification = {
 	},
 
 	Phase5Status = {
-		Status = "Approved",
-		Revision = "LargeCityUptownArena-Dressing-v4-RecessedGates",
+		Status = "InReview",
+		Revision = "LargeCityUptownArena-Dressing-v5-ProjectedFacade",
 		Includes = {
 			"Uptown Arena wordmark",
 			"Sports / Concerts / Events entrance strip",
@@ -192,11 +192,19 @@ local Specification = {
 		NextPhase = "ExternalGameTestPending",
 	},
 
+
+	FacadeVisibilityFix = {
+		Status = "InReview",
+		GeometryRevision = "LargeCityUptownArena-v5-ProjectedFacadeDetails",
+		DressingRevision = "LargeCityUptownArena-Dressing-v5-ProjectedFacade",
+		Notes = "Continuous cyan media ribbon, framed event screens, feature bays, sparse facade lights and vertical fins were moved outward so they sit visibly on the exterior skin instead of being buried in the shell.",
+	},
+
 	Phase6Status = {
 		Status = "ExternalGameTestPending",
 		ExternalCollapseIntegration = true,
 		QualityGateC = "Pending",
-		Notes = "Workshop visual review approved; destruction and shared collapse behaviour remain deferred to the main game.",
+		Notes = "External collapse test remains pending. Facade visibility correction is currently under visual review.",
 	},
 
 	Phase3Acceptance = {
