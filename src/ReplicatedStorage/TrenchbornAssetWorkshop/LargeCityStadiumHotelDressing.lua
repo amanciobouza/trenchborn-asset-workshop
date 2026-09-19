@@ -137,8 +137,8 @@ local function addEntranceDressing(root)
 
 	block(area, "ArrivalWarmLine", Vector3.new(38, 0.38, 0.28), Vector3.new(0, 13.5, -42.38), COLORS.Warm, Enum.Material.Neon)
 
-	addPlanter(area, "ArrivalPlanterLeft", Vector3.new(-27, 0.72, -45.5), Vector3.new(9, 1.2, 3.2))
-	addPlanter(area, "ArrivalPlanterRight", Vector3.new(27, 0.72, -45.5), Vector3.new(9, 1.2, 3.2))
+	addPlanter(area, "ArrivalPlanterLeft", Vector3.new(-27, 0.60, -45.5), Vector3.new(9, 1.2, 3.2))
+	addPlanter(area, "ArrivalPlanterRight", Vector3.new(27, 0.60, -45.5), Vector3.new(9, 1.2, 3.2))
 	addPalm(area, "ArrivalPalmLeft", Vector3.new(-34, 0, -46), 9.5, 10)
 	addPalm(area, "ArrivalPalmRight", Vector3.new(34, 0, -46), 9.5, -10)
 
@@ -163,8 +163,8 @@ local function addSkyLoungeDressing(root)
 		)
 	end
 
-	addPalm(area, "SkyLoungePalmLeft", Vector3.new(-17, 60.6, -27.0), 5.2, 12)
-	addPalm(area, "SkyLoungePalmRight", Vector3.new(23, 60.6, -27.0), 5.2, -12)
+	addPalm(area, "SkyLoungePalmLeft", Vector3.new(-17, 60.53, -27.0), 5.2, 12)
+	addPalm(area, "SkyLoungePalmRight", Vector3.new(23, 60.53, -27.0), 5.2, -12)
 end
 
 local function addRooftopDressing(root)
@@ -183,14 +183,14 @@ local function addRooftopDressing(root)
 			Enum.PartType.Ball
 		)
 	end
-	addPalm(area, "RoofPalm", Vector3.new(25, 72.2, 12), 5.8, 5)
+	addPalm(area, "RoofPalm", Vector3.new(25, 72.08, 12), 5.8, 5)
 
 	for index, x in ipairs({-15, -7, 1, 9}) do
 		local lounger = block(
 			area,
 			"PoolLounger_" .. index,
 			Vector3.new(5.0, 0.35, 1.7),
-			Vector3.new(x, 72.35, 1.0),
+			Vector3.new(x, 71.50, 1.0),
 			COLORS.PoolDeck,
 			Enum.Material.SmoothPlastic
 		)
@@ -201,7 +201,7 @@ local function addRooftopDressing(root)
 		area,
 		"PoolDeckSign",
 		Vector3.new(14, 1.8, 0.28),
-		Vector3.new(-4, 73.0, -12.75),
+		Vector3.new(-4, 72.05, -12.75),
 		COLORS.Teal,
 		Enum.Material.Neon
 	)
@@ -250,13 +250,14 @@ function Dressing.Apply(model)
 	model:SetAttribute("AssetPhase", 5)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Approved")
-	model:SetAttribute("DressingRevision", "LargeCityStadiumHotel-Dressing-v1")
+	model:SetAttribute("DressingRevision", "LargeCityStadiumHotel-Dressing-v2-SurfaceAnchored")
 	model:SetAttribute("DressingStatus", "Review")
 	model:SetAttribute("StandaloneImport", true)
 	model:SetAttribute("SkyLoungeVegetation", true)
 	model:SetAttribute("RooftopPoolDressing", true)
 	model:SetAttribute("RearServiceDressingVisible", true)
 	model:SetAttribute("HighContrastNeonText", true)
+	model:SetAttribute("DressingSurfaceAnchored", true)
 	return model
 end
 
