@@ -8,7 +8,7 @@ local Specification = {
 	City = "LargeCity",
 	District = "MedicalTech",
 	BuildingType = "Power Utility",
-	Phase = 1,
+	Phase = 2,
 	QualityGate = "A-Pending",
 	Branch = "largecity-power-utility-l3",
 
@@ -132,7 +132,7 @@ local Specification = {
 	},
 
 	Phase1Status = {
-		Status = "ConceptReview",
+		Status = "Approved",
 		QualityGateA = "Pending",
 		ReviewFocus = {
 			"immediate power-utility readability at Kaiju gameplay distance",
@@ -147,7 +147,7 @@ local Specification = {
 	},
 
 	VisualTarget = {
-		Status = "Pending",
+		Status = "Review",
 		NextPhase = 2,
 		Brief = {
 			"premium tropical urban power utility in the MedicalTech district",
@@ -162,6 +162,23 @@ local Specification = {
 			"formal tropical landscaping at the public entrance only",
 			"daylight architectural concept board with front, three-quarter, rear, side and transformer-detail views",
 			"not refinery, not warehouse, not dirty heavy industry, not cyberpunk",
+		},
+	},
+
+
+	Phase2Status = {
+		Status = "VisualTargetReview",
+		TargetRevision = "LargeCityPowerUtility-VisualTarget-v1",
+		QualityGateA = "Pending",
+		ReviewFocus = {
+			"power utility is immediately recognizable from silhouette and equipment",
+			"switchgear hall and taller converter hall have clear hierarchy",
+			"four transformers remain large and visually dominant in the rear process court",
+			"busbar gantries read as electrical infrastructure rather than generic pipes",
+			"control spine provides a clean MedicalTech signature",
+			"rooftop cooling and ventilation remains organized and below the 56-stud target",
+			"cyan and amber accents are restrained and physically attached to plausible electrical equipment",
+			"overall architecture feels premium tropical infrastructure rather than dirty heavy industry",
 		},
 	},
 
