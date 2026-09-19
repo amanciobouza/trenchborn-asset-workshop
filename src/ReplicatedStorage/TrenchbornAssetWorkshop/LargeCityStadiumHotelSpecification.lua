@@ -8,8 +8,8 @@ local Specification = {
 	City = "LargeCity",
 	District = "Uptown",
 	BuildingType = "Hotel",
-	Phase = 2,
-	QualityGate = "A-Pending",
+	Phase = 3,
+	QualityGate = "A-Approved",
 	Branch = "largecity-stadium-hotel-l3",
 
 	StandaloneImport = {
@@ -140,7 +140,7 @@ local Specification = {
 	},
 
 	VisualTarget = {
-		Status = "InReview",
+		Status = "Approved",
 		Revision = "LargeCityStadiumHotel-VisualTarget-v1",
 		Brief = {
 			"premium Miami/Singapore event hotel beside stadium and arena",
@@ -158,10 +158,93 @@ local Specification = {
 	},
 
 
+
+	QualityGateA = {
+		Status = "Approved",
+		ApprovedTarget = "LargeCityStadiumHotel-VisualTarget-v1",
+		Notes = "Approved premium event-hotel concept with curved guest-room massing, strong porte-cochere arrival, sky lounge and rooftop pool deck.",
+		NextPhase = 3,
+	},
+
+	TechnicalBreakdown = {
+		CoordinateSystem = {
+			Pivot = "ground center",
+			Front = "local -Z",
+			Rear = "local +Z",
+			LayoutYaw = 0,
+		},
+		Overall = {
+			TargetFootprint = Vector2.new(78, 64),
+			TargetHeight = 82,
+			GroundLevel = 0,
+		},
+		Podium = {
+			Footprint = Vector2.new(74, 60),
+			Center = Vector3.new(0, 8, 0),
+			Height = 16,
+			CornerRadiusApprox = 5,
+			ArrivalCutWidth = 38,
+			ArrivalCutDepth = 8,
+		},
+		GuestRoomBar = {
+			Footprint = Vector2.new(66, 50),
+			Center = Vector3.new(0, 37, 0),
+			Height = 42,
+			CurveDepth = 3.5,
+			LongFaceRoomBayCount = 10,
+			ShortFaceRoomBayCount = 6,
+			BalconyBandCount = 7,
+			BalconyProjection = 2.4,
+		},
+		SkyLounge = {
+			Footprint = Vector2.new(54, 44),
+			Center = Vector3.new(3, 64, -1),
+			Height = 12,
+			TerraceProjection = 4.5,
+			PanoramicGlazing = true,
+		},
+		RooftopPoolDeck = {
+			BaseY = 70,
+			TopY = 82,
+			DeckFootprint = Vector2.new(58, 46),
+			PoolFootprint = Vector2.new(34, 9),
+			PergolaHeight = 5.0,
+			PergolaFinCount = 8,
+			CanopyFootprint = Vector2.new(40, 20),
+		},
+		Facade = {
+			GlassDepth = 0.6,
+			RoomFrameDepth = 0.8,
+			BalconySlabThickness = 0.65,
+			BalustradeHeight = 1.35,
+			BalustradeDepth = 0.24,
+			Rule = "Repeated room bays and shallow balcony ledges sit visibly outside the facade; avoid full-height office curtain wall treatment.",
+		},
+		Entrance = {
+			LobbyWidth = 32,
+			LobbyHeight = 12,
+			RecessDepth = 4.5,
+			PorteCochereWidth = 42,
+			PorteCochereDepth = 12,
+			CanopyY = 14.0,
+		},
+		RearService = {
+			DoorCount = 4,
+			DoorWidth = 7,
+			ServiceCanopy = true,
+			Screening = true,
+			Rule = "Rear hotel service/loading access must sit on the true +Z exterior and remain visible beyond any canopy.",
+		},
+		PartBudget = {
+			TargetVisibleParts = 620,
+			MaximumVisibleParts = 800,
+		},
+	},
+
 	Phase2Status = {
-		Status = "VisualTargetReview",
+		Status = "Approved",
 		TargetRevision = "LargeCityStadiumHotel-VisualTarget-v1",
-		QualityGateA = "Pending",
+		QualityGateA = "Approved",
 		ReviewFocus = {
 			"premium event-hotel read",
 			"gently bowed guest-room bar",
@@ -172,6 +255,17 @@ local Specification = {
 			"clear distinction from Uptown Residences and Waterfront Resort",
 			"rear hotel service court integrated into massing",
 		},
+	},
+
+	Phase3Acceptance = {
+		"Podium, guest-room bar, sky lounge and rooftop pool deck use deterministic dimensions tied to LC-54.",
+		"Guest-room bay rhythm and shallow balconies clearly read as hotel architecture.",
+		"Main room bar uses visible curvature/stepping and avoids a plain rectangular slab silhouette.",
+		"Porte-cochere and lobby are clearly readable from the front.",
+		"Sky lounge and rooftop pool deck remain visibly projected and distinct from the facade.",
+		"Rear service court stays on the true +Z exterior.",
+		"Seven destruction groups map to coherent architectural masses.",
+		"Golden Master target remains below 800 visible parts.",
 	},
 
 	Phase1Acceptance = {
