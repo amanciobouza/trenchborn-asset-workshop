@@ -7,6 +7,9 @@
     },
     "LargeCityMeridianPharmaGoldenMaster": {
       "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityMeridianPharmaGoldenMaster.lua"
+    },
+    "LargeCityMeridianPharmaDressing": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityMeridianPharmaDressing.lua"
     }
   }
 }
