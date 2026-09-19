@@ -150,12 +150,15 @@ end
 local function addSkyLoungeDressing(root)
 	local area = folder(root, "SkyLoungeDressing")
 
-	for _, x in ipairs({-15, -7.5, 0, 7.5, 15}) do
+	-- The planted bed top is Y=60.525. Embed the foliage slightly into the soil
+	-- and keep every plant within the actual 28-stud-wide bed so nothing appears
+	-- to hover over the terrace slab.
+	for _, x in ipairs({-8, -3, 2, 7, 12, 16}) do
 		part(
 			area,
 			"SkyLoungeShrub_" .. tostring(x),
 			Vector3.new(1.6, 1.6, 1.6),
-			CFrame.new(x + 3, 61.1, -27.7),
+			CFrame.new(x, 61.0, -27.7),
 			COLORS.Green,
 			Enum.Material.Grass,
 			0,
@@ -163,27 +166,28 @@ local function addSkyLoungeDressing(root)
 		)
 	end
 
-	addPalm(area, "SkyLoungePalmLeft", Vector3.new(-17, 60.53, -27.0), 5.2, 12)
-	addPalm(area, "SkyLoungePalmRight", Vector3.new(23, 60.53, -27.0), 5.2, -12)
+	addPalm(area, "SkyLoungePalmLeft", Vector3.new(-8, 60.40, -27.0), 5.2, 12)
+	addPalm(area, "SkyLoungePalmRight", Vector3.new(14, 60.40, -27.0), 5.2, -12)
 end
 
 local function addRooftopDressing(root)
 	local area = folder(root, "RooftopDressing")
 
-	-- Planting and poolside furniture stay clear of the water plane.
+	-- PoolPlantBed top is Y=72.075. Embed the greenery slightly into the soil
+	-- rather than balancing it exactly on the surface, which can read as floating.
 	for _, z in ipairs({-8, 1, 10}) do
 		part(
 			area,
 			"RoofShrub_" .. tostring(z),
 			Vector3.new(1.7, 1.7, 1.7),
-			CFrame.new(25, 72.8, z),
+			CFrame.new(25, 72.55, z),
 			COLORS.Green,
 			Enum.Material.Grass,
 			0,
 			Enum.PartType.Ball
 		)
 	end
-	addPalm(area, "RoofPalm", Vector3.new(25, 72.08, 12), 5.8, 5)
+	addPalm(area, "RoofPalm", Vector3.new(25, 71.95, 12), 5.8, 5)
 
 	for index, x in ipairs({-15, -7, 1, 9}) do
 		local lounger = block(
@@ -197,15 +201,29 @@ local function addRooftopDressing(root)
 		lounger.CFrame *= CFrame.Angles(0, math.rad(-8), math.rad(-7))
 	end
 
+	-- Mount the rooftop pool sign directly to the front edge of the pergola
+	-- canopy (variant 2). Its top touches the canopy underside, so it reads as a
+	-- fixed architectural sign instead of a screen floating over the roof deck.
 	local poolSign = block(
 		area,
 		"PoolDeckSign",
 		Vector3.new(14, 1.8, 0.28),
-		Vector3.new(-4, 72.05, -12.75),
+		Vector3.new(0, 77.45, -0.15),
 		COLORS.Teal,
 		Enum.Material.Neon
 	)
 	addSurfaceText(area, poolSign, "ROOFTOP POOL", Enum.NormalId.Front, COLORS.Dark)
+
+	for _, x in ipairs({-6.0, 6.0}) do
+		block(
+			area,
+			"PoolDeckSignMount_" .. tostring(x),
+			Vector3.new(0.35, 0.8, 0.35),
+			Vector3.new(x, 78.0, 0),
+			COLORS.Dark,
+			Enum.Material.Metal
+		)
+	end
 end
 
 local function addRearDressing(root)
@@ -249,8 +267,8 @@ function Dressing.Apply(model)
 
 	model:SetAttribute("AssetPhase", 5)
 	model:SetAttribute("QualityGateA", "Approved")
-	model:SetAttribute("QualityGateB", "Approved")
-	model:SetAttribute("DressingRevision", "LargeCityStadiumHotel-Dressing-v2-SurfaceAnchored")
+	model:SetAttribute("QualityGateB", "Pending")
+	model:SetAttribute("DressingRevision", "LargeCityStadiumHotel-Dressing-v3-PlantedAndPergolaMounted")
 	model:SetAttribute("DressingStatus", "Review")
 	model:SetAttribute("StandaloneImport", true)
 	model:SetAttribute("SkyLoungeVegetation", true)
@@ -258,6 +276,8 @@ function Dressing.Apply(model)
 	model:SetAttribute("RearServiceDressingVisible", true)
 	model:SetAttribute("HighContrastNeonText", true)
 	model:SetAttribute("DressingSurfaceAnchored", true)
+	model:SetAttribute("RooftopSignPergolaMounted", true)
+	model:SetAttribute("VegetationEmbeddedInPlanters", true)
 	return model
 end
 
