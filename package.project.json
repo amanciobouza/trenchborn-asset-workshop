@@ -4,6 +4,9 @@
     "$className": "Folder",
     "LargeCityPowerUtilitySpecification": {
       "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityPowerUtilitySpecification.lua"
+    },
+    "LargeCityPowerUtilityGoldenMaster": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityPowerUtilityGoldenMaster.lua"
     }
   }
 }
