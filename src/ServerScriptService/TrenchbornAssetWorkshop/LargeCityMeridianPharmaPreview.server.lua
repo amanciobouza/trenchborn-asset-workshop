@@ -6,6 +6,7 @@ local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
 
 local specification = require(packageFolder:WaitForChild("LargeCityMeridianPharmaSpecification"))
 local goldenMaster = require(packageFolder:WaitForChild("LargeCityMeridianPharmaGoldenMaster"))
+local dressing = require(packageFolder:WaitForChild("LargeCityMeridianPharmaDressing"))
 
 local function getSpawnReference()
 	return Workspace:FindFirstChildWhichIsA("SpawnLocation", true)
@@ -53,6 +54,7 @@ local targetZ = spawnPosition.Z
 local groundY = getGroundYAt(targetX, targetZ, spawn)
 
 local model = goldenMaster.Build(workshop)
+dressing.Apply(model)
 model:PivotTo(
 	CFrame.new(targetX, groundY, targetZ)
 		* CFrame.Angles(0, math.rad(specification.TechnicalBreakdown.CoordinateSystem.LayoutYaw), 0)
@@ -66,16 +68,16 @@ if minY < math.huge then
 end
 
 model:SetAttribute("GroundContactY", groundY)
-model:SetAttribute("ReviewScene", "LargeCityMeridianPharma_Isolated_Phase4_GoldenMasterReview")
+model:SetAttribute("ReviewScene", "LargeCityMeridianPharma_Isolated_Phase5_DressingReview")
 
 workshop:SetAttribute("Pipeline", "Trenchborn-7-Phase")
 workshop:SetAttribute("CurrentAsset", specification.AssetId)
-workshop:SetAttribute("CurrentPhase", 4)
-workshop:SetAttribute("QualityStatus", "Phase4_GoldenMasterReview")
+workshop:SetAttribute("CurrentPhase", 5)
+workshop:SetAttribute("QualityStatus", "Phase5_DressingReview")
 workshop:SetAttribute("QualityGateA", "Approved")
-workshop:SetAttribute("QualityGateB", "Pending")
+workshop:SetAttribute("QualityGateB", "Approved")
 workshop:SetAttribute("GoldenMasterReviewTarget", model.Name)
 workshop:SetAttribute("StandaloneBuildingBranch", true)
 
-print("[Trenchborn Asset Workshop] Meridian Pharma Phase 4 Golden Master ready for review:", model:GetFullName())
+print("[Trenchborn Asset Workshop] Meridian Pharma Phase 5 dressing ready for review:", model:GetFullName())
 print("[Trenchborn Asset Workshop] Meridian Pharma ground contact Y/correction:", groundY, model:GetAttribute("GroundContactCorrection"))
