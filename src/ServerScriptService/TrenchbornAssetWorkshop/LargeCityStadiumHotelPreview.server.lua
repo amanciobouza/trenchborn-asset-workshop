@@ -73,9 +73,9 @@ model:SetAttribute("ReviewScene", "LargeCityStadiumHotel_Isolated_Phase5_Dressin
 workshop:SetAttribute("Pipeline", "Trenchborn-7-Phase")
 workshop:SetAttribute("CurrentAsset", specification.AssetId)
 workshop:SetAttribute("CurrentPhase", 5)
-workshop:SetAttribute("QualityStatus", "Phase5_DressingReview")
+workshop:SetAttribute("QualityStatus", "Phase5_DressingReview_GeometryFixPending")
 workshop:SetAttribute("QualityGateA", "Approved")
-workshop:SetAttribute("QualityGateB", "Approved")
+workshop:SetAttribute("QualityGateB", "Pending")
 workshop:SetAttribute("GoldenMasterReviewTarget", model.Name)
 workshop:SetAttribute("StandaloneBuildingBranch", true)
 
