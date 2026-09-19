@@ -260,7 +260,7 @@ local Specification = {
 
 	Phase4Status = {
 		Status = "GoldenMasterReview",
-		GeometryRevision = "LargeCityStadiumHotel-v2-CorrectConvexYaw",
+		GeometryRevision = "LargeCityStadiumHotel-v3-AnchoredRoofBlade",
 		QualityGateB = "Pending",
 		ReviewFocus = {
 			"overall premium event-hotel silhouette",
@@ -272,13 +272,14 @@ local Specification = {
 			"rooftop pergola remains light and open",
 			"rear service court is visibly on true +Z exterior",
 			"no balcony, pool-deck or roof Z-fighting",
+			"large roof blade with warm neon is grounded on the rooftop lounge deck",
 		},
 	},
 
 
 	QualityGateB = {
 		Status = "Pending",
-		ApprovedGeometry = "LargeCityStadiumHotel-v2-CorrectConvexYaw",
+		ApprovedGeometry = "LargeCityStadiumHotel-v3-AnchoredRoofBlade",
 		Notes = "Convex guest-room facade yaw corrected after review found the window/balcony tangents visually bending inward. Recheck front and rear curvature before re-approval.",
 		NextPhase = 5,
 	},
@@ -286,13 +287,13 @@ local Specification = {
 
 	FacadeCurveOrientationFix = {
 		Status = "InReview",
-		GeometryRevision = "LargeCityStadiumHotel-v2-CorrectConvexYaw",
+		GeometryRevision = "LargeCityStadiumHotel-v3-AnchoredRoofBlade",
 		Notes = "Window, balcony slab and balustrade yaw now follow the outward/convex guest-room bow instead of visually suggesting a concave facade.",
 	},
 
 	Phase5Status = {
 		Status = "InReview",
-		Revision = "LargeCityStadiumHotel-Dressing-v4-FasciaMountedPoolSign",
+		Revision = "LargeCityStadiumHotel-Dressing-v5-RestoredPergolaSign",
 		Includes = {
 			"Stadium Hotel wordmark on visible porte-cochere fascia",
 			"warm arrival accent, palms, planters and bollards",
@@ -302,7 +303,7 @@ local Specification = {
 			"rear hotel-service signage and bay numbers",
 			"landscaping and pool-deck dressing sit directly on their supporting surfaces",
 			"sky-lounge and rooftop vegetation is embedded into its planter soil rather than floating above it",
-			"rooftop pool sign is flush-mounted to a solid pergola front fascia with no visible air gap",
+			"small rooftop pool sign uses the original light pergola bracket mounting; the large warm-lit roof blade is anchored directly to the rooftop lounge deck",
 		},
 		QualityGateC = "Pending",
 	},
