@@ -8,8 +8,8 @@ local Specification = {
 	City = "LargeCity",
 	District = "Uptown",
 	BuildingType = "Parking Tower",
-	Phase = 2,
-	QualityGate = "A-Pending",
+	Phase = 3,
+	QualityGate = "A-Approved",
 	Branch = "largecity-uptown-parking-l3",
 
 	StandaloneImport = {
@@ -133,7 +133,7 @@ local Specification = {
 	},
 
 	VisualTarget = {
-		Status = "InReview",
+		Status = "Approved",
 		Revision = "LargeCityUptownParking-VisualTarget-v1",
 		Brief = {
 			"premium event-district parking tower in Singapore x Miami language",
@@ -152,10 +152,112 @@ local Specification = {
 	},
 
 
+
+	QualityGateA = {
+		Status = "Approved",
+		ApprovedTarget = "LargeCityUptownParking-VisualTarget-v1",
+		Notes = "Approved Verdant Mobility Deck concept with ventilated screen veil, expressed ramp corner, green breathing cuts, EV hub, glass pedestrian core and rooftop mobility canopy.",
+		NextPhase = 3,
+	},
+
+	TechnicalBreakdown = {
+		CoordinateSystem = {
+			Pivot = "ground center",
+			Front = "local -Z",
+			Rear = "local +Z",
+			LayoutYaw = 0,
+		},
+		Overall = {
+			TargetFootprint = Vector2.new(70, 60),
+			TargetHeight = 54,
+			GroundLevel = 0,
+		},
+		Base = {
+			Footprint = Vector2.new(68, 58),
+			Center = Vector3.new(0, 5, 0),
+			Height = 10,
+			VehicleEntryWidth = 22,
+			PedestrianCoreWidth = 10,
+		},
+		ParkingDecks = {
+			Footprint = Vector2.new(66, 56),
+			FromY = 10,
+			ToY = 44,
+			LevelCount = 6,
+			SlabThickness = 0.9,
+			ClearLevelHeight = 4.7,
+			OpenGapHeight = 3.0,
+		},
+		ScreenVeil = {
+			FinWidth = 0.65,
+			FinDepth = 1.1,
+			FinSpacing = 2.8,
+			BronzeAccentEvery = 5,
+			OffsetFromDeckEdge = 1.2,
+			Rule = "Screen fins remain clearly outside the deck edges and preserve visible ventilation gaps.",
+		},
+		ExpressedRamp = {
+			Corner = "front-right",
+			RampWidth = 10,
+			RisePerLevel = 4.7,
+			RunPerLevel = 18,
+			VisibleSlope = true,
+			Rule = "Ramp slabs must read as sloped circulation, not decorative diagonal bands.",
+		},
+		GreenBreathingCutOne = {
+			Face = "front",
+			CenterX = -12,
+			FromY = 18,
+			ToY = 32,
+			Width = 18,
+			Depth = 5,
+		},
+		GreenBreathingCutTwo = {
+			Face = "rear-right",
+			CenterX = 14,
+			FromY = 30,
+			ToY = 43,
+			Width = 16,
+			Depth = 5,
+		},
+		EVHub = {
+			Face = "front",
+			BayCount = 4,
+			CanopyWidth = 28,
+			CanopyDepth = 8,
+			Accent = "teal",
+		},
+		PedestrianCore = {
+			Face = "front-left",
+			Footprint = Vector2.new(10, 12),
+			Height = 50,
+			Glazing = true,
+			Rule = "Glass core projects outside the screen veil and remains readable as stairs/lift access.",
+		},
+		RooftopMobilityDeck = {
+			BaseY = 44,
+			TopY = 54,
+			DeckFootprint = Vector2.new(62, 52),
+			CanopyFootprint = Vector2.new(46, 28),
+			CanopyHeight = 5.5,
+			SolarFinCount = 8,
+			PlantingDepth = 4,
+		},
+		RearService = {
+			DoorCount = 2,
+			DoorWidth = 7,
+			Rule = "Rear service access sits on true +Z exterior and stays visible behind the facade screen.",
+		},
+		PartBudget = {
+			TargetVisibleParts = 600,
+			MaximumVisibleParts = 780,
+		},
+	},
+
 	Phase2Status = {
-		Status = "VisualTargetReview",
+		Status = "Approved",
 		TargetRevision = "LargeCityUptownParking-VisualTarget-v1",
-		QualityGateA = "Pending",
+		QualityGateA = "Approved",
 		ReviewFocus = {
 			"premium mobility-hub read",
 			"vertical screen veil",
@@ -166,6 +268,17 @@ local Specification = {
 			"light rooftop solar/pergola canopy",
 			"clear distinction from office, residential and warehouse architecture",
 		},
+	},
+
+	Phase3Acceptance = {
+		"Base, six parking decks, ramp, screen veil, pedestrian core and rooftop deck use deterministic dimensions tied to LC-55.",
+		"Parking deck ventilation remains clearly visible behind the facade screen.",
+		"Expressed corner ramp is structurally readable as sloped circulation.",
+		"Both planted breathing cuts interrupt the facade mass and remain open/readable.",
+		"EV hub and pedestrian core are clearly identifiable from the front.",
+		"Rooftop solar/pergola canopy remains light and open.",
+		"Seven destruction groups map to coherent architectural masses.",
+		"Golden Master target remains below 780 visible parts.",
 	},
 
 	Phase1Acceptance = {
