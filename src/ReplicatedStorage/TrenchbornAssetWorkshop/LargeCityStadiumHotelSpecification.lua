@@ -8,7 +8,7 @@ local Specification = {
 	City = "LargeCity",
 	District = "Uptown",
 	BuildingType = "Hotel",
-	Phase = 1,
+	Phase = 2,
 	QualityGate = "A-Pending",
 	Branch = "largecity-stadium-hotel-l3",
 
@@ -140,7 +140,7 @@ local Specification = {
 	},
 
 	VisualTarget = {
-		Status = "Draft",
+		Status = "InReview",
 		Revision = "LargeCityStadiumHotel-VisualTarget-v1",
 		Brief = {
 			"premium Miami/Singapore event hotel beside stadium and arena",
@@ -154,6 +154,23 @@ local Specification = {
 			"clear rear service/loading court",
 			"daylight architectural concept board with front, three-quarter, side and rear cues",
 			"not cyberpunk, not office, not apartment residential",
+		},
+	},
+
+
+	Phase2Status = {
+		Status = "VisualTargetReview",
+		TargetRevision = "LargeCityStadiumHotel-VisualTarget-v1",
+		QualityGateA = "Pending",
+		ReviewFocus = {
+			"premium event-hotel read",
+			"gently bowed guest-room bar",
+			"strong porte-cochere and lobby arrival",
+			"regular room-bay rhythm with shallow balconies",
+			"set-back panoramic sky lounge",
+			"visible rooftop pool deck and pergola",
+			"clear distinction from Uptown Residences and Waterfront Resort",
+			"rear hotel service court integrated into massing",
 		},
 	},
 
