@@ -3,7 +3,7 @@ local Specification = {
 	DisplayName = "Uptown Arena",
 	City = "LargeCity",
 	Phase = 6,
-	QualityGate = "B-Approved",
+	QualityGate = "C-Pending",
 	Style = "Singapore x Miami tropical metropolitan indoor arena",
 
 	AssetBrief = {
@@ -57,6 +57,8 @@ local Specification = {
 		EnergyType = "Electric",
 		InstallerTag = "KaijuHouse",
 		ExternalCollapseIntegration = true,
+		IntegrationPackageVersion = 1,
+		FinalInstallerReady = false,
 		Rationale = "The arena is a major Large City civic venue but materially smaller than the 256k stadium; Electric matches lighting, scoreboards and event infrastructure.",
 	},
 

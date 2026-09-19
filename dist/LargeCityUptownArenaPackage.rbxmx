@@ -1,0 +1,1077 @@
+<roblox version="4">
+  <Item class="Folder" referent="0">
+    <Properties>
+      <string name="Name">LargeCityUptownArenaPackage</string>
+    </Properties>
+    <Item class="ModuleScript" referent="1">
+      <Properties>
+        <string name="Name">LargeCityUptownArenaDressing</string>
+        <string name="Source"><![CDATA[local Dressing = {}
+
+local COLORS = {
+	White = Color3.fromRGB(244, 247, 247),
+	Dark = Color3.fromRGB(39, 47, 54),
+	DarkGlass = Color3.fromRGB(36, 70, 82),
+	Teal = Color3.fromRGB(50, 158, 166),
+	Cyan = Color3.fromRGB(95, 205, 214),
+	Warm = Color3.fromRGB(236, 176, 92),
+	Metal = Color3.fromRGB(154, 164, 167),
+	Concrete = Color3.fromRGB(211, 214, 210),
+	Leaf = Color3.fromRGB(55, 126, 74),
+	Wood = Color3.fromRGB(123, 91, 61),
+	Soil = Color3.fromRGB(74, 59, 44),
+}
+
+local function folder(parent, name)
+	local existing = parent:FindFirstChild(name)
+	if existing then existing:Destroy() end
+	local item = Instance.new("Folder")
+	item.Name = name
+	item.Parent = parent
+	return item
+end
+
+local function part(parent, name, size, cf, color, material, transparency, shape)
+	local item = Instance.new("Part")
+	item.Name = name
+	item.Size = size
+	item.CFrame = cf
+	item.Color = color
+	item.Material = material or Enum.Material.SmoothPlastic
+	item.Transparency = transparency or 0
+	item.Shape = shape or Enum.PartType.Block
+	item.Anchored = true
+	item.CanCollide = false
+	item.CanTouch = false
+	item.CanQuery = false
+	item.CastShadow = true
+	item.TopSurface = Enum.SurfaceType.Smooth
+	item.BottomSurface = Enum.SurfaceType.Smooth
+	item.Parent = parent
+	return item
+end
+
+local function block(parent, name, size, position, color, material, transparency)
+	return part(parent, name, size, CFrame.new(position), color, material, transparency)
+end
+
+local function cylinder(parent, name, size, position, color, material, rotation)
+	return part(
+		parent,
+		name,
+		size,
+		CFrame.new(position) * CFrame.Angles(math.rad(rotation.X), math.rad(rotation.Y), math.rad(rotation.Z)),
+		color,
+		material,
+		0,
+		Enum.PartType.Cylinder
+	)
+end
+
+local function addSurfaceText(parent, adornee, text, face, color, font)
+	local gui = Instance.new("SurfaceGui")
+	gui.Name = adornee.Name .. "Surface"
+	gui.Adornee = adornee
+	gui.Face = face or Enum.NormalId.Front
+	gui.AlwaysOnTop = false
+	gui.LightInfluence = 0.2
+	gui.PixelsPerStud = 42
+	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	gui.Parent = parent
+
+	local label = Instance.new("TextLabel")
+	label.Name = "Label"
+	label.Size = UDim2.fromScale(1, 1)
+	label.BackgroundTransparency = 1
+	label.Text = text
+	label.TextColor3 = color or COLORS.White
+	label.TextStrokeTransparency = 0.82
+	label.Font = font or Enum.Font.GothamBold
+	label.TextScaled = true
+	label.TextWrapped = true
+	label.Parent = gui
+end
+
+local function addPalm(parent, name, position, height, yaw)
+	local palm = folder(parent, name)
+	local h = height or 10
+	cylinder(
+		palm,
+		"Trunk",
+		Vector3.new(h, 0.85, 0.85),
+		position + Vector3.new(0, h * 0.5, 0),
+		COLORS.Wood,
+		Enum.Material.Wood,
+		Vector3.new(0, 0, 90)
+	)
+	local crown = position + Vector3.new(0, h, 0)
+	for index = 1, 7 do
+		local angle = math.rad((index - 1) * (360 / 7) + (yaw or 0))
+		local dx = math.cos(angle)
+		local dz = math.sin(angle)
+		block(
+			palm,
+			"Leaf" .. index,
+			Vector3.new(0.7, 0.25, 4.8),
+			crown + Vector3.new(dx * 1.6, 0.2, dz * 1.6),
+			COLORS.Leaf,
+			Enum.Material.Grass
+		).CFrame *= CFrame.Angles(math.rad(-14), math.rad(math.deg(angle)), 0)
+	end
+end
+
+local function addPlanter(parent, name, position, size)
+	local planter = folder(parent, name)
+	block(planter, "Box", size, position, COLORS.Concrete, Enum.Material.Concrete)
+	block(planter, "Soil", size - Vector3.new(0.5, 0.65, 0.5), position + Vector3.new(0, 0.55, 0), COLORS.Soil, Enum.Material.Ground)
+	for x = -1, 1 do
+		part(
+			planter,
+			"Shrub" .. x,
+			Vector3.new(1.5, 1.5, 1.5),
+			CFrame.new(position + Vector3.new(x * 1.8, 1.45, 0)),
+			COLORS.Leaf,
+			Enum.Material.Grass,
+			0,
+			Enum.PartType.Ball
+		)
+	end
+end
+
+local function addEntranceDressing(root)
+	local area = folder(root, "EntranceDressing")
+
+	local wordmark = block(
+		area,
+		"ArenaWordmark",
+		Vector3.new(48, 4.0, 0.55),
+		Vector3.new(0, 23.8, -58.85),
+		COLORS.Dark,
+		Enum.Material.Metal
+	)
+	addSurfaceText(area, wordmark, "UPTOWN ARENA", Enum.NormalId.Front, COLORS.White)
+
+	local eventStrip = block(
+		area,
+		"EventStrip",
+		Vector3.new(54, 2.6, 0.38),
+		Vector3.new(0, 20.6, -58.95),
+		COLORS.Teal,
+		Enum.Material.Neon
+	)
+	addSurfaceText(area, eventStrip, "SPORTS   •   CONCERTS   •   EVENTS", Enum.NormalId.Front, COLORS.Dark)
+
+	local gates = {
+		-- Portal piers sit at -27, -17, -6, 6, 17 and 27.
+		-- Center each gate sign in a real bay between adjacent piers.
+		{label = "A", x = -22.0},
+		{label = "B", x = -11.5},
+		{label = "C", x = 11.5},
+		{label = "D", x = 22.0},
+	}
+	for _, gate in ipairs(gates) do
+		local sign = block(
+			area,
+			"Gate" .. gate.label,
+			Vector3.new(5.5, 2.4, 0.35),
+			Vector3.new(gate.x, 8.0, -57.75),
+			COLORS.DarkGlass,
+			Enum.Material.Glass
+		)
+		addSurfaceText(area, sign, "GATE " .. gate.label, Enum.NormalId.Front, COLORS.White)
+	end
+
+	for _, x in ipairs({-32, -24, -16, 16, 24, 32}) do
+		cylinder(
+			area,
+			"QueueBollard" .. tostring(x),
+			Vector3.new(2.2, 0.35, 0.35),
+			Vector3.new(x, 1.1, -67.5),
+			COLORS.Metal,
+			Enum.Material.Metal,
+			Vector3.new(0, 0, 90)
+		)
+	end
+
+	addPlanter(area, "PlanterLeft", Vector3.new(-41, 0.85, -69), Vector3.new(10, 1.3, 3.2))
+	addPlanter(area, "PlanterRight", Vector3.new(41, 0.85, -69), Vector3.new(10, 1.3, 3.2))
+	addPalm(area, "PalmLeft", Vector3.new(-51, 0, -70), 11, 12)
+	addPalm(area, "PalmRight", Vector3.new(51, 0, -70), 11, -12)
+end
+
+local function addMediaRibbonDressing(root)
+	local area = folder(root, "MediaRibbonDressing")
+	local panels = {
+		{theta = math.rad(28), text = "TONIGHT 20:00", color = COLORS.Cyan},
+		{theta = math.rad(72), text = "LIVE", color = COLORS.Warm},
+		{theta = math.rad(108), text = "UPTOWN", color = COLORS.Cyan},
+		{theta = math.rad(152), text = "ARENA", color = COLORS.Warm},
+		{theta = math.rad(208), text = "EVENTS", color = COLORS.Cyan},
+		{theta = math.rad(252), text = "CITY LIVE", color = COLORS.Warm},
+		{theta = math.rad(288), text = "SPORT", color = COLORS.Cyan},
+		{theta = math.rad(332), text = "MUSIC", color = COLORS.Warm},
+	}
+	local a, b = 68.2, 49.2
+
+	for index, panel in ipairs(panels) do
+		local theta = panel.theta
+		local position = Vector3.new(a * math.cos(theta), 29.0, b * math.sin(theta))
+		local tangent = Vector3.new(-a * math.sin(theta), 0, b * math.cos(theta)).Unit
+		local up = Vector3.yAxis
+		local back = tangent:Cross(up).Unit
+		local cf = CFrame.fromMatrix(position, tangent, up, back) * CFrame.new(0, 0, -3.7)
+
+		local frame = part(
+			area,
+			"RibbonFrame" .. index,
+			Vector3.new(12.5, 5.1, 0.55),
+			cf,
+			COLORS.Dark,
+			Enum.Material.Metal
+		)
+		local display = part(
+			area,
+			"RibbonDisplay" .. index,
+			Vector3.new(11.5, 4.2, 0.26),
+			cf * CFrame.new(0, 0, -0.46),
+			panel.color,
+			Enum.Material.Neon
+		)
+		frame.CastShadow = true
+		display.CastShadow = false
+		addSurfaceText(area, display, panel.text, Enum.NormalId.Front, COLORS.Dark)
+	end
+end
+
+local function addFacadeVariation(root)
+	local area = folder(root, "FacadeVariation")
+
+	-- Break up the long concrete oval with larger dark-glass event bays.
+	-- These are deliberately sparse so the arena stays elegant rather than noisy.
+	local bays = {
+		{theta = math.rad(42), accent = COLORS.Cyan},
+		{theta = math.rad(72), accent = COLORS.Warm},
+		{theta = math.rad(108), accent = COLORS.Cyan},
+		{theta = math.rad(138), accent = COLORS.Warm},
+		{theta = math.rad(222), accent = COLORS.Cyan},
+		{theta = math.rad(252), accent = COLORS.Warm},
+		{theta = math.rad(288), accent = COLORS.Cyan},
+		{theta = math.rad(318), accent = COLORS.Warm},
+	}
+	local a, b = 68.3, 49.3
+
+	for index, bay in ipairs(bays) do
+		local theta = bay.theta
+		local position = Vector3.new(a * math.cos(theta), 17.5, b * math.sin(theta))
+		local tangent = Vector3.new(-a * math.sin(theta), 0, b * math.cos(theta)).Unit
+		local up = Vector3.yAxis
+		local back = tangent:Cross(up).Unit
+		local cf = CFrame.fromMatrix(position, tangent, up, back) * CFrame.new(0, 0, -5.0)
+
+		local frame = part(
+			area,
+			"FeatureBayFrame" .. index,
+			Vector3.new(10.5, 18.0, 0.8),
+			cf,
+			COLORS.Dark,
+			Enum.Material.Metal
+		)
+		local glass = part(
+			area,
+			"FeatureBayGlass" .. index,
+			Vector3.new(8.9, 15.8, 0.35),
+			cf * CFrame.new(0, 0, -0.52),
+			COLORS.DarkGlass,
+			Enum.Material.Glass,
+			0.08
+		)
+		local accent = part(
+			area,
+			"FeatureBayAccent" .. index,
+			Vector3.new(9.2, 0.65, 0.30),
+			cf * CFrame.new(0, 7.4, -0.62),
+			bay.accent,
+			Enum.Material.Neon
+		)
+		frame.CastShadow = true
+		glass.CastShadow = false
+		accent.CastShadow = false
+	end
+end
+
+local function addFacadeLighting(root)
+	local area = folder(root, "FacadeLighting")
+	local count = 18
+	local a, b = 68.0, 49.0
+	for index = 0, count - 1 do
+		local theta = (index / count) * math.pi * 2
+		local position = Vector3.new(a * math.cos(theta), 36.5, b * math.sin(theta))
+		local tangent = Vector3.new(-a * math.sin(theta), 0, b * math.cos(theta)).Unit
+		local up = Vector3.yAxis
+		local back = tangent:Cross(up).Unit
+		local cf = CFrame.fromMatrix(position, tangent, up, back) * CFrame.new(0, 0, -3.2)
+		local lamp = part(
+			area,
+			"FacadeLight" .. string.format("%02d", index + 1),
+			Vector3.new(0.7, 1.8, 0.45),
+			cf,
+			index % 2 == 0 and COLORS.Cyan or COLORS.White,
+			Enum.Material.Neon
+		)
+		lamp.CastShadow = false
+	end
+end
+
+local function addRearDressing(root)
+	local area = folder(root, "RearDressing")
+
+	-- Rear is local +Z; keep all signage and dock dressing outside the rear wall.
+	local sign = block(
+		area,
+		"ServiceSign",
+		Vector3.new(30, 3.0, 0.35),
+		Vector3.new(0, 15.0, 55.95),
+		COLORS.Dark,
+		Enum.Material.Metal
+	)
+	addSurfaceText(area, sign, "EVENT LOADING", Enum.NormalId.Back, COLORS.White)
+
+	local crewSign = block(
+		area,
+		"CrewEntranceSign",
+		Vector3.new(14, 2.2, 0.30),
+		Vector3.new(28, 11.0, 55.98),
+		COLORS.Teal,
+		Enum.Material.Neon
+	)
+	addSurfaceText(area, crewSign, "CREW", Enum.NormalId.Back, COLORS.Dark)
+
+	for index, x in ipairs({-27, -9, 9, 27}) do
+		local dock = block(
+			area,
+			"DockNumber" .. index,
+			Vector3.new(4.6, 2.0, 0.28),
+			Vector3.new(x, 10.2, 56.02),
+			COLORS.DarkGlass,
+			Enum.Material.Glass
+		)
+		addSurfaceText(area, dock, string.format("%02d", index), Enum.NormalId.Back, COLORS.White)
+	end
+
+	-- Vehicle guidance makes the rear read as a real service entrance from distance.
+	for _, x in ipairs({-27, -9, 9, 27}) do
+		block(
+			area,
+			"LoadingLane" .. tostring(x),
+			Vector3.new(8, 0.10, 14),
+			Vector3.new(x, 0.55, 64),
+			COLORS.White,
+			Enum.Material.SmoothPlastic
+		)
+	end
+end
+
+function Dressing.Apply(model)
+	assert(model and model:IsA("Model"), "LargeCityUptownArenaDressing.Apply expects a Model")
+
+	local existing = model:FindFirstChild("Dressing")
+	if existing then existing:Destroy() end
+	local root = folder(model, "Dressing")
+
+	addEntranceDressing(root)
+	addMediaRibbonDressing(root)
+	addFacadeVariation(root)
+	addFacadeLighting(root)
+	addRearDressing(root)
+
+	model:SetAttribute("AssetPhase", 5)
+	model:SetAttribute("QualityGateA", "Approved")
+	model:SetAttribute("QualityGateB", "Approved")
+	model:SetAttribute("DressingRevision", "LargeCityUptownArena-Dressing-v6-HighContrastNeonText")
+	model:SetAttribute("DressingStatus", "Approved")
+	model:SetAttribute("TextScaledRule", true)
+	model:SetAttribute("FacadeFeatureBays", 8)
+	model:SetAttribute("RearServiceDressingVisible", true)
+	model:SetAttribute("GateSignsCenteredBetweenPiers", true)
+	model:SetAttribute("GateSignsBehindPierFace", true)
+	model:SetAttribute("MediaScreensProjectedOutsideShell", true)
+	model:SetAttribute("FeatureBaysProjectedOutsideShell", true)
+	model:SetAttribute("FacadeLightsProjectedOutsideShell", true)
+	model:SetAttribute("HighContrastNeonText", true)
+	return model
+end
+
+return Dressing
+]]></string>
+      </Properties>
+    </Item>
+    <Item class="ModuleScript" referent="2">
+      <Properties>
+        <string name="Name">LargeCityUptownArenaGoldenMaster</string>
+        <string name="Source"><![CDATA[local specification = require(script.Parent:WaitForChild("LargeCityUptownArenaSpecification"))
+
+local Builder = {}
+
+local COLORS = {
+	Concrete = Color3.fromRGB(222, 224, 221),
+	ConcreteDark = Color3.fromRGB(171, 178, 179),
+	Metal = Color3.fromRGB(165, 174, 177),
+	Roof = Color3.fromRGB(202, 208, 209),
+	Glass = Color3.fromRGB(52, 91, 105),
+	DarkGlass = Color3.fromRGB(35, 60, 72),
+	Teal = Color3.fromRGB(50, 158, 166),
+	Dark = Color3.fromRGB(43, 50, 56),
+}
+
+local SEGMENTS = 72
+local FIN_COUNT = 24
+
+local function folder(parent, name)
+	local item = Instance.new("Folder")
+	item.Name = name
+	item.Parent = parent
+	return item
+end
+
+local function part(parent, name, size, cf, color, material, transparency, shape)
+	local item = Instance.new("Part")
+	item.Name = name
+	item.Size = size
+	item.CFrame = cf
+	item.Color = color
+	item.Material = material or Enum.Material.SmoothPlastic
+	item.Transparency = transparency or 0
+	item.Shape = shape or Enum.PartType.Block
+	item.Anchored = true
+	item.CanCollide = true
+	item.CanQuery = true
+	item.CanTouch = true
+	item.CastShadow = true
+	item.TopSurface = Enum.SurfaceType.Smooth
+	item.BottomSurface = Enum.SurfaceType.Smooth
+	item.Parent = parent
+	return item
+end
+
+local function block(parent, name, size, position, color, material, transparency)
+	return part(parent, name, size, CFrame.new(position), color, material, transparency)
+end
+
+local function ellipsePoint(a, b, theta)
+	return Vector3.new(a * math.cos(theta), 0, b * math.sin(theta))
+end
+
+local function tangentFrame(a, b, theta, y, segmentCount)
+	local halfStep = math.pi / segmentCount
+	local before = ellipsePoint(a, b, theta - halfStep)
+	local after = ellipsePoint(a, b, theta + halfStep)
+	local tangent = (after - before).Unit
+	local up = Vector3.yAxis
+	local back = tangent:Cross(up).Unit
+	local position = ellipsePoint(a, b, theta) + Vector3.new(0, y, 0)
+	return CFrame.fromMatrix(position, tangent, up, back), (after - before).Magnitude
+end
+
+local function addSmoothRing(parent, prefix, a, b, y, height, depth, count, color, material, transparency, overlap)
+	local step = math.pi * 2 / count
+	for index = 0, count - 1 do
+		local theta = index * step
+		local cf, chord = tangentFrame(a, b, theta, y, count)
+		part(
+			parent,
+			prefix .. string.format("_%02d", index + 1),
+			Vector3.new(chord * (overlap or 1.16), height, depth),
+			cf,
+			color,
+			material,
+			transparency
+		)
+	end
+end
+
+local function addSlopedRoofBand(parentWest, parentEast, prefix, outerA, outerB, outerY, innerA, innerB, innerY)
+	local step = math.pi * 2 / SEGMENTS
+	local midA = (outerA + innerA) * 0.5
+	local midB = (outerB + innerB) * 0.5
+
+	for index = 0, SEGMENTS - 1 do
+		local theta = index * step
+		local outer = ellipsePoint(outerA, outerB, theta) + Vector3.new(0, outerY, 0)
+		local inner = ellipsePoint(innerA, innerB, theta) + Vector3.new(0, innerY, 0)
+		local radial = inner - outer
+
+		local halfStep = step * 0.5
+		local before = ellipsePoint(midA, midB, theta - halfStep)
+		local after = ellipsePoint(midA, midB, theta + halfStep)
+		local right = (after - before).Unit
+
+		local back = radial - right * radial:Dot(right)
+		back = back.Unit
+		local up = back:Cross(right).Unit
+
+		local middle = outer:Lerp(inner, 0.5)
+		local cf = CFrame.fromMatrix(middle, right, up, back)
+		local chord = (after - before).Magnitude
+		local parent = middle.X < 0 and parentWest or parentEast
+
+		part(
+			parent,
+			prefix .. string.format("_%02d", index + 1),
+			Vector3.new(chord * 1.18, 2.2, radial.Magnitude + 1.5),
+			cf,
+			COLORS.Roof,
+			Enum.Material.Metal
+		)
+	end
+end
+
+local function addOvalCap(parent, name, centerY)
+	return part(
+		parent,
+		name,
+		Vector3.new(2.2, 12, 8),
+		CFrame.new(0, centerY, 0) * CFrame.Angles(0, 0, math.rad(90)),
+		COLORS.Roof,
+		Enum.Material.Metal,
+		0,
+		Enum.PartType.Cylinder
+	)
+end
+
+local function addMainEntrance(group)
+	block(group, "EntranceMass", Vector3.new(66, 27, 15), Vector3.new(0, 13.5, -48.5), COLORS.Concrete, Enum.Material.Concrete)
+	block(group, "EntranceRecess", Vector3.new(58, 20, 4.0), Vector3.new(0, 13, -55.5), COLORS.Dark, Enum.Material.Metal)
+	block(group, "EntranceGlass", Vector3.new(56, 18, 0.55), Vector3.new(0, 13, -57.35), COLORS.Glass, Enum.Material.Glass, 0.10)
+
+	for _, x in ipairs({-27, -17, -6, 6, 17, 27}) do
+		block(group, "PortalPier" .. tostring(x), Vector3.new(2.4, 28, 3.2), Vector3.new(x, 14, -56.5), COLORS.Metal, Enum.Material.Metal)
+	end
+
+	block(group, "EntranceCanopy", Vector3.new(70, 1.6, 9), Vector3.new(0, 27.2, -56), COLORS.Roof, Enum.Material.Metal)
+	for step = 1, 4 do
+		block(
+			group,
+			"ArrivalStep" .. step,
+			Vector3.new(76 - step * 4, 0.7, 4.5),
+			Vector3.new(0, 0.35 + (step - 1) * 0.55, -66 + step * 3.2),
+			COLORS.Concrete,
+			Enum.Material.Concrete
+		)
+	end
+end
+
+local function addFacade(lowerGroup, upperGroup, ribbonGroup)
+	-- v2 uses shallow tangent shells instead of deep radial blocks. With 72
+	-- overlapping segments the exterior reads as one flowing oval skin.
+	addSmoothRing(lowerGroup, "LowerFacade", 65.5, 46.5, 12.0, 23.0, 12.0, SEGMENTS, COLORS.Concrete, Enum.Material.Concrete, 0, 1.18)
+	addSmoothRing(upperGroup, "UpperFacade", 64.0, 45.0, 33.0, 20.0, 11.0, SEGMENTS, COLORS.ConcreteDark, Enum.Material.Concrete, 0, 1.18)
+
+	-- Continuous dark-glass concourse slot under the media ribbon.
+	addSmoothRing(lowerGroup, "ConcourseGlass", 66.2, 47.2, 22.5, 6.0, 1.25, SEGMENTS, COLORS.DarkGlass, Enum.Material.Glass, 0.08, 1.18)
+
+	-- Media ribbon remains a thin continuous layer outside the smoother shell.
+	addSmoothRing(ribbonGroup, "MediaRibbon", 70.8, 51.8, 29.0, 5.5, 0.75, SEGMENTS, COLORS.Teal, Enum.Material.Neon, 0, 1.17)
+
+	-- Vertical fins remain sparse surface rhythm instead of emphasizing every facet.
+	local step = math.pi * 2 / FIN_COUNT
+	for index = 0, FIN_COUNT - 1 do
+		local theta = index * step
+		local cf = tangentFrame(70.4, 51.4, theta, 30.0, FIN_COUNT)
+		part(
+			upperGroup,
+			"VerticalFin" .. string.format("_%02d", index + 1),
+			Vector3.new(0.85, 25.0, 1.6),
+			cf,
+			COLORS.Metal,
+			Enum.Material.Metal
+		)
+	end
+end
+
+local function addRoof(westGroup, eastGroup)
+	-- Three broad sloped annular bands form a continuous shallow crown.
+	-- Unlike v1, there are no horizontal staircase-like roof terraces.
+	addSlopedRoofBand(westGroup, eastGroup, "RoofOuter", 65.5, 46.5, 44.0, 45.0, 31.5, 47.4)
+	addSlopedRoofBand(westGroup, eastGroup, "RoofMiddle", 45.6, 32.0, 47.2, 24.0, 16.5, 51.6)
+	addSlopedRoofBand(westGroup, eastGroup, "RoofInner", 24.6, 17.0, 51.4, 5.5, 3.8, 54.5)
+
+	addOvalCap(westGroup, "RoofCentralOvalCap", 54.8)
+
+	-- Smooth perimeter ring hides the outer polygon joints and gives the roof
+	-- one clean continuous edge when viewed from street level.
+	addSmoothRing(westGroup, "RoofPerimeter", 65.8, 46.8, 43.7, 2.3, 1.6, SEGMENTS, COLORS.Metal, Enum.Material.Metal, 0, 1.18)
+end
+
+local function addRearService(group)
+	block(group, "RearServiceMass", Vector3.new(74, 18, 15), Vector3.new(0, 9, 48), COLORS.ConcreteDark, Enum.Material.Concrete)
+
+	-- Rear is local +Z. v1 placed the doors and canopy on the inner (-Z) face,
+	-- where the main arena shell hid them. Put the service elevation on the
+	-- actual outer rear face so it reads clearly from outside.
+	for _, x in ipairs({-27, -9, 9, 27}) do
+		block(group, "LoadingDoor" .. tostring(x), Vector3.new(12, 8, 0.5), Vector3.new(x, 5, 55.75), COLORS.Dark, Enum.Material.Metal)
+	end
+
+	block(group, "RearServiceCanopy", Vector3.new(78, 1.4, 8), Vector3.new(0, 17.5, 58.5), COLORS.Metal, Enum.Material.Metal)
+	block(group, "RearServiceApron", Vector3.new(84, 0.5, 18), Vector3.new(0, 0.25, 64), COLORS.Concrete, Enum.Material.Concrete)
+end
+
+local function countVisibleParts(model)
+	local count = 0
+	for _, item in ipairs(model:GetDescendants()) do
+		if item:IsA("BasePart") and item.Transparency < 1 then
+			count += 1
+		end
+	end
+	model:SetAttribute("VisiblePartCount", count)
+	model:SetAttribute("VisiblePartBudget", 700)
+	model:SetAttribute("VisiblePartBudgetPassed", count <= 700)
+end
+
+function Builder.Build(parent)
+	local existing = parent:FindFirstChild("LargeCity_UptownArena_L3_GoldenMaster")
+	if existing then existing:Destroy() end
+
+	local model = Instance.new("Model")
+	model.Name = "LargeCity_UptownArena_L3_GoldenMaster"
+	model:SetAttribute("AssetId", specification.AssetId)
+	model:SetAttribute("DisplayName", specification.DisplayName)
+	model:SetAttribute("AssetPhase", 4)
+	model:SetAttribute("QualityGateA", "Approved")
+	model:SetAttribute("QualityGateB", "Approved")
+	model:SetAttribute("GeometryRevision", "LargeCityUptownArena-v5-ProjectedFacadeDetails")
+	model:SetAttribute("HasInterior", false)
+	model:SetAttribute("Style", specification.Style)
+	model:SetAttribute("MaxHealth", specification.ProposedGameplayMetadata.TargetMaxHealth)
+	model:SetAttribute("EnergyType", specification.ProposedGameplayMetadata.EnergyType)
+	model:SetAttribute("InstallerTag", specification.ProposedGameplayMetadata.InstallerTag)
+	model:SetAttribute("FacadeSegmentCount", SEGMENTS)
+	model:SetAttribute("RoofSegmentCount", SEGMENTS)
+	model:SetAttribute("EnclosedArenaShell", true)
+	model:SetAttribute("EnclosedRoof", true)
+	model:SetAttribute("SmoothFacadeShell", true)
+	model:SetAttribute("SlopedContinuousRoof", true)
+	model:SetAttribute("RearServiceVisible", true)
+	model:SetAttribute("EntrancePiersProjectForward", true)
+	model:SetAttribute("MediaRibbonProjectedOutsideShell", true)
+	model:SetAttribute("FacadeFinsProjectedOutsideShell", true)
+	model.Parent = parent
+
+	local groups = folder(model, "DestructionGroups")
+	local d1 = folder(groups, "D1_MainEntrance")
+	local d2 = folder(groups, "D2_LowerFacade")
+	local d3 = folder(groups, "D3_UpperFacade")
+	local d4 = folder(groups, "D4_RoofWest")
+	local d5 = folder(groups, "D5_RoofEast")
+	local d6 = folder(groups, "D6_MediaRibbonAndSignage")
+	local d7 = folder(groups, "D7_ServiceAndLoading")
+
+	addMainEntrance(d1)
+	addFacade(d2, d3, d6)
+	addRoof(d4, d5)
+	addRearService(d7)
+
+	local pivot = part(model, "GroundPivot", Vector3.new(1, 1, 1), CFrame.new(0, 0.5, 0), Color3.new(1, 1, 1), Enum.Material.SmoothPlastic, 1)
+	pivot.CanCollide = false
+	pivot.CanQuery = false
+	pivot.CanTouch = false
+	pivot.CastShadow = false
+	model.PrimaryPart = pivot
+	model:PivotTo(CFrame.new())
+
+	countVisibleParts(model)
+	return model
+end
+
+return Builder
+]]></string>
+      </Properties>
+    </Item>
+    <Item class="ModuleScript" referent="3">
+      <Properties>
+        <string name="Name">LargeCityUptownArenaInstaller</string>
+        <string name="Source"><![CDATA[local CollectionService = game:GetService("CollectionService")
+
+local packageFolder = script.Parent
+
+local specification = require(packageFolder:WaitForChild("LargeCityUptownArenaSpecification"))
+local goldenMaster = require(packageFolder:WaitForChild("LargeCityUptownArenaGoldenMaster"))
+local dressing = require(packageFolder:WaitForChild("LargeCityUptownArenaDressing"))
+
+local Installer = {}
+
+local MODEL_NAME = specification.AssetId
+local GOLDEN_MASTER_NAME = "LargeCity_UptownArena_L3_GoldenMaster"
+local PACKAGE_VERSION = specification.ProposedGameplayMetadata.IntegrationPackageVersion
+local MAX_HEALTH = specification.ProposedGameplayMetadata.TargetMaxHealth
+local ENERGY_TYPE = specification.ProposedGameplayMetadata.EnergyType
+local BUILDING_TAG = specification.ProposedGameplayMetadata.InstallerTag
+
+local function validateDestructionGroups(model)
+	local groups = model:FindFirstChild("DestructionGroups")
+	assert(groups and groups:IsA("Folder"), "Large City Uptown Arena installer requires a DestructionGroups folder")
+
+	for _, groupName in ipairs(specification.PlannedDestructionGroups) do
+		local group = groups:FindFirstChild(groupName)
+		assert(group and group:IsA("Folder"), "Large City Uptown Arena is missing destruction group: " .. groupName)
+	end
+
+	return groups
+end
+
+local function lowestVisibleY(model)
+	local minimumY = math.huge
+	for _, item in ipairs(model:GetDescendants()) do
+		if item:IsA("BasePart") and item.Transparency < 1 then
+			local halfSize = item.Size * 0.5
+			local verticalExtent =
+				math.abs(item.CFrame.XVector.Y) * halfSize.X
+				+ math.abs(item.CFrame.YVector.Y) * halfSize.Y
+				+ math.abs(item.CFrame.ZVector.Y) * halfSize.Z
+			minimumY = math.min(minimumY, item.Position.Y - verticalExtent)
+		end
+	end
+	return minimumY
+end
+
+local function placeModel(model, options)
+	if options.CFrame then
+		assert(typeof(options.CFrame) == "CFrame", "Large City Uptown Arena options.CFrame must be a CFrame")
+		model:PivotTo(options.CFrame)
+		return
+	end
+
+	local groundCFrame = options.GroundCFrame or CFrame.new()
+	assert(typeof(groundCFrame) == "CFrame", "Large City Uptown Arena options.GroundCFrame must be a CFrame")
+	model:PivotTo(groundCFrame)
+
+	if options.AlignToGround == false then
+		return
+	end
+
+	local minimumY = lowestVisibleY(model)
+	if minimumY < math.huge then
+		local correction = groundCFrame.Position.Y - minimumY
+		model:PivotTo(model:GetPivot() + Vector3.new(0, correction, 0))
+		model:SetAttribute("GroundContactCorrection", correction)
+		model:SetAttribute("GroundContactY", groundCFrame.Position.Y)
+	end
+end
+
+local function applyIntegrationMetadata(model)
+	model.Name = MODEL_NAME
+	model:SetAttribute("AssetId", specification.AssetId)
+	model:SetAttribute("DisplayName", specification.DisplayName)
+	model:SetAttribute("City", specification.City)
+	model:SetAttribute("BuildingType", "Arena")
+	model:SetAttribute("CityTier", 4)
+	model:SetAttribute("MaxHealth", MAX_HEALTH)
+	model:SetAttribute("EnergyType", ENERGY_TYPE)
+	model:SetAttribute("AssetPhase", 6)
+	model:SetAttribute("PipelinePhase", 6)
+	model:SetAttribute("QualityGateA", "Approved")
+	model:SetAttribute("QualityGateB", "Approved")
+	model:SetAttribute("QualityGateC", "Pending")
+	model:SetAttribute("Phase6Status", "ExternalGameTestPending")
+	model:SetAttribute("DressingStatus", "Approved")
+	model:SetAttribute("PackageId", "LargeCityUptownArenaPackage")
+	model:SetAttribute("IntegrationPackageVersion", PACKAGE_VERSION)
+	model:SetAttribute("IntegrationPackageReady", true)
+	model:SetAttribute("InstallerReady", true)
+	model:SetAttribute("FinalInstallerReady", false)
+	model:SetAttribute("WorkshopOnly", false)
+	model:SetAttribute("HasInterior", false)
+	model:SetAttribute("DestructionGroupCount", #specification.PlannedDestructionGroups)
+	model:SetAttribute("ExternalCollapseIntegration", true)
+	model:SetAttribute("UsesSharedMainGameDestruction", true)
+
+	if not CollectionService:HasTag(model, BUILDING_TAG) then
+		CollectionService:AddTag(model, BUILDING_TAG)
+	end
+end
+
+function Installer.Validate(model)
+	assert(model and model:IsA("Model"), "LargeCityUptownArenaInstaller.Validate requires a Model")
+	validateDestructionGroups(model)
+	assert(model:GetAttribute("MaxHealth") == MAX_HEALTH, "Large City Uptown Arena MaxHealth metadata is invalid")
+	assert(model:GetAttribute("EnergyType") == ENERGY_TYPE, "Large City Uptown Arena EnergyType metadata is invalid")
+	assert(CollectionService:HasTag(model, BUILDING_TAG), "Large City Uptown Arena is missing tag: " .. BUILDING_TAG)
+	return true
+end
+
+function Installer.Install(parent, options)
+	assert(typeof(parent) == "Instance", "LargeCityUptownArenaInstaller.Install requires a parent Instance")
+	options = options or {}
+	assert(typeof(options) == "table", "LargeCityUptownArenaInstaller.Install options must be a table")
+
+	local existing = parent:FindFirstChild(MODEL_NAME)
+	if existing then
+		existing:Destroy()
+	end
+
+	local oldGoldenMaster = parent:FindFirstChild(GOLDEN_MASTER_NAME)
+	if oldGoldenMaster then
+		oldGoldenMaster:Destroy()
+	end
+
+	local model = goldenMaster.Build(parent)
+	dressing.Apply(model)
+	validateDestructionGroups(model)
+	applyIntegrationMetadata(model)
+	placeModel(model, options)
+	Installer.Validate(model)
+
+	return model
+end
+
+function Installer.Uninstall(parent)
+	assert(typeof(parent) == "Instance", "LargeCityUptownArenaInstaller.Uninstall requires a parent Instance")
+	local model = parent:FindFirstChild(MODEL_NAME)
+	if not model then
+		return false
+	end
+	model:Destroy()
+	return true
+end
+
+Installer.ModelName = MODEL_NAME
+Installer.PackageVersion = PACKAGE_VERSION
+Installer.MaxHealth = MAX_HEALTH
+Installer.EnergyType = ENERGY_TYPE
+Installer.RequiredTag = BUILDING_TAG
+Installer.QualityGateC = "Pending"
+
+return Installer
+]]></string>
+      </Properties>
+    </Item>
+    <Item class="ModuleScript" referent="4">
+      <Properties>
+        <string name="Name">LargeCityUptownArenaSpecification</string>
+        <string name="Source"><![CDATA[local Specification = {
+	AssetId = "LargeCity_UptownArena_L3",
+	DisplayName = "Uptown Arena",
+	City = "LargeCity",
+	Phase = 6,
+	QualityGate = "C-Pending",
+	Style = "Singapore x Miami tropical metropolitan indoor arena",
+
+	AssetBrief = {
+		Purpose = "Secondary Sports + Uptown landmark that complements the open stadium without competing with it.",
+		Role = "Large enclosed multi-purpose arena for indoor sports, concerts and civic events; must read immediately as an arena rather than a stadium, mall or convention centre.",
+		Scale = "Large L3 landmark sized to LC-51: approximately 150 x 112 studs with a silhouette height around 58 studs.",
+		GameplayRead = "Compact enclosed bowl, continuous roof volume, strong entrance portals and a luminous media ribbon must remain readable from kaiju distance.",
+		NoInterior = true,
+	},
+
+	Location = {
+		LayoutId = "LC-51",
+		District = "Sports + Uptown",
+		PlotCenter = Vector3.new(-220, 24, 530),
+		PlotFootprint = Vector2.new(150, 112),
+		PlotYaw = -4,
+		ApprovedBlockoutHeight = 58,
+	},
+
+	DesignIntent = {
+		Silhouette = "Low, broad enclosed oval arena with a gently domed segmented roof and a stronger horizontal profile than the stadium.",
+		Front = "Large recessed main entrance with broad glazed portal, civic stairs and a prominent arena wordmark.",
+		Sides = "Smooth layered facade bands with a continuous digital/media ribbon and repeated vertical fins.",
+		Roof = "Fully enclosed shallow roof, visually segmented and supported by a clean perimeter ring; clearly different from the stadium's open canopy.",
+		Rear = "Back-of-house loading/service mass integrated into the main volume without becoming a separate box.",
+		Landscape = "Urban event plaza, palms, planters, queue bollards and drop-off edges; denser and more metropolitan than the stadium forecourt.",
+	},
+
+	VisualLanguage = {
+		PrimaryMaterials = {"light concrete", "white metal", "dark glass", "brushed aluminium"},
+		Accent = "teal/cyan media ribbon with limited warm event lighting",
+		Avoid = {
+			"open stadium bowl",
+			"large exposed seating terraces",
+			"fully futuristic sci-fi dome",
+			"generic shopping mall",
+			"boxy convention centre",
+		},
+		IdentityAnchors = {
+			"enclosed oval arena",
+			"shallow segmented roof",
+			"continuous media ribbon",
+			"large recessed glazed entrance",
+			"vertical facade fins",
+			"urban event plaza",
+		},
+	},
+
+	ProposedGameplayMetadata = {
+		TargetMaxHealth = 64000,
+		EnergyType = "Electric",
+		InstallerTag = "KaijuHouse",
+		ExternalCollapseIntegration = true,
+		IntegrationPackageVersion = 1,
+		FinalInstallerReady = false,
+		Rationale = "The arena is a major Large City civic venue but materially smaller than the 256k stadium; Electric matches lighting, scoreboards and event infrastructure.",
+	},
+
+	PlannedDestructionGroups = {
+		"D1_MainEntrance",
+		"D2_LowerFacade",
+		"D3_UpperFacade",
+		"D4_RoofWest",
+		"D5_RoofEast",
+		"D6_MediaRibbonAndSignage",
+		"D7_ServiceAndLoading",
+	},
+
+	Phase1Acceptance = {
+		"Silhouette reads immediately as a compact enclosed arena from gameplay distance.",
+		"Asset fits within the LC-51 150 x 112 stud plot.",
+		"Design is clearly distinct from the adjacent Large City Stadium.",
+		"Roof is fully enclosed but remains metropolitan rather than Mega City sci-fi.",
+		"No playable interior rooms are required.",
+		"Seven destruction groups can map to coherent physical masses.",
+		"Asset remains buildable entirely in Roblox Studio with modular geometry.",
+	},
+
+	VisualTarget = {
+		Status = "Approved",
+		Revision = "LargeCityUptownArena-VisualTarget-v1",
+		Approved = true,
+		ApprovedRead = "Elegant enclosed tropical metropolitan arena with a broad oval body, shallow segmented roof, continuous teal media ribbon, strong vertical fins and a recessed glazed civic entrance.",
+		Front = "Large centered recessed glass portal beneath the media ribbon, broad stairs, arena wordmark and event-plaza arrival.",
+		Sides = "Layered horizontal facade bands with repeated vertical fins; smooth enclosed bowl rather than exposed stadium seating.",
+		Roof = "Low fully enclosed segmented roof with a soft crown, clean perimeter edge and no open pitch hole.",
+		Rear = "Integrated service/loading elevation with reduced glazing and a quieter architectural treatment.",
+		Landscape = "Palm-lined urban plaza with planters, queue bollards and drop-off edges; dense civic event atmosphere rather than resort landscaping.",
+		Camera = "Three-quarter aerial exterior view high enough to read the oval roof and footprint, but low enough to judge entrance scale and media ribbon continuity.",
+		Lighting = "Bright tropical Large City daylight with clean blue sky and strong material contrast.",
+		NextGate = "Quality Gate B",
+	},
+
+	QualityGateA = {
+		Status = "Approved",
+		ApprovedTarget = "LargeCityUptownArena-VisualTarget-v1",
+	},
+
+	TechnicalBreakdown = {
+		CoordinateSystem = {
+			Pivot = "Ground center of arena footprint",
+			Front = "Local -Z faces main event plaza",
+			Rear = "Local +Z faces service/loading side",
+			GroundY = 0,
+		},
+		Massing = {
+			OuterArena = {Footprint = Vector2.new(136, 98), LowerHeight = 24, UpperHeight = 43},
+			MainEntrance = {Footprint = Vector2.new(64, 16), Center = Vector3.new(0, 13, -49), Height = 27},
+			RearService = {Footprint = Vector2.new(74, 16), Center = Vector3.new(0, 9, 48), Height = 18},
+		},
+		Facade = {
+			SegmentCount = 72,
+			LowerBandY = 14,
+			UpperBandY = 32,
+			MediaRibbonY = 28,
+			MediaRibbonHeight = 5.5,
+			VerticalFinCount = 24,
+			Rule = "Arena body uses shallow overlapping tangent-shell segments so the exterior reads as one flowing enclosed oval; vertical fins remain sparse surface rhythm rather than emphasizing facets.",
+		},
+		Roof = {
+			SegmentCount = 72,
+			OuterFootprint = Vector2.new(132, 94),
+			CrownY = 56,
+			PerimeterY = 44,
+			Thickness = 2.2,
+			Rule = "Fully enclosed shallow crown uses three broad sloped annular bands plus a small oval cap and continuous perimeter ring; avoid horizontal roof terraces, visible stepping and futuristic dome language.",
+		},
+		Entrance = {
+			GlazingSpan = 56,
+			GlazingHeight = 18,
+			RecessDepth = 4.5,
+			PortalPierCount = 6,
+			WordmarkStandOff = 0.45,
+			Rule = "Main portal remains broad, centered and visually recessed beneath the media ribbon.",
+		},
+		MediaRibbon = {
+			OuterA = 69,
+			OuterB = 50,
+			Y = 29,
+			Height = 5.5,
+			SegmentCount = 48,
+			FacadeStandOff = 0.45,
+			Rule = "Ribbon stays visibly outside the facade shell to avoid clipping or Z-fighting.",
+		},
+		Service = {
+			LoadingDoorCount = 4,
+			RearGlazingReduced = true,
+			Rule = "Back-of-house mass is integrated into the arena silhouette and never reads as a detached warehouse.",
+		},
+		LandscapeReferences = {
+			PalmCount = 8,
+			PlanterCount = 6,
+			QueueBollardCount = 10,
+			Phase = 5,
+		},
+		PartBudget = {
+			TargetVisibleParts = 520,
+			MaximumVisibleParts = 700,
+		},
+	},
+
+	Phase4Status = {
+		Status = "Approved",
+		GeometryRevision = "LargeCityUptownArena-v2-SmoothShellRoof",
+		QualityGateB = "Approved",
+	},
+
+	QualityGateB = {
+		Status = "Approved",
+		ApprovedGeometry = "LargeCityUptownArena-v2-SmoothShellRoof",
+		Notes = "Flowing 72-segment oval shell and three-band sloped enclosed roof accepted.",
+		NextPhase = 5,
+	},
+
+	Phase5Status = {
+		Status = "Approved",
+		Revision = "LargeCityUptownArena-Dressing-v6-HighContrastNeonText",
+		Includes = {
+			"Uptown Arena wordmark",
+			"Sports / Concerts / Events entrance strip",
+			"Gate A-D entrance signage",
+			"eight framed media-ribbon event displays",
+			"facade accent lighting",
+			"event plaza palms, planters and queue bollards",
+			"rear event-loading signage",
+		},
+		QualityGateC = "Pending",
+		NextPhase = "ExternalGameTestPending",
+	},
+
+
+	FacadeVisibilityFix = {
+		Status = "Approved",
+		GeometryRevision = "LargeCityUptownArena-v5-ProjectedFacadeDetails",
+		DressingRevision = "LargeCityUptownArena-Dressing-v6-HighContrastNeonText",
+		Notes = "Continuous cyan media ribbon, framed event screens, feature bays, sparse facade lights and vertical fins were moved outward so they sit visibly on the exterior skin instead of being buried in the shell. Bright cyan/warm neon signs use dark lettering for readable contrast.",
+	},
+
+	Phase6Status = {
+		Status = "ExternalGameTestPending",
+		ExternalCollapseIntegration = true,
+		QualityGateC = "Pending",
+		Notes = "Workshop visual review approved after facade visibility and neon-text contrast corrections; destruction and shared collapse behaviour remain deferred to the main game.",
+	},
+
+	Phase3Acceptance = {
+		"Continuous enclosed oval facade has deterministic dimensions and no large segment gaps.",
+		"Fully enclosed shallow roof is clearly distinct from the adjacent open stadium.",
+		"Media ribbon and entrance glazing stand clear of structural surfaces.",
+		"Seven destruction groups map to coherent architectural masses.",
+		"Golden Master remains below 700 visible parts.",
+		"No modeled interior rooms are required.",
+	},
+}
+
+return Specification
+]]></string>
+      </Properties>
+    </Item>
+  </Item>
+</roblox>
