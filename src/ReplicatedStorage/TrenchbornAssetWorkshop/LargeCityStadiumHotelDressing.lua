@@ -201,18 +201,28 @@ local function addRooftopDressing(root)
 		lounger.CFrame *= CFrame.Angles(0, math.rad(-8), math.rad(-7))
 	end
 
-	-- Mount the rooftop pool sign flush to the solid pergola fascia.
-	-- The sign's rear face sits exactly on the fascia front plane, so there is
-	-- no visible air gap and no separate hanging-screen read.
+	-- Keep the small ROOFTOP POOL sign on the original light bracket mounts.
+	-- This is separate from the large architectural roof blade with the warm neon line.
 	local poolSign = block(
 		area,
 		"PoolDeckSign",
 		Vector3.new(14, 1.8, 0.28),
-		Vector3.new(0, 77.15, -0.14),
+		Vector3.new(0, 77.45, -0.15),
 		COLORS.Teal,
 		Enum.Material.Neon
 	)
 	addSurfaceText(area, poolSign, "ROOFTOP POOL", Enum.NormalId.Front, COLORS.Dark)
+
+	for _, x in ipairs({-6.0, 6.0}) do
+		block(
+			area,
+			"PoolDeckSignMount_" .. tostring(x),
+			Vector3.new(0.35, 0.8, 0.35),
+			Vector3.new(x, 78.0, 0),
+			COLORS.Dark,
+			Enum.Material.Metal
+		)
+	end
 end
 
 local function addRearDressing(root)
@@ -257,7 +267,7 @@ function Dressing.Apply(model)
 	model:SetAttribute("AssetPhase", 5)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Pending")
-	model:SetAttribute("DressingRevision", "LargeCityStadiumHotel-Dressing-v4-FasciaMountedPoolSign")
+	model:SetAttribute("DressingRevision", "LargeCityStadiumHotel-Dressing-v5-RestoredPergolaSign")
 	model:SetAttribute("DressingStatus", "Review")
 	model:SetAttribute("StandaloneImport", true)
 	model:SetAttribute("SkyLoungeVegetation", true)
@@ -266,7 +276,6 @@ function Dressing.Apply(model)
 	model:SetAttribute("HighContrastNeonText", true)
 	model:SetAttribute("DressingSurfaceAnchored", true)
 	model:SetAttribute("RooftopSignPergolaMounted", true)
-	model:SetAttribute("RooftopSignFlushMounted", true)
 	model:SetAttribute("VegetationEmbeddedInPlanters", true)
 	return model
 end
