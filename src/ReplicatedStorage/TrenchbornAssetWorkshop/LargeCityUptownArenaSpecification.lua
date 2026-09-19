@@ -178,7 +178,7 @@ local Specification = {
 
 	Phase5Status = {
 		Status = "InReview",
-		Revision = "LargeCityUptownArena-Dressing-v5-ProjectedFacade",
+		Revision = "LargeCityUptownArena-Dressing-v6-HighContrastNeonText",
 		Includes = {
 			"Uptown Arena wordmark",
 			"Sports / Concerts / Events entrance strip",
@@ -196,8 +196,8 @@ local Specification = {
 	FacadeVisibilityFix = {
 		Status = "InReview",
 		GeometryRevision = "LargeCityUptownArena-v5-ProjectedFacadeDetails",
-		DressingRevision = "LargeCityUptownArena-Dressing-v5-ProjectedFacade",
-		Notes = "Continuous cyan media ribbon, framed event screens, feature bays, sparse facade lights and vertical fins were moved outward so they sit visibly on the exterior skin instead of being buried in the shell.",
+		DressingRevision = "LargeCityUptownArena-Dressing-v6-HighContrastNeonText",
+		Notes = "Continuous cyan media ribbon, framed event screens, feature bays, sparse facade lights and vertical fins were moved outward so they sit visibly on the exterior skin instead of being buried in the shell. Bright cyan/warm neon signs use dark lettering for readable contrast.",
 	},
 
 	Phase6Status = {
