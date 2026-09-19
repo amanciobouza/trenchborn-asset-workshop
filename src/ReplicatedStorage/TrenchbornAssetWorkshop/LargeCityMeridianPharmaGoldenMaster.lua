@@ -189,10 +189,15 @@ local function addRooftopProcess(group)
 	cylinderZ(group, "DuctToModuleB", 13, 1.4, Vector3.new(31, 36.0, -5.5), COLORS.Silver, Enum.Material.Metal)
 	cylinderZ(group, "DuctToModuleC", 11, 1.4, Vector3.new(43, 36.0, 6.5), COLORS.Silver, Enum.Material.Metal)
 
-	-- Compact exhaust cluster stays below the 48-stud target.
+	-- Compact exhaust cluster stays safely below the 48-stud target.
+	local stackHeights = {10.0, 11.0, 12.0}
+	local stackCenters = {40.3, 40.5, 40.7}
 	for index, x in ipairs({16, 20, 24}) do
-		cylinderY(group, "ExhaustStack_" .. index, 10 + index * 0.8, 1.8, Vector3.new(x, 41.0 + index * 0.4, 15), COLORS.Silver, Enum.Material.Metal)
-		cylinderY(group, "ExhaustCap_" .. index, 0.8, 2.5, Vector3.new(x, 46.2 + index * 0.4, 15), COLORS.Dark, Enum.Material.Metal)
+		local height = stackHeights[index]
+		local centerY = stackCenters[index]
+		local topY = centerY + height / 2
+		cylinderY(group, "ExhaustStack_" .. index, height, 1.8, Vector3.new(x, centerY, 15), COLORS.Silver, Enum.Material.Metal)
+		cylinderY(group, "ExhaustCap_" .. index, 0.8, 2.5, Vector3.new(x, topY + 0.4, 15), COLORS.Dark, Enum.Material.Metal)
 	end
 end
 
