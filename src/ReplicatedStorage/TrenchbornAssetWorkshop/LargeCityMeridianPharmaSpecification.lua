@@ -8,8 +8,8 @@ local Specification = {
 	City = "LargeCity",
 	District = "MedicalTech",
 	BuildingType = "Pharma Plant",
-	Phase = 3,
-	QualityGate = "A-Approved",
+	Phase = 4,
+	QualityGate = "B-Pending",
 	Branch = "largecity-meridian-pharma-l3",
 
 	StandaloneImport = {
@@ -263,6 +263,25 @@ local Specification = {
 			"organized rooftop process modules and ducts",
 			"restrained chemical-magenta safety accents",
 			"clear distinction from hospital, warehouse and refinery architecture",
+		},
+	},
+
+
+	Phase4Status = {
+		Status = "GoldenMasterReview",
+		GeometryRevision = "LargeCityMeridianPharma-v1-MeridianBioWorks",
+		QualityGateB = "Pending",
+		ReviewFocus = {
+			"immediate pharmaceutical / biotech production readability",
+			"clear research headhouse versus cleanroom hall hierarchy",
+			"visitor atrium and canopy read clearly from the front",
+			"cleanroom observation bands remain horizontal and production-like",
+			"process bridge is visibly external and elevated",
+			"rear bioreactor court is organized and not refinery-like",
+			"rooftop process modules and ducts form a deliberate technical silhouette",
+			"chemical-magenta accents remain restrained",
+			"rear loading/service remains visible on true +Z exterior",
+			"no facade, roof or process-equipment Z-fighting",
 		},
 	},
 
