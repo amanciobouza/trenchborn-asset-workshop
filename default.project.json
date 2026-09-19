@@ -16,6 +16,18 @@
         "$className": "Folder",
         "LargeCityPowerUtilitySpecification": {
           "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityPowerUtilitySpecification.lua"
+        },
+        "LargeCityPowerUtilityGoldenMaster": {
+          "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityPowerUtilityGoldenMaster.lua"
+        }
+      }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "TrenchbornAssetWorkshop": {
+        "$className": "Folder",
+        "LargeCityPowerUtilityPreview": {
+          "$path": "src/ServerScriptService/TrenchbornAssetWorkshop/LargeCityPowerUtilityPreview.server.lua"
         }
       }
     }
