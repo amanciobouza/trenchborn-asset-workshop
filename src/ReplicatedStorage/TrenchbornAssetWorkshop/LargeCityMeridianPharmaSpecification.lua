@@ -268,7 +268,7 @@ local Specification = {
 
 	Phase4Status = {
 		Status = "GoldenMasterReview",
-		GeometryRevision = "LargeCityMeridianPharma-v5-VisibleResearchSeamBridge",
+		GeometryRevision = "LargeCityMeridianPharma-v6-ExternalProcessLighting",
 		QualityGateB = "Pending",
 		ReviewFocus = {
 			"immediate pharmaceutical / biotech production readability",
@@ -285,6 +285,8 @@ local Specification = {
 			"chemical-magenta accents remain restrained",
 			"rear +Z process court remains clearly readable with no loading-bay conflict",
 			"no facade, roof or process-equipment Z-fighting",
+			"cyan/magenta tank safety bands are mounted on the outward tank faces rather than inside the hall",
+			"bioreactor gantry and teal gantry line sit outside the cleanroom envelope",
 		},
 	},
 
