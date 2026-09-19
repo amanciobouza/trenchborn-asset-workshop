@@ -165,13 +165,23 @@ local function addProcessBridge(group)
 end
 
 local function addRooftopProcess(group)
-	-- Three deliberate process modules on top of the production hall.
+	-- Three deliberate process modules sit visibly ON the cleanroom roof.
+	-- Each gets a shallow equipment plinth so no technical box appears buried
+	-- inside the production hall.
 	local modules = {
-		{name = "A", size = Vector3.new(20, 7, 14), pos = Vector3.new(5, 31.5, -13)},
-		{name = "B", size = Vector3.new(18, 8, 12), pos = Vector3.new(31, 32.0, -11)},
-		{name = "C", size = Vector3.new(16, 6, 11), pos = Vector3.new(43, 31.0, 12)},
+		{name = "A", size = Vector3.new(20, 7, 14), pos = Vector3.new(5, 32.0, -13)},
+		{name = "B", size = Vector3.new(18, 8, 12), pos = Vector3.new(31, 32.5, -11)},
+		{name = "C", size = Vector3.new(16, 6, 11), pos = Vector3.new(43, 31.5, 12)},
 	}
 	for _, module in ipairs(modules) do
+		block(
+			group,
+			"ProcessModulePlinth_" .. module.name,
+			Vector3.new(module.size.X + 1.5, 0.5, module.size.Z + 1.5),
+			Vector3.new(module.pos.X, 28.25, module.pos.Z),
+			COLORS.SterileDark,
+			Enum.Material.Concrete
+		)
 		block(group, "ProcessModule_" .. module.name, module.size, module.pos, COLORS.Dark, Enum.Material.Metal)
 		block(
 			group,
@@ -181,26 +191,66 @@ local function addRooftopProcess(group)
 			COLORS.Metal,
 			Enum.Material.Metal
 		)
+		-- Cyan/teal elements belong to these rooftop process modules as restrained
+		-- service-status accents, not inside the building mass.
+		block(
+			group,
+			"ProcessModuleTeal_" .. module.name,
+			Vector3.new(module.size.X - 4, 0.45, 0.28),
+			module.pos + Vector3.new(0, -module.size.Y / 2 + 1.1, -(module.size.Z / 2 + 0.48)),
+			COLORS.Teal,
+			Enum.Material.Neon
+		)
 	end
 
-	-- Clean silver duct network linking process modules.
+	-- Clean silver duct network linking the rooftop process modules.
 	cylinderX(group, "MainDuct_X", 46, 1.4, Vector3.new(22, 36.0, 1), COLORS.Silver, Enum.Material.Metal)
 	cylinderZ(group, "DuctToModuleA", 15, 1.4, Vector3.new(5, 36.0, -6.5), COLORS.Silver, Enum.Material.Metal)
 	cylinderZ(group, "DuctToModuleB", 13, 1.4, Vector3.new(31, 36.0, -5.5), COLORS.Silver, Enum.Material.Metal)
 	cylinderZ(group, "DuctToModuleC", 11, 1.4, Vector3.new(43, 36.0, 6.5), COLORS.Silver, Enum.Material.Metal)
 
-	-- Compact exhaust cluster stays safely below the 48-stud target.
-	local stackHeights = {10.0, 11.0, 12.0}
-	local stackCenters = {40.3, 40.5, 40.7}
-	for index, x in ipairs({16, 20, 24}) do
-		local height = stackHeights[index]
-		local centerY = stackCenters[index]
-		local topY = centerY + height / 2
-		cylinderY(group, "ExhaustStack_" .. index, height, 1.8, Vector3.new(x, centerY, 15), COLORS.Silver, Enum.Material.Metal)
-		cylinderY(group, "ExhaustCap_" .. index, 0.8, 2.5, Vector3.new(x, topY + 0.4, 15), COLORS.Dark, Enum.Material.Metal)
-	end
-end
+	-- The three exhaust stacks now form one coherent rooftop utility cluster:
+	-- a shared technical plinth sits directly on the cleanroom roof and the
+	-- stacks rise from it, with a visible manifold duct tying them back to the
+	-- process network. Nothing floats.
+	block(
+		group,
+		"ExhaustUtilityPlinth",
+		Vector3.new(20, 3.0, 14),
+		Vector3.new(20, 29.5, 16),
+		COLORS.Dark,
+		Enum.Material.Metal
+	)
+	block(
+		group,
+		"ExhaustUtilityScreen",
+		Vector3.new(18, 2.0, 0.45),
+		Vector3.new(20, 29.7, 8.75),
+		COLORS.Metal,
+		Enum.Material.Metal
+	)
+	block(
+		group,
+		"ExhaustUtilityTeal",
+		Vector3.new(14, 0.4, 0.28),
+		Vector3.new(20, 30.3, 8.48),
+		COLORS.Teal,
+		Enum.Material.Neon
+	)
 
+	local stackHeights = {10.0, 11.0, 12.0}
+	for index, x in ipairs({14, 20, 26}) do
+		local height = stackHeights[index]
+		local baseY = 31.0
+		local centerY = baseY + height / 2
+		cylinderY(group, "ExhaustStack_" .. index, height, 1.8, Vector3.new(x, centerY, 16), COLORS.Silver, Enum.Material.Metal)
+		cylinderY(group, "ExhaustCap_" .. index, 0.8, 2.5, Vector3.new(x, baseY + height + 0.4, 16), COLORS.Dark, Enum.Material.Metal)
+	end
+
+	-- Manifold visibly connects the exhaust cluster to the rooftop process zone.
+	cylinderX(group, "ExhaustManifold_X", 16, 1.4, Vector3.new(20, 33.0, 11), COLORS.Silver, Enum.Material.Metal)
+	cylinderZ(group, "ExhaustManifold_Z", 10, 1.4, Vector3.new(20, 33.0, 6), COLORS.Silver, Enum.Material.Metal)
+end
 local function addBioreactorCourt(group)
 	-- Four organized vessel housings at the true rear process side.
 	local vessels = {
@@ -265,7 +315,7 @@ function Builder.Build(parent)
 	model:SetAttribute("AssetPhase", 4)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Pending")
-	model:SetAttribute("GeometryRevision", "LargeCityMeridianPharma-v1-MeridianBioWorks")
+	model:SetAttribute("GeometryRevision", "LargeCityMeridianPharma-v2-RooftopProcessAnchored")
 	model:SetAttribute("MaxHealth", specification.ProposedGameplayMetadata.TargetMaxHealth)
 	model:SetAttribute("EnergyType", specification.ProposedGameplayMetadata.EnergyType)
 	model:SetAttribute("InstallerTag", specification.ProposedGameplayMetadata.InstallerTag)
@@ -276,6 +326,9 @@ function Builder.Build(parent)
 	model:SetAttribute("ProcessBridgeExternal", true)
 	model:SetAttribute("BioreactorCount", 4)
 	model:SetAttribute("RooftopProcessModuleCount", 3)
+	model:SetAttribute("RooftopProcessModulesOnPlinths", true)
+	model:SetAttribute("ExhaustStacksOnUtilityPlinth", true)
+	model:SetAttribute("ExhaustClusterDuctConnected", true)
 	model:SetAttribute("RearLoadingVisible", true)
 	model.Parent = parent
 
