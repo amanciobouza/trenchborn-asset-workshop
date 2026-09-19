@@ -59,8 +59,51 @@ end
 
 local function addChamferedMass(parent, prefix, center, width, depth, height, radius, bodyColor, bodyMaterial)
 	local r = math.min(radius, width * 0.18, depth * 0.18)
-	block(parent, prefix .. "_CoreX", Vector3.new(width - 2 * r, height, depth), center, bodyColor, bodyMaterial)
-	block(parent, prefix .. "_CoreZ", Vector3.new(width, height, depth - 2 * r), center, bodyColor, bodyMaterial)
+
+	-- Tile the rounded rectangle with non-overlapping masses. The previous
+	-- CoreX/CoreZ construction overlapped across a large area and produced
+	-- coplanar top faces, which caused visible roof Z-fighting in Studio.
+	block(
+		parent,
+		prefix .. "_Center",
+		Vector3.new(width - 2 * r, height, depth - 2 * r),
+		center,
+		bodyColor,
+		bodyMaterial
+	)
+
+	block(
+		parent,
+		prefix .. "_Front",
+		Vector3.new(width - 2 * r, height, r),
+		center + Vector3.new(0, 0, -(depth / 2 - r / 2)),
+		bodyColor,
+		bodyMaterial
+	)
+	block(
+		parent,
+		prefix .. "_Rear",
+		Vector3.new(width - 2 * r, height, r),
+		center + Vector3.new(0, 0, depth / 2 - r / 2),
+		bodyColor,
+		bodyMaterial
+	)
+	block(
+		parent,
+		prefix .. "_Left",
+		Vector3.new(r, height, depth - 2 * r),
+		center + Vector3.new(-(width / 2 - r / 2), 0, 0),
+		bodyColor,
+		bodyMaterial
+	)
+	block(
+		parent,
+		prefix .. "_Right",
+		Vector3.new(r, height, depth - 2 * r),
+		center + Vector3.new(width / 2 - r / 2, 0, 0),
+		bodyColor,
+		bodyMaterial
+	)
 
 	for _, sx in ipairs({-1, 1}) do
 		for _, sz in ipairs({-1, 1}) do
@@ -205,7 +248,7 @@ function Builder.Build(parent)
 	model:SetAttribute("AssetPhase", 4)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Pending")
-	model:SetAttribute("GeometryRevision", "LargeCitySummitTower-v1-SteppedSkyGardens")
+	model:SetAttribute("GeometryRevision", "LargeCitySummitTower-v2-NonOverlappingRoofMasses")
 	model:SetAttribute("MaxHealth", specification.ProposedGameplayMetadata.TargetMaxHealth)
 	model:SetAttribute("EnergyType", specification.ProposedGameplayMetadata.EnergyType)
 	model:SetAttribute("InstallerTag", specification.ProposedGameplayMetadata.InstallerTag)
@@ -213,6 +256,7 @@ function Builder.Build(parent)
 	model:SetAttribute("HasInterior", false)
 	model:SetAttribute("SkyGardenCount", 2)
 	model:SetAttribute("SetbackCount", 2)
+	model:SetAttribute("RoofZFightingFix", true)
 	model.Parent = parent
 
 	local groups = folder(model, "DestructionGroups")
