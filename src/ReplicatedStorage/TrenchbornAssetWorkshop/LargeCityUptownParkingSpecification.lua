@@ -8,8 +8,8 @@ local Specification = {
 	City = "LargeCity",
 	District = "Uptown",
 	BuildingType = "Parking Tower",
-	Phase = 3,
-	QualityGate = "A-Approved",
+	Phase = 4,
+	QualityGate = "B-Pending",
 	Branch = "largecity-uptown-parking-l3",
 
 	StandaloneImport = {
@@ -267,6 +267,25 @@ local Specification = {
 			"glass pedestrian core",
 			"light rooftop solar/pergola canopy",
 			"clear distinction from office, residential and warehouse architecture",
+		},
+	},
+
+
+	Phase4Status = {
+		Status = "GoldenMasterReview",
+		GeometryRevision = "LargeCityUptownParking-v1-VerdantMobilityDeck",
+		QualityGateB = "Pending",
+		ReviewFocus = {
+			"immediate parking / mobility-hub readability",
+			"open six-level deck structure and visible ventilation gaps",
+			"screen veil sits outside the deck edges",
+			"front-right ramps read as real sloped circulation",
+			"two green breathing cuts remain visibly open",
+			"EV vehicle entry is prominent and unobstructed",
+			"glass pedestrian core projects clearly outside the screen",
+			"rooftop solar/pergola canopy remains light and open",
+			"rear service remains visible on true +Z exterior",
+			"no coplanar deck or facade Z-fighting",
 		},
 	},
 
