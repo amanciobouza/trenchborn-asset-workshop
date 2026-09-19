@@ -8,7 +8,7 @@ local Specification = {
 	City = "LargeCity",
 	District = "Uptown",
 	BuildingType = "Luxury Apartment",
-	Phase = 1,
+	Phase = 2,
 	QualityGate = "A-Pending",
 	Branch = "largecity-uptown-residences-l3",
 
@@ -144,7 +144,7 @@ local Specification = {
 	},
 
 	VisualTarget = {
-		Status = "Draft",
+		Status = "InReview",
 		Revision = "LargeCityUptownResidences-VisualTarget-v1",
 		Brief = {
 			"tropical luxury residential tower in Singapore x Miami language",
@@ -158,6 +158,23 @@ local Specification = {
 			"light rooftop residents pavilion with pergola and planting",
 			"daylight architectural concept board with front, three-quarter, side and rear cues",
 			"not cyberpunk, not an office tower, not a hotel",
+		},
+	},
+
+
+	Phase2Status = {
+		Status = "VisualTargetReview",
+		TargetRevision = "LargeCityUptownResidences-VisualTarget-v1",
+		QualityGateA = "Pending",
+		ReviewFocus = {
+			"luxury residential read",
+			"two offset upper wings",
+			"central vertical garden slot",
+			"strong horizontal balcony rhythm",
+			"planted transfer terrace",
+			"residential porte-cochere and lobby",
+			"light rooftop residents pavilion",
+			"clear distinction from Summit Tower and Stadium Hotel",
 		},
 	},
 
