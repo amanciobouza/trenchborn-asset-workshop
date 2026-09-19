@@ -1,6 +1,12 @@
 {
-  "name": "TrenchbornAssetWorkshop",
+  "name": "LargeCityStadiumHotelPackage",
   "tree": {
-    "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop"
+    "$className": "Folder",
+    "LargeCityStadiumHotelSpecification": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityStadiumHotelSpecification.lua"
+    },
+    "LargeCityStadiumHotelGoldenMaster": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityStadiumHotelGoldenMaster.lua"
+    }
   }
 }
