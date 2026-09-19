@@ -8,8 +8,8 @@ local Specification = {
 	City = "LargeCity",
 	District = "MedicalTech",
 	BuildingType = "Power Utility",
-	Phase = 2,
-	QualityGate = "A-Pending",
+	Phase = 3,
+	QualityGate = "A-Approved",
 	Branch = "largecity-power-utility-l3",
 
 	StandaloneImport = {
@@ -147,8 +147,9 @@ local Specification = {
 	},
 
 	VisualTarget = {
-		Status = "Review",
-		NextPhase = 2,
+		Status = "Approved",
+		Revision = "LargeCityPowerUtility-VisualTarget-v1",
+		NextPhase = 3,
 		Brief = {
 			"premium tropical urban power utility in the MedicalTech district",
 			"152x106 footprint and 56-stud height",
@@ -167,9 +168,9 @@ local Specification = {
 
 
 	Phase2Status = {
-		Status = "VisualTargetReview",
+		Status = "Approved",
 		TargetRevision = "LargeCityPowerUtility-VisualTarget-v1",
-		QualityGateA = "Pending",
+		QualityGateA = "Approved",
 		ReviewFocus = {
 			"power utility is immediately recognizable from silhouette and equipment",
 			"switchgear hall and taller converter hall have clear hierarchy",
@@ -180,6 +181,114 @@ local Specification = {
 			"cyan and amber accents are restrained and physically attached to plausible electrical equipment",
 			"overall architecture feels premium tropical infrastructure rather than dirty heavy industry",
 		},
+	},
+
+
+	QualityGateA = {
+		Status = "Approved",
+		ApprovedTarget = "LargeCityPowerUtility-VisualTarget-v1",
+		Notes = "Approved Aureline Gridworks visual target with two-hall utility massing, glazed control spine, rear transformer court, elevated busbar gantries and restrained MedicalTech electrical accents.",
+		NextPhase = 3,
+	},
+
+	TechnicalBreakdown = {
+		CoordinateSystem = {
+			Pivot = "ground center",
+			Front = "local -Z",
+			Rear = "local +Z",
+			LayoutYaw = -4,
+		},
+		Overall = {
+			TargetFootprint = Vector2.new(152, 106),
+			TargetHeight = 56,
+			GroundLevel = 0,
+		},
+		SwitchgearHall = {
+			Footprint = Vector2.new(68, 72),
+			Center = Vector3.new(-38, 16, -5),
+			Height = 32,
+			FacadeBayCountFront = 8,
+			VerticalFinDepth = 2.2,
+			Rule = "Use deep vertical switchgear fins and dark lower service panels; avoid generic warehouse rhythm.",
+		},
+		ConverterHall = {
+			Footprint = Vector2.new(62, 70),
+			Center = Vector3.new(34, 20, -3),
+			Height = 40,
+			FacadeBayCountFront = 7,
+			CornerPylonCount = 2,
+			Rule = "Taller hall must clearly step above the switchgear hall and carry the stronger power-conversion identity.",
+		},
+		ControlSpine = {
+			Center = Vector3.new(-2, 26, -18),
+			Size = Vector3.new(18, 20, 12),
+			Glazing = true,
+			EntryBelow = true,
+			Rule = "The glazed control spine must visibly sit between the two halls, project beyond the facade plane and remain readable as a distinct bridge/control volume.",
+		},
+		TransformerCourt = {
+			Face = "+Z",
+			CourtCenter = Vector3.new(22, 0, 43),
+			TransformerCount = 4,
+			TransformerBodySize = Vector3.new(16, 18, 12),
+			TransformerSpacing = 20,
+			CoolingFinDepth = 2.0,
+			BushingHeight = 8,
+			MaintenanceClearance = 5,
+			Rule = "Four large transformers remain fully visible, evenly spaced and unobstructed; no loading doors or unrelated clutter may sit behind them.",
+		},
+		BusbarGantries = {
+			GantryCount = 2,
+			PrimaryHeight = 31,
+			SecondaryHeight = 25,
+			Span = 64,
+			BusbarDiameter = 1.4,
+			InsulatorHeight = 3.4,
+			Rule = "Busbars must read as rigid electrical conductors carried on insulators, not as plumbing or refinery pipework.",
+		},
+		RooftopSystems = {
+			BaseY = 32,
+			MaximumY = 56,
+			CoolingModuleCount = 4,
+			VentStackCount = 3,
+			Rule = "Rooftop equipment is grouped into deliberate cooling and ventilation zones with clear maintenance spacing and no random clutter.",
+		},
+		Facade = {
+			PanelDepth = 0.7,
+			GlassStandOff = 0.45,
+			FinStandOff = 0.8,
+			ElectricalAccentStandOff = 0.25,
+			Rule = "All fins, glazing and accent bars sit clearly outside the base wall surfaces to avoid clipping and Z-fighting.",
+		},
+		Entrance = {
+			PortalWidth = 30,
+			PortalHeight = 22,
+			CanopyWidth = 34,
+			CanopyDepth = 8,
+			PlazaDepth = 12,
+			Rule = "Main control entrance sits on local -Z, centered beneath the glazed spine and remains clearly separate from the rear transformer court.",
+		},
+		PartBudget = {
+			TargetVisibleParts = 680,
+			MaximumVisibleParts = 900,
+		},
+	},
+
+	Phase3Status = {
+		Status = "TechnicalBreakdownApproved",
+		QualityGateA = "Approved",
+		NextPhase = 4,
+	},
+
+	Phase3Acceptance = {
+		"All primary masses use deterministic dimensions tied to LC-44.",
+		"Switchgear hall, converter hall and control spine remain visually distinct but form one coherent utility campus.",
+		"Four transformers remain large, unobstructed and evenly spaced in the true rear +Z process court.",
+		"Busbar gantries read as electrical infrastructure through rigid conductors and insulators.",
+		"Rooftop cooling and ventilation stay below the 56-stud plot target.",
+		"Public control entrance remains clearly separated from rear high-voltage equipment.",
+		"Seven destruction groups map to coherent architectural and electrical systems.",
+		"Golden Master target remains below 900 visible parts.",
 	},
 
 	Phase1Acceptance = {
