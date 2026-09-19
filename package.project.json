@@ -1,6 +1,12 @@
 {
-  "name": "TrenchbornAssetWorkshop",
+  "name": "LargeCityMeridianPharmaPackage",
   "tree": {
-    "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop"
+    "$className": "Folder",
+    "LargeCityMeridianPharmaSpecification": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityMeridianPharmaSpecification.lua"
+    },
+    "LargeCityMeridianPharmaGoldenMaster": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityMeridianPharmaGoldenMaster.lua"
+    }
   }
 }
