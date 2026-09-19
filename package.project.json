@@ -7,6 +7,9 @@
     },
     "LargeCityStadiumHotelGoldenMaster": {
       "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityStadiumHotelGoldenMaster.lua"
+    },
+    "LargeCityStadiumHotelDressing": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityStadiumHotelDressing.lua"
     }
   }
 }
