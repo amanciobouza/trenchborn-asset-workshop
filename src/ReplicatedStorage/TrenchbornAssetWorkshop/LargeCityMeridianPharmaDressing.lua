@@ -211,30 +211,58 @@ end
 local function addRooftopDressing(root)
 	local area = folder(root, "RooftopDressing")
 
+	-- Labels are mounted on stand-off brackets in front of the process-module
+	-- screens. They must never be coplanar with the module facade, otherwise the
+	-- screen geometry can occlude or Z-fight with the text.
 	local modules = {
-		{name = "A", x = 5, y = 32.0, z = -20.25, width = 12},
-		{name = "B", x = 31, y = 32.5, z = -17.25, width = 11},
-		{name = "C", x = 43, y = 31.5, z = 6.25, width = 10},
+		{name = "A", x = 5, y = 32.0, screenZ = -20.25, width = 12},
+		{name = "B", x = 31, y = 32.5, screenZ = -17.25, width = 11},
+		{name = "C", x = 43, y = 31.5, screenZ = 6.25, width = 10},
 	}
 
 	for _, module in ipairs(modules) do
+		local plaqueZ = module.screenZ - 0.95
+
+		for _, side in ipairs({-1, 1}) do
+			block(
+				area,
+				"ProcessLabelBracket_" .. module.name .. "_" .. tostring(side),
+				Vector3.new(0.35, 0.35, 1.35),
+				Vector3.new(module.x + side * (module.width * 0.38), module.y, module.screenZ - 0.48),
+				COLORS.Metal,
+				Enum.Material.Metal
+			)
+		end
+
 		local plaque = block(
 			area,
 			"ProcessLabel_" .. module.name,
-			Vector3.new(module.width, 1.15, 0.28),
-			Vector3.new(module.x, module.y, module.z),
+			Vector3.new(module.width, 1.35, 0.30),
+			Vector3.new(module.x, module.y, plaqueZ),
 			COLORS.Dark,
 			Enum.Material.Metal
 		)
 		addSurfaceText(area, plaque, "PROCESS " .. module.name, Enum.NormalId.Front, COLORS.White)
 	end
 
-	-- Small utility identifier on the stack plinth clarifies the exhaust cluster.
+	-- Utility label uses the same stand-off logic so it remains readable from
+	-- gameplay distance and never disappears into the equipment screen.
+	for _, x in ipairs({15.8, 24.2}) do
+		block(
+			area,
+			"ExhaustUtilityLabelBracket_" .. tostring(x),
+			Vector3.new(0.35, 0.35, 1.25),
+			Vector3.new(x, 30.0, 8.05),
+			COLORS.Metal,
+			Enum.Material.Metal
+		)
+	end
+
 	local utility = block(
 		area,
 		"ExhaustUtilityLabel",
-		Vector3.new(12, 1.1, 0.28),
-		Vector3.new(20, 30.0, 8.45),
+		Vector3.new(12, 1.2, 0.30),
+		Vector3.new(20, 30.0, 7.65),
 		COLORS.Dark,
 		Enum.Material.Metal
 	)
@@ -244,13 +272,25 @@ end
 local function addFacadeDressing(root)
 	local area = folder(root, "FacadeDressing")
 
-	-- Small, non-neon facility marker on the cleanroom hall avoids competing with
-	-- the main visitor wordmark while strengthening the biotech read.
+	-- The full-height cleanroom struts sit at Z=-35.75. Mount the facility sign
+	-- on a separate stand-off blade well in front of that grid so no mullion can
+	-- cross the lettering.
+	for _, x in ipairs({22.5, 39.5}) do
+		block(
+			area,
+			"CleanroomMarkerBracket_" .. tostring(x),
+			Vector3.new(0.40, 0.40, 1.55),
+			Vector3.new(x, 24.2, -36.45),
+			COLORS.Metal,
+			Enum.Material.Metal
+		)
+	end
+
 	local hallMarker = block(
 		area,
 		"CleanroomHallMarker",
-		Vector3.new(21, 1.7, 0.3),
-		Vector3.new(31, 24.2, -35.82),
+		Vector3.new(21, 1.9, 0.34),
+		Vector3.new(31, 24.2, -37.25),
 		COLORS.Dark,
 		Enum.Material.Metal
 	)
@@ -272,13 +312,15 @@ function Dressing.Apply(model)
 	model:SetAttribute("AssetPhase", 5)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Approved")
-	model:SetAttribute("DressingRevision", "LargeCityMeridianPharma-Dressing-v1")
+	model:SetAttribute("DressingRevision", "LargeCityMeridianPharma-Dressing-v2-StandOffSignage")
 	model:SetAttribute("DressingStatus", "ReviewPending")
 	model:SetAttribute("StandaloneImport", true)
 	model:SetAttribute("MeridianBioWorksSignage", true)
 	model:SetAttribute("VisitorLandscapeDressed", true)
 	model:SetAttribute("ProcessCourtDressed", true)
 	model:SetAttribute("RooftopProcessLabels", true)
+	model:SetAttribute("StandOffSignage", true)
+	model:SetAttribute("CleanroomSignClearOfMullions", true)
 	model:SetAttribute("NoLoadingBayDressing", true)
 	model:SetAttribute("NoGoldenMasterMassingChanges", true)
 	return model
