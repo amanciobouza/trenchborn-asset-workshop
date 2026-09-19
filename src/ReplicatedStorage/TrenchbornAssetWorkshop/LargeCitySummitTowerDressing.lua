@@ -195,11 +195,13 @@ end
 
 local function addRearDressing(root)
 	local area = folder(root, "RearDressing")
+	-- Put the main service identity on the outer canopy fascia. Previously the
+	-- sign sat on the wall behind the canopy and was partly hidden from the rear.
 	local sign = block(
 		area,
 		"ServiceSign",
-		Vector3.new(28, 2.4, 0.35),
-		Vector3.new(0, 14.2, 30.45),
+		Vector3.new(28, 1.8, 0.35),
+		Vector3.new(0, 15.0, 36.65),
 		COLORS.Dark,
 		Enum.Material.Metal
 	)
@@ -233,7 +235,7 @@ function Dressing.Apply(model)
 	model:SetAttribute("AssetPhase", 5)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Approved")
-	model:SetAttribute("DressingRevision", "LargeCitySummitTower-Dressing-v2-ProjectedSkyGardens")
+	model:SetAttribute("DressingRevision", "LargeCitySummitTower-Dressing-v3-ServiceCanopySign")
 	model:SetAttribute("DressingStatus", "Review")
 	model:SetAttribute("SkyGardenVegetation", true)
 	model:SetAttribute("StandaloneImport", true)
