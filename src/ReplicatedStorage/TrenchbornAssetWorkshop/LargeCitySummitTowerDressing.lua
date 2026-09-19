@@ -236,7 +236,7 @@ function Dressing.Apply(model)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Approved")
 	model:SetAttribute("DressingRevision", "LargeCitySummitTower-Dressing-v3-ServiceCanopySign")
-	model:SetAttribute("DressingStatus", "Review")
+	model:SetAttribute("DressingStatus", "Approved")
 	model:SetAttribute("SkyGardenVegetation", true)
 	model:SetAttribute("StandaloneImport", true)
 	return model
