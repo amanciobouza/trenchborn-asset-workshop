@@ -250,7 +250,7 @@ local Specification = {
 
 	Phase4Status = {
 		Status = "Approved",
-		GeometryRevision = "LargeCitySummitTower-v4-RaisedCrownAlignedFins",
+		GeometryRevision = "LargeCitySummitTower-v5-ProjectedSkyGardens",
 		QualityGateB = "Approved",
 		ReviewFocus = {
 			"overall stepped silhouette",
@@ -263,19 +263,20 @@ local Specification = {
 			"all three crown blades fully exposed above the raised rooftop crown",
 			"facade fins aligned to window mullions",
 			"sky gardens read as balconies/canopies without an unexplained black overlay across the glazing",
+			"sky-garden slabs project fully outside the facade instead of intersecting the tower mass",
 		},
 	},
 
 	QualityGateB = {
 		Status = "Approved",
-		ApprovedGeometry = "LargeCitySummitTower-v4-RaisedCrownAlignedFins",
+		ApprovedGeometry = "LargeCitySummitTower-v5-ProjectedSkyGardens",
 		Notes = "Raised crown, exposed crown blades, window-aligned facade fins, clarified sky-garden balconies and clean roof surfaces accepted.",
 		NextPhase = 5,
 	},
 
 	Phase5Status = {
 		Status = "InReview",
-		Revision = "LargeCitySummitTower-Dressing-v1",
+		Revision = "LargeCitySummitTower-Dressing-v2-ProjectedSkyGardens",
 		Includes = {
 			"Summit Tower entrance wordmark and teal lobby accent",
 			"entry palms, planters and bollards",
