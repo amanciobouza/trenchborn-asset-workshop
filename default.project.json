@@ -1,5 +1,5 @@
 {
-  "name": "TrenchbornAssetWorkshop",
+  "name": "LargeCityUptownParkingWorkshop",
   "servePort": 34872,
   "tree": {
     "$className": "DataModel",
@@ -7,21 +7,28 @@
       "$className": "Workspace",
       "TrenchbornAssetWorkshop": {
         "$className": "Folder",
-        "$path": "src/Workspace/TrenchbornAssetWorkshop"
+        "$ignoreUnknownInstances": true
       }
     },
     "ReplicatedStorage": {
       "$className": "ReplicatedStorage",
       "TrenchbornAssetWorkshop": {
         "$className": "Folder",
-        "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop"
+        "LargeCityUptownParkingSpecification": {
+          "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityUptownParkingSpecification.lua"
+        },
+        "LargeCityUptownParkingGoldenMaster": {
+          "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityUptownParkingGoldenMaster.lua"
+        }
       }
     },
     "ServerScriptService": {
       "$className": "ServerScriptService",
       "TrenchbornAssetWorkshop": {
         "$className": "Folder",
-        "$path": "src/ServerScriptService/TrenchbornAssetWorkshop"
+        "LargeCityUptownParkingPreview": {
+          "$path": "src/ServerScriptService/TrenchbornAssetWorkshop/LargeCityUptownParkingPreview.server.lua"
+        }
       }
     }
   }
