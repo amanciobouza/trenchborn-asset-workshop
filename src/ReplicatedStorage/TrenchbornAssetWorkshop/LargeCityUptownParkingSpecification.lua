@@ -29,7 +29,7 @@ local Specification = {
 
 	Concept = {
 		Name = "Verdant Mobility Deck",
-		Read = "A compact sculptural parking tower wrapped in a breathable vertical screen, with a visible corner ramp, planted facade cuts, EV-charging identity and a lightweight rooftop mobility canopy.",
+		Read = "A compact sculptural parking tower wrapped in a breathable vertical screen, with a visible corner ramp, planted facade cuts, parking wayfinding identity and a lightweight rooftop mobility canopy.",
 		DoNotReadAs = {
 			"plain concrete parking garage",
 			"warehouse",
@@ -75,9 +75,9 @@ local Specification = {
 			Description = "Two broad planted facade voids interrupt the screen and create visible tropical green pockets rather than a monotonous parking box.",
 		},
 		{
-			Name = "EVHub",
+			Name = "VehicleEntry",
 			Face = "-Z",
-			Description = "Ground-level EV charging / mobility bay with teal lighting and a clearly readable vehicle entrance.",
+			Description = "Ground-level vehicle entry / mobility bay with teal lighting and a clearly readable vehicle entrance.",
 		},
 		{
 			Name = "RooftopSolarCanopy",
@@ -110,7 +110,7 @@ local Specification = {
 			"ground-level bioswale planters",
 			"planted facade cuts",
 			"rooftop edge planting",
-			"EV charging signage",
+			"parking wayfinding signage",
 			"pedestrian bollards",
 		},
 	},
@@ -123,7 +123,7 @@ local Specification = {
 	},
 
 	PlannedDestructionGroups = {
-		"D1_VehicleEntryAndEVHub",
+		"D1_VehicleEntryAndVehicleEntry",
 		"D2_LowerParkingDecks",
 		"D3_UpperParkingDecks",
 		"D4_ExpressedRamp",
@@ -144,7 +144,7 @@ local Specification = {
 			"one expressed corner ramp with sloped geometry",
 			"two planted facade breathing cuts",
 			"glass pedestrian stair/elevator core",
-			"strong vehicle entry and EV charging identity",
+			"strong vehicle entry and parking entry identity",
 			"light rooftop solar/pergola canopy with planted edge",
 			"daylight architectural concept board with front, three-quarter, side and rear cues",
 			"not cyberpunk, not warehouse, not plain concrete garage",
@@ -156,7 +156,7 @@ local Specification = {
 	QualityGateA = {
 		Status = "Approved",
 		ApprovedTarget = "LargeCityUptownParking-VisualTarget-v1",
-		Notes = "Approved Verdant Mobility Deck concept with ventilated screen veil, expressed ramp corner, green breathing cuts, EV hub, glass pedestrian core and rooftop mobility canopy.",
+		Notes = "Approved Verdant Mobility Deck concept with ventilated screen veil, expressed ramp corner, green breathing cuts, vehicle entry, glass pedestrian core and rooftop mobility canopy.",
 		NextPhase = 3,
 	},
 
@@ -220,7 +220,7 @@ local Specification = {
 			Width = 16,
 			Depth = 5,
 		},
-		EVHub = {
+		VehicleEntry = {
 			Face = "front",
 			BayCount = 4,
 			CanopyWidth = 28,
@@ -263,7 +263,7 @@ local Specification = {
 			"vertical screen veil",
 			"expressed corner ramp",
 			"two planted breathing cuts",
-			"clear EV vehicle entry",
+			"clear vehicle entry",
 			"glass pedestrian core",
 			"light rooftop solar/pergola canopy",
 			"clear distinction from office, residential and warehouse architecture",
@@ -281,7 +281,7 @@ local Specification = {
 			"screen veil sits outside the deck edges",
 			"front-right ramps read as real sloped circulation",
 			"two green breathing cuts remain visibly open",
-			"EV vehicle entry is prominent and unobstructed",
+			"vehicle entry is prominent and unobstructed",
 			"glass pedestrian core projects clearly outside the screen",
 			"pedestrian glass core clears the concrete deck envelope with no black/concrete surface overlap or Z-fighting",
 			"rooftop solar/pergola canopy remains light and open",
@@ -294,16 +294,16 @@ local Specification = {
 	QualityGateB = {
 		Status = "Approved",
 		ApprovedGeometry = "LargeCityUptownParking-v2-FreestandingPedestrianCore",
-		Notes = "Ventilated parking decks, screen veil, expressed ramp, green breathing cuts, EV hub, freestanding pedestrian core and rooftop mobility canopy accepted.",
+		Notes = "Ventilated parking decks, screen veil, expressed ramp, green breathing cuts, vehicle entry, freestanding pedestrian core and rooftop mobility canopy accepted.",
 		NextPhase = 5,
 	},
 
 	Phase5Status = {
 		Status = "InReview",
-		Revision = "LargeCityUptownParking-Dressing-v1",
+		Revision = "LargeCityUptownParking-Dressing-v2-NoEV",
 		Includes = {
-			"Uptown Parking identity and EV charging signage",
-			"high-contrast EV bay markers",
+			"Uptown Parking identity and parking wayfinding signage",
+			"high-contrast parking bay markers",
 			"green breathing-cut vegetation",
 			"rooftop planting and mobility-deck sign",
 			"rear service signage and bay markers",
@@ -316,7 +316,7 @@ local Specification = {
 		"Parking deck ventilation remains clearly visible behind the facade screen.",
 		"Expressed corner ramp is structurally readable as sloped circulation.",
 		"Both planted breathing cuts interrupt the facade mass and remain open/readable.",
-		"EV hub and pedestrian core are clearly identifiable from the front.",
+		"vehicle entry and pedestrian core are clearly identifiable from the front.",
 		"Rooftop solar/pergola canopy remains light and open.",
 		"Seven destruction groups map to coherent architectural masses.",
 		"Golden Master target remains below 780 visible parts.",
@@ -326,7 +326,7 @@ local Specification = {
 		"Building reads immediately as premium parking / mobility infrastructure.",
 		"Vertical screen veil and expressed corner ramp create a distinctive silhouette at Kaiju gameplay distance.",
 		"At least two planted breathing cuts break the parking mass and connect it to Large City's tropical identity.",
-		"Vehicle entry, EV hub and pedestrian core are clearly identifiable from the front.",
+		"Vehicle entry, vehicle entry and pedestrian core are clearly identifiable from the front.",
 		"Facade remains visibly ventilated rather than reading as a sealed office curtain wall.",
 		"Rooftop canopy adds interest without competing with nearby hotel and tower crowns.",
 		"Footprint and height remain compatible with LC-55.",
