@@ -269,7 +269,7 @@ local Specification = {
 
 	Phase4Status = {
 		Status = "GoldenMasterReview",
-		GeometryRevision = "LargeCityMeridianPharma-v1-MeridianBioWorks",
+		GeometryRevision = "LargeCityMeridianPharma-v2-RooftopProcessAnchored",
 		QualityGateB = "Pending",
 		ReviewFocus = {
 			"immediate pharmaceutical / biotech production readability",
@@ -279,6 +279,8 @@ local Specification = {
 			"process bridge is visibly external and elevated",
 			"rear bioreactor court is organized and not refinery-like",
 			"rooftop process modules and ducts form a deliberate technical silhouette",
+			"rooftop process modules sit on visible equipment plinths rather than intersecting the hall mass",
+			"three exhaust stacks rise from one shared rooftop utility plinth and visibly connect to the process duct network",
 			"chemical-magenta accents remain restrained",
 			"rear loading/service remains visible on true +Z exterior",
 			"no facade, roof or process-equipment Z-fighting",
