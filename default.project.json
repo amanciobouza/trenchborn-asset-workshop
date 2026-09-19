@@ -19,6 +19,9 @@
         },
         "LargeCityUptownResidencesGoldenMaster": {
           "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityUptownResidencesGoldenMaster.lua"
+        },
+        "LargeCityUptownResidencesDressing": {
+          "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityUptownResidencesDressing.lua"
         }
       }
     },
