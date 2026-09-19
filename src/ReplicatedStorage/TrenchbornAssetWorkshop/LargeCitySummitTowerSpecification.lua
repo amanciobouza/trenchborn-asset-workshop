@@ -250,7 +250,7 @@ local Specification = {
 
 	Phase4Status = {
 		Status = "GoldenMasterReview",
-		GeometryRevision = "LargeCitySummitTower-v1-SteppedSkyGardens",
+		GeometryRevision = "LargeCitySummitTower-v2-NonOverlappingRoofMasses",
 		QualityGateB = "Pending",
 		ReviewFocus = {
 			"overall stepped silhouette",
@@ -259,6 +259,7 @@ local Specification = {
 			"main lobby depth",
 			"asymmetric crown",
 			"rear service visibility",
+			"roof and crown free of coplanar surface flicker / Z-fighting",
 		},
 	},
 
