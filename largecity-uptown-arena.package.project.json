@@ -1,0 +1,18 @@
+{
+  "name": "LargeCityUptownArenaPackage",
+  "tree": {
+    "$className": "Folder",
+    "LargeCityUptownArenaDressing": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityUptownArenaDressing.lua"
+    },
+    "LargeCityUptownArenaGoldenMaster": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityUptownArenaGoldenMaster.lua"
+    },
+    "LargeCityUptownArenaInstaller": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityUptownArenaInstaller.lua"
+    },
+    "LargeCityUptownArenaSpecification": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityUptownArenaSpecification.lua"
+    }
+  }
+}

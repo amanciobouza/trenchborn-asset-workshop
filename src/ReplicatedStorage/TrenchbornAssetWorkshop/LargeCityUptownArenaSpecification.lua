@@ -3,7 +3,7 @@ local Specification = {
 	DisplayName = "Uptown Arena",
 	City = "LargeCity",
 	Phase = 6,
-	QualityGate = "B-Approved",
+	QualityGate = "C-Pending",
 	Style = "Singapore x Miami tropical metropolitan indoor arena",
 
 	AssetBrief = {
@@ -57,6 +57,8 @@ local Specification = {
 		EnergyType = "Electric",
 		InstallerTag = "KaijuHouse",
 		ExternalCollapseIntegration = true,
+		IntegrationPackageVersion = 1,
+		FinalInstallerReady = false,
 		Rationale = "The arena is a major Large City civic venue but materially smaller than the 256k stadium; Electric matches lighting, scoreboards and event infrastructure.",
 	},
 
@@ -178,7 +180,7 @@ local Specification = {
 
 	Phase5Status = {
 		Status = "Approved",
-		Revision = "LargeCityUptownArena-Dressing-v4-RecessedGates",
+		Revision = "LargeCityUptownArena-Dressing-v6-HighContrastNeonText",
 		Includes = {
 			"Uptown Arena wordmark",
 			"Sports / Concerts / Events entrance strip",
@@ -192,11 +194,19 @@ local Specification = {
 		NextPhase = "ExternalGameTestPending",
 	},
 
+
+	FacadeVisibilityFix = {
+		Status = "Approved",
+		GeometryRevision = "LargeCityUptownArena-v5-ProjectedFacadeDetails",
+		DressingRevision = "LargeCityUptownArena-Dressing-v6-HighContrastNeonText",
+		Notes = "Continuous cyan media ribbon, framed event screens, feature bays, sparse facade lights and vertical fins were moved outward so they sit visibly on the exterior skin instead of being buried in the shell. Bright cyan/warm neon signs use dark lettering for readable contrast.",
+	},
+
 	Phase6Status = {
 		Status = "ExternalGameTestPending",
 		ExternalCollapseIntegration = true,
 		QualityGateC = "Pending",
-		Notes = "Workshop visual review approved; destruction and shared collapse behaviour remain deferred to the main game.",
+		Notes = "Workshop visual review approved after facade visibility and neon-text contrast corrections; destruction and shared collapse behaviour remain deferred to the main game.",
 	},
 
 	Phase3Acceptance = {

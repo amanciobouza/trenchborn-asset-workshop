@@ -2,33 +2,30 @@
 
 Synchronized Roblox Studio workspace for specification-driven Trenchborn asset development and automated quality gates.
 
-## Large City Stadium integration package
+## Large City Uptown Arena integration package
 
-The Stadium can be imported into another Roblox project without workshop preview or bootstrap scripts. The package contains its Specification, Golden Master, Dressing, optional Pong Easter egg, and Installer modules.
+The Uptown Arena can be imported into another Roblox project without workshop preview or bootstrap scripts. The package contains its Specification, Golden Master, Dressing, and Installer modules.
 
 Build the Studio-importable package with Rojo:
 
 ```powershell
-.\tools\build-largecity-stadium-package.ps1
+.\tools\build-largecity-uptown-arena-package.ps1
 ```
 
-This creates `dist/LargeCityStadiumPackage.rbxmx`. Insert that model into `ReplicatedStorage` in the target place, then call the installer from a server script:
+This creates `dist/LargeCityUptownArenaPackage.rbxmx`. Insert that model into `ReplicatedStorage` in the target place, then call the installer from a server script:
 
 ```lua
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local packageFolder = ReplicatedStorage:WaitForChild("LargeCityStadiumPackage")
-local installer = require(packageFolder:WaitForChild("LargeCityStadiumInstaller"))
+local packageFolder = ReplicatedStorage:WaitForChild("LargeCityUptownArenaPackage")
+local installer = require(packageFolder:WaitForChild("LargeCityUptownArenaInstaller"))
 
-local stadium = installer.Install(workspace, {
+local arena = installer.Install(workspace, {
 	GroundCFrame = CFrame.new(0, 0, 0),
-	EnablePong = false,
 })
 ```
 
-`GroundCFrame` identifies the desired ground position and orientation. The installer builds the approved geometry and dressing, aligns the lowest visible part to the requested ground height, validates all seven destruction groups, sets `MaxHealth` to `256000`, sets `EnergyType` to `Electric`, and adds the `KaijuHouse` tag. Calling `Install` again replaces the previous installation; `installer.Uninstall(parent)` removes it.
-
-Set `EnablePong = true` only when the target project intentionally wants the decorative server-driven Pong preview runtime. It is disabled by default so the imported Stadium does not add a per-frame server animation unexpectedly.
+`GroundCFrame` identifies the desired ground position and orientation. The installer builds the approved geometry and dressing, aligns the lowest visible part to the requested ground height, validates all seven destruction groups, sets `MaxHealth` to `64000`, sets `EnergyType` to `Electric`, and adds the `KaijuHouse` tag. Calling `Install` again replaces the previous installation; `installer.Uninstall(parent)` removes it.
 
 This is a Phase 6 integration package. It is ready for use by the target project's shared damage and collapse system, but Quality Gate C remains pending until that external gameplay test passes. It must not be treated as the final Phase 7 release yet.
 

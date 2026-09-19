@@ -151,7 +151,7 @@ local function addEntranceDressing(root)
 		COLORS.Teal,
 		Enum.Material.Neon
 	)
-	addSurfaceText(area, eventStrip, "SPORTS   •   CONCERTS   •   EVENTS", Enum.NormalId.Front, COLORS.White)
+	addSurfaceText(area, eventStrip, "SPORTS   •   CONCERTS   •   EVENTS", Enum.NormalId.Front, COLORS.Dark)
 
 	local gates = {
 		-- Portal piers sit at -27, -17, -6, 6, 17 and 27.
@@ -211,7 +211,7 @@ local function addMediaRibbonDressing(root)
 		local tangent = Vector3.new(-a * math.sin(theta), 0, b * math.cos(theta)).Unit
 		local up = Vector3.yAxis
 		local back = tangent:Cross(up).Unit
-		local cf = CFrame.fromMatrix(position, tangent, up, back)
+		local cf = CFrame.fromMatrix(position, tangent, up, back) * CFrame.new(0, 0, -3.7)
 
 		local frame = part(
 			area,
@@ -225,13 +225,13 @@ local function addMediaRibbonDressing(root)
 			area,
 			"RibbonDisplay" .. index,
 			Vector3.new(11.5, 4.2, 0.26),
-			cf * CFrame.new(0, 0, -0.42),
+			cf * CFrame.new(0, 0, -0.46),
 			panel.color,
 			Enum.Material.Neon
 		)
 		frame.CastShadow = true
 		display.CastShadow = false
-		addSurfaceText(area, display, panel.text, Enum.NormalId.Front, COLORS.White)
+		addSurfaceText(area, display, panel.text, Enum.NormalId.Front, COLORS.Dark)
 	end
 end
 
@@ -258,7 +258,7 @@ local function addFacadeVariation(root)
 		local tangent = Vector3.new(-a * math.sin(theta), 0, b * math.cos(theta)).Unit
 		local up = Vector3.yAxis
 		local back = tangent:Cross(up).Unit
-		local cf = CFrame.fromMatrix(position, tangent, up, back)
+		local cf = CFrame.fromMatrix(position, tangent, up, back) * CFrame.new(0, 0, -5.0)
 
 		local frame = part(
 			area,
@@ -272,7 +272,7 @@ local function addFacadeVariation(root)
 			area,
 			"FeatureBayGlass" .. index,
 			Vector3.new(8.9, 15.8, 0.35),
-			cf * CFrame.new(0, 0, -0.58),
+			cf * CFrame.new(0, 0, -0.52),
 			COLORS.DarkGlass,
 			Enum.Material.Glass,
 			0.08
@@ -281,7 +281,7 @@ local function addFacadeVariation(root)
 			area,
 			"FeatureBayAccent" .. index,
 			Vector3.new(9.2, 0.65, 0.30),
-			cf * CFrame.new(0, 7.4, -0.78),
+			cf * CFrame.new(0, 7.4, -0.62),
 			bay.accent,
 			Enum.Material.Neon
 		)
@@ -294,15 +294,19 @@ end
 local function addFacadeLighting(root)
 	local area = folder(root, "FacadeLighting")
 	local count = 18
+	local a, b = 68.0, 49.0
 	for index = 0, count - 1 do
 		local theta = (index / count) * math.pi * 2
-		local x = 66.7 * math.cos(theta)
-		local z = 47.7 * math.sin(theta)
+		local position = Vector3.new(a * math.cos(theta), 36.5, b * math.sin(theta))
+		local tangent = Vector3.new(-a * math.sin(theta), 0, b * math.cos(theta)).Unit
+		local up = Vector3.yAxis
+		local back = tangent:Cross(up).Unit
+		local cf = CFrame.fromMatrix(position, tangent, up, back) * CFrame.new(0, 0, -3.2)
 		local lamp = part(
 			area,
 			"FacadeLight" .. string.format("%02d", index + 1),
 			Vector3.new(0.7, 1.8, 0.45),
-			CFrame.new(x, 36.5, z),
+			cf,
 			index % 2 == 0 and COLORS.Cyan or COLORS.White,
 			Enum.Material.Neon
 		)
@@ -332,7 +336,7 @@ local function addRearDressing(root)
 		COLORS.Teal,
 		Enum.Material.Neon
 	)
-	addSurfaceText(area, crewSign, "CREW", Enum.NormalId.Back, COLORS.White)
+	addSurfaceText(area, crewSign, "CREW", Enum.NormalId.Back, COLORS.Dark)
 
 	for index, x in ipairs({-27, -9, 9, 27}) do
 		local dock = block(
@@ -375,13 +379,17 @@ function Dressing.Apply(model)
 	model:SetAttribute("AssetPhase", 5)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Approved")
-	model:SetAttribute("DressingRevision", "LargeCityUptownArena-Dressing-v4-RecessedGates")
+	model:SetAttribute("DressingRevision", "LargeCityUptownArena-Dressing-v6-HighContrastNeonText")
 	model:SetAttribute("DressingStatus", "Approved")
 	model:SetAttribute("TextScaledRule", true)
 	model:SetAttribute("FacadeFeatureBays", 8)
 	model:SetAttribute("RearServiceDressingVisible", true)
 	model:SetAttribute("GateSignsCenteredBetweenPiers", true)
 	model:SetAttribute("GateSignsBehindPierFace", true)
+	model:SetAttribute("MediaScreensProjectedOutsideShell", true)
+	model:SetAttribute("FeatureBaysProjectedOutsideShell", true)
+	model:SetAttribute("FacadeLightsProjectedOutsideShell", true)
+	model:SetAttribute("HighContrastNeonText", true)
 	return model
 end
 
