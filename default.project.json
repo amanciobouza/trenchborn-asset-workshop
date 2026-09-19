@@ -1,5 +1,5 @@
 {
-  "name": "TrenchbornAssetWorkshop",
+  "name": "LargeCityStadiumHotelWorkshop",
   "servePort": 34872,
   "tree": {
     "$className": "DataModel",
@@ -7,21 +7,28 @@
       "$className": "Workspace",
       "TrenchbornAssetWorkshop": {
         "$className": "Folder",
-        "$path": "src/Workspace/TrenchbornAssetWorkshop"
+        "$ignoreUnknownInstances": true
       }
     },
     "ReplicatedStorage": {
       "$className": "ReplicatedStorage",
       "TrenchbornAssetWorkshop": {
         "$className": "Folder",
-        "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop"
+        "LargeCityStadiumHotelSpecification": {
+          "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityStadiumHotelSpecification.lua"
+        },
+        "LargeCityStadiumHotelGoldenMaster": {
+          "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityStadiumHotelGoldenMaster.lua"
+        }
       }
     },
     "ServerScriptService": {
       "$className": "ServerScriptService",
       "TrenchbornAssetWorkshop": {
         "$className": "Folder",
-        "$path": "src/ServerScriptService/TrenchbornAssetWorkshop"
+        "LargeCityStadiumHotelPreview": {
+          "$path": "src/ServerScriptService/TrenchbornAssetWorkshop/LargeCityStadiumHotelPreview.server.lua"
+        }
       }
     }
   }
