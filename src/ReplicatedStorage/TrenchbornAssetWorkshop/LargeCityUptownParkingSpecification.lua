@@ -8,7 +8,7 @@ local Specification = {
 	City = "LargeCity",
 	District = "Uptown",
 	BuildingType = "Parking Tower",
-	Phase = 1,
+	Phase = 2,
 	QualityGate = "A-Pending",
 	Branch = "largecity-uptown-parking-l3",
 
@@ -133,7 +133,7 @@ local Specification = {
 	},
 
 	VisualTarget = {
-		Status = "Draft",
+		Status = "InReview",
 		Revision = "LargeCityUptownParking-VisualTarget-v1",
 		Brief = {
 			"premium event-district parking tower in Singapore x Miami language",
@@ -148,6 +148,23 @@ local Specification = {
 			"light rooftop solar/pergola canopy with planted edge",
 			"daylight architectural concept board with front, three-quarter, side and rear cues",
 			"not cyberpunk, not warehouse, not plain concrete garage",
+		},
+	},
+
+
+	Phase2Status = {
+		Status = "VisualTargetReview",
+		TargetRevision = "LargeCityUptownParking-VisualTarget-v1",
+		QualityGateA = "Pending",
+		ReviewFocus = {
+			"premium mobility-hub read",
+			"vertical screen veil",
+			"expressed corner ramp",
+			"two planted breathing cuts",
+			"clear EV vehicle entry",
+			"glass pedestrian core",
+			"light rooftop solar/pergola canopy",
+			"clear distinction from office, residential and warehouse architecture",
 		},
 	},
 
