@@ -250,7 +250,7 @@ local Specification = {
 
 	Phase4Status = {
 		Status = "GoldenMasterReview",
-		GeometryRevision = "LargeCitySummitTower-v2-NonOverlappingRoofMasses",
+		GeometryRevision = "LargeCitySummitTower-v3-ExposedCrownBlades",
 		QualityGateB = "Pending",
 		ReviewFocus = {
 			"overall stepped silhouette",
@@ -260,6 +260,7 @@ local Specification = {
 			"asymmetric crown",
 			"rear service visibility",
 			"roof and crown free of coplanar surface flicker / Z-fighting",
+			"all three crown blades fully exposed above the rooftop plinth",
 		},
 	},
 
