@@ -1,0 +1,27 @@
+{
+  "name": "LargeCityWaterfrontResortPackage",
+  "tree": {
+    "$className": "Folder",
+    "LargeCityWaterfrontResortDressing": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityWaterfrontResortDressing.lua"
+    },
+    "LargeCityWaterfrontResortDressingRefinement": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityWaterfrontResortDressingRefinement.lua"
+    },
+    "LargeCityWaterfrontResortGoldenMaster": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityWaterfrontResortGoldenMaster.lua"
+    },
+    "LargeCityWaterfrontResortInstaller": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityWaterfrontResortInstaller.lua"
+    },
+    "LargeCityWaterfrontResortPoolFacade": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityWaterfrontResortPoolFacade.lua"
+    },
+    "LargeCityWaterfrontResortSignDressing": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityWaterfrontResortSignDressing.lua"
+    },
+    "LargeCityWaterfrontResortSpecification": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityWaterfrontResortSpecification.lua"
+    }
+  }
+}
