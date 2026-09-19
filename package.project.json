@@ -7,6 +7,9 @@
     },
     "LargeCitySummitTowerGoldenMaster": {
       "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCitySummitTowerGoldenMaster.lua"
+    },
+    "LargeCitySummitTowerDressing": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCitySummitTowerDressing.lua"
     }
   }
 }
