@@ -153,7 +153,7 @@ local function addSkyGardenDressing(root)
 			area,
 			"LowerSkyGardenShrub" .. index,
 			Vector3.new(2.0, 2.0, 2.0),
-			CFrame.new(x, 60.0, -17.0),
+			CFrame.new(x, 60.0, -29.6),
 			COLORS.Green,
 			Enum.Material.Grass,
 			0,
@@ -161,7 +161,7 @@ local function addSkyGardenDressing(root)
 		)
 		shrub.CastShadow = true
 	end
-	addPalm(area, "LowerSkyGardenPalm", Vector3.new(-17, 59.0, -17.0), 5.8, 20)
+	addPalm(area, "LowerSkyGardenPalm", Vector3.new(-17, 59.0, -29.6), 5.8, 20)
 
 	-- Upper rear-right garden.
 	for index, x in ipairs({1, 6, 11, 16}) do
@@ -169,14 +169,14 @@ local function addSkyGardenDressing(root)
 			area,
 			"UpperSkyGardenShrub" .. index,
 			Vector3.new(1.7, 1.7, 1.7),
-			CFrame.new(x, 94.3, 17.0),
+			CFrame.new(x, 94.3, 23.8),
 			COLORS.Green,
 			Enum.Material.Grass,
 			0,
 			Enum.PartType.Ball
 		)
 	end
-	addPalm(area, "UpperSkyGardenPalm", Vector3.new(13, 93.6, 17.0), 5.0, -15)
+	addPalm(area, "UpperSkyGardenPalm", Vector3.new(13, 93.6, 23.8), 5.0, -15)
 end
 
 local function addFacadeAccents(root)
@@ -233,7 +233,7 @@ function Dressing.Apply(model)
 	model:SetAttribute("AssetPhase", 5)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Approved")
-	model:SetAttribute("DressingRevision", "LargeCitySummitTower-Dressing-v1")
+	model:SetAttribute("DressingRevision", "LargeCitySummitTower-Dressing-v2-ProjectedSkyGardens")
 	model:SetAttribute("DressingStatus", "Review")
 	model:SetAttribute("SkyGardenVegetation", true)
 	model:SetAttribute("StandaloneImport", true)
