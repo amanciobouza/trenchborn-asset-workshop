@@ -8,8 +8,8 @@ local Specification = {
 	City = "LargeCity",
 	District = "Uptown",
 	BuildingType = "Hotel",
-	Phase = 5,
-	QualityGate = "B-Pending",
+	Phase = 6,
+	QualityGate = "B-Approved",
 	Branch = "largecity-stadium-hotel-l3",
 
 	StandaloneImport = {
@@ -279,21 +279,21 @@ local Specification = {
 
 
 	QualityGateB = {
-		Status = "Pending",
+		Status = "Approved",
 		ApprovedGeometry = "LargeCityStadiumHotel-v4-StiltedRoofBlade",
-		Notes = "Convex guest-room facade yaw corrected after review found the window/balcony tangents visually bending inward. Recheck front and rear curvature before re-approval.",
+		Notes = "Corrected convex guest-room facade orientation, surface-anchored planting and stilted warm-lit roof blade accepted.",
 		NextPhase = 5,
 	},
 
 
 	FacadeCurveOrientationFix = {
-		Status = "InReview",
+		Status = "Approved",
 		GeometryRevision = "LargeCityStadiumHotel-v4-StiltedRoofBlade",
 		Notes = "Window, balcony slab and balustrade yaw now follow the outward/convex guest-room bow instead of visually suggesting a concave facade.",
 	},
 
 	Phase5Status = {
-		Status = "InReview",
+		Status = "Approved",
 		Revision = "LargeCityStadiumHotel-Dressing-v5-RestoredPergolaSign",
 		Includes = {
 			"Stadium Hotel wordmark on visible porte-cochere fascia",
@@ -307,6 +307,15 @@ local Specification = {
 			"small rooftop pool sign uses the original light pergola bracket mounting; the large warm-lit roof blade is anchored directly to the rooftop lounge deck",
 		},
 		QualityGateC = "Pending",
+		NextPhase = "ExternalGameTestPending",
+	},
+
+
+	Phase6Status = {
+		Status = "ExternalGameTestPending",
+		ExternalCollapseIntegration = true,
+		QualityGateC = "Pending",
+		Notes = "Workshop visual review approved after convex facade, landscaping and rooftop roof-blade refinements; destruction/collapse behaviour remains deferred to the main game's shared collapse system.",
 	},
 
 	Phase3Acceptance = {
