@@ -9,7 +9,7 @@ local Specification = {
 	District = "Uptown",
 	BuildingType = "High-Rise",
 	Phase = 6,
-	QualityGate = "B-Approved",
+	QualityGate = "C-Pending",
 	Branch = "largecity-summit-tower-l3",
 
 	StandaloneImport = {
@@ -121,6 +121,8 @@ local Specification = {
 		EnergyType = "Electric",
 		InstallerTag = "KaijuHouse",
 		ExternalCollapseIntegration = true,
+		IntegrationPackageVersion = 1,
+		FinalInstallerReady = false,
 	},
 
 	PlannedDestructionGroups = {
