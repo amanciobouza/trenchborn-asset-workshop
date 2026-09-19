@@ -278,9 +278,32 @@ local function addRooftopPoolDeck(group)
 	end
 	block(group, "PergolaCanopy", Vector3.new(40, 0.7, 20), Vector3.new(0, 78.7, 10), COLORS.Stone, Enum.Material.Metal)
 
-	-- Asymmetric event-hotel roof blade gives the deck a recognisable skyline edge.
-	block(group, "RoofBlade", Vector3.new(4.0, 8.0, 17), Vector3.new(24, 75.28, -8), COLORS.Stone, Enum.Material.Metal)
-	block(group, "RoofBladeWarmLine", Vector3.new(0.5, 6.0, 14), Vector3.new(21.8, 75.28, -8), COLORS.Warm, Enum.Material.Neon)
+	-- Asymmetric event-hotel roof blade is lifted above the planted edge on two
+	-- slim portal frames. The supports sit outside the planter footprint so the
+	-- greenery remains visible underneath instead of being covered by the blade.
+	block(group, "RoofBlade", Vector3.new(4.0, 8.0, 17), Vector3.new(24, 79.0, -8), COLORS.Stone, Enum.Material.Metal)
+	block(group, "RoofBladeWarmLine", Vector3.new(0.5, 6.0, 14), Vector3.new(21.8, 79.0, -8), COLORS.Warm, Enum.Material.Neon)
+
+	for frameIndex, z in ipairs({-14, -2}) do
+		for _, x in ipairs({21, 29}) do
+			block(
+				group,
+				"RoofBladeStilt_" .. frameIndex .. "_" .. tostring(x),
+				Vector3.new(0.55, 3.18, 0.55),
+				Vector3.new(x, 72.91, z),
+				COLORS.Metal,
+				Enum.Material.Metal
+			)
+		end
+		block(
+			group,
+			"RoofBladeCrossbeam_" .. frameIndex,
+			Vector3.new(8.55, 0.5, 0.6),
+			Vector3.new(25, 74.75, z),
+			COLORS.Metal,
+			Enum.Material.Metal
+		)
+	end
 
 	block(group, "RoofFrontRail", Vector3.new(56, 1.4, 0.24), Vector3.new(0, 71.6, -23.0), COLORS.Glass, Enum.Material.Glass, 0.17)
 	block(group, "RoofRearRail", Vector3.new(56, 1.4, 0.24), Vector3.new(0, 71.6, 23.0), COLORS.Glass, Enum.Material.Glass, 0.17)
@@ -330,7 +353,7 @@ function Builder.Build(parent)
 	model:SetAttribute("AssetPhase", 4)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Pending")
-	model:SetAttribute("GeometryRevision", "LargeCityStadiumHotel-v3-AnchoredRoofBlade")
+	model:SetAttribute("GeometryRevision", "LargeCityStadiumHotel-v4-StiltedRoofBlade")
 	model:SetAttribute("MaxHealth", specification.ProposedGameplayMetadata.TargetMaxHealth)
 	model:SetAttribute("EnergyType", specification.ProposedGameplayMetadata.EnergyType)
 	model:SetAttribute("InstallerTag", specification.ProposedGameplayMetadata.InstallerTag)
@@ -339,6 +362,7 @@ function Builder.Build(parent)
 	model:SetAttribute("CurvedGuestRoomFacade", true)
 	model:SetAttribute("ConvexFacadeYawCorrected", true)
 	model:SetAttribute("RoofBladeAnchoredToDeck", true)
+	model:SetAttribute("RoofBladeStiltedAbovePlanter", true)
 	model:SetAttribute("RooftopPoolVisible", true)
 	model:SetAttribute("SkyLoungeTerraceProjected", true)
 	model:SetAttribute("RearServiceVisible", true)
