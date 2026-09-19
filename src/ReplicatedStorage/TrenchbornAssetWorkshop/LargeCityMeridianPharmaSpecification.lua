@@ -107,9 +107,8 @@ local Specification = {
 			"formal entry trees/palms",
 			"sterile plaza planters",
 			"bioswale near process court",
-			"loading bollards",
 			"chemical-zone safety striping",
-			"service fencing/screening",
+			"process-court safety markers and low screening",
 		},
 	},
 
@@ -294,8 +293,9 @@ local Specification = {
 
 
 	Phase5Status = {
-		Status = "DressingPending",
+		Status = "DressingReview",
 		QualityGateB = "Approved",
+		DressingRevision = "LargeCityMeridianPharma-Dressing-v1",
 		Scope = {
 			"building signage and Meridian BioWorks identity",
 			"visitor-entry landscape and sterile plaza detailing",
