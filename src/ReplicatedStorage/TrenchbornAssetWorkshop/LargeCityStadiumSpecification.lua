@@ -3,7 +3,7 @@ local Specification = {
 	DisplayName = "Large City Stadium",
 	City = "LargeCity",
 	Phase = 6,
-	QualityGate = "B-Approved",
+	QualityGate = "C-Pending",
 	Style = "Singapore x Miami tropical metropolitan sports landmark",
 
 	AssetBrief = {
@@ -147,6 +147,8 @@ local Specification = {
 		TargetMaxHealth = 256000,
 		EnergyType = "Electric",
 		InstallerTag = "KaijuHouse",
+		IntegrationPackageVersion = 1,
+		FinalInstallerReady = false,
 		ExternalCollapseIntegration = true,
 	},
 

@@ -1,0 +1,1531 @@
+<roblox version="4">
+  <Item class="Folder" referent="0">
+    <Properties>
+      <string name="Name">LargeCityStadiumPackage</string>
+    </Properties>
+    <Item class="ModuleScript" referent="1">
+      <Properties>
+        <string name="Name">LargeCityStadiumDressing</string>
+        <string name="Source"><![CDATA[local Dressing = {}
+
+local COLORS = {
+	White = Color3.fromRGB(242, 245, 245),
+	Concrete = Color3.fromRGB(205, 209, 207),
+	Dark = Color3.fromRGB(42, 50, 56),
+	DarkGlass = Color3.fromRGB(43, 79, 92),
+	Teal = Color3.fromRGB(54, 154, 157),
+	Cyan = Color3.fromRGB(91, 199, 210),
+	Metal = Color3.fromRGB(151, 162, 165),
+	Leaf = Color3.fromRGB(55, 128, 75),
+	Wood = Color3.fromRGB(122, 89, 59),
+	Soil = Color3.fromRGB(76, 61, 45),
+	Light = Color3.fromRGB(229, 246, 255),
+}
+
+local function folder(parent, name)
+	local existing = parent:FindFirstChild(name)
+	if existing then existing:Destroy() end
+	local item = Instance.new("Folder")
+	item.Name = name
+	item.Parent = parent
+	return item
+end
+
+local function part(parent, name, size, cf, color, material, transparency, shape)
+	local item = Instance.new("Part")
+	item.Name = name
+	item.Size = size
+	item.CFrame = cf
+	item.Color = color
+	item.Material = material or Enum.Material.SmoothPlastic
+	item.Transparency = transparency or 0
+	item.Shape = shape or Enum.PartType.Block
+	item.Anchored = true
+	item.CanCollide = false
+	item.CanTouch = false
+	item.CanQuery = false
+	item.CastShadow = true
+	item.TopSurface = Enum.SurfaceType.Smooth
+	item.BottomSurface = Enum.SurfaceType.Smooth
+	item.Parent = parent
+	return item
+end
+
+local function block(parent, name, size, position, color, material, rotation, transparency)
+	local cf = CFrame.new(position)
+	if rotation then
+		cf *= CFrame.Angles(math.rad(rotation.X), math.rad(rotation.Y), math.rad(rotation.Z))
+	end
+	return part(parent, name, size, cf, color, material, transparency)
+end
+
+local function cylinder(parent, name, size, position, color, material, rotation, transparency)
+	local r = rotation or Vector3.zero
+	return part(
+		parent,
+		name,
+		size,
+		CFrame.new(position) * CFrame.Angles(math.rad(r.X), math.rad(r.Y), math.rad(r.Z)),
+		color,
+		material,
+		transparency,
+		Enum.PartType.Cylinder
+	)
+end
+
+local function addSurfaceText(parent, adornee, text, face, color, font)
+	local gui = Instance.new("SurfaceGui")
+	gui.Name = adornee.Name .. "Surface"
+	gui.Adornee = adornee
+	gui.Face = face or Enum.NormalId.Front
+	gui.AlwaysOnTop = false
+	gui.LightInfluence = 0.2
+	gui.PixelsPerStud = 42
+	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	gui.Parent = parent
+
+	local label = Instance.new("TextLabel")
+	label.Name = "Label"
+	label.Size = UDim2.fromScale(1, 1)
+	label.BackgroundTransparency = 1
+	label.Text = text
+	label.TextColor3 = color or COLORS.White
+	label.TextStrokeTransparency = 0.8
+	label.Font = font or Enum.Font.GothamBold
+	label.TextScaled = true
+	label.TextWrapped = true
+	label.Parent = gui
+end
+
+local function addPalm(parent, name, position, height, yaw)
+	local palm = folder(parent, name)
+	local h = height or 11
+	cylinder(
+		palm,
+		"Trunk",
+		Vector3.new(h, 0.9, 0.9),
+		position + Vector3.new(0, h * 0.5, 0),
+		COLORS.Wood,
+		Enum.Material.Wood,
+		Vector3.new(0, 0, 90)
+	)
+	local crown = position + Vector3.new(0, h, 0)
+	for index = 1, 7 do
+		local angle = math.rad((index - 1) * (360 / 7) + (yaw or 0))
+		local dx = math.cos(angle)
+		local dz = math.sin(angle)
+		block(
+			palm,
+			"Leaf" .. index,
+			Vector3.new(0.75, 0.28, 5.4),
+			crown + Vector3.new(dx * 1.8, 0.2, dz * 1.8),
+			COLORS.Leaf,
+			Enum.Material.Grass,
+			Vector3.new(-14, math.deg(angle), 0)
+		)
+	end
+end
+
+local function addPlanter(parent, name, position, size)
+	local planter = folder(parent, name)
+	block(planter, "Box", size, position, COLORS.Concrete, Enum.Material.Concrete)
+	block(planter, "Soil", size - Vector3.new(0.6, 0.65, 0.6), position + Vector3.new(0, 0.55, 0), COLORS.Soil, Enum.Material.Ground)
+	for x = -1, 1 do
+		part(
+			planter,
+			"Shrub" .. x,
+			Vector3.new(1.7, 1.7, 1.7),
+			CFrame.new(position + Vector3.new(x * 2.0, 1.5, 0)),
+			COLORS.Leaf,
+			Enum.Material.Grass,
+			0,
+			Enum.PartType.Ball
+		)
+	end
+end
+
+local function addEntranceDressing(root)
+	local area = folder(root, "EntranceDressing")
+
+	local sign = block(
+		area,
+		"StadiumWordmark",
+		Vector3.new(60, 4.2, 0.6),
+		Vector3.new(0, 24.0, -81.20),
+		COLORS.Dark,
+		Enum.Material.Metal
+	)
+	addSurfaceText(area, sign, "LARGE CITY STADIUM", Enum.NormalId.Front, COLORS.White)
+
+	-- Thin cyan header reads as one continuous civic entrance identity across all gates.
+	block(area, "EntranceAccent", Vector3.new(69, 0.8, 0.35), Vector3.new(0, 22.0, -80.75), COLORS.Cyan, Enum.Material.Neon)
+
+	local gates = {
+		-- Centers are aligned to the four actual entrance bays between the structural piers.
+		{label = "A", x = -24.5},
+		{label = "B", x = -12.0},
+		{label = "C", x = 12.0},
+		{label = "D", x = 24.5},
+	}
+	for _, gate in ipairs(gates) do
+		local plaque = block(
+			area,
+			"Gate" .. gate.label,
+			Vector3.new(6.5, 3.2, 0.42),
+			Vector3.new(gate.x, 8.5, -81.00),
+			COLORS.Teal,
+			Enum.Material.SmoothPlastic
+		)
+		addSurfaceText(area, plaque, "GATE " .. gate.label, Enum.NormalId.Front, COLORS.White)
+	end
+
+	for _, x in ipairs({-38, -28, 28, 38}) do
+		cylinder(
+			area,
+			"EntranceBollard" .. tostring(x),
+			Vector3.new(2.6, 0.42, 0.42),
+			Vector3.new(x, 1.3, -89.0),
+			COLORS.Metal,
+			Enum.Material.Metal,
+			Vector3.new(0, 0, 90)
+		)
+	end
+
+	addPlanter(area, "EntrancePlanterLeft", Vector3.new(-45, 0.85, -91), Vector3.new(11, 1.3, 3.4))
+	addPlanter(area, "EntrancePlanterRight", Vector3.new(45, 0.85, -91), Vector3.new(11, 1.3, 3.4))
+	addPalm(area, "EntrancePalmLeft", Vector3.new(-54, 0, -93), 12, 10)
+	addPalm(area, "EntrancePalmRight", Vector3.new(54, 0, -93), 12, -10)
+end
+
+local function addFacadeDressing(root)
+	local area = folder(root, "FacadeDressing")
+	local screenAngles = {
+		math.rad(36), math.rad(68), math.rad(112), math.rad(144),
+		math.rad(216), math.rad(248), math.rad(292), math.rad(324),
+	}
+	local a, b = 113.2, 73.2
+
+	for index, theta in ipairs(screenAngles) do
+		local x = a * math.cos(theta)
+		local z = b * math.sin(theta)
+		local tangent = Vector3.new(-a * math.sin(theta), 0, b * math.cos(theta)).Unit
+		local up = Vector3.yAxis
+		local back = tangent:Cross(up).Unit
+		local cf = CFrame.fromMatrix(Vector3.new(x, 31, z), tangent, up, back)
+		local frame = part(
+			area,
+			"FacadeScreenFrame" .. index,
+			Vector3.new(13.0, 8.8, 0.8),
+			cf,
+			COLORS.Dark,
+			Enum.Material.Metal
+		)
+		local screen = part(
+			area,
+			"FacadeScreen" .. index,
+			Vector3.new(11.7, 7.4, 0.35),
+			cf * CFrame.new(0, 0, -0.58),
+			index % 2 == 0 and COLORS.Cyan or COLORS.DarkGlass,
+			Enum.Material.Glass,
+			0.04
+		)
+		frame.CastShadow = true
+		screen.CastShadow = false
+	end
+
+	-- A continuous lower cyan line visually ties the exterior screen modules together.
+	for index = 0, 31 do
+		local theta = (index / 32) * math.pi * 2
+		local x = 111.8 * math.cos(theta)
+		local z = 71.8 * math.sin(theta)
+		local nextTheta = ((index + 1) / 32) * math.pi * 2
+		local nx = 111.8 * math.cos(nextTheta)
+		local nz = 71.8 * math.sin(nextTheta)
+		local p1 = Vector3.new(x, 23.0, z)
+		local p2 = Vector3.new(nx, 23.0, nz)
+		local delta = p2 - p1
+		local mid = p1:Lerp(p2, 0.5)
+		part(
+			area,
+			"FacadeAccent" .. string.format("%02d", index + 1),
+			Vector3.new(0.35, 0.65, delta.Magnitude * 1.04),
+			CFrame.lookAt(mid, p2),
+			COLORS.Teal,
+			Enum.Material.Neon
+		)
+	end
+end
+
+local function addFloodlights(root)
+	local area = folder(root, "Floodlights")
+	local fieldTarget = Vector3.new(0, 3, 4)
+	local mounts = {
+		Vector3.new(-77, 74, -49),
+		Vector3.new(77, 74, -49),
+		Vector3.new(-77, 74, 49),
+		Vector3.new(77, 74, 49),
+	}
+
+	for mountIndex, mount in ipairs(mounts) do
+		local bank = folder(area, "FloodlightBank" .. mountIndex)
+		local bankCF = CFrame.lookAt(mount, fieldTarget)
+
+		-- Large visible stadium rig: dark backing frame, twin supports and a
+		-- 6 x 3 lamp matrix aimed directly at the pitch.
+		local backing = part(
+			bank,
+			"FloodlightFrame",
+			Vector3.new(16.5, 10.0, 0.8),
+			bankCF,
+			COLORS.Dark,
+			Enum.Material.Metal
+		)
+		backing.CastShadow = true
+
+		part(
+			bank,
+			"UpperCrossbar",
+			Vector3.new(17.5, 0.7, 1.2),
+			bankCF * CFrame.new(0, 4.8, 0.45),
+			COLORS.Metal,
+			Enum.Material.Metal
+		)
+		part(
+			bank,
+			"LowerCrossbar",
+			Vector3.new(17.5, 0.7, 1.2),
+			bankCF * CFrame.new(0, -4.8, 0.45),
+			COLORS.Metal,
+			Enum.Material.Metal
+		)
+
+		-- Connect the floodlight frame directly to the inner side of the large
+		-- stadium pylon. Using endpoint-to-endpoint beams keeps the braces touching
+		-- the light frame and prevents them from protruding outside the pylon.
+		local signX = mount.X < 0 and -1 or 1
+		local signZ = mount.Z < 0 and -1 or 1
+		local pylonInnerAnchor = Vector3.new(signX * 80.0, 59.0, signZ * 52.0)
+
+		for _, supportX in ipairs({-3.1, 3.1}) do
+			local upper = bankCF:PointToWorldSpace(Vector3.new(supportX, -4.55, 0.55))
+			local lower = pylonInnerAnchor + bankCF.RightVector * (supportX * 0.72)
+			local delta = upper - lower
+			local middle = lower:Lerp(upper, 0.5)
+			part(
+				bank,
+				"RearSupport" .. tostring(supportX),
+				Vector3.new(0.95, 0.95, delta.Magnitude),
+				CFrame.lookAt(middle, upper),
+				COLORS.Metal,
+				Enum.Material.Metal
+			)
+		end
+
+		local centerLamp
+		for row = 1, 3 do
+			for column = 1, 6 do
+				local x = (column - 3.5) * 2.45
+				local y = (2 - row) * 2.65
+				local lamp = part(
+					bank,
+					string.format("Lamp_R%d_C%d", row, column),
+					Vector3.new(2.05, 1.95, 0.55),
+					bankCF * CFrame.new(x, y, -0.72),
+					COLORS.Light,
+					Enum.Material.Neon
+				)
+				lamp.CastShadow = false
+
+				local rim = part(
+					bank,
+					string.format("LampRim_R%d_C%d", row, column),
+					Vector3.new(2.42, 2.30, 0.24),
+					bankCF * CFrame.new(x, y, -0.48),
+					COLORS.Metal,
+					Enum.Material.Metal
+				)
+				rim.CastShadow = false
+
+				if row == 2 and column == 3 then
+					centerLamp = lamp
+				end
+			end
+		end
+
+		-- One strong spotlight per bank provides the actual night field illumination;
+		-- the visible lamp matrix supplies the stadium-scale visual read.
+		if centerLamp then
+			local light = Instance.new("SpotLight")
+			light.Name = "PitchFloodlight"
+			light.Face = Enum.NormalId.Front
+			light.Brightness = 5.0
+			light.Range = 60
+			light.Angle = 72
+			light.Color = COLORS.Light
+			light.Shadows = true
+			light.Parent = centerLamp
+		end
+	end
+
+	-- Roblox light range is limited, while the visual floodlight banks sit high
+	-- on the stadium structure. Four invisible spill proxies over the pitch
+	-- provide the broad night illumination that visually belongs to those banks.
+	local spillPositions = {
+		Vector3.new(-24, 38, -12),
+		Vector3.new(24, 38, -12),
+		Vector3.new(-24, 38, 20),
+		Vector3.new(24, 38, 20),
+	}
+	for index, position in ipairs(spillPositions) do
+		local target = Vector3.new(position.X * 0.35, 0.8, 4 + (position.Z - 4) * 0.25)
+		local proxy = part(
+			area,
+			"FieldSpillProxy" .. index,
+			Vector3.new(0.5, 0.5, 0.5),
+			CFrame.lookAt(position, target),
+			COLORS.Light,
+			Enum.Material.SmoothPlastic,
+			1
+		)
+		proxy.CastShadow = false
+
+		local spill = Instance.new("SpotLight")
+		spill.Name = "FieldSpill"
+		spill.Face = Enum.NormalId.Front
+		spill.Brightness = 2.4
+		spill.Range = 60
+		spill.Angle = 95
+		spill.Color = COLORS.Light
+		spill.Shadows = true
+		spill.Parent = proxy
+	end
+end
+
+local function addRearServiceDressing(root)
+	local area = folder(root, "RearServiceDressing")
+
+	local header = block(
+		area,
+		"RearServiceHeader",
+		Vector3.new(44, 3.2, 0.45),
+		Vector3.new(0, 14.2, 79.65),
+		COLORS.Dark,
+		Enum.Material.Metal
+	)
+	addSurfaceText(area, header, "TEAM  •  SERVICE  •  DELIVERIES", Enum.NormalId.Back, COLORS.White)
+
+	for index, x in ipairs({-30, -15, 0, 15, 30}) do
+		block(
+			area,
+			"RearBayFrame" .. index,
+			Vector3.new(11.2, 8.2, 0.55),
+			Vector3.new(x, 7, 79.55),
+			COLORS.Dark,
+			Enum.Material.Metal
+		)
+
+		local bayNumber = block(
+			area,
+			"RearBayNumber" .. index,
+			Vector3.new(4.8, 2.0, 0.30),
+			Vector3.new(x, 12.0, 79.88),
+			index == 3 and COLORS.Cyan or COLORS.Teal,
+			Enum.Material.Neon
+		)
+		addSurfaceText(area, bayNumber, string.format("%02d", index), Enum.NormalId.Back, COLORS.White)
+	end
+
+	local crew = block(
+		area,
+		"CrewEntranceLabel",
+		Vector3.new(8.5, 1.8, 0.28),
+		Vector3.new(0, 3.0, 79.9),
+		COLORS.Cyan,
+		Enum.Material.Neon
+	)
+	addSurfaceText(area, crew, "CREW", Enum.NormalId.Back, COLORS.White)
+
+	for _, x in ipairs({-30, -15, 0, 15, 30}) do
+		block(
+			area,
+			"LoadingGuide" .. tostring(x),
+			Vector3.new(7.0, 0.10, 12.0),
+			Vector3.new(x, 0.56, 88),
+			COLORS.White,
+			Enum.Material.SmoothPlastic
+		)
+	end
+
+	for _, x in ipairs({-40, 40}) do
+		cylinder(
+			area,
+			"RearBollard" .. tostring(x),
+			Vector3.new(2.6, 0.42, 0.42),
+			Vector3.new(x, 1.3, 83.5),
+			COLORS.Metal,
+			Enum.Material.Metal,
+			Vector3.new(0, 0, 90)
+		)
+	end
+end
+
+local function addPitchDressing(root)
+	local area = folder(root, "PitchDressing")
+	local y = 0.82
+
+	-- Minimal football markings remain subtle because Pong is the intentional Easter egg.
+	block(area, "MidLine", Vector3.new(0.22, 0.08, 58), Vector3.new(0, y, 4), COLORS.White, Enum.Material.SmoothPlastic)
+	block(area, "TopTouchline", Vector3.new(102, 0.08, 0.22), Vector3.new(0, y, -25), COLORS.White, Enum.Material.SmoothPlastic)
+	block(area, "BottomTouchline", Vector3.new(102, 0.08, 0.22), Vector3.new(0, y, 33), COLORS.White, Enum.Material.SmoothPlastic)
+	block(area, "LeftGoalLine", Vector3.new(0.22, 0.08, 58), Vector3.new(-51, y, 4), COLORS.White, Enum.Material.SmoothPlastic)
+	block(area, "RightGoalLine", Vector3.new(0.22, 0.08, 58), Vector3.new(51, y, 4), COLORS.White, Enum.Material.SmoothPlastic)
+
+	local centerRing = cylinder(
+		area,
+		"CenterCircle",
+		Vector3.new(0.08, 18, 18),
+		Vector3.new(0, y + 0.04, 4),
+		COLORS.White,
+		Enum.Material.SmoothPlastic,
+		Vector3.new(0, 0, 90)
+	)
+	centerRing.Transparency = 0.35
+end
+
+function Dressing.Apply(model)
+	assert(model and model:IsA("Model"), "LargeCityStadiumDressing.Apply expects a Model")
+
+	local existing = model:FindFirstChild("Dressing")
+	if existing then existing:Destroy() end
+	local root = folder(model, "Dressing")
+
+	-- The Golden Master still contains the earlier unframed exterior screen set.
+	-- Phase 5 replaces those with the approved black-framed display modules, so
+	-- remove the lower duplicate set only while dressing is applied.
+	for _, item in ipairs(model:GetDescendants()) do
+		if item:IsA("BasePart") and item.Name:match("^ExteriorScreen%d+") then
+			item:Destroy()
+		end
+	end
+
+	addEntranceDressing(root)
+	addFacadeDressing(root)
+	addFloodlights(root)
+	addRearServiceDressing(root)
+	addPitchDressing(root)
+
+	model:SetAttribute("AssetPhase", 5)
+	model:SetAttribute("QualityGateA", "Approved")
+	model:SetAttribute("QualityGateB", "Approved")
+	model:SetAttribute("DressingRevision", "LargeCityStadium-Dressing-v6-RearServiceVisible")
+	model:SetAttribute("DressingStatus", "Approved")
+	model:SetAttribute("TextScaledRule", true)
+	model:SetAttribute("LargeStadiumFloodlights", true)
+	model:SetAttribute("FloodlightBankCount", 4)
+	model:SetAttribute("FloodlightLampCount", 72)
+	model:SetAttribute("FloodlightsMovedInward", true)
+	model:SetAttribute("FloodlightSupportsAligned", true)
+	model:SetAttribute("FloodlightsRaised", true)
+	model:SetAttribute("FloodlightSupportsInnerAnchored", true)
+	model:SetAttribute("RearServiceDressingVisible", true)
+	model:SetAttribute("RearServiceBayCount", 5)
+	return model
+end
+
+return Dressing
+]]></string>
+      </Properties>
+    </Item>
+    <Item class="ModuleScript" referent="2">
+      <Properties>
+        <string name="Name">LargeCityStadiumGoldenMaster</string>
+        <string name="Source"><![CDATA[local specification = require(script.Parent:WaitForChild("LargeCityStadiumSpecification"))
+
+local Builder = {}
+
+local COLORS = {
+	Concrete = Color3.fromRGB(224, 226, 221),
+	ConcreteDark = Color3.fromRGB(178, 184, 183),
+	Metal = Color3.fromRGB(166, 176, 179),
+	Roof = Color3.fromRGB(205, 211, 211),
+	Glass = Color3.fromRGB(58, 104, 118),
+	Seat = Color3.fromRGB(45, 73, 93),
+	Pitch = Color3.fromRGB(76, 132, 74),
+	Teal = Color3.fromRGB(54, 154, 157),
+	Dark = Color3.fromRGB(47, 55, 60),
+}
+
+local BOWL_SEGMENTS = 64
+local RIB_COUNT = 32
+local ROOF_SEGMENTS = 64
+
+local function folder(parent, name)
+	local item = Instance.new("Folder")
+	item.Name = name
+	item.Parent = parent
+	return item
+end
+
+local function part(parent, name, size, cf, color, material, transparency)
+	local item = Instance.new("Part")
+	item.Name = name
+	item.Size = size
+	item.CFrame = cf
+	item.Color = color
+	item.Material = material or Enum.Material.SmoothPlastic
+	item.Transparency = transparency or 0
+	item.Anchored = true
+	item.CanCollide = true
+	item.CanQuery = true
+	item.CanTouch = true
+	item.CastShadow = true
+	item.TopSurface = Enum.SurfaceType.Smooth
+	item.BottomSurface = Enum.SurfaceType.Smooth
+	item.Parent = parent
+	return item
+end
+
+local function block(parent, name, size, position, color, material, transparency)
+	return part(parent, name, size, CFrame.new(position), color, material, transparency)
+end
+
+local function ellipsePoint(a, b, theta)
+	return Vector3.new(a * math.cos(theta), 0, b * math.sin(theta))
+end
+
+local function tangentFrame(a, b, theta, y)
+	local halfStep = math.pi / BOWL_SEGMENTS
+	local before = ellipsePoint(a, b, theta - halfStep)
+	local after = ellipsePoint(a, b, theta + halfStep)
+	local tangent = (after - before).Unit
+	local up = Vector3.yAxis
+	local back = tangent:Cross(up).Unit
+	local position = ellipsePoint(a, b, theta) + Vector3.new(0, y, 0)
+	return CFrame.fromMatrix(position, tangent, up, back), (after - before).Magnitude
+end
+
+local function radialBandFrame(innerA, innerB, outerA, outerB, theta, y, segmentCount)
+	local inner = ellipsePoint(innerA, innerB, theta)
+	local outer = ellipsePoint(outerA, outerB, theta)
+	local mid = inner:Lerp(outer, 0.5)
+	local radial = outer - inner
+	local up = Vector3.yAxis
+	local back = radial.Unit
+	local right = up:Cross(back).Unit
+
+	local halfStep = math.pi / segmentCount
+	local midA = (innerA + outerA) * 0.5
+	local midB = (innerB + outerB) * 0.5
+	local before = ellipsePoint(midA, midB, theta - halfStep)
+	local after = ellipsePoint(midA, midB, theta + halfStep)
+
+	return CFrame.fromMatrix(mid + Vector3.new(0, y, 0), right, up, back), (after - before).Magnitude, radial.Magnitude
+end
+
+local function addSmoothRing(parent, prefix, a, b, y, height, depth, count, color, material, overlap)
+	local step = math.pi * 2 / count
+	local halfStep = step * 0.5
+	for index = 0, count - 1 do
+		local theta = index * step
+		local before = ellipsePoint(a, b, theta - halfStep)
+		local after = ellipsePoint(a, b, theta + halfStep)
+		local tangent = (after - before).Unit
+		local up = Vector3.yAxis
+		local back = tangent:Cross(up).Unit
+		local position = ellipsePoint(a, b, theta) + Vector3.new(0, y, 0)
+		part(
+			parent,
+			prefix .. string.format("_%02d", index + 1),
+			Vector3.new((after - before).Magnitude * (overlap or 1.10), height, depth),
+			CFrame.fromMatrix(position, tangent, up, back),
+			color,
+			material
+		)
+	end
+end
+
+local function addBandRing(parent, prefix, innerA, innerB, outerA, outerB, y, height, count, color, material)
+	local step = math.pi * 2 / count
+	for index = 0, count - 1 do
+		local theta = index * step
+		local cf, chord, radialDepth = radialBandFrame(innerA, innerB, outerA, outerB, theta, y, count)
+		part(
+			parent,
+			prefix .. string.format("_%02d", index + 1),
+			Vector3.new(chord * 1.13, height, radialDepth + 1.2),
+			cf,
+			color,
+			material
+		)
+	end
+end
+
+local function addSplitCanopy(westParent, eastParent)
+	local innerA, innerB = 65, 39
+	local outerA, outerB = 108, 70
+	local step = math.pi * 2 / ROOF_SEGMENTS
+
+	for index = 0, ROOF_SEGMENTS - 1 do
+		local theta = index * step
+		local cf, chord, radialDepth = radialBandFrame(innerA, innerB, outerA, outerB, theta, 50, ROOF_SEGMENTS)
+		local center = cf.Position
+		local parent = center.X < 0 and westParent or eastParent
+
+		part(
+			parent,
+			"RoofCanopySegment" .. string.format("_%02d", index + 1),
+			Vector3.new(chord * 1.14, 2.4, radialDepth + 1.6),
+			cf,
+			COLORS.Roof,
+			Enum.Material.Metal
+		)
+	end
+
+	-- Thin edge fascias hide the polygon joints and make both roof edges read
+	-- as one continuous architectural ring instead of individual roof blocks.
+	for index = 0, ROOF_SEGMENTS - 1 do
+		local theta = index * step
+		local x = math.cos(theta)
+		local outerX = outerA * x
+		local parent = outerX < 0 and westParent or eastParent
+
+		local outerCf, outerChord = tangentFrame(outerA, outerB, theta, 48.6)
+		part(
+			parent,
+			"RoofOuterFascia" .. string.format("_%02d", index + 1),
+			Vector3.new(outerChord * 1.12, 3.0, 1.8),
+			outerCf,
+			COLORS.Metal,
+			Enum.Material.Metal
+		)
+
+		local innerCf, innerChord = tangentFrame(innerA, innerB, theta, 48.8)
+		part(
+			parent,
+			"RoofInnerFascia" .. string.format("_%02d", index + 1),
+			Vector3.new(innerChord * 1.12, 2.6, 1.6),
+			innerCf,
+			COLORS.Metal,
+			Enum.Material.Metal
+		)
+	end
+end
+
+local function beamBetween(parent, name, a, b, thickness, color)
+	local delta = b - a
+	local length = delta.Magnitude
+	local middle = a:Lerp(b, 0.5)
+	return part(
+		parent,
+		name,
+		Vector3.new(thickness, thickness, length),
+		CFrame.lookAt(middle, b),
+		color or COLORS.Metal,
+		Enum.Material.Metal
+	)
+end
+
+local function addMainEntrance(group)
+	block(group, "EntranceHallMass", Vector3.new(70, 28, 14), Vector3.new(0, 14, -73), COLORS.Concrete, Enum.Material.Concrete)
+	block(group, "EntranceGlass", Vector3.new(68, 18, 0.5), Vector3.new(0, 13.5, -80.25), COLORS.Glass, Enum.Material.Glass, 0.12)
+	for _, x in ipairs({-31, -18, -6, 6, 18, 31}) do
+		block(group, "EntrancePier" .. tostring(x), Vector3.new(3.2, 30, 4), Vector3.new(x, 15, -79), COLORS.ConcreteDark, Enum.Material.Concrete)
+	end
+	block(group, "EntranceCanopy", Vector3.new(76, 2.0, 12), Vector3.new(0, 28.5, -78), COLORS.Roof, Enum.Material.Metal)
+	for step = 1, 4 do
+		block(
+			group,
+			"ArrivalStep" .. step,
+			Vector3.new(88 - step * 4, 0.8, 5),
+			Vector3.new(0, 0.4 + (step - 1) * 0.7, -86 + step * 3.8),
+			COLORS.Concrete,
+			Enum.Material.Concrete
+		)
+	end
+end
+
+local function addExteriorScreens(parent)
+	local count = 16
+	local a, b = 112.5, 72.5
+	local step = math.pi * 2 / count
+
+	for index = 0, count - 1 do
+		local theta = index * step
+		-- Keep the ceremonial front entrance visually clean; screens wrap the
+		-- sides and rear facade and sit clearly outside the closed bowl shell.
+		local frontDistance = math.abs(math.atan2(math.sin(theta + math.pi * 0.5), math.cos(theta + math.pi * 0.5)))
+		if frontDistance > math.rad(28) then
+			local cf, chord = tangentFrame(a, b, theta, 28)
+			local screen = part(
+				parent,
+				"ExteriorScreen" .. string.format("_%02d", index + 1),
+				Vector3.new(math.max(10.5, chord * 0.72), 7.5, 0.75),
+				cf,
+				COLORS.Glass,
+				Enum.Material.Glass,
+				0.04
+			)
+			screen:SetAttribute("FacadeStandOff", true)
+		end
+	end
+end
+
+local function addSeatingTier(parent, prefix, a, b, y, depth)
+	addSmoothRing(parent, prefix, a, b, y, 3.6, depth, BOWL_SEGMENTS, COLORS.Seat, Enum.Material.SmoothPlastic, 1.11)
+end
+
+local function addBowl(lowerGroup, upperGroup, serviceGroup)
+	-- Filled overlapping bands create a continuous oval shell. The previous
+	-- version used isolated blocks around an ellipse, which left large visible gaps.
+	addBandRing(lowerGroup, "LowerBowl", 84, 48, 110, 70, 12.5, 21, BOWL_SEGMENTS, COLORS.Concrete, Enum.Material.Concrete)
+	addBandRing(upperGroup, "UpperBowl", 76, 43, 106, 68, 34, 21, BOWL_SEGMENTS, COLORS.ConcreteDark, Enum.Material.Concrete)
+
+	-- Four stepped seating bands produce a readable two-tier interior without
+	-- modeling individual seats or creating a playable interior.
+	addSeatingTier(lowerGroup, "LowerSeatOuter", 79, 44, 19, 8.5)
+	addSeatingTier(lowerGroup, "LowerSeatInner", 73, 38, 23, 8.0)
+	addSeatingTier(upperGroup, "UpperSeatOuter", 77, 43, 36, 7.5)
+	addSeatingTier(upperGroup, "UpperSeatInner", 70, 36, 41, 7.0)
+
+	-- Continuous concourse glazing sits outside the concrete bowl.
+	addSmoothRing(serviceGroup, "ConcourseGlass", 108, 69, 19, 7, 1.25, BOWL_SEGMENTS, COLORS.Glass, Enum.Material.Glass, 1.12)
+	addExteriorScreens(serviceGroup)
+
+	-- Structural ribs are now accents over a closed facade, not the only thing
+	-- bridging large gaps between bowl blocks.
+	local step = math.pi * 2 / RIB_COUNT
+	for index = 0, RIB_COUNT - 1 do
+		local theta = index * step
+		local before = ellipsePoint(110, 71, theta - step * 0.5)
+		local after = ellipsePoint(110, 71, theta + step * 0.5)
+		local tangent = (after - before).Unit
+		local up = Vector3.yAxis
+		local back = tangent:Cross(up).Unit
+		local position = ellipsePoint(110, 71, theta) + Vector3.new(0, 25.5, 0)
+		part(
+			upperGroup,
+			"StructuralRib" .. string.format("_%02d", index + 1),
+			Vector3.new(2.4, 43, 3.0),
+			CFrame.fromMatrix(position, tangent, up, back),
+			COLORS.Metal,
+			Enum.Material.Metal
+		)
+	end
+end
+
+local function addPylons(group)
+	local positions = {
+		Vector3.new(-88, 0, -58),
+		Vector3.new(88, 0, -58),
+		Vector3.new(-88, 0, 58),
+		Vector3.new(88, 0, 58),
+	}
+
+	for pylonIndex, base in ipairs(positions) do
+		local sx = base.X < 0 and 1 or -1
+		local sz = base.Z < 0 and 1 or -1
+		for segment = 1, 3 do
+			local y = 12 + (segment - 1) * 24
+			local shrink = segment - 1
+			local x = base.X + sx * shrink * 2.4
+			local z = base.Z + sz * shrink * 1.6
+			block(
+				group,
+				"Pylon" .. pylonIndex .. "Segment" .. segment,
+				Vector3.new(10 - shrink * 2.2, 24, 12 - shrink * 2.5),
+				Vector3.new(x, y, z),
+				COLORS.ConcreteDark,
+				Enum.Material.Concrete
+			)
+		end
+
+		local top = Vector3.new(base.X + sx * 5, 72, base.Z + sz * 3.5)
+		local roofAnchor = Vector3.new(base.X * 0.80, 51, base.Z * 0.80)
+		beamBetween(group, "PylonRoofBrace" .. pylonIndex .. "A", top - Vector3.new(0, 14, 0), roofAnchor, 1.4, COLORS.Metal)
+		beamBetween(group, "PylonRoofBrace" .. pylonIndex .. "B", top - Vector3.new(0, 6, 0), roofAnchor + Vector3.new(-sx * 7, 0, -sz * 4), 1.1, COLORS.Metal)
+	end
+end
+
+local function addScoreboard(group)
+	block(group, "ScoreboardFrame", Vector3.new(52, 19, 3.0), Vector3.new(0, 39, 50), COLORS.Dark, Enum.Material.Metal)
+	block(group, "ScoreboardScreen", Vector3.new(47, 14, 0.5), Vector3.new(0, 39, 48.2), COLORS.Glass, Enum.Material.Glass, 0.05)
+	for _, x in ipairs({-24, 24}) do
+		block(group, "ScoreboardSupport" .. x, Vector3.new(2.2, 21, 2.2), Vector3.new(x, 29, 50), COLORS.Metal, Enum.Material.Metal)
+	end
+end
+
+local function addRearService(group)
+	block(group, "RearServiceMass", Vector3.new(82, 18, 14), Vector3.new(0, 9, 72), COLORS.ConcreteDark, Enum.Material.Concrete)
+
+	-- Rear is local +Z. The original openings were accidentally placed on the
+	-- inner (-Z) face at Z=64.7 and were hidden by the stadium body.
+	-- Move the complete service elevation to the visible outer rear face.
+	for _, x in ipairs({-30, -15, 0, 15, 30}) do
+		block(group, "RearServiceOpening" .. x, Vector3.new(10, 7, 0.5), Vector3.new(x, 7, 79.25), COLORS.Glass, Enum.Material.Glass, 0.14)
+	end
+
+	-- A shallow structural canopy gives the rear entrance a readable silhouette
+	-- before Phase 5 signage and loading-bay details are applied.
+	block(group, "RearServiceCanopy", Vector3.new(86, 1.4, 8), Vector3.new(0, 17.3, 82.5), COLORS.Metal, Enum.Material.Metal)
+	block(group, "RearServiceApron", Vector3.new(92, 0.5, 20), Vector3.new(0, 0.25, 86), COLORS.Concrete, Enum.Material.Concrete)
+end
+
+local function addPitch(group)
+	block(group, "PitchPerimeter", Vector3.new(118, 0.35, 72), Vector3.new(0, 0.18, 4), COLORS.ConcreteDark, Enum.Material.Concrete)
+	block(group, "PitchSurface", Vector3.new(104, 0.45, 60), Vector3.new(0, 0.55, 4), COLORS.Pitch, Enum.Material.Grass)
+end
+
+local function countVisibleParts(model)
+	local count = 0
+	for _, item in ipairs(model:GetDescendants()) do
+		if item:IsA("BasePart") and item.Transparency < 1 then
+			count += 1
+		end
+	end
+	model:SetAttribute("VisiblePartCount", count)
+	model:SetAttribute("VisiblePartBudget", 900)
+	model:SetAttribute("VisiblePartBudgetPassed", count <= 900)
+end
+
+function Builder.Build(parent)
+	local existing = parent:FindFirstChild("LargeCity_Stadium_L3_GoldenMaster")
+	if existing then existing:Destroy() end
+
+	local model = Instance.new("Model")
+	model.Name = "LargeCity_Stadium_L3_GoldenMaster"
+	model:SetAttribute("AssetId", specification.AssetId)
+	model:SetAttribute("DisplayName", specification.DisplayName)
+	model:SetAttribute("AssetPhase", 4)
+	model:SetAttribute("QualityGateA", "Approved")
+	model:SetAttribute("QualityGateB", "Approved")
+	model:SetAttribute("GeometryRevision", "LargeCityStadium-v3-FacadeScreens")
+	model:SetAttribute("RearServiceFixRevision", "LargeCityStadium-RearService-v1")
+	model:SetAttribute("RearServiceVisible", true)
+	model:SetAttribute("HasInterior", false)
+	model:SetAttribute("Style", specification.Style)
+	model:SetAttribute("MaxHealth", specification.ProposedGameplayMetadata.TargetMaxHealth)
+	model:SetAttribute("EnergyType", specification.ProposedGameplayMetadata.EnergyType)
+	model:SetAttribute("InstallerTag", specification.ProposedGameplayMetadata.InstallerTag)
+	model:SetAttribute("BowlSegmentCount", BOWL_SEGMENTS)
+	model:SetAttribute("RoofSegmentCount", ROOF_SEGMENTS)
+	model:SetAttribute("BowlClosedShell", true)
+	model:SetAttribute("RoofContinuousRing", true)
+	model:SetAttribute("ExteriorScreensRestored", true)
+	model:SetAttribute("EntranceGlazingFullSpan", true)
+	model.Parent = parent
+
+	local groups = folder(model, "DestructionGroups")
+	local d1 = folder(groups, "D1_MainEntrance")
+	local d2 = folder(groups, "D2_LowerBowl")
+	local d3 = folder(groups, "D3_UpperBowl")
+	local d4 = folder(groups, "D4_RoofCanopyWest")
+	local d5 = folder(groups, "D5_RoofCanopyEast")
+	local d6 = folder(groups, "D6_ScoreboardAndPylons")
+	local d7 = folder(groups, "D7_ServiceAndConcourse")
+
+	addMainEntrance(d1)
+	addBowl(d2, d3, d7)
+	addSplitCanopy(d4, d5)
+	addPylons(d6)
+	addScoreboard(d6)
+	addRearService(d7)
+	addPitch(d7)
+
+	local pivot = part(model, "GroundPivot", Vector3.new(1, 1, 1), CFrame.new(0, 0.5, 0), Color3.new(1, 1, 1), Enum.Material.SmoothPlastic, 1)
+	pivot.CanCollide = false
+	pivot.CanQuery = false
+	pivot.CanTouch = false
+	pivot.CastShadow = false
+	model.PrimaryPart = pivot
+	model:PivotTo(CFrame.new())
+
+	countVisibleParts(model)
+	return model
+end
+
+return Builder
+]]></string>
+      </Properties>
+    </Item>
+    <Item class="ModuleScript" referent="3">
+      <Properties>
+        <string name="Name">LargeCityStadiumInstaller</string>
+        <string name="Source"><![CDATA[local CollectionService = game:GetService("CollectionService")
+
+local packageFolder = script.Parent
+
+local specification = require(packageFolder:WaitForChild("LargeCityStadiumSpecification"))
+local goldenMaster = require(packageFolder:WaitForChild("LargeCityStadiumGoldenMaster"))
+local dressing = require(packageFolder:WaitForChild("LargeCityStadiumDressing"))
+local pong = require(packageFolder:WaitForChild("LargeCityStadiumPong"))
+
+local Installer = {}
+
+local MODEL_NAME = specification.AssetId
+local GOLDEN_MASTER_NAME = "LargeCity_Stadium_L3_GoldenMaster"
+local PACKAGE_VERSION = specification.ProposedGameplayMetadata.IntegrationPackageVersion
+local MAX_HEALTH = specification.ProposedGameplayMetadata.TargetMaxHealth
+local ENERGY_TYPE = specification.ProposedGameplayMetadata.EnergyType
+local BUILDING_TAG = specification.ProposedGameplayMetadata.InstallerTag
+
+local function validateDestructionGroups(model)
+	local groups = model:FindFirstChild("DestructionGroups")
+	assert(groups and groups:IsA("Folder"), "Large City Stadium installer requires a DestructionGroups folder")
+
+	for _, groupName in ipairs(specification.PlannedDestructionGroups) do
+		local group = groups:FindFirstChild(groupName)
+		assert(group and group:IsA("Folder"), "Large City Stadium is missing destruction group: " .. groupName)
+	end
+
+	return groups
+end
+
+local function lowestVisibleY(model)
+	local minimumY = math.huge
+	for _, item in ipairs(model:GetDescendants()) do
+		if item:IsA("BasePart") and item.Transparency < 1 then
+			local halfSize = item.Size * 0.5
+			local verticalExtent =
+				math.abs(item.CFrame.XVector.Y) * halfSize.X
+				+ math.abs(item.CFrame.YVector.Y) * halfSize.Y
+				+ math.abs(item.CFrame.ZVector.Y) * halfSize.Z
+			minimumY = math.min(minimumY, item.Position.Y - verticalExtent)
+		end
+	end
+	return minimumY
+end
+
+local function placeModel(model, options)
+	if options.CFrame then
+		assert(typeof(options.CFrame) == "CFrame", "Large City Stadium options.CFrame must be a CFrame")
+		model:PivotTo(options.CFrame)
+		return
+	end
+
+	local groundCFrame = options.GroundCFrame or CFrame.new()
+	assert(typeof(groundCFrame) == "CFrame", "Large City Stadium options.GroundCFrame must be a CFrame")
+	model:PivotTo(groundCFrame)
+
+	if options.AlignToGround == false then
+		return
+	end
+
+	local minimumY = lowestVisibleY(model)
+	if minimumY < math.huge then
+		local correction = groundCFrame.Position.Y - minimumY
+		model:PivotTo(model:GetPivot() + Vector3.new(0, correction, 0))
+		model:SetAttribute("GroundContactCorrection", correction)
+		model:SetAttribute("GroundContactY", groundCFrame.Position.Y)
+	end
+end
+
+local function applyIntegrationMetadata(model)
+	model.Name = MODEL_NAME
+	model:SetAttribute("AssetId", specification.AssetId)
+	model:SetAttribute("DisplayName", specification.DisplayName)
+	model:SetAttribute("City", specification.City)
+	model:SetAttribute("BuildingType", "Stadium")
+	model:SetAttribute("CityTier", 4)
+	model:SetAttribute("MaxHealth", MAX_HEALTH)
+	model:SetAttribute("EnergyType", ENERGY_TYPE)
+	model:SetAttribute("AssetPhase", 6)
+	model:SetAttribute("PipelinePhase", 6)
+	model:SetAttribute("QualityGateA", "Approved")
+	model:SetAttribute("QualityGateB", "Approved")
+	model:SetAttribute("QualityGateC", "Pending")
+	model:SetAttribute("Phase6Status", "ExternalGameTestPending")
+	model:SetAttribute("DressingStatus", "Approved")
+	model:SetAttribute("PackageId", "LargeCityStadiumPackage")
+	model:SetAttribute("IntegrationPackageVersion", PACKAGE_VERSION)
+	model:SetAttribute("IntegrationPackageReady", true)
+	model:SetAttribute("InstallerReady", true)
+	model:SetAttribute("FinalInstallerReady", false)
+	model:SetAttribute("WorkshopOnly", false)
+	model:SetAttribute("HasInterior", false)
+	model:SetAttribute("DestructionGroupCount", #specification.PlannedDestructionGroups)
+	model:SetAttribute("ExternalCollapseIntegration", true)
+	model:SetAttribute("UsesSharedMainGameDestruction", true)
+
+	if not CollectionService:HasTag(model, BUILDING_TAG) then
+		CollectionService:AddTag(model, BUILDING_TAG)
+	end
+end
+
+local function configurePong(model, options)
+	local enabled = options.EnablePong == true
+	model:SetAttribute("PongEnabled", enabled)
+	model:SetAttribute("PongIncluded", true)
+
+	if enabled then
+		pong.Attach(model)
+	else
+		model:SetAttribute("PongRuntimeAttached", false)
+	end
+end
+
+function Installer.Validate(model)
+	assert(model and model:IsA("Model"), "LargeCityStadiumInstaller.Validate requires a Model")
+	validateDestructionGroups(model)
+	assert(model:GetAttribute("MaxHealth") == MAX_HEALTH, "Large City Stadium MaxHealth metadata is invalid")
+	assert(model:GetAttribute("EnergyType") == ENERGY_TYPE, "Large City Stadium EnergyType metadata is invalid")
+	assert(CollectionService:HasTag(model, BUILDING_TAG), "Large City Stadium is missing tag: " .. BUILDING_TAG)
+	return true
+end
+
+function Installer.Install(parent, options)
+	assert(typeof(parent) == "Instance", "LargeCityStadiumInstaller.Install requires a parent Instance")
+	options = options or {}
+	assert(typeof(options) == "table", "LargeCityStadiumInstaller.Install options must be a table")
+
+	local existing = parent:FindFirstChild(MODEL_NAME)
+	if existing then
+		existing:Destroy()
+	end
+
+	local oldGoldenMaster = parent:FindFirstChild(GOLDEN_MASTER_NAME)
+	if oldGoldenMaster then
+		oldGoldenMaster:Destroy()
+	end
+
+	local model = goldenMaster.Build(parent)
+	dressing.Apply(model)
+	validateDestructionGroups(model)
+	applyIntegrationMetadata(model)
+	placeModel(model, options)
+	configurePong(model, options)
+	Installer.Validate(model)
+
+	return model
+end
+
+function Installer.Uninstall(parent)
+	assert(typeof(parent) == "Instance", "LargeCityStadiumInstaller.Uninstall requires a parent Instance")
+	local model = parent:FindFirstChild(MODEL_NAME)
+	if not model then
+		return false
+	end
+	model:Destroy()
+	return true
+end
+
+Installer.ModelName = MODEL_NAME
+Installer.PackageVersion = PACKAGE_VERSION
+Installer.MaxHealth = MAX_HEALTH
+Installer.EnergyType = ENERGY_TYPE
+Installer.RequiredTag = BUILDING_TAG
+Installer.QualityGateC = "Pending"
+
+return Installer
+]]></string>
+      </Properties>
+    </Item>
+    <Item class="ModuleScript" referent="4">
+      <Properties>
+        <string name="Name">LargeCityStadiumPong</string>
+        <string name="Source"><![CDATA[local RunService = game:GetService("RunService")
+
+local Pong = {}
+
+local WHITE = Color3.fromRGB(245, 248, 250)
+local PITCH_CENTER_Z = 4
+local LEFT_X = -45
+local RIGHT_X = 45
+local BALL_X_LIMIT = 42.5
+local Z_LIMIT = 25
+local BALL_SPEED_X = 24
+local BALL_SPEED_Z = 15
+local PADDLE_FOLLOW_SPEED = 7
+
+local function makePart(parent, name, size, localPosition, rootCFrame)
+	local item = Instance.new("Part")
+	item.Name = name
+	item.Size = size
+	item.CFrame = rootCFrame * CFrame.new(localPosition)
+	item.Color = WHITE
+	item.Material = Enum.Material.Neon
+	item.Anchored = true
+	item.CanCollide = false
+	item.CanQuery = false
+	item.CanTouch = false
+	item.CastShadow = false
+	item.TopSurface = Enum.SurfaceType.Smooth
+	item.BottomSurface = Enum.SurfaceType.Smooth
+	item.Parent = parent
+	return item
+end
+
+local function localToWorld(rootCFrame, x, y, z)
+	return (rootCFrame * CFrame.new(x, y, z))
+end
+
+function Pong.Attach(model)
+	local existing = model:FindFirstChild("PongEasterEgg")
+	if existing then
+		existing:Destroy()
+	end
+
+	if model:GetAttribute("PongEnabled") == nil then
+		model:SetAttribute("PongEnabled", true)
+	end
+
+	local root = model.PrimaryPart
+	assert(root, "Large City Stadium Pong requires model.PrimaryPart")
+
+	local folder = Instance.new("Folder")
+	folder.Name = "PongEasterEgg"
+	folder.Parent = model
+
+	local rootCFrame = root.CFrame
+	local y = 1.35
+
+	local leftPaddle = makePart(folder, "LeftPaddle", Vector3.new(1.25, 0.32, 12), Vector3.new(LEFT_X, y, PITCH_CENTER_Z), rootCFrame)
+	local rightPaddle = makePart(folder, "RightPaddle", Vector3.new(1.25, 0.32, 12), Vector3.new(RIGHT_X, y, PITCH_CENTER_Z), rootCFrame)
+	local ball = makePart(folder, "Ball", Vector3.new(2.2, 0.34, 2.2), Vector3.new(0, y + 0.02, PITCH_CENTER_Z), rootCFrame)
+
+	local beep = Instance.new("Sound")
+	beep.Name = "PongBeep"
+	beep.SoundId = "rbxasset://sounds/electronicpingshort.wav"
+	beep.Volume = 0.34
+	beep.PlaybackSpeed = 0.86
+	beep.RollOffMaxDistance = 260
+	beep.RollOffMinDistance = 24
+	beep.RollOffMode = Enum.RollOffMode.InverseTapered
+	beep.Parent = ball
+
+	-- Push the stock electronic ping toward the dry, narrow-band tone of an
+	-- early Pong/CRT set: little bass, strong upper-mid presence and a hint of buzz.
+	local eq = Instance.new("EqualizerSoundEffect")
+	eq.Name = "CRTEqualizer"
+	eq.LowGain = -18
+	eq.MidGain = 1
+	eq.HighGain = 7
+	eq.Parent = beep
+
+	local distortion = Instance.new("DistortionSoundEffect")
+	distortion.Name = "CRTBuzz"
+	distortion.Level = 0.11
+	distortion.Parent = beep
+
+	local stateX = 0
+	local stateZ = PITCH_CENTER_Z
+	local velocityX = BALL_SPEED_X
+	local velocityZ = BALL_SPEED_Z
+	local leftZ = PITCH_CENTER_Z
+	local rightZ = PITCH_CENTER_Z
+	local bounceCount = 0
+
+	local beepGeneration = 0
+	local function playBeep(pitch)
+		beepGeneration += 1
+		local generation = beepGeneration
+		beep.PlaybackSpeed = pitch
+		beep.TimePosition = 0
+		beep:Play()
+
+		-- Classic Pong is a very short TV-like pip, not a lingering chime.
+		task.delay(0.075, function()
+			if beepGeneration == generation and beep.IsPlaying then
+				beep:Stop()
+			end
+		end)
+	end
+
+	local function updateVisibility()
+		local enabled = model:GetAttribute("PongEnabled") ~= false
+		local transparency = enabled and 0 or 1
+		leftPaddle.Transparency = transparency
+		rightPaddle.Transparency = transparency
+		ball.Transparency = transparency
+		if not enabled and beep.IsPlaying then
+			beep:Stop()
+		end
+		return enabled
+	end
+
+	updateVisibility()
+
+	local connection
+	connection = RunService.Heartbeat:Connect(function(dt)
+		if not model.Parent or not folder.Parent then
+			connection:Disconnect()
+			return
+		end
+
+		if not updateVisibility() then
+			return
+		end
+
+		dt = math.min(dt, 1 / 20)
+		stateX += velocityX * dt
+		stateZ += velocityZ * dt
+
+		local upperZ = PITCH_CENTER_Z + Z_LIMIT
+		local lowerZ = PITCH_CENTER_Z - Z_LIMIT
+		if stateZ >= upperZ then
+			stateZ = upperZ
+			velocityZ = -math.abs(velocityZ)
+			bounceCount += 1
+			playBeep(bounceCount % 2 == 0 and 0.84 or 0.79)
+		elseif stateZ <= lowerZ then
+			stateZ = lowerZ
+			velocityZ = math.abs(velocityZ)
+			bounceCount += 1
+			playBeep(bounceCount % 2 == 0 and 1.06 or 0.96)
+		end
+
+		if stateX >= BALL_X_LIMIT then
+			stateX = BALL_X_LIMIT
+			velocityX = -math.abs(velocityX)
+			velocityZ = math.clamp(velocityZ + math.sin(bounceCount * 1.7) * 3.2, -20, 20)
+			bounceCount += 1
+			playBeep(1.02)
+		elseif stateX <= -BALL_X_LIMIT then
+			stateX = -BALL_X_LIMIT
+			velocityX = math.abs(velocityX)
+			velocityZ = math.clamp(velocityZ + math.cos(bounceCount * 1.4) * 3.2, -20, 20)
+			bounceCount += 1
+			playBeep(0.94)
+		end
+
+		local targetLeft = math.clamp(stateZ + math.sin(bounceCount * 0.8) * 2.5, lowerZ + 6, upperZ - 6)
+		local targetRight = math.clamp(stateZ + math.cos(bounceCount * 0.7) * 2.5, lowerZ + 6, upperZ - 6)
+		local alpha = math.clamp(PADDLE_FOLLOW_SPEED * dt, 0, 1)
+		leftZ += (targetLeft - leftZ) * alpha
+		rightZ += (targetRight - rightZ) * alpha
+
+		ball.CFrame = localToWorld(rootCFrame, stateX, y + 0.02, stateZ)
+		leftPaddle.CFrame = localToWorld(rootCFrame, LEFT_X, y, leftZ)
+		rightPaddle.CFrame = localToWorld(rootCFrame, RIGHT_X, y, rightZ)
+	end)
+
+	model:SetAttribute("PongRuntimeAttached", true)
+	model:SetAttribute("PongSoundStyle", "CRT-Pong-Pip-v2")
+	folder:SetAttribute("DecorativeOnly", true)
+	folder:SetAttribute("Runtime", "ServerPreview")
+	return folder
+end
+
+return Pong
+]]></string>
+      </Properties>
+    </Item>
+    <Item class="ModuleScript" referent="5">
+      <Properties>
+        <string name="Name">LargeCityStadiumSpecification</string>
+        <string name="Source"><![CDATA[local Specification = {
+	AssetId = "LargeCity_Stadium_L3",
+	DisplayName = "Large City Stadium",
+	City = "LargeCity",
+	Phase = 6,
+	QualityGate = "C-Pending",
+	Style = "Singapore x Miami tropical metropolitan sports landmark",
+
+	AssetBrief = {
+		Purpose = "Major Large City landmark, high-value destruction target and visual anchor for the Sports + Uptown district.",
+		Role = "Primary stadium of the metropolis; must be instantly readable as a stadium from kaiju distance and clearly distinct from an arena, mall or convention center.",
+		Scale = "Very large L3 landmark sized to the approved LC-50 plot: approximately 250 x 170 studs with a silhouette height around 72 studs.",
+		GameplayRead = "Open-bowl massing, roof ring/canopy, visible seating tiers, entrance gates and stadium-scale signage must survive distance compression.",
+		NoInterior = true,
+	},
+
+	Location = {
+		LayoutId = "LC-50",
+		District = "Sports + Uptown",
+		PlotCenter = Vector3.new(0, 24, 555),
+		PlotFootprint = Vector2.new(250, 170),
+		PlotYaw = 0,
+		ApprovedBlockoutHeight = 72,
+	},
+
+	VisualTarget = {
+		Approved = true,
+		Status = "Approved",
+		Revision = "LargeCityStadium-VisualTarget-v1",
+		ApprovedRead = "Grand tropical metropolitan open-bowl stadium with layered seating, a light partial roof ring, four tall structural pylons, a monumental glazed entrance and a large internal scoreboard.",
+		Front = "Symmetrical civic arrival facade with broad glazed gate hall, stadium wordmark, strong vertical entrance piers and palm-lined plaza.",
+		Sides = "Oval bowl with repeated concrete/steel ribs, exposed concourse glazing and visible stepped seating mass.",
+		Rear = "Functional bowl elevation with repeated ribs and service/concourse openings; no second ceremonial entrance.",
+		Roof = "Open center with a thin segmented canopy/ring around the bowl; white/light-metal structure, not a sealed dome.",
+		Pylons = "Four tall tapered pylons at the main quadrant positions, clearly above the roof line and readable at kaiju distance.",
+		InteriorRead = "Pitch opening, two-tier seating and one dominant scoreboard are visible from above; no modeled rooms or playable interior required.",
+	},
+
+	DesignIntent = {
+		Silhouette = "Broad oval stadium bowl with a strong elevated roof ring and four unmistakable structural pylons.",
+		Front = "Grand civic arrival facade with broad stair/ramp language, multiple gate bays and a central stadium wordmark.",
+		Sides = "Tiered bowl geometry with repeated structural ribs rather than flat walls.",
+		Roof = "Partial open roof canopy framing the pitch opening; not a fully sealed dome.",
+		Rear = "Service/loading side with simplified but credible stadium infrastructure.",
+		Landscape = "Palm-lined plazas, broad pedestrian hardscape and transit-friendly arrival zones.",
+	},
+
+	VisualLanguage = {
+		PrimaryMaterials = {"light concrete", "white structural steel", "dark glass", "brushed metal"},
+		Accent = "restrained teal/cyan with limited warm sports signage accents",
+		Avoid = {"sealed futuristic dome", "generic rectangular box", "small-town football field", "resort aesthetic", "Mega City sci-fi language"},
+		IdentityAnchors = {"open stadium bowl", "partial roof canopy", "visible seating tiers", "repeated structural ribs", "large civic entrance", "scoreboard / stadium signage", "four tall pylons"},
+	},
+
+	TechnicalBreakdown = {
+		CoordinateSystem = {
+			Pivot = "Ground center of stadium footprint",
+			Front = "Local -Z faces main civic arrival plaza",
+			Rear = "Local +Z faces service side",
+			GroundY = 0,
+		},
+		Massing = {
+			OuterBowl = {Footprint = Vector2.new(222, 146), LowerHeight = 26, UpperHeight = 47},
+			PitchOpening = {Footprint = Vector2.new(108, 64), Center = Vector3.new(0, 0, 4)},
+			MainEntrance = {Footprint = Vector2.new(70, 18), Center = Vector3.new(0, 14, -72), Height = 30},
+			RearService = {Footprint = Vector2.new(82, 15), Center = Vector3.new(0, 9, 72), Height = 18},
+		},
+		Bowl = {
+			SegmentCount = 64,
+			LowerTierTopY = 24,
+			UpperTierTopY = 43,
+			ConcourseBandY = 18,
+			StructuralRibCount = 32,
+			Rule = "Use overlapping high-resolution shell segments so the bowl reads as one continuous oval; structural ribs remain a facade accent rather than bridging open gaps.",
+		},
+		Roof = {
+			CanopyOuterFootprint = Vector2.new(218, 142),
+			CanopyInnerOpening = Vector2.new(128, 78),
+			CanopyY = 50,
+			CanopyThickness = 2.4,
+			SegmentCount = 64,
+			Rule = "Roof remains visibly open over the pitch, uses overlapping high-resolution segments with continuous inner/outer fascias, and is split into coherent destroyable canopy masses.",
+		},
+		Pylons = {
+			Height = 72,
+			BaseSize = Vector3.new(9, 12, 12),
+			TopSize = Vector3.new(4, 4, 5),
+			Positions = {
+				Vector3.new(-88, 36, -58), Vector3.new(88, 36, -58),
+				Vector3.new(-88, 36, 58), Vector3.new(88, 36, 58),
+			},
+			Rule = "Pylons taper subtly inward and connect visually to the roof canopy.",
+		},
+		Scoreboard = {Size = Vector3.new(48, 16, 2.2), Center = Vector3.new(0, 38, 50)},
+		FacadeModules = {
+			EntranceGlazingSpan = 68,
+			EntranceGlazingHeight = 18,
+			RibWidth = 2.4,
+			ConcourseGlassHeight = 7,
+			FacadeStandOff = 0.3,
+			Rule = "Glass and decorative overlays must stand clear of structural faces to avoid Z-fighting.",
+		},
+		LandscapeReferences = {PalmCount = 14, MainPlaza = Vector3.new(110, 0, 28), SidePlazaDepth = 16, Phase = 5},
+		PartBudget = {TargetVisibleParts = 760, MaximumVisibleParts = 900},
+	},
+
+	PlannedPhase5 = {
+		Facade = {
+			ExteriorScreens = "Restore rectangular exterior window/screen panels as visible overlays outside the continuous bowl shell.",
+			EntranceGlazing = "Widen the main entrance glass so the glazed facade spans the complete gate sector rather than only the central bays.",
+		},
+		PongEasterEgg = {
+			Status = "ApprovedForPhase5",
+			Purpose = "Small decorative stadium gag running on the football pitch; no gameplay reward or player interaction.",
+			Presentation = "Minimal classic Pong projected/placed flat just above the pitch surface.",
+			LeftPaddle = {Shape = "thin white bar", Size = Vector3.new(1.2, 0.25, 12)},
+			RightPaddle = {Shape = "thin white bar", Size = Vector3.new(1.2, 0.25, 12)},
+			Ball = {Shape = "small white square", Size = Vector3.new(2.2, 0.25, 2.2)},
+			Motion = {
+				Loop = true,
+				Deterministic = true,
+				HorizontalTravel = "Ball travels continuously between left and right paddles.",
+				VerticalTravel = "Small changing Z component creates classic diagonal Pong motion and top/bottom bounces.",
+				Paddles = "Paddles track the ball with deliberately simple smooth motion so the rally continues indefinitely.",
+			},
+			Audio = {
+				Enabled = true,
+				Style = "short simple retro Pong beep",
+				Events = {"paddle bounce", "top/bottom boundary bounce"},
+				Spatial = true,
+				MaxDistance = 95,
+				Volume = 0.18,
+				Rule = "Keep the beep subtle enough that it reads as a nearby stadium Easter egg rather than global ambience.",
+			},
+			Runtime = {
+				DecorativeOnly = true,
+				ServerAuthoritative = false,
+				PreferredExecution = "lightweight client/local visual animation when practical",
+				DisableAttribute = "PongEnabled",
+				DefaultEnabled = true,
+				CleanupWithAsset = true,
+			},
+		},
+	},
+
+	ProposedGameplayMetadata = {
+		TargetMaxHealth = 256000,
+		EnergyType = "Electric",
+		InstallerTag = "KaijuHouse",
+		IntegrationPackageVersion = 1,
+		FinalInstallerReady = false,
+		ExternalCollapseIntegration = true,
+	},
+
+	PlannedDestructionGroups = {
+		"D1_MainEntrance", "D2_LowerBowl", "D3_UpperBowl", "D4_RoofCanopyWest",
+		"D5_RoofCanopyEast", "D6_ScoreboardAndPylons", "D7_ServiceAndConcourse",
+	},
+
+	QualityGateA = {
+		Status = "Approved",
+		ApprovedTarget = "LargeCityStadium-VisualTarget-v1",
+	},
+
+	QualityGateB = {
+		Status = "Approved",
+		ApprovedGeometry = "LargeCityStadium-v3-FacadeScreens",
+		Notes = "Smooth oval bowl, continuous roof ring, restored exterior facade screens, full-span entrance glazing, verified ground contact and working Pong preview accepted.",
+		NextPhase = 5,
+	},
+
+	Phase5Status = {
+		Status = "Approved",
+		Revision = "LargeCityStadium-Dressing-v6-RearServiceVisible",
+		Includes = {
+			"Large City Stadium wordmark and Gate A-D signage",
+			"teal/cyan exterior accent band",
+			"eight facade display panels",
+			"pylon floodlight banks",
+			"tropical entrance palms and planters",
+			"subtle football pitch markings",
+			"decorative Pong Easter egg with CRT-style beep",
+			"visible rear team/service/loading entrance with five numbered bays",
+		},
+		QualityGateC = "Pending",
+		NextPhase = "ExternalGameTestPending",
+	},
+
+	RearServiceFix = {
+		Status = "Approved",
+		GeometryRevision = "LargeCityStadium-RearService-v1",
+		DressingRevision = "LargeCityStadium-Dressing-v6-RearServiceVisible",
+		Notes = "Previously hidden rear service openings were moved to the true exterior +Z face; canopy, apron, team/service signage, five bays, crew entrance and loading guides accepted.",
+	},
+
+	Phase6Status = {
+		Status = "ExternalGameTestPending",
+		ExternalCollapseIntegration = true,
+		QualityGateC = "Pending",
+		Notes = "Workshop visual review approved; destruction/collapse behaviour remains deferred to the main game's shared collapse system.",
+	},
+
+	Phase3Acceptance = {
+		"Outer bowl, pitch opening, roof ring, pylons, entrance and rear service mass have deterministic dimensions.",
+		"Continuous overlapping oval shell, stepped seating tiers and structural ribs replace the previous gapped blockout read.",
+		"Seven destruction groups map cleanly to large coherent physical masses.",
+		"Golden Master target remains below 900 visible parts.",
+		"No modeled interior rooms are required.",
+	},
+}
+
+return Specification
+]]></string>
+      </Properties>
+    </Item>
+  </Item>
+</roblox>
