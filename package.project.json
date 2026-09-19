@@ -1,6 +1,9 @@
 {
-  "name": "TrenchbornAssetWorkshop",
+  "name": "LargeCityPowerUtilityPackage",
   "tree": {
-    "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop"
+    "$className": "Folder",
+    "LargeCityPowerUtilitySpecification": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityPowerUtilitySpecification.lua"
+    }
   }
 }
