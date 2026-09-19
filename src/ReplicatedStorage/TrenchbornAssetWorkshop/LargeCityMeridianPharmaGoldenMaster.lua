@@ -131,30 +131,38 @@ end
 local function addCleanroomHall(group)
 	block(group, "CleanroomHallMass", Vector3.new(76, 28, 74), Vector3.new(20, 14, 2), COLORS.Sterile, Enum.Material.Concrete)
 
-	-- Two cleanroom observation bands front and rear. They stand clearly outside the wall.
+	-- One shared facade grid controls BOTH observation bands and the full-height
+	-- vertical framing. This prevents the upper/lower windows and long vertical
+	-- struts from using different X positions.
+	local facadeGrid = {}
+	for bay = 0, 9 do
+		facadeGrid[#facadeGrid + 1] = -13 + (66 / 9) * bay
+	end
+
+	-- Two cleanroom observation bands front and rear.
 	for bandIndex, y in ipairs({9.0, 19.0}) do
 		block(group, "CleanroomFrontBand_" .. bandIndex, Vector3.new(66, 4.4, 0.65), Vector3.new(20, y, -35.4), COLORS.Glass, Enum.Material.Glass, 0.07)
 		block(group, "CleanroomRearBand_" .. bandIndex, Vector3.new(66, 4.4, 0.65), Vector3.new(20, y, 39.4), COLORS.Glass, Enum.Material.Glass, 0.07)
-
-		for bay = 0, 9 do
-			local x = -13 + (66 / 9) * bay
-			block(group, "FrontBandMullion_" .. bandIndex .. "_" .. bay, Vector3.new(0.48, 4.8, 0.82), Vector3.new(x, y, -35.75), COLORS.Metal, Enum.Material.Metal)
-			block(group, "RearBandMullion_" .. bandIndex .. "_" .. bay, Vector3.new(0.48, 4.8, 0.82), Vector3.new(x, y, 39.75), COLORS.Metal, Enum.Material.Metal)
-		end
 	end
 
-	-- Sterile facade seams keep the hall modular and engineered.
-	for bay = 0, 9 do
-		local x = -18 + (76 / 9) * bay
-		block(group, "CleanroomPanelJointFront_" .. bay, Vector3.new(0.32, 27, 0.45), Vector3.new(x, 14, -35.55), COLORS.SterileDark, Enum.Material.Metal)
-		block(group, "CleanroomPanelJointRear_" .. bay, Vector3.new(0.32, 27, 0.45), Vector3.new(x, 14, 39.55), COLORS.SterileDark, Enum.Material.Metal)
+	-- Continuous vertical facade frames now run from bottom to top on exactly
+	-- the same grid as both window bands.
+	for index, x in ipairs(facadeGrid) do
+		block(group, "CleanroomVerticalFrameFront_" .. index, Vector3.new(0.55, 27, 0.82), Vector3.new(x, 14, -35.75), COLORS.Metal, Enum.Material.Metal)
+		block(group, "CleanroomVerticalFrameRear_" .. index, Vector3.new(0.55, 27, 0.82), Vector3.new(x, 14, 39.75), COLORS.Metal, Enum.Material.Metal)
+	end
+
+	-- Horizontal caps make the two observation levels read as intentional bands
+	-- while preserving the same vertical rhythm all the way through the facade.
+	for bandIndex, y in ipairs({6.8, 11.2, 16.8, 21.2}) do
+		block(group, "CleanroomBandRailFront_" .. bandIndex, Vector3.new(66, 0.42, 0.78), Vector3.new(20, y, -35.72), COLORS.Metal, Enum.Material.Metal)
+		block(group, "CleanroomBandRailRear_" .. bandIndex, Vector3.new(66, 0.42, 0.78), Vector3.new(20, y, 39.72), COLORS.Metal, Enum.Material.Metal)
 	end
 
 	-- Restrained chemical safety accents on process-facing corners only.
 	block(group, "ChemicalSafetyFront", Vector3.new(0.5, 18, 0.5), Vector3.new(58.4, 14, -34.8), COLORS.Chemical, Enum.Material.Neon)
 	block(group, "ChemicalSafetyRear", Vector3.new(0.5, 18, 0.5), Vector3.new(58.4, 14, 38.8), COLORS.Chemical, Enum.Material.Neon)
 end
-
 local function addProcessBridge(group)
 	-- Short elevated bridge spans the real open seam between the research
 	-- headhouse (right edge X=-22) and cleanroom hall (left edge X=-18).
@@ -314,8 +322,8 @@ function Builder.Build(parent)
 	model:SetAttribute("DisplayName", specification.DisplayName)
 	model:SetAttribute("AssetPhase", 4)
 	model:SetAttribute("QualityGateA", "Approved")
-	model:SetAttribute("QualityGateB", "Approved")
-	model:SetAttribute("GeometryRevision", "LargeCityMeridianPharma-v6-ExternalProcessLighting")
+	model:SetAttribute("QualityGateB", "Pending")
+	model:SetAttribute("GeometryRevision", "LargeCityMeridianPharma-v7-AlignedCleanroomFacadeGrid")
 	model:SetAttribute("MaxHealth", specification.ProposedGameplayMetadata.TargetMaxHealth)
 	model:SetAttribute("EnergyType", specification.ProposedGameplayMetadata.EnergyType)
 	model:SetAttribute("InstallerTag", specification.ProposedGameplayMetadata.InstallerTag)
@@ -323,6 +331,7 @@ function Builder.Build(parent)
 	model:SetAttribute("HasInterior", false)
 	model:SetAttribute("ResearchHeadhouseDistinct", true)
 	model:SetAttribute("CleanroomObservationBands", true)
+	model:SetAttribute("CleanroomFacadeGridAligned", true)
 	model:SetAttribute("ProcessBridgeExternal", true)
 	model:SetAttribute("ResearchProductionGapVisible", true)
 	model:SetAttribute("ResearchSpineExternal", true)
