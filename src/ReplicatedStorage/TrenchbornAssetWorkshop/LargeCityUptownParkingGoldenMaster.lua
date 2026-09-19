@@ -79,8 +79,8 @@ local function addBase(group)
 	end
 
 	-- Pedestrian entry is separated from cars and tied to the glass core.
-	block(group, "PedestrianPortal", Vector3.new(11, 8, 2.4), Vector3.new(-27, 4.5, -29.0), COLORS.Dark, Enum.Material.Metal)
-	block(group, "PedestrianGlass", Vector3.new(8.5, 6.5, 0.6), Vector3.new(-27, 4.2, -30.6), COLORS.Glass, Enum.Material.Glass, 0.08)
+	block(group, "PedestrianPortal", Vector3.new(11, 8, 2.4), Vector3.new(-38.5, 4.5, -25.2), COLORS.Dark, Enum.Material.Metal)
+	block(group, "PedestrianGlass", Vector3.new(8.5, 6.5, 0.6), Vector3.new(-38.5, 4.2, -26.6), COLORS.Glass, Enum.Material.Glass, 0.08)
 end
 
 local function addDeckStructure(group)
@@ -187,14 +187,20 @@ local function addExpressedRamp(group)
 end
 
 local function addPedestrianCore(group)
-	-- Core projects beyond the facade screen and remains readable from the street.
-	block(group, "CoreMass", Vector3.new(10, 50, 12), Vector3.new(-29, 25, -18), COLORS.Dark, Enum.Material.Metal)
-	block(group, "CoreGlassFront", Vector3.new(8.5, 47, 0.65), Vector3.new(-29, 25, -24.35), COLORS.Glass, Enum.Material.Glass, 0.07)
-	block(group, "CoreGlassSide", Vector3.new(0.65, 47, 10), Vector3.new(-34.35, 25, -18), COLORS.Glass, Enum.Material.Glass, 0.07)
+	-- Freestanding glass core sits just outside the garage's left deck edge.
+	-- v1 intersected the dark CoreMass with the concrete base/decks, producing
+	-- visible Z-fighting near the lower levels. The core now clears the deck
+	-- envelope by 0.5 studs while remaining visually attached to the building.
+	local coreX = -38.5
+	local coreZ = -18
+
+	block(group, "CoreMass", Vector3.new(10, 50, 12), Vector3.new(coreX, 25, coreZ), COLORS.Dark, Enum.Material.Metal)
+	block(group, "CoreGlassFront", Vector3.new(8.5, 47, 0.65), Vector3.new(coreX, 25, coreZ - 6.35), COLORS.Glass, Enum.Material.Glass, 0.07)
+	block(group, "CoreGlassSide", Vector3.new(0.65, 47, 10), Vector3.new(coreX - 5.35, 25, coreZ), COLORS.Glass, Enum.Material.Glass, 0.07)
 	for y = 6, 46, 6.5 do
-		block(group, "CoreHorizontal_" .. tostring(y), Vector3.new(9, 0.45, 0.8), Vector3.new(-29, y, -24.7), COLORS.Metal, Enum.Material.Metal)
+		block(group, "CoreHorizontal_" .. tostring(y), Vector3.new(9, 0.45, 0.8), Vector3.new(coreX, y, coreZ - 6.7), COLORS.Metal, Enum.Material.Metal)
 	end
-	block(group, "CoreTop", Vector3.new(11, 1.0, 13), Vector3.new(-29, 50.5, -18), COLORS.Metal, Enum.Material.Metal)
+	block(group, "CoreTop", Vector3.new(11, 1.0, 13), Vector3.new(coreX, 50.5, coreZ), COLORS.Metal, Enum.Material.Metal)
 end
 
 local function addRooftopMobilityDeck(group)
@@ -250,7 +256,7 @@ function Builder.Build(parent)
 	model:SetAttribute("AssetPhase", 4)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Pending")
-	model:SetAttribute("GeometryRevision", "LargeCityUptownParking-v1-VerdantMobilityDeck")
+	model:SetAttribute("GeometryRevision", "LargeCityUptownParking-v2-FreestandingPedestrianCore")
 	model:SetAttribute("MaxHealth", specification.ProposedGameplayMetadata.TargetMaxHealth)
 	model:SetAttribute("EnergyType", specification.ProposedGameplayMetadata.EnergyType)
 	model:SetAttribute("InstallerTag", specification.ProposedGameplayMetadata.InstallerTag)
@@ -262,6 +268,8 @@ function Builder.Build(parent)
 	model:SetAttribute("GreenBreathingCuts", 2)
 	model:SetAttribute("RooftopSolarCanopy", true)
 	model:SetAttribute("RearServiceVisible", true)
+	model:SetAttribute("PedestrianCoreClearsDeckEnvelope", true)
+	model:SetAttribute("PedestrianCoreZFightingFix", true)
 	model.Parent = parent
 
 	local groups = folder(model, "DestructionGroups")
