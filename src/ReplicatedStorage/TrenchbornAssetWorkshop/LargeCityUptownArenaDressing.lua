@@ -151,7 +151,7 @@ local function addEntranceDressing(root)
 		COLORS.Teal,
 		Enum.Material.Neon
 	)
-	addSurfaceText(area, eventStrip, "SPORTS   •   CONCERTS   •   EVENTS", Enum.NormalId.Front, COLORS.White)
+	addSurfaceText(area, eventStrip, "SPORTS   •   CONCERTS   •   EVENTS", Enum.NormalId.Front, COLORS.Dark)
 
 	local gates = {
 		-- Portal piers sit at -27, -17, -6, 6, 17 and 27.
@@ -231,7 +231,7 @@ local function addMediaRibbonDressing(root)
 		)
 		frame.CastShadow = true
 		display.CastShadow = false
-		addSurfaceText(area, display, panel.text, Enum.NormalId.Front, COLORS.White)
+		addSurfaceText(area, display, panel.text, Enum.NormalId.Front, COLORS.Dark)
 	end
 end
 
@@ -336,7 +336,7 @@ local function addRearDressing(root)
 		COLORS.Teal,
 		Enum.Material.Neon
 	)
-	addSurfaceText(area, crewSign, "CREW", Enum.NormalId.Back, COLORS.White)
+	addSurfaceText(area, crewSign, "CREW", Enum.NormalId.Back, COLORS.Dark)
 
 	for index, x in ipairs({-27, -9, 9, 27}) do
 		local dock = block(
@@ -379,7 +379,7 @@ function Dressing.Apply(model)
 	model:SetAttribute("AssetPhase", 5)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Approved")
-	model:SetAttribute("DressingRevision", "LargeCityUptownArena-Dressing-v5-ProjectedFacade")
+	model:SetAttribute("DressingRevision", "LargeCityUptownArena-Dressing-v6-HighContrastNeonText")
 	model:SetAttribute("DressingStatus", "Review")
 	model:SetAttribute("TextScaledRule", true)
 	model:SetAttribute("FacadeFeatureBays", 8)
@@ -389,6 +389,7 @@ function Dressing.Apply(model)
 	model:SetAttribute("MediaScreensProjectedOutsideShell", true)
 	model:SetAttribute("FeatureBaysProjectedOutsideShell", true)
 	model:SetAttribute("FacadeLightsProjectedOutsideShell", true)
+	model:SetAttribute("HighContrastNeonText", true)
 	return model
 end
 
