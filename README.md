@@ -2,30 +2,30 @@
 
 Synchronized Roblox Studio workspace for specification-driven Trenchborn asset development and automated quality gates.
 
-## Large City Waterfront Resort integration package
+## Large City Central Hospital integration package
 
-The Waterfront Resort can be imported into another Roblox project without the Large City layout, workshop preview, or bootstrap scripts. The package contains only the seven Resort modules required to build and install the asset.
+The Central Hospital can be imported into another Roblox project without the workshop preview or bootstrap scripts. The package contains only its Specification, Golden Master, Roof Fix, Geometry Refinement, Dressing, and Installer modules.
 
 Build the Studio-importable package with Rojo:
 
 ```powershell
-.\tools\build-largecity-waterfront-resort-package.ps1
+.\tools\build-largecity-central-hospital-package.ps1
 ```
 
-This creates `dist/LargeCityWaterfrontResortPackage.rbxmx`. Insert that model into `ReplicatedStorage` in the target place, then call the installer from a server script:
+This creates `dist/LargeCityCentralHospitalPackage.rbxmx`. Insert that model into `ReplicatedStorage` in the target place, then call the installer from a server script:
 
 ```lua
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local packageFolder = ReplicatedStorage:WaitForChild("LargeCityWaterfrontResortPackage")
-local installer = require(packageFolder:WaitForChild("LargeCityWaterfrontResortInstaller"))
+local packageFolder = ReplicatedStorage:WaitForChild("LargeCityCentralHospitalPackage")
+local installer = require(packageFolder:WaitForChild("LargeCityCentralHospitalInstaller"))
 
-local resort = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
+local hospital = installer.Install(workspace, {
+	GroundCFrame = CFrame.new(625, 0, -170),
 })
 ```
 
-`GroundCFrame` identifies the desired ground position and orientation. The installer builds all Resort geometry and dressing, aligns the lowest visible part to the requested ground height, validates all seven destruction groups, sets `MaxHealth` to `64000`, sets `EnergyType` to `Thermal`, and adds the `KaijuHouse` tag. Calling `Install` again replaces the previous installation; `installer.Uninstall(parent)` removes it.
+`GroundCFrame` identifies the desired ground position and orientation. The installer applies all geometry fixes and dressing, aligns the lowest visible part to the requested ground height, validates all seven destruction groups, sets `MaxHealth` to `64000`, sets `EnergyType` to `Chemical`, and adds the `KaijuHouse` tag. Calling `Install` again replaces the previous installation; `installer.Uninstall(parent)` removes it.
 
 This is a Phase 6 integration package. It is ready for use by the target project's shared damage and collapse system, but Quality Gate C remains pending until that external gameplay test passes. It must not be treated as the final Phase 7 release yet.
 
