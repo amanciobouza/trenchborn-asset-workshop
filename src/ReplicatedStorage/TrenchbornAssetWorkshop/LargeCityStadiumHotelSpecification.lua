@@ -292,7 +292,7 @@ local Specification = {
 
 	Phase5Status = {
 		Status = "InReview",
-		Revision = "LargeCityStadiumHotel-Dressing-v3-PlantedAndPergolaMounted",
+		Revision = "LargeCityStadiumHotel-Dressing-v4-FasciaMountedPoolSign",
 		Includes = {
 			"Stadium Hotel wordmark on visible porte-cochere fascia",
 			"warm arrival accent, palms, planters and bollards",
@@ -302,7 +302,7 @@ local Specification = {
 			"rear hotel-service signage and bay numbers",
 			"landscaping and pool-deck dressing sit directly on their supporting surfaces",
 			"sky-lounge and rooftop vegetation is embedded into its planter soil rather than floating above it",
-			"rooftop pool sign is mounted to the pergola canopy instead of floating over the roof deck",
+			"rooftop pool sign is flush-mounted to a solid pergola front fascia with no visible air gap",
 		},
 		QualityGateC = "Pending",
 	},
