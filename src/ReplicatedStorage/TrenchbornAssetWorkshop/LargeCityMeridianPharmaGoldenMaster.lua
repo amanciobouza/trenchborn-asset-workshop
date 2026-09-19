@@ -87,43 +87,45 @@ end
 
 local function addResearchEntrance(group)
 	-- Research headhouse is the public-facing, highly glazed part of the complex.
-	block(group, "ResearchHeadhouseMass", Vector3.new(42, 32, 72), Vector3.new(-39, 16, -4), COLORS.Sterile, Enum.Material.Concrete)
+	block(group, "ResearchHeadhouseMass", Vector3.new(42, 32, 72), Vector3.new(-43, 16, -4), COLORS.Sterile, Enum.Material.Concrete)
 
 	-- Tall recessed sterile-glass atrium on local -Z.
-	block(group, "AtriumPortal", Vector3.new(32, 26, 3.2), Vector3.new(-39, 13, -39.1), COLORS.Dark, Enum.Material.Metal)
-	block(group, "AtriumGlass", Vector3.new(28, 23, 0.65), Vector3.new(-39, 12.5, -41.1), COLORS.Glass, Enum.Material.Glass, 0.06)
-	for _, x in ipairs({-51, -45, -39, -33, -27}) do
+	block(group, "AtriumPortal", Vector3.new(32, 26, 3.2), Vector3.new(-43, 13, -39.1), COLORS.Dark, Enum.Material.Metal)
+	block(group, "AtriumGlass", Vector3.new(28, 23, 0.65), Vector3.new(-43, 12.5, -41.1), COLORS.Glass, Enum.Material.Glass, 0.06)
+	for _, x in ipairs({-55, -49, -43, -37, -31}) do
 		block(group, "AtriumMullion_" .. tostring(x), Vector3.new(0.75, 24, 0.9), Vector3.new(x, 12.5, -41.45), COLORS.Metal, Enum.Material.Metal)
 	end
 	for _, y in ipairs({6.5, 13.0, 19.5}) do
-		block(group, "AtriumHorizontal_" .. tostring(y), Vector3.new(29, 0.55, 0.9), Vector3.new(-39, y, -41.45), COLORS.Metal, Enum.Material.Metal)
+		block(group, "AtriumHorizontal_" .. tostring(y), Vector3.new(29, 0.55, 0.9), Vector3.new(-43, y, -41.45), COLORS.Metal, Enum.Material.Metal)
 	end
 
-	block(group, "VisitorCanopy", Vector3.new(34, 1.2, 9), Vector3.new(-39, 12.8, -45.3), COLORS.Sterile, Enum.Material.Metal)
-	for _, x in ipairs({-53.5, -24.5}) do
+	block(group, "VisitorCanopy", Vector3.new(34, 1.2, 9), Vector3.new(-43, 12.8, -45.3), COLORS.Sterile, Enum.Material.Metal)
+	for _, x in ipairs({-57.5, -28.5}) do
 		block(group, "VisitorCanopyPost_" .. tostring(x), Vector3.new(1.1, 11.5, 1.1), Vector3.new(x, 5.75, -48.7), COLORS.SterileDark, Enum.Material.Metal)
 	end
-	block(group, "VisitorPlaza", Vector3.new(46, 0.45, 14), Vector3.new(-39, 0.23, -47.0), COLORS.SterileDark, Enum.Material.Concrete)
+	block(group, "VisitorPlaza", Vector3.new(46, 0.45, 14), Vector3.new(-43, 0.23, -47.0), COLORS.SterileDark, Enum.Material.Concrete)
 
 	-- Public facade side glazing keeps the headhouse distinctly research-oriented.
-	block(group, "HeadhouseSideGlass", Vector3.new(0.65, 25, 44), Vector3.new(-60.4, 16, -6), COLORS.Glass, Enum.Material.Glass, 0.07)
+	block(group, "HeadhouseSideGlass", Vector3.new(0.65, 25, 44), Vector3.new(-64.4, 16, -6), COLORS.Glass, Enum.Material.Glass, 0.07)
 	for _, z in ipairs({-24, -12, 0, 12}) do
-		block(group, "HeadhouseSideMullion_" .. tostring(z), Vector3.new(0.85, 26, 0.7), Vector3.new(-60.75, 16, z), COLORS.Metal, Enum.Material.Metal)
+		block(group, "HeadhouseSideMullion_" .. tostring(z), Vector3.new(0.85, 26, 0.7), Vector3.new(-64.75, 16, z), COLORS.Metal, Enum.Material.Metal)
 	end
 end
 
 local function addResearchHeadhouse(group)
 	-- Long research observation bands on the rear and upper front edges.
-	block(group, "ResearchBandFront", Vector3.new(36, 4.4, 0.65), Vector3.new(-39, 25.0, -40.35), COLORS.Glass, Enum.Material.Glass, 0.07)
-	block(group, "ResearchBandRear", Vector3.new(36, 4.4, 0.65), Vector3.new(-39, 19.0, 32.35), COLORS.Glass, Enum.Material.Glass, 0.07)
+	block(group, "ResearchBandFront", Vector3.new(36, 4.4, 0.65), Vector3.new(-43, 25.0, -40.35), COLORS.Glass, Enum.Material.Glass, 0.07)
+	block(group, "ResearchBandRear", Vector3.new(36, 4.4, 0.65), Vector3.new(-43, 19.0, 32.35), COLORS.Glass, Enum.Material.Glass, 0.07)
 
-	for _, x in ipairs({-54, -48, -42, -36, -30, -24}) do
+	for _, x in ipairs({-58, -52, -46, -40, -34, -28}) do
 		block(group, "ResearchFrontFrame_" .. tostring(x), Vector3.new(0.55, 4.8, 0.8), Vector3.new(x, 25.0, -40.7), COLORS.Metal, Enum.Material.Metal)
 	end
 
-	-- Vertical sterile spine visually separates research and process zones.
-	block(group, "ResearchSpine", Vector3.new(4.0, 30, 8), Vector3.new(-19.5, 15.0, -8), COLORS.SterileDark, Enum.Material.Concrete)
-	block(group, "ResearchSpineTeal", Vector3.new(0.45, 25, 6), Vector3.new(-21.75, 15.0, -8), COLORS.Teal, Enum.Material.Neon)
+	-- Visible seam pylon sits in the open gap between research and production.
+	-- It no longer intersects either building mass; the teal strip is mounted on
+	-- the pylon's front face so the feature reads intentionally from the street.
+	block(group, "ResearchSpine", Vector3.new(2.0, 30, 5.0), Vector3.new(-20.0, 15.0, -33.5), COLORS.SterileDark, Enum.Material.Concrete)
+	block(group, "ResearchSpineTeal", Vector3.new(1.2, 25, 0.35), Vector3.new(-20.0, 15.0, -36.2), COLORS.Teal, Enum.Material.Neon)
 end
 
 local function addCleanroomHall(group)
@@ -154,16 +156,18 @@ local function addCleanroomHall(group)
 end
 
 local function addProcessBridge(group)
-	-- Bridge crosses the seam between headhouse and production hall and remains visibly external.
-	block(group, "BridgeFrame", Vector3.new(18, 7, 8), Vector3.new(-16, 24, -19), COLORS.Dark, Enum.Material.Metal)
-	block(group, "BridgeGlassFront", Vector3.new(16.5, 5.5, 0.55), Vector3.new(-16, 24, -23.25), COLORS.Glass, Enum.Material.Glass, 0.06)
-	block(group, "BridgeGlassRear", Vector3.new(16.5, 5.5, 0.55), Vector3.new(-16, 24, -14.75), COLORS.Glass, Enum.Material.Glass, 0.06)
-	for _, x in ipairs({-23, -19.5, -16, -12.5, -9}) do
-		block(group, "BridgeMullion_" .. tostring(x), Vector3.new(0.4, 5.8, 0.75), Vector3.new(x, 24, -23.55), COLORS.Metal, Enum.Material.Metal)
+	-- Short elevated bridge spans the real open seam between the research
+	-- headhouse (right edge X=-22) and cleanroom hall (left edge X=-18).
+	-- It overlaps each facade only slightly for a believable structural tie-in.
+	local center = Vector3.new(-20, 24, -19)
+	block(group, "BridgeFrame", Vector3.new(8, 7, 8), center, COLORS.Dark, Enum.Material.Metal)
+	block(group, "BridgeGlassFront", Vector3.new(6.8, 5.5, 0.55), center + Vector3.new(0, 0, -4.25), COLORS.Glass, Enum.Material.Glass, 0.06)
+	block(group, "BridgeGlassRear", Vector3.new(6.8, 5.5, 0.55), center + Vector3.new(0, 0, 4.25), COLORS.Glass, Enum.Material.Glass, 0.06)
+	for _, x in ipairs({-23, -21.5, -20, -18.5, -17}) do
+		block(group, "BridgeMullion_" .. tostring(x), Vector3.new(0.35, 5.8, 0.75), Vector3.new(x, 24, -23.55), COLORS.Metal, Enum.Material.Metal)
 	end
-	block(group, "BridgeTealUnderside", Vector3.new(16, 0.4, 6.6), Vector3.new(-16, 20.35, -19), COLORS.Teal, Enum.Material.Neon)
+	block(group, "BridgeTealUnderside", Vector3.new(6.5, 0.4, 6.6), Vector3.new(-20, 20.35, -19), COLORS.Teal, Enum.Material.Neon)
 end
-
 local function addRooftopProcess(group)
 	-- Three deliberate process modules sit visibly ON the cleanroom roof.
 	-- Each gets a shallow equipment plinth so no technical box appears buried
@@ -309,7 +313,7 @@ function Builder.Build(parent)
 	model:SetAttribute("AssetPhase", 4)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Pending")
-	model:SetAttribute("GeometryRevision", "LargeCityMeridianPharma-v4-RearBioreactors-NoLoadingBays")
+	model:SetAttribute("GeometryRevision", "LargeCityMeridianPharma-v5-VisibleResearchSeamBridge")
 	model:SetAttribute("MaxHealth", specification.ProposedGameplayMetadata.TargetMaxHealth)
 	model:SetAttribute("EnergyType", specification.ProposedGameplayMetadata.EnergyType)
 	model:SetAttribute("InstallerTag", specification.ProposedGameplayMetadata.InstallerTag)
@@ -318,6 +322,8 @@ function Builder.Build(parent)
 	model:SetAttribute("ResearchHeadhouseDistinct", true)
 	model:SetAttribute("CleanroomObservationBands", true)
 	model:SetAttribute("ProcessBridgeExternal", true)
+	model:SetAttribute("ResearchProductionGapVisible", true)
+	model:SetAttribute("ResearchSpineExternal", true)
 	model:SetAttribute("BioreactorCount", 4)
 	model:SetAttribute("RooftopProcessModuleCount", 3)
 	model:SetAttribute("RooftopProcessModulesOnPlinths", true)
