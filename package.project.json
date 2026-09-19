@@ -1,6 +1,15 @@
 {
-  "name": "TrenchbornAssetWorkshop",
+  "name": "LargeCitySummitTowerPackage",
   "tree": {
-    "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop"
+    "$className": "Folder",
+    "LargeCitySummitTowerSpecification": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCitySummitTowerSpecification.lua"
+    },
+    "LargeCitySummitTowerGoldenMaster": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCitySummitTowerGoldenMaster.lua"
+    },
+    "LargeCitySummitTowerDressing": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCitySummitTowerDressing.lua"
+    }
   }
 }

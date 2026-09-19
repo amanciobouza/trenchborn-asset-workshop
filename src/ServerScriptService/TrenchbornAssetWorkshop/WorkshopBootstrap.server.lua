@@ -7,13 +7,15 @@ workshop:SetAttribute("QualityStatus", "Phase6_GameplaySimulation")
 
 local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
 
--- This branch uses an isolated Large City Uptown Arena preview. Stop the
--- legacy multi-asset workshop bootstrap before it spawns unrelated assets.
-if script.Parent:FindFirstChild("LargeCityUptownArenaPreview") and packageFolder:FindFirstChild("LargeCityUptownArenaSpecification") then
+-- Standalone Summit Tower review owns this branch. Disable the retired Guardian
+-- bootstrap before it requires or spawns unrelated workshop assets.
+local isolatedSummitTowerReview =
+	script.Parent:FindFirstChild("LargeCitySummitTowerPreview")
+	and packageFolder:FindFirstChild("LargeCitySummitTowerSpecification")
+if isolatedSummitTowerReview then
 	workshop:SetAttribute("LegacyWorkshopBootstrapDisabled", true)
 	return
 end
-
 local specification = require(packageFolder:WaitForChild("MarshalRoadblockSpecification"))
 local goldenMaster = require(packageFolder:WaitForChild("MarshalRoadblockGoldenMaster"))
 local dressing = require(packageFolder:WaitForChild("MarshalRoadblockDressing"))

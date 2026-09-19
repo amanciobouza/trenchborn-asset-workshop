@@ -1,5 +1,5 @@
 {
-  "name": "TrenchbornAssetWorkshop",
+  "name": "LargeCitySummitTowerWorkshop",
   "servePort": 34872,
   "tree": {
     "$className": "DataModel",
@@ -7,21 +7,31 @@
       "$className": "Workspace",
       "TrenchbornAssetWorkshop": {
         "$className": "Folder",
-        "$path": "src/Workspace/TrenchbornAssetWorkshop"
+        "$ignoreUnknownInstances": true
       }
     },
     "ReplicatedStorage": {
       "$className": "ReplicatedStorage",
       "TrenchbornAssetWorkshop": {
         "$className": "Folder",
-        "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop"
+        "LargeCitySummitTowerSpecification": {
+          "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCitySummitTowerSpecification.lua"
+        },
+        "LargeCitySummitTowerGoldenMaster": {
+          "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCitySummitTowerGoldenMaster.lua"
+        },
+        "LargeCitySummitTowerDressing": {
+          "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCitySummitTowerDressing.lua"
+        }
       }
     },
     "ServerScriptService": {
       "$className": "ServerScriptService",
       "TrenchbornAssetWorkshop": {
         "$className": "Folder",
-        "$path": "src/ServerScriptService/TrenchbornAssetWorkshop"
+        "LargeCitySummitTowerPreview": {
+          "$path": "src/ServerScriptService/TrenchbornAssetWorkshop/LargeCitySummitTowerPreview.server.lua"
+        }
       }
     }
   }

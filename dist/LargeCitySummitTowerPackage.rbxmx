@@ -1,0 +1,1073 @@
+<roblox version="4">
+  <Item class="Folder" referent="0">
+    <Properties>
+      <string name="Name">LargeCitySummitTowerPackage</string>
+    </Properties>
+    <Item class="ModuleScript" referent="1">
+      <Properties>
+        <string name="Name">LargeCitySummitTowerDressing</string>
+        <string name="Source"><![CDATA[local Dressing = {}
+
+local COLORS = {
+	White = Color3.fromRGB(245, 247, 244),
+	Dark = Color3.fromRGB(38, 45, 49),
+	Stone = Color3.fromRGB(222, 220, 210),
+	StoneDark = Color3.fromRGB(173, 177, 174),
+	Glass = Color3.fromRGB(45, 83, 98),
+	Teal = Color3.fromRGB(57, 174, 178),
+	Green = Color3.fromRGB(65, 128, 78),
+	Wood = Color3.fromRGB(118, 88, 59),
+	Soil = Color3.fromRGB(76, 61, 45),
+}
+
+local function folder(parent, name)
+	local existing = parent:FindFirstChild(name)
+	if existing then existing:Destroy() end
+	local item = Instance.new("Folder")
+	item.Name = name
+	item.Parent = parent
+	return item
+end
+
+local function part(parent, name, size, cf, color, material, transparency, shape)
+	local item = Instance.new("Part")
+	item.Name = name
+	item.Size = size
+	item.CFrame = cf
+	item.Color = color
+	item.Material = material or Enum.Material.SmoothPlastic
+	item.Transparency = transparency or 0
+	item.Shape = shape or Enum.PartType.Block
+	item.Anchored = true
+	item.CanCollide = false
+	item.CanTouch = false
+	item.CanQuery = false
+	item.CastShadow = true
+	item.TopSurface = Enum.SurfaceType.Smooth
+	item.BottomSurface = Enum.SurfaceType.Smooth
+	item.Parent = parent
+	return item
+end
+
+local function block(parent, name, size, position, color, material, transparency)
+	return part(parent, name, size, CFrame.new(position), color, material, transparency)
+end
+
+local function cylinder(parent, name, height, diameter, position, color, material)
+	return part(
+		parent,
+		name,
+		Vector3.new(height, diameter, diameter),
+		CFrame.new(position) * CFrame.Angles(0, 0, math.rad(90)),
+		color,
+		material,
+		0,
+		Enum.PartType.Cylinder
+	)
+end
+
+local function addSurfaceText(parent, adornee, text, face, color)
+	local gui = Instance.new("SurfaceGui")
+	gui.Name = adornee.Name .. "Surface"
+	gui.Adornee = adornee
+	gui.Face = face or Enum.NormalId.Front
+	gui.AlwaysOnTop = false
+	gui.LightInfluence = 0.2
+	gui.PixelsPerStud = 42
+	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	gui.Parent = parent
+
+	local label = Instance.new("TextLabel")
+	label.Name = "Label"
+	label.Size = UDim2.fromScale(1, 1)
+	label.BackgroundTransparency = 1
+	label.Text = text
+	label.TextColor3 = color or COLORS.White
+	label.TextStrokeTransparency = 0.82
+	label.Font = Enum.Font.GothamBold
+	label.TextScaled = true
+	label.Parent = gui
+end
+
+local function addPalm(parent, name, position, height, yaw)
+	local palm = folder(parent, name)
+	local h = height or 9
+	cylinder(palm, "Trunk", h, 0.75, position + Vector3.new(0, h * 0.5, 0), COLORS.Wood, Enum.Material.Wood)
+
+	local crown = position + Vector3.new(0, h, 0)
+	for index = 1, 7 do
+		local angle = math.rad((index - 1) * (360 / 7) + (yaw or 0))
+		local leaf = block(
+			palm,
+			"Leaf" .. index,
+			Vector3.new(0.6, 0.22, 4.2),
+			crown + Vector3.new(math.cos(angle) * 1.4, 0.15, math.sin(angle) * 1.4),
+			COLORS.Green,
+			Enum.Material.Grass
+		)
+		leaf.CFrame *= CFrame.Angles(math.rad(-13), angle, 0)
+	end
+end
+
+local function addPlanter(parent, name, position, size)
+	local planter = folder(parent, name)
+	block(planter, "Box", size, position, COLORS.Stone, Enum.Material.Concrete)
+	block(planter, "Soil", size - Vector3.new(0.5, 0.55, 0.5), position + Vector3.new(0, 0.45, 0), COLORS.Soil, Enum.Material.Ground)
+	for x = -1, 1 do
+		part(
+			planter,
+			"Shrub" .. x,
+			Vector3.new(1.35, 1.35, 1.35),
+			CFrame.new(position + Vector3.new(x * 1.55, 1.18, 0)),
+			COLORS.Green,
+			Enum.Material.Grass,
+			0,
+			Enum.PartType.Ball
+		)
+	end
+end
+
+local function addEntranceDressing(root)
+	local area = folder(root, "EntranceDressing")
+
+	local wordmark = block(
+		area,
+		"SummitTowerWordmark",
+		Vector3.new(24, 3.0, 0.35),
+		Vector3.new(0, 15.7, -31.85),
+		COLORS.Dark,
+		Enum.Material.Metal
+	)
+	addSurfaceText(area, wordmark, "SUMMIT TOWER", Enum.NormalId.Front, COLORS.White)
+
+	block(area, "LobbyAccent", Vector3.new(30, 0.55, 0.35), Vector3.new(0, 13.9, -32.05), COLORS.Teal, Enum.Material.Neon)
+
+	addPlanter(area, "EntryPlanterLeft", Vector3.new(-22, 0.75, -36), Vector3.new(8, 1.2, 3))
+	addPlanter(area, "EntryPlanterRight", Vector3.new(22, 0.75, -36), Vector3.new(8, 1.2, 3))
+	addPalm(area, "EntryPalmLeft", Vector3.new(-29, 0, -37), 9, 10)
+	addPalm(area, "EntryPalmRight", Vector3.new(29, 0, -37), 9, -10)
+
+	for _, x in ipairs({-13, -6.5, 6.5, 13}) do
+		cylinder(area, "EntryBollard" .. tostring(x), 2.0, 0.32, Vector3.new(x, 1, -38.5), COLORS.StoneDark, Enum.Material.Metal)
+	end
+end
+
+local function addSkyGardenDressing(root)
+	local area = folder(root, "SkyGardenDressing")
+
+	-- Lower front-left garden.
+	for index, x in ipairs({-19, -13, -7, -1}) do
+		local shrub = part(
+			area,
+			"LowerSkyGardenShrub" .. index,
+			Vector3.new(2.0, 2.0, 2.0),
+			CFrame.new(x, 60.0, -29.6),
+			COLORS.Green,
+			Enum.Material.Grass,
+			0,
+			Enum.PartType.Ball
+		)
+		shrub.CastShadow = true
+	end
+	addPalm(area, "LowerSkyGardenPalm", Vector3.new(-17, 59.0, -29.6), 5.8, 20)
+
+	-- Upper rear-right garden.
+	for index, x in ipairs({1, 6, 11, 16}) do
+		part(
+			area,
+			"UpperSkyGardenShrub" .. index,
+			Vector3.new(1.7, 1.7, 1.7),
+			CFrame.new(x, 94.3, 23.8),
+			COLORS.Green,
+			Enum.Material.Grass,
+			0,
+			Enum.PartType.Ball
+		)
+	end
+	addPalm(area, "UpperSkyGardenPalm", Vector3.new(13, 93.6, 23.8), 5.0, -15)
+end
+
+local function addFacadeAccents(root)
+	local area = folder(root, "FacadeAccents")
+
+	-- Sparse teal vertical accents reinforce the premium tower identity without
+	-- fighting the structural fins and window mullions.
+	for _, x in ipairs({-17, 17}) do
+		block(area, "LowerAccent" .. tostring(x), Vector3.new(0.45, 28, 0.45), Vector3.new(x, 38, -24.0), COLORS.Teal, Enum.Material.Neon)
+	end
+	for _, x in ipairs({-15, 9}) do
+		block(area, "MidAccent" .. tostring(x), Vector3.new(0.42, 22, 0.42), Vector3.new(x, 75, -19.4), COLORS.Teal, Enum.Material.Neon)
+	end
+	block(area, "UpperAccent", Vector3.new(0.42, 15, 0.42), Vector3.new(9, 104, -19.5), COLORS.Teal, Enum.Material.Neon)
+end
+
+local function addRearDressing(root)
+	local area = folder(root, "RearDressing")
+	-- Put the main service identity on the outer canopy fascia. Previously the
+	-- sign sat on the wall behind the canopy and was partly hidden from the rear.
+	local sign = block(
+		area,
+		"ServiceSign",
+		Vector3.new(28, 1.8, 0.35),
+		Vector3.new(0, 15.0, 36.65),
+		COLORS.Dark,
+		Enum.Material.Metal
+	)
+	addSurfaceText(area, sign, "SERVICE  •  DELIVERIES", Enum.NormalId.Back, COLORS.White)
+
+	for index, x in ipairs({-12, 0, 12}) do
+		local bay = block(
+			area,
+			"ServiceBayNumber" .. index,
+			Vector3.new(3.8, 1.8, 0.28),
+			Vector3.new(x, 10.3, 30.48),
+			COLORS.Teal,
+			Enum.Material.Neon
+		)
+		addSurfaceText(area, bay, string.format("%02d", index), Enum.NormalId.Back, COLORS.White)
+	end
+end
+
+function Dressing.Apply(model)
+	assert(model and model:IsA("Model"), "LargeCitySummitTowerDressing.Apply expects a Model")
+
+	local existing = model:FindFirstChild("Dressing")
+	if existing then existing:Destroy() end
+	local root = folder(model, "Dressing")
+
+	addEntranceDressing(root)
+	addSkyGardenDressing(root)
+	addFacadeAccents(root)
+	addRearDressing(root)
+
+	model:SetAttribute("AssetPhase", 5)
+	model:SetAttribute("QualityGateA", "Approved")
+	model:SetAttribute("QualityGateB", "Approved")
+	model:SetAttribute("DressingRevision", "LargeCitySummitTower-Dressing-v3-ServiceCanopySign")
+	model:SetAttribute("DressingStatus", "Approved")
+	model:SetAttribute("SkyGardenVegetation", true)
+	model:SetAttribute("StandaloneImport", true)
+	return model
+end
+
+return Dressing
+]]></string>
+      </Properties>
+    </Item>
+    <Item class="ModuleScript" referent="2">
+      <Properties>
+        <string name="Name">LargeCitySummitTowerGoldenMaster</string>
+        <string name="Source"><![CDATA[local specification = require(script.Parent:WaitForChild("LargeCitySummitTowerSpecification"))
+
+local Builder = {}
+
+local COLORS = {
+	Stone = Color3.fromRGB(222, 220, 210),
+	StoneDark = Color3.fromRGB(173, 177, 174),
+	Glass = Color3.fromRGB(45, 83, 98),
+	DarkGlass = Color3.fromRGB(28, 53, 65),
+	Metal = Color3.fromRGB(171, 177, 176),
+	Dark = Color3.fromRGB(38, 45, 49),
+	Teal = Color3.fromRGB(57, 174, 178),
+	PlantBed = Color3.fromRGB(67, 79, 63),
+}
+
+local function folder(parent, name)
+	local item = Instance.new("Folder")
+	item.Name = name
+	item.Parent = parent
+	return item
+end
+
+local function part(parent, name, size, cf, color, material, transparency, shape)
+	local item = Instance.new("Part")
+	item.Name = name
+	item.Size = size
+	item.CFrame = cf
+	item.Color = color
+	item.Material = material or Enum.Material.SmoothPlastic
+	item.Transparency = transparency or 0
+	item.Shape = shape or Enum.PartType.Block
+	item.Anchored = true
+	item.CanCollide = true
+	item.CanTouch = true
+	item.CanQuery = true
+	item.CastShadow = true
+	item.TopSurface = Enum.SurfaceType.Smooth
+	item.BottomSurface = Enum.SurfaceType.Smooth
+	item.Parent = parent
+	return item
+end
+
+local function block(parent, name, size, position, color, material, transparency)
+	return part(parent, name, size, CFrame.new(position), color, material, transparency)
+end
+
+local function cylinder(parent, name, height, diameter, position, color, material)
+	return part(
+		parent,
+		name,
+		Vector3.new(height, diameter, diameter),
+		CFrame.new(position) * CFrame.Angles(0, 0, math.rad(90)),
+		color,
+		material,
+		0,
+		Enum.PartType.Cylinder
+	)
+end
+
+local function addChamferedMass(parent, prefix, center, width, depth, height, radius, bodyColor, bodyMaterial)
+	local r = math.min(radius, width * 0.18, depth * 0.18)
+
+	-- Tile the rounded rectangle with non-overlapping masses. The previous
+	-- CoreX/CoreZ construction overlapped across a large area and produced
+	-- coplanar top faces, which caused visible roof Z-fighting in Studio.
+	block(
+		parent,
+		prefix .. "_Center",
+		Vector3.new(width - 2 * r, height, depth - 2 * r),
+		center,
+		bodyColor,
+		bodyMaterial
+	)
+
+	block(
+		parent,
+		prefix .. "_Front",
+		Vector3.new(width - 2 * r, height, r),
+		center + Vector3.new(0, 0, -(depth / 2 - r / 2)),
+		bodyColor,
+		bodyMaterial
+	)
+	block(
+		parent,
+		prefix .. "_Rear",
+		Vector3.new(width - 2 * r, height, r),
+		center + Vector3.new(0, 0, depth / 2 - r / 2),
+		bodyColor,
+		bodyMaterial
+	)
+	block(
+		parent,
+		prefix .. "_Left",
+		Vector3.new(r, height, depth - 2 * r),
+		center + Vector3.new(-(width / 2 - r / 2), 0, 0),
+		bodyColor,
+		bodyMaterial
+	)
+	block(
+		parent,
+		prefix .. "_Right",
+		Vector3.new(r, height, depth - 2 * r),
+		center + Vector3.new(width / 2 - r / 2, 0, 0),
+		bodyColor,
+		bodyMaterial
+	)
+
+	for _, sx in ipairs({-1, 1}) do
+		for _, sz in ipairs({-1, 1}) do
+			cylinder(
+				parent,
+				prefix .. string.format("_Corner_%d_%d", sx, sz),
+				height,
+				r * 2,
+				center + Vector3.new(sx * (width / 2 - r), 0, sz * (depth / 2 - r)),
+				bodyColor,
+				bodyMaterial
+			)
+		end
+	end
+end
+
+local function addFacadeFace(parent, prefix, center, width, height, depth, face, bays, floors)
+	local glassDepth = 0.72
+	local edge = 0.75
+	local frameDepth = 0.95
+	local horizontalBand = 0.42
+
+	if face == "Front" or face == "Rear" then
+		local z = center.Z + (face == "Front" and -(depth / 2 + glassDepth / 2 + 0.05) or (depth / 2 + glassDepth / 2 + 0.05))
+		block(parent, prefix .. "_Glass_" .. face, Vector3.new(width - 4, height - 2.4, glassDepth), Vector3.new(center.X, center.Y, z), COLORS.Glass, Enum.Material.Glass, 0.08)
+		for i = 0, bays do
+			local x = center.X - (width - 4) / 2 + (width - 4) * i / bays
+			block(parent, prefix .. "_V_" .. face .. "_" .. i, Vector3.new(edge, height - 1.0, frameDepth), Vector3.new(x, center.Y, z + (face == "Front" and -0.16 or 0.16)), COLORS.Metal, Enum.Material.Metal)
+		end
+		for i = 1, floors - 1 do
+			local y = center.Y - height / 2 + height * i / floors
+			block(parent, prefix .. "_H_" .. face .. "_" .. i, Vector3.new(width - 3.0, horizontalBand, frameDepth), Vector3.new(center.X, y, z + (face == "Front" and -0.18 or 0.18)), COLORS.StoneDark, Enum.Material.Metal)
+		end
+	else
+		local x = center.X + (face == "Left" and -(width / 2 + glassDepth / 2 + 0.05) or (width / 2 + glassDepth / 2 + 0.05))
+		block(parent, prefix .. "_Glass_" .. face, Vector3.new(glassDepth, height - 2.4, depth - 4), Vector3.new(x, center.Y, center.Z), COLORS.Glass, Enum.Material.Glass, 0.08)
+		for i = 0, bays do
+			local z = center.Z - (depth - 4) / 2 + (depth - 4) * i / bays
+			block(parent, prefix .. "_V_" .. face .. "_" .. i, Vector3.new(frameDepth, height - 1.0, edge), Vector3.new(x + (face == "Left" and -0.16 or 0.16), center.Y, z), COLORS.Metal, Enum.Material.Metal)
+		end
+		for i = 1, floors - 1 do
+			local y = center.Y - height / 2 + height * i / floors
+			block(parent, prefix .. "_H_" .. face .. "_" .. i, Vector3.new(frameDepth, horizontalBand, depth - 3.0), Vector3.new(x + (face == "Left" and -0.18 or 0.18), y, center.Z), COLORS.StoneDark, Enum.Material.Metal)
+		end
+	end
+end
+
+local function addTowerTier(parent, prefix, center, width, depth, height, radius, longBays, shortBays, floors)
+	addChamferedMass(parent, prefix .. "_Mass", center, width, depth, height, radius, COLORS.DarkGlass, Enum.Material.SmoothPlastic)
+	addFacadeFace(parent, prefix, center, width, height, depth, "Front", longBays, floors)
+	addFacadeFace(parent, prefix, center, width, height, depth, "Rear", longBays, floors)
+	addFacadeFace(parent, prefix, center, width, height, depth, "Left", shortBays, floors)
+	addFacadeFace(parent, prefix, center, width, height, depth, "Right", shortBays, floors)
+end
+
+local function addVerticalFins(parent, prefix, center, width, depth, height, longBays)
+	local frontZ = center.Z - depth / 2 - 0.9
+	local rearZ = center.Z + depth / 2 + 0.9
+	local glassWidth = width - 4
+
+	-- Strong facade fins must sit directly on window mullions. v1 positioned
+	-- them as fractions of the tower width, so they drifted across the glazing.
+	local indices
+	if longBays >= 7 then
+		indices = {1, 2, longBays - 2, longBays - 1}
+	elseif longBays == 6 then
+		indices = {1, 2, 4, 5}
+	else
+		indices = {1, 2, longBays - 2, longBays - 1}
+	end
+
+	for _, index in ipairs(indices) do
+		local x = -glassWidth / 2 + glassWidth * index / longBays
+		block(parent, prefix .. "_FrontFin_" .. index, Vector3.new(1.15, height + 3, 1.5), Vector3.new(center.X + x, center.Y, frontZ), COLORS.Stone, Enum.Material.Metal)
+		block(parent, prefix .. "_RearFin_" .. index, Vector3.new(1.15, height + 3, 1.5), Vector3.new(center.X + x, center.Y, rearZ), COLORS.Stone, Enum.Material.Metal)
+	end
+end
+
+local function addPodium(group)
+	addChamferedMass(group, "Podium", Vector3.new(0, 9, 0), 64, 58, 18, 5, COLORS.Stone, Enum.Material.Concrete)
+
+	-- Recessed front lobby: dark portal mass sits inside the main facade, with glass still farther back.
+	block(group, "LobbyPortal", Vector3.new(34, 15, 3.2), Vector3.new(0, 8.0, -28.6), COLORS.Dark, Enum.Material.Metal)
+	block(group, "LobbyGlass", Vector3.new(28, 13, 0.65), Vector3.new(0, 7.5, -30.4), COLORS.Glass, Enum.Material.Glass, 0.07)
+	for _, x in ipairs({-14.5, -7.2, 0, 7.2, 14.5}) do
+		block(group, "LobbyPier_" .. tostring(x), Vector3.new(1.2, 16.5, 2.0), Vector3.new(x, 8.25, -31.0), COLORS.Metal, Enum.Material.Metal)
+	end
+	block(group, "LobbyCanopy", Vector3.new(36, 1.4, 8), Vector3.new(0, 13.8, -33.2), COLORS.Stone, Enum.Material.Metal)
+	block(group, "LobbyPlinth", Vector3.new(42, 0.6, 13), Vector3.new(0, 0.3, -33.0), COLORS.StoneDark, Enum.Material.Concrete)
+end
+
+local function addSkyGardens(group)
+	-- Lower sky garden reads as a real projecting balcony. The former dark
+	-- "recess" block sat directly across the curtain wall and looked like an
+	-- unexplained black bar covering windows.
+	block(group, "SkyGardenOneTerrace", Vector3.new(33, 1.3, 11.5), Vector3.new(-9.0, 57.8, -28.25), COLORS.Stone, Enum.Material.Concrete)
+	block(group, "SkyGardenOneCanopy", Vector3.new(29, 0.9, 5.0), Vector3.new(-8.0, 61.1, -25.3), COLORS.StoneDark, Enum.Material.Metal)
+	block(group, "SkyGardenOneRevealLeft", Vector3.new(0.9, 4.0, 4.5), Vector3.new(-22.0, 59.2, -25.3), COLORS.StoneDark, Enum.Material.Metal)
+	block(group, "SkyGardenOneRevealRight", Vector3.new(0.9, 4.0, 4.5), Vector3.new(6.0, 59.2, -25.3), COLORS.StoneDark, Enum.Material.Metal)
+	block(group, "SkyGardenOneBed", Vector3.new(27, 0.8, 4.4), Vector3.new(-9.0, 58.8, -29.6), COLORS.PlantBed, Enum.Material.Ground)
+	block(group, "SkyGardenOneAccent", Vector3.new(31, 0.65, 0.7), Vector3.new(-9.0, 59.2, -34.15), COLORS.Teal, Enum.Material.Neon)
+
+	-- Upper garden uses the same readable balcony language on the rear-right.
+	block(group, "SkyGardenTwoTerrace", Vector3.new(25, 1.2, 11.5), Vector3.new(8.0, 92.4, 22.75), COLORS.Stone, Enum.Material.Concrete)
+	block(group, "SkyGardenTwoCanopy", Vector3.new(21, 0.8, 4.5), Vector3.new(8.0, 95.2, 19.6), COLORS.StoneDark, Enum.Material.Metal)
+	block(group, "SkyGardenTwoRevealLeft", Vector3.new(0.8, 3.4, 4.0), Vector3.new(-2.0, 93.6, 19.6), COLORS.StoneDark, Enum.Material.Metal)
+	block(group, "SkyGardenTwoRevealRight", Vector3.new(0.8, 3.4, 4.0), Vector3.new(18.0, 93.6, 19.6), COLORS.StoneDark, Enum.Material.Metal)
+	block(group, "SkyGardenTwoBed", Vector3.new(20, 0.75, 4.2), Vector3.new(8.0, 93.25, 23.8), COLORS.PlantBed, Enum.Material.Ground)
+	block(group, "SkyGardenTwoAccent", Vector3.new(23, 0.65, 0.7), Vector3.new(8.0, 93.5, 28.35), COLORS.Teal, Enum.Material.Neon)
+end
+
+local function addCrown(group)
+	-- Restore the more interesting raised rooftop volume from the earlier review,
+	-- but keep all three crown blades entirely above it instead of embedding them.
+	local center = Vector3.new(7, 119.5, -3)
+	addChamferedMass(group, "CrownCore", center, 28, 24, 7, 2.8, COLORS.DarkGlass, Enum.Material.SmoothPlastic)
+
+	-- Raised stepped blades. They intentionally extend slightly above the nominal
+	-- plot height because they are lightweight crown features, not occupied floors.
+	block(group, "CrownBladePrimary", Vector3.new(4.0, 6.0, 7.0), Vector3.new(13.0, 126.0, -5.0), COLORS.Stone, Enum.Material.Metal)
+	block(group, "CrownBladeSecondary", Vector3.new(3.0, 5.0, 6.0), Vector3.new(4.0, 125.5, -8.0), COLORS.Stone, Enum.Material.Metal)
+	block(group, "CrownBladeTertiary", Vector3.new(3.0, 4.0, 5.5), Vector3.new(-2.0, 125.0, 3.0), COLORS.StoneDark, Enum.Material.Metal)
+
+	-- Light band sits on the upper edge of the raised crown core.
+	block(group, "CrownLightFront", Vector3.new(28, 0.75, 0.8), Vector3.new(7, 122.8, -15.4), COLORS.Teal, Enum.Material.Neon)
+	block(group, "CrownLightRear", Vector3.new(28, 0.75, 0.8), Vector3.new(7, 122.8, 9.4), COLORS.Teal, Enum.Material.Neon)
+	block(group, "CrownLightLeft", Vector3.new(0.8, 0.75, 24), Vector3.new(-7.4, 122.8, -3), COLORS.Teal, Enum.Material.Neon)
+	block(group, "CrownLightRight", Vector3.new(0.8, 0.75, 24), Vector3.new(21.4, 122.8, -3), COLORS.Teal, Enum.Material.Neon)
+end
+local function addRearService(group)
+	-- Rear is true +Z and is deliberately placed outside the podium mass.
+	block(group, "RearServiceHeader", Vector3.new(36, 4, 1.2), Vector3.new(0, 14.2, 29.8), COLORS.Dark, Enum.Material.Metal)
+	for index, x in ipairs({-12, 0, 12}) do
+		block(group, "RearServiceDoor_" .. index, Vector3.new(8, 8, 0.75), Vector3.new(x, 5.0, 29.55), COLORS.DarkGlass, Enum.Material.Metal)
+		-- Four slim strips frame the opening without covering the door.
+		block(group, "RearServiceFrameTop_" .. index, Vector3.new(9.4, 0.65, 0.45), Vector3.new(x, 9.35, 30.05), COLORS.Metal, Enum.Material.Metal)
+		block(group, "RearServiceFrameBottom_" .. index, Vector3.new(9.4, 0.65, 0.45), Vector3.new(x, 0.65, 30.05), COLORS.Metal, Enum.Material.Metal)
+		block(group, "RearServiceFrameLeft_" .. index, Vector3.new(0.65, 8.1, 0.45), Vector3.new(x - 4.35, 5.0, 30.05), COLORS.Metal, Enum.Material.Metal)
+		block(group, "RearServiceFrameRight_" .. index, Vector3.new(0.65, 8.1, 0.45), Vector3.new(x + 4.35, 5.0, 30.05), COLORS.Metal, Enum.Material.Metal)
+	end
+	block(group, "RearServiceCanopy", Vector3.new(42, 1.2, 7.0), Vector3.new(0, 15.0, 33.0), COLORS.StoneDark, Enum.Material.Metal)
+	block(group, "RearServiceApron", Vector3.new(48, 0.45, 13), Vector3.new(0, 0.23, 35.0), COLORS.StoneDark, Enum.Material.Concrete)
+end
+
+local function countVisibleParts(model)
+	local count = 0
+	for _, item in ipairs(model:GetDescendants()) do
+		if item:IsA("BasePart") and item.Transparency < 1 then
+			count += 1
+		end
+	end
+	model:SetAttribute("VisiblePartCount", count)
+	model:SetAttribute("VisiblePartBudget", 760)
+	model:SetAttribute("VisiblePartBudgetPassed", count <= 760)
+end
+
+function Builder.Build(parent)
+	local existing = parent:FindFirstChild("LargeCity_SummitTower_L3_GoldenMaster")
+	if existing then existing:Destroy() end
+
+	local model = Instance.new("Model")
+	model.Name = "LargeCity_SummitTower_L3_GoldenMaster"
+	model:SetAttribute("AssetId", specification.AssetId)
+	model:SetAttribute("DisplayName", specification.DisplayName)
+	model:SetAttribute("AssetPhase", 4)
+	model:SetAttribute("QualityGateA", "Approved")
+	model:SetAttribute("QualityGateB", "Approved")
+	model:SetAttribute("GeometryRevision", "LargeCitySummitTower-v5-ProjectedSkyGardens")
+	model:SetAttribute("MaxHealth", specification.ProposedGameplayMetadata.TargetMaxHealth)
+	model:SetAttribute("EnergyType", specification.ProposedGameplayMetadata.EnergyType)
+	model:SetAttribute("InstallerTag", specification.ProposedGameplayMetadata.InstallerTag)
+	model:SetAttribute("StandaloneImport", true)
+	model:SetAttribute("HasInterior", false)
+	model:SetAttribute("SkyGardenCount", 2)
+	model:SetAttribute("SetbackCount", 2)
+	model:SetAttribute("RoofZFightingFix", true)
+	model:SetAttribute("CrownBladesFullyExposed", true)
+	model:SetAttribute("FacadeFinsAlignedToMullions", true)
+	model:SetAttribute("SkyGardenBlackOverlayRemoved", true)
+	model:SetAttribute("SkyGardensFullyProjected", true)
+	model.Parent = parent
+
+	local groups = folder(model, "DestructionGroups")
+	local d1 = folder(groups, "D1_EntryPodium")
+	local d2 = folder(groups, "D2_LowerTower")
+	local d3 = folder(groups, "D3_MidTower")
+	local d4 = folder(groups, "D4_UpperTower")
+	local d5 = folder(groups, "D5_SkyGardens")
+	local d6 = folder(groups, "D6_SummitCrown")
+	local d7 = folder(groups, "D7_ServiceCore")
+
+	addPodium(d1)
+
+	addTowerTier(d2, "LowerTower", Vector3.new(0, 38, 0), 52, 46, 40, 4.0, 7, 6, 8)
+	addVerticalFins(d2, "LowerTower", Vector3.new(0, 38, 0), 52, 46, 40, 7)
+
+	addTowerTier(d3, "MidTower", Vector3.new(-3, 75, 2), 46, 42, 34, 4.0, 6, 5, 7)
+	addVerticalFins(d3, "MidTower", Vector3.new(-3, 75, 2), 46, 42, 34, 6)
+
+	addTowerTier(d4, "UpperTower", Vector3.new(3, 104, -1), 39, 36, 24, 3.5, 5, 5, 5)
+	addVerticalFins(d4, "UpperTower", Vector3.new(3, 104, -1), 39, 36, 24, 5)
+
+	addSkyGardens(d5)
+	addCrown(d6)
+	addRearService(d7)
+
+	local pivot = part(model, "GroundPivot", Vector3.new(1, 1, 1), CFrame.new(0, 0.5, 0), Color3.new(1, 1, 1), Enum.Material.SmoothPlastic, 1)
+	pivot.CanCollide = false
+	pivot.CanTouch = false
+	pivot.CanQuery = false
+	pivot.CastShadow = false
+	model.PrimaryPart = pivot
+	model:PivotTo(CFrame.new())
+
+	countVisibleParts(model)
+	return model
+end
+
+return Builder
+]]></string>
+      </Properties>
+    </Item>
+    <Item class="ModuleScript" referent="3">
+      <Properties>
+        <string name="Name">LargeCitySummitTowerInstaller</string>
+        <string name="Source"><![CDATA[local CollectionService = game:GetService("CollectionService")
+
+local packageFolder = script.Parent
+
+local specification = require(packageFolder:WaitForChild("LargeCitySummitTowerSpecification"))
+local goldenMaster = require(packageFolder:WaitForChild("LargeCitySummitTowerGoldenMaster"))
+local dressing = require(packageFolder:WaitForChild("LargeCitySummitTowerDressing"))
+
+local Installer = {}
+
+local MODEL_NAME = specification.AssetId
+local GOLDEN_MASTER_NAME = "LargeCity_SummitTower_L3_GoldenMaster"
+local PACKAGE_VERSION = specification.ProposedGameplayMetadata.IntegrationPackageVersion
+local MAX_HEALTH = specification.ProposedGameplayMetadata.TargetMaxHealth
+local ENERGY_TYPE = specification.ProposedGameplayMetadata.EnergyType
+local BUILDING_TAG = specification.ProposedGameplayMetadata.InstallerTag
+
+local function validateDestructionGroups(model)
+	local groups = model:FindFirstChild("DestructionGroups")
+	assert(groups and groups:IsA("Folder"), "Large City Summit Tower installer requires a DestructionGroups folder")
+
+	for _, groupName in ipairs(specification.PlannedDestructionGroups) do
+		local group = groups:FindFirstChild(groupName)
+		assert(group and group:IsA("Folder"), "Large City Summit Tower is missing destruction group: " .. groupName)
+	end
+
+	return groups
+end
+
+local function lowestVisibleY(model)
+	local minimumY = math.huge
+	for _, item in ipairs(model:GetDescendants()) do
+		if item:IsA("BasePart") and item.Transparency < 1 then
+			local halfSize = item.Size * 0.5
+			local verticalExtent =
+				math.abs(item.CFrame.XVector.Y) * halfSize.X
+				+ math.abs(item.CFrame.YVector.Y) * halfSize.Y
+				+ math.abs(item.CFrame.ZVector.Y) * halfSize.Z
+			minimumY = math.min(minimumY, item.Position.Y - verticalExtent)
+		end
+	end
+	return minimumY
+end
+
+local function placeModel(model, options)
+	if options.CFrame then
+		assert(typeof(options.CFrame) == "CFrame", "Large City Summit Tower options.CFrame must be a CFrame")
+		model:PivotTo(options.CFrame)
+		return
+	end
+
+	local groundCFrame = options.GroundCFrame or CFrame.new()
+	assert(typeof(groundCFrame) == "CFrame", "Large City Summit Tower options.GroundCFrame must be a CFrame")
+	model:PivotTo(groundCFrame)
+
+	if options.AlignToGround == false then
+		return
+	end
+
+	local minimumY = lowestVisibleY(model)
+	if minimumY < math.huge then
+		local correction = groundCFrame.Position.Y - minimumY
+		model:PivotTo(model:GetPivot() + Vector3.new(0, correction, 0))
+		model:SetAttribute("GroundContactCorrection", correction)
+		model:SetAttribute("GroundContactY", groundCFrame.Position.Y)
+	end
+end
+
+local function applyIntegrationMetadata(model)
+	model.Name = MODEL_NAME
+	model:SetAttribute("AssetId", specification.AssetId)
+	model:SetAttribute("DisplayName", specification.DisplayName)
+	model:SetAttribute("City", specification.City)
+	model:SetAttribute("BuildingType", specification.BuildingType)
+	model:SetAttribute("CityTier", 4)
+	model:SetAttribute("MaxHealth", MAX_HEALTH)
+	model:SetAttribute("EnergyType", ENERGY_TYPE)
+	model:SetAttribute("AssetPhase", 6)
+	model:SetAttribute("PipelinePhase", 6)
+	model:SetAttribute("QualityGateA", "Approved")
+	model:SetAttribute("QualityGateB", "Approved")
+	model:SetAttribute("QualityGateC", "Pending")
+	model:SetAttribute("Phase6Status", "ExternalGameTestPending")
+	model:SetAttribute("DressingStatus", "Approved")
+	model:SetAttribute("PackageId", "LargeCitySummitTowerPackage")
+	model:SetAttribute("IntegrationPackageVersion", PACKAGE_VERSION)
+	model:SetAttribute("IntegrationPackageReady", true)
+	model:SetAttribute("InstallerReady", true)
+	model:SetAttribute("FinalInstallerReady", false)
+	model:SetAttribute("WorkshopOnly", false)
+	model:SetAttribute("HasInterior", false)
+	model:SetAttribute("DestructionGroupCount", #specification.PlannedDestructionGroups)
+	model:SetAttribute("ExternalCollapseIntegration", true)
+	model:SetAttribute("UsesSharedMainGameDestruction", true)
+
+	if not CollectionService:HasTag(model, BUILDING_TAG) then
+		CollectionService:AddTag(model, BUILDING_TAG)
+	end
+end
+
+function Installer.Validate(model)
+	assert(model and model:IsA("Model"), "LargeCitySummitTowerInstaller.Validate requires a Model")
+	validateDestructionGroups(model)
+	assert(model:GetAttribute("MaxHealth") == MAX_HEALTH, "Large City Summit Tower MaxHealth metadata is invalid")
+	assert(model:GetAttribute("EnergyType") == ENERGY_TYPE, "Large City Summit Tower EnergyType metadata is invalid")
+	assert(CollectionService:HasTag(model, BUILDING_TAG), "Large City Summit Tower is missing tag: " .. BUILDING_TAG)
+	return true
+end
+
+function Installer.Install(parent, options)
+	assert(typeof(parent) == "Instance", "LargeCitySummitTowerInstaller.Install requires a parent Instance")
+	options = options or {}
+	assert(typeof(options) == "table", "LargeCitySummitTowerInstaller.Install options must be a table")
+
+	local existing = parent:FindFirstChild(MODEL_NAME)
+	if existing then
+		existing:Destroy()
+	end
+
+	local oldGoldenMaster = parent:FindFirstChild(GOLDEN_MASTER_NAME)
+	if oldGoldenMaster then
+		oldGoldenMaster:Destroy()
+	end
+
+	local model = goldenMaster.Build(parent)
+	dressing.Apply(model)
+	validateDestructionGroups(model)
+	applyIntegrationMetadata(model)
+	placeModel(model, options)
+	Installer.Validate(model)
+
+	return model
+end
+
+function Installer.Uninstall(parent)
+	assert(typeof(parent) == "Instance", "LargeCitySummitTowerInstaller.Uninstall requires a parent Instance")
+	local model = parent:FindFirstChild(MODEL_NAME)
+	if not model then
+		return false
+	end
+	model:Destroy()
+	return true
+end
+
+Installer.ModelName = MODEL_NAME
+Installer.PackageVersion = PACKAGE_VERSION
+Installer.MaxHealth = MAX_HEALTH
+Installer.EnergyType = ENERGY_TYPE
+Installer.RequiredTag = BUILDING_TAG
+Installer.QualityGateC = "Pending"
+
+return Installer
+]]></string>
+      </Properties>
+    </Item>
+    <Item class="ModuleScript" referent="4">
+      <Properties>
+        <string name="Name">LargeCitySummitTowerSpecification</string>
+        <string name="Source"><![CDATA[-- Phase 1 concept/specification for LC-52 Summit Tower.
+-- Standalone building branch: no dependency on other Large City building branches.
+
+local Specification = {
+	AssetId = "LargeCity_SummitTower_L3",
+	DisplayName = "Summit Tower",
+	LayoutId = "LC-52",
+	City = "LargeCity",
+	District = "Uptown",
+	BuildingType = "High-Rise",
+	Phase = 6,
+	QualityGate = "C-Pending",
+	Branch = "largecity-summit-tower-l3",
+
+	StandaloneImport = {
+		Required = true,
+		Rule = "This branch must remain independently importable into another project without depending on Stadium, Arena, Hospital, Resort, or any other building branch.",
+	},
+
+	LayoutReference = {
+		Position = Vector3.new(220, 24, 500),
+		Footprint = Vector2.new(70, 64),
+		Height = 126,
+		Yaw = 4,
+	},
+
+	Style = "Singapore x Miami tropical luxury metropolis",
+	Role = "Uptown skyline landmark beside the stadium and arena",
+
+	Concept = {
+		Name = "Tropical Summit Spire",
+		Read = "Elegant premium high-rise with a flowing vertical silhouette, offset glass volumes, sky-garden cuts and a distinctive luminous crown.",
+		DoNotReadAs = {
+			"generic rectangular office slab",
+			"cyberpunk tower",
+			"needle skyscraper",
+			"stadium annex",
+		},
+	},
+
+	Massing = {
+		Podium = {
+			Footprint = Vector2.new(64, 58),
+			Height = 18,
+			Rule = "Broad civic/luxury podium anchors the tower at street level and creates a readable Kaiju-scale base.",
+		},
+		LowerTower = {
+			Footprint = Vector2.new(52, 46),
+			FromY = 18,
+			ToY = 58,
+			Rule = "Rounded/softened rectangular tower shaft with strong vertical fins and glass bands.",
+		},
+		MidTower = {
+			Footprint = Vector2.new(46, 42),
+			FromY = 58,
+			ToY = 92,
+			Offset = Vector3.new(-3, 0, 2),
+			Rule = "First setback shifts the mass slightly to avoid a single extruded box.",
+		},
+		UpperTower = {
+			Footprint = Vector2.new(39, 36),
+			FromY = 92,
+			ToY = 116,
+			Offset = Vector3.new(3, 0, -1),
+			Rule = "Second setback creates a slimmer crown approach and a clear skyline progression.",
+		},
+	},
+
+	SignatureFeatures = {
+		{
+			Name = "SkyGardenOne",
+			Y = 55,
+			Description = "Deep planted terrace/notch wrapping one corner of the tower; visible from medium distance.",
+		},
+		{
+			Name = "SkyGardenTwo",
+			Y = 89,
+			Description = "Smaller upper sky terrace with palms/greenery and a stronger teal accent band.",
+		},
+		{
+			Name = "VerticalFins",
+			Description = "Tall pale-metal fins run across selected facade bays and visually connect podium, shaft and crown.",
+		},
+		{
+			Name = "SummitCrown",
+			Y = 116,
+			Height = 10,
+			Description = "Asymmetric stepped crown with a luminous teal ring/line; iconic but still metropolitan rather than futuristic.",
+		},
+		{
+			Name = "MainLobby",
+			Face = "-Z",
+			Description = "Tall recessed glass lobby under a projecting canopy, clearly readable as the main entrance.",
+		},
+	},
+
+	Facade = {
+		Primary = "Blue-green dark glass",
+		Secondary = "Warm pale concrete / stone",
+		Accent = "Teal/cyan",
+		Rule = "Alternate glass fields, pale structural frames, fins and sky-garden recesses so the facade never reads as one monotonous curtain wall.",
+	},
+
+	RoofAndCrown = {
+		Rule = "No flat anonymous roof. Upper shaft steps into an asymmetric crown with a shallow illuminated perimeter feature.",
+	},
+
+	Landscape = {
+		Phase = 5,
+		Includes = {
+			"entrance palms",
+			"raised planters",
+			"drop-off canopy",
+			"small plaza bollards",
+			"sky-garden greenery",
+		},
+	},
+
+	ProposedGameplayMetadata = {
+		TargetMaxHealth = 256000,
+		EnergyType = "Electric",
+		InstallerTag = "KaijuHouse",
+		ExternalCollapseIntegration = true,
+		IntegrationPackageVersion = 1,
+		FinalInstallerReady = false,
+	},
+
+	PlannedDestructionGroups = {
+		"D1_EntryPodium",
+		"D2_LowerTower",
+		"D3_MidTower",
+		"D4_UpperTower",
+		"D5_SkyGardens",
+		"D6_SummitCrown",
+		"D7_ServiceCore",
+	},
+
+	VisualTarget = {
+		Status = "Approved",
+		Revision = "LargeCitySummitTower-VisualTarget-v1",
+		Brief = {
+			"tropical luxury high-rise in Singapore x Miami language",
+			"softened rectangular shaft with two visible setbacks",
+			"two planted sky-garden cuts",
+			"dark blue-green glass with pale structural frames",
+			"strong vertical fins",
+			"recessed tall main lobby on the front",
+			"asymmetric illuminated summit crown",
+			"daylight architectural concept board with front, three-quarter and rear cues",
+			"not cyberpunk, not a plain glass box",
+		},
+	},
+
+	QualityGateA = {
+		Status = "Approved",
+		ApprovedTarget = "LargeCitySummitTower-VisualTarget-v1",
+		Notes = "Approved tropical luxury stepped high-rise with two sky gardens, strong vertical fins, recessed lobby and asymmetric illuminated crown.",
+		NextPhase = 3,
+	},
+
+	TechnicalBreakdown = {
+		CoordinateSystem = {
+			Pivot = "ground center",
+			Front = "local -Z",
+			Rear = "local +Z",
+			LayoutYaw = 4,
+		},
+		Overall = {
+			TargetFootprint = Vector2.new(70, 64),
+			TargetHeight = 126,
+			GroundLevel = 0,
+		},
+		Podium = {
+			Footprint = Vector2.new(64, 58),
+			Center = Vector3.new(0, 9, 0),
+			Height = 18,
+			CornerChamfer = 5,
+			LobbyCutWidth = 30,
+			LobbyCutDepth = 5,
+		},
+		LowerTower = {
+			Footprint = Vector2.new(52, 46),
+			Center = Vector3.new(0, 38, 0),
+			Height = 40,
+			CornerRadiusApprox = 4,
+			FacadeBayCountPerLongFace = 7,
+			FacadeBayCountPerShortFace = 6,
+		},
+		SkyGardenOne = {
+			Y = 55,
+			Height = 5,
+			Depth = 6,
+			WrapCorner = "front-left",
+			VisibleGreeneryBand = true,
+		},
+		MidTower = {
+			Footprint = Vector2.new(46, 42),
+			Center = Vector3.new(-3, 75, 2),
+			Height = 34,
+			CornerRadiusApprox = 4,
+		},
+		SkyGardenTwo = {
+			Y = 89,
+			Height = 4.5,
+			Depth = 5,
+			WrapCorner = "rear-right",
+			VisibleGreeneryBand = true,
+		},
+		UpperTower = {
+			Footprint = Vector2.new(39, 36),
+			Center = Vector3.new(3, 104, -1),
+			Height = 24,
+			CornerRadiusApprox = 3.5,
+		},
+		Crown = {
+			BaseY = 116,
+			TopY = 126,
+			CoreFootprint = Vector2.new(30, 28),
+			PrimaryBladeHeight = 10,
+			SecondaryBladeHeight = 7,
+			AsymmetryOffset = Vector3.new(4, 0, -2),
+			LuminousPerimeter = true,
+		},
+		Facade = {
+			PrimaryGlassDepth = 0.7,
+			FrameDepth = 1.0,
+			VerticalFinDepth = 1.5,
+			VerticalFinWidth = 1.2,
+			VerticalFinSpacing = 7.0,
+			AccentBandHeight = 0.8,
+			Rule = "Use continuous facade fields with attached fins and frames; avoid a stack of disconnected floor boxes.",
+		},
+		Entrance = {
+			GlazingWidth = 28,
+			GlazingHeight = 13,
+			RecessDepth = 4.5,
+			CanopyWidth = 34,
+			CanopyDepth = 8,
+			CanopyY = 13.5,
+		},
+		RearService = {
+			DoorCount = 3,
+			DoorWidth = 8,
+			ServiceCanopy = true,
+			Rule = "Rear service access must be visibly placed on the true +Z exterior face, not hidden inside the podium mass.",
+		},
+		PartBudget = {
+			TargetVisibleParts = 620,
+			MaximumVisibleParts = 760,
+		},
+	},
+
+	Phase4Status = {
+		Status = "Approved",
+		GeometryRevision = "LargeCitySummitTower-v5-ProjectedSkyGardens",
+		QualityGateB = "Approved",
+		ReviewFocus = {
+			"overall stepped silhouette",
+			"two readable sky-garden interruptions",
+			"facade verticality and fin rhythm",
+			"main lobby depth",
+			"asymmetric crown",
+			"rear service visibility",
+			"roof and crown free of coplanar surface flicker / Z-fighting",
+			"all three crown blades fully exposed above the raised rooftop crown",
+			"facade fins aligned to window mullions",
+			"sky gardens read as balconies/canopies without an unexplained black overlay across the glazing",
+			"sky-garden slabs project fully outside the facade instead of intersecting the tower mass",
+		},
+	},
+
+	QualityGateB = {
+		Status = "Approved",
+		ApprovedGeometry = "LargeCitySummitTower-v5-ProjectedSkyGardens",
+		Notes = "Raised crown, exposed crown blades, window-aligned facade fins, clarified sky-garden balconies and clean roof surfaces accepted.",
+		NextPhase = 5,
+	},
+
+	Phase5Status = {
+		Status = "Approved",
+		Revision = "LargeCitySummitTower-Dressing-v3-ServiceCanopySign",
+		Includes = {
+			"Summit Tower entrance wordmark and teal lobby accent",
+			"entry palms, planters and bollards",
+			"vegetation on both sky gardens",
+			"sparse teal facade accents",
+			"rear service and delivery signage",
+			"service identity mounted on the visible outer canopy fascia",
+		},
+		QualityGateC = "Pending",
+		NextPhase = "ExternalGameTestPending",
+	},
+
+	Phase6Status = {
+		Status = "ExternalGameTestPending",
+		ExternalCollapseIntegration = true,
+		QualityGateC = "Pending",
+		Notes = "Workshop visual review approved; destruction/collapse behaviour remains deferred to the main game's shared collapse system.",
+	},
+
+	Phase3Acceptance = {
+		"Podium, three tower masses and crown use deterministic dimensions tied to the LC-52 footprint and height.",
+		"Two setbacks and two sky-garden cuts remain visibly distinct in the Golden Master.",
+		"Facade treatment is continuous and vertical rather than a stack of unrelated boxes.",
+		"Main lobby and rear service access are both externally readable.",
+		"Seven destruction groups map to coherent architectural masses.",
+		"Golden Master target stays below 760 visible parts.",
+	},
+
+	Phase1Acceptance = {
+		"Silhouette is noticeably more vertical than Stadium and Arena.",
+		"Tower is not a plain rectangular extrusion.",
+		"Two setbacks and two sky-garden cuts are readable at Kaiju gameplay distance.",
+		"Main entrance is clearly identifiable from the front.",
+		"Crown gives Summit Tower a unique skyline identity without becoming sci-fi.",
+		"Footprint and overall height remain compatible with LC-52.",
+	},
+}
+
+return Specification
+]]></string>
+      </Properties>
+    </Item>
+  </Item>
+</roblox>
