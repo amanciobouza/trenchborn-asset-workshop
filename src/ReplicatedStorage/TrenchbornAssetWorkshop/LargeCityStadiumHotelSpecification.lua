@@ -260,7 +260,7 @@ local Specification = {
 
 	Phase4Status = {
 		Status = "GoldenMasterReview",
-		GeometryRevision = "LargeCityStadiumHotel-v3-AnchoredRoofBlade",
+		GeometryRevision = "LargeCityStadiumHotel-v4-StiltedRoofBlade",
 		QualityGateB = "Pending",
 		ReviewFocus = {
 			"overall premium event-hotel silhouette",
@@ -270,16 +270,17 @@ local Specification = {
 			"sky-lounge terrace visibly projected outside the facade",
 			"rooftop pool deck reads clearly from street and elevated views",
 			"rooftop pergola remains light and open",
+			"stilt supports remain outside the planter footprint and do not visually bury the rooftop garden",
 			"rear service court is visibly on true +Z exterior",
 			"no balcony, pool-deck or roof Z-fighting",
-			"large roof blade with warm neon is grounded on the rooftop lounge deck",
+			"large roof blade with warm neon is lifted on slim portal-frame stilts so the planter remains visible underneath",
 		},
 	},
 
 
 	QualityGateB = {
 		Status = "Pending",
-		ApprovedGeometry = "LargeCityStadiumHotel-v3-AnchoredRoofBlade",
+		ApprovedGeometry = "LargeCityStadiumHotel-v4-StiltedRoofBlade",
 		Notes = "Convex guest-room facade yaw corrected after review found the window/balcony tangents visually bending inward. Recheck front and rear curvature before re-approval.",
 		NextPhase = 5,
 	},
@@ -287,7 +288,7 @@ local Specification = {
 
 	FacadeCurveOrientationFix = {
 		Status = "InReview",
-		GeometryRevision = "LargeCityStadiumHotel-v3-AnchoredRoofBlade",
+		GeometryRevision = "LargeCityStadiumHotel-v4-StiltedRoofBlade",
 		Notes = "Window, balcony slab and balustrade yaw now follow the outward/convex guest-room bow instead of visually suggesting a concave facade.",
 	},
 
