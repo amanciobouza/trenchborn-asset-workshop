@@ -16,6 +16,9 @@
         "$className": "Folder",
         "LargeCityTechnologyFireStationSpecification": {
           "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityTechnologyFireStationSpecification.lua"
+        },
+        "LargeCityFireStationFamily": {
+          "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityFireStationFamily.lua"
         }
       }
     }
