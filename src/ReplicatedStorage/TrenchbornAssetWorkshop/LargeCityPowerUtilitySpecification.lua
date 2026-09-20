@@ -330,12 +330,14 @@ local Specification = {
 
 
 	Phase5Status = {
-		Status = "DressingPending",
+		Status = "DressingReview",
 		QualityGateB = "Approved",
+		DressingRevision = "LargeCityPowerUtility-Dressing-v1",
 		Scope = {
 			"Aureline Gridworks building signage and facility identity",
 			"control-entry plaza and restrained tropical landscaping",
 			"switchyard bay numbering and zone labels without obstructing walkable aisles",
+			"switchyard dressing preserves all four player service corridors",
 			"transformer and reactive-power identifiers mounted clear of equipment",
 			"subtle safety graphics attached to plausible electrical infrastructure",
 			"no changes to the approved walkable parallel-switchyard geometry",
