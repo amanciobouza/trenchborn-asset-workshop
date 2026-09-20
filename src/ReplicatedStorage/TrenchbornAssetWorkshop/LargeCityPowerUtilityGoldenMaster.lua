@@ -245,58 +245,86 @@ end
 local function addReactivePowerYard(group)
 	local reactive = folder(group, "ReactivePowerYard")
 
-	-- The rear yard now fills almost the entire plot width, making LC-44 read as
-	-- a major grid installation rather than a building with a few transformers.
-	block(reactive, "ReactivePowerPad", Vector3.new(144, 0.45, 22), Vector3.new(0, 0.23, 43), COLORS.Ground, Enum.Material.Concrete)
+	-- Campus-scale switchyard: almost the full LC-44 plot width and a deep rear
+	-- electrical apron. Large clear zones make the installation feel bigger than
+	-- simply adding more small props.
+	block(reactive, "MainSwitchyardPad", Vector3.new(148, 0.45, 36), Vector3.new(0, 0.23, 35), COLORS.Ground, Enum.Material.Concrete)
+	block(reactive, "EastElectricalApron", Vector3.new(12, 0.45, 46), Vector3.new(70, 0.23, 5), COLORS.Ground, Enum.Material.Concrete)
 
-	addCapacitorBank(reactive, "CapacitorBank_A", -61, 43)
-	addCapacitorBank(reactive, "CapacitorBank_B", -45, 43)
-	addCapacitorBank(reactive, "CapacitorBank_C", -29, 43)
+	-- Three large capacitor banks form a dedicated reactive-power zone on the
+	-- west side of the switchyard.
+	addCapacitorBank(reactive, "CapacitorBank_A", -61, 44)
+	addCapacitorBank(reactive, "CapacitorBank_B", -44, 44)
+	addCapacitorBank(reactive, "CapacitorBank_C", -27, 44)
 
-	-- Two shunt reactors occupy the narrow right-side electrical yard.
-	addShuntReactor(reactive, "ShuntReactor_A", 8)
-	addShuntReactor(reactive, "ShuntReactor_B", 24)
+	-- Two shunt reactors occupy the east-side electrical apron.
+	addShuntReactor(reactive, "ShuntReactor_A", -7)
+	addShuntReactor(reactive, "ShuntReactor_B", 13)
 
-	-- Low live-bus spine visually ties reactive-power equipment into the yard.
-	cylinderX(reactive, "ReactiveBusbar", 48, 1.2, Vector3.new(-45, 12.0, 34.5), COLORS.Silver, Enum.Material.Metal)
-	block(reactive, "ReactiveLiveLine", Vector3.new(46, 0.22, 0.22), Vector3.new(-45, 12.0, 33.8), COLORS.Cyan, Enum.Material.Neon)
+	-- Large rigid reactive bus visually ties the capacitor field to the main yard.
+	cylinderX(reactive, "ReactiveBusbar", 58, 1.2, Vector3.new(-44, 12.0, 34.5), COLORS.Silver, Enum.Material.Metal)
+	block(reactive, "ReactiveLiveLine", Vector3.new(56, 0.22, 0.22), Vector3.new(-44, 12.65, 34.5), COLORS.Cyan, Enum.Material.Neon)
+
+	-- Broad maintenance corridors deliberately remain empty so the switchyard
+	-- reads at infrastructure scale instead of as a cluttered equipment pile.
+	block(reactive, "WestMaintenanceLane", Vector3.new(46, 0.16, 3.2), Vector3.new(-45, 0.53, 27), COLORS.ConcreteDark, Enum.Material.Concrete)
+	block(reactive, "MainMaintenanceLane", Vector3.new(86, 0.16, 3.2), Vector3.new(24, 0.53, 27), COLORS.ConcreteDark, Enum.Material.Concrete)
 end
-
 local function addTransformerCourt(group)
-	-- Four main power transformers occupy the right/central half of a much larger
-	-- electrical yard. Their size remains unchanged; the facility grows around them.
-	local positions = {-8, 12, 32, 52}
+	-- Four main power transformers occupy a broad central/east zone with clear
+	-- maintenance space between units. Their size stays unchanged, but their
+	-- spacing makes the yard read much larger.
+	local positions = {-10, 13, 36, 59}
 	for index, x in ipairs(positions) do
 		addTransformer(group, index, x)
 	end
 end
 
 local function addBusbarGantries(group)
+	-- Three full-width portal rows make the switchyard read as a major urban
+	-- substation. The spans deliberately approach the LC-44 plot width.
 	local gantries = {
-		{name = "Primary", z = 33.5, height = 31},
-		{name = "Secondary", z = 39.0, height = 25},
+		{name = "Incoming", z = 24.0, height = 34},
+		{name = "Main", z = 34.0, height = 29},
+		{name = "Transfer", z = 48.0, height = 24},
 	}
+
+	local postXs = {-68, -34, 0, 34, 68}
 
 	for _, gantry in ipairs(gantries) do
 		local beamY = gantry.height
-		for _, x in ipairs({-8, 24, 56}) do
-			block(group, gantry.name .. "Post_" .. tostring(x), Vector3.new(0.9, gantry.height, 0.9), Vector3.new(x, gantry.height / 2, gantry.z), COLORS.Graphite, Enum.Material.Metal)
-			block(group, gantry.name .. "Crossarm_" .. tostring(x), Vector3.new(9, 0.8, 1.1), Vector3.new(x, beamY, gantry.z), COLORS.Graphite, Enum.Material.Metal)
+
+		-- Repeated portal frames establish large-scale perspective across the yard.
+		for _, x in ipairs(postXs) do
+			block(group, gantry.name .. "Post_" .. tostring(x), Vector3.new(1.0, gantry.height, 1.0), Vector3.new(x, gantry.height / 2, gantry.z), COLORS.Graphite, Enum.Material.Metal)
+			block(group, gantry.name .. "Crossarm_" .. tostring(x), Vector3.new(12, 0.9, 1.2), Vector3.new(x, beamY, gantry.z), COLORS.Graphite, Enum.Material.Metal)
 
 			for phase = -1, 1 do
-				local phaseZ = gantry.z + phase * 2.4
-				cylinderY(group, gantry.name .. "Insulator_" .. tostring(x) .. "_" .. tostring(phase), 3.4, 0.9, Vector3.new(x, beamY + 2.1, phaseZ), COLORS.Ceramic, Enum.Material.SmoothPlastic)
+				local phaseZ = gantry.z + phase * 2.5
+				cylinderY(group, gantry.name .. "Insulator_" .. tostring(x) .. "_" .. tostring(phase), 3.6, 0.95, Vector3.new(x, beamY + 2.2, phaseZ), COLORS.Ceramic, Enum.Material.SmoothPlastic)
 			end
 		end
 
+		-- Full-width rigid conductors make the electrical field visibly continuous.
 		for phase = -1, 1 do
-			local phaseZ = gantry.z + phase * 2.4
-			cylinderX(group, gantry.name .. "Busbar_" .. tostring(phase), 64, 1.4, Vector3.new(24, beamY + 4.1, phaseZ), COLORS.Silver, Enum.Material.Metal)
-			block(group, gantry.name .. "LiveLine_" .. tostring(phase), Vector3.new(62, 0.18, 0.18), Vector3.new(24, beamY + 4.75, phaseZ), COLORS.Cyan, Enum.Material.Neon)
+			local phaseZ = gantry.z + phase * 2.5
+			cylinderX(group, gantry.name .. "Busbar_" .. tostring(phase), 136, 1.5, Vector3.new(0, beamY + 4.25, phaseZ), COLORS.Silver, Enum.Material.Metal)
+			block(group, gantry.name .. "LiveLine_" .. tostring(phase), Vector3.new(134, 0.18, 0.18), Vector3.new(0, beamY + 4.95, phaseZ), COLORS.Cyan, Enum.Material.Neon)
 		end
 	end
-end
 
+	-- Six large switch bays under the main portal row. Each bay has obvious
+	-- disconnectors rather than tiny decorative details.
+	for bay = 1, 6 do
+		local x = -55 + (bay - 1) * 22
+		for side = -1, 1, 2 do
+			local bx = x + side * 3.2
+			cylinderY(group, "DisconnectorInsulator_" .. bay .. "_" .. side, 7.0, 1.1, Vector3.new(bx, 4.0, 22.0), COLORS.Ceramic, Enum.Material.SmoothPlastic)
+		end
+		block(group, "DisconnectorBlade_" .. bay, Vector3.new(7.2, 0.45, 0.7), Vector3.new(x, 7.7, 22.0), COLORS.Silver, Enum.Material.Metal)
+		block(group, "SwitchBayBase_" .. bay, Vector3.new(10, 0.6, 6), Vector3.new(x, 0.3, 22.0), COLORS.GraphiteLight, Enum.Material.Metal)
+	end
+end
 local function addRooftopAndService(group)
 	-- Four organized cooling modules split across both hall roofs.
 	local modules = {
@@ -359,7 +387,7 @@ function Builder.Build(parent)
 	model:SetAttribute("AssetPhase", 4)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Pending")
-	model:SetAttribute("GeometryRevision", "LargeCityPowerUtility-v2-ExpandedReactivePowerYard")
+	model:SetAttribute("GeometryRevision", "LargeCityPowerUtility-v3-BroadSwitchyard")
 	model:SetAttribute("MaxHealth", specification.ProposedGameplayMetadata.TargetMaxHealth)
 	model:SetAttribute("EnergyType", specification.ProposedGameplayMetadata.EnergyType)
 	model:SetAttribute("InstallerTag", specification.ProposedGameplayMetadata.InstallerTag)
@@ -369,7 +397,9 @@ function Builder.Build(parent)
 	model:SetAttribute("CapacitorBankCount", 3)
 	model:SetAttribute("ShuntReactorCount", 2)
 	model:SetAttribute("ExpandedReactivePowerYard", true)
-	model:SetAttribute("BusbarGantryCount", 2)
+	model:SetAttribute("BusbarGantryCount", 3)
+	model:SetAttribute("SwitchBayCount", 6)
+	model:SetAttribute("BroadSwitchyard", true)
 	model:SetAttribute("CoolingModuleCount", 4)
 	model:SetAttribute("VentStackCount", 3)
 	model:SetAttribute("NoLoadingStations", true)
