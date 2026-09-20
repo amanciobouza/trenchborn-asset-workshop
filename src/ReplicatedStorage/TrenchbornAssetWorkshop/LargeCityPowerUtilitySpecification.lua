@@ -246,7 +246,7 @@ local Specification = {
 			Rule = "Four large transformers remain fully visible, evenly spaced and unobstructed; no loading doors or unrelated clutter may sit behind them.",
 		},
 		ReactivePowerYard = {
-			PadSize = Vector2.new(148, 36),
+			PadSize = Vector2.new(148, 20),
 			CapacitorBankCount = 3,
 			CapacitorCansPerBank = 8,
 			ShuntReactorCount = 2,
@@ -268,7 +268,7 @@ local Specification = {
 			MaximumY = 56,
 			CoolingModuleCount = 4,
 			VentStackCount = 3,
-			Rule = "Rooftop equipment is grouped into deliberate cooling and ventilation zones with clear maintenance spacing and no random clutter.",
+			Rule = "Rooftop equipment is grouped into deliberate cooling and ventilation zones; every equipment plinth sits fully above its supporting roof surface with the module visibly mounted on top.",
 		},
 		Facade = {
 			PanelDepth = 0.7,
@@ -300,7 +300,7 @@ local Specification = {
 
 	Phase4Status = {
 		Status = "GoldenMasterReview",
-		GeometryRevision = "LargeCityPowerUtility-v3-BroadSwitchyard",
+		GeometryRevision = "LargeCityPowerUtility-v4-ClearSwitchyard-RaisedRoofEquipment",
 		QualityGateB = "Pending",
 		ReviewFocus = {
 			"power utility is immediately recognizable from silhouette and equipment",
@@ -311,9 +311,11 @@ local Specification = {
 			"transformer cooling fins and ceramic bushings read clearly at gameplay distance",
 			"busbar gantries read as rigid electrical conductors carried by insulators, not as pipes",
 			"three full-width portal rows establish a large switchyard silhouette",
+			"all switchyard portal rows and disconnector bays sit fully behind the rear hall envelopes",
 			"six large disconnector bays add visible switching infrastructure beneath the incoming portal row",
 			"thin cyan live indicators stay physically attached to busbars and reactive-power equipment",
 			"rooftop cooling modules and three vent stacks are grounded on visible plinths and stay below 56 studs",
+			"cooling-module plinths are fully visible above both hall roofs rather than embedded in the building masses",
 			"cyan and amber accents remain restrained and physically attached to plausible electrical elements",
 			"no loading stations or unrelated service clutter block the transformer court",
 			"no facade, gantry, transformer or rooftop Z-fighting",
