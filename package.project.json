@@ -1,6 +1,9 @@
 {
-  "name": "TrenchbornAssetWorkshop",
+  "name": "LargeCityTechnologyFireStationPackage",
   "tree": {
-    "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop"
+    "$className": "Folder",
+    "LargeCityTechnologyFireStationSpecification": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityTechnologyFireStationSpecification.lua"
+    }
   }
 }
