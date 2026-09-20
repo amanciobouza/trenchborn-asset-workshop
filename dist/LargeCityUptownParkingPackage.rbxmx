@@ -1,0 +1,1100 @@
+<roblox version="4">
+  <Item class="Folder" referent="0">
+    <Properties>
+      <string name="Name">LargeCityUptownParkingPackage</string>
+    </Properties>
+    <Item class="ModuleScript" referent="1">
+      <Properties>
+        <string name="Name">LargeCityUptownParkingDressing</string>
+        <string name="Source"><![CDATA[local Dressing = {}
+
+local COLORS = {
+	White = Color3.fromRGB(245, 247, 244),
+	Dark = Color3.fromRGB(39, 46, 49),
+	Concrete = Color3.fromRGB(216, 216, 207),
+	ConcreteDark = Color3.fromRGB(165, 169, 165),
+	Glass = Color3.fromRGB(58, 101, 112),
+	Teal = Color3.fromRGB(57, 173, 178),
+	Bronze = Color3.fromRGB(154, 113, 72),
+	Green = Color3.fromRGB(64, 126, 74),
+	Wood = Color3.fromRGB(118, 88, 59),
+	Soil = Color3.fromRGB(76, 61, 45),
+}
+
+local function folder(parent, name)
+	local existing = parent:FindFirstChild(name)
+	if existing then existing:Destroy() end
+	local item = Instance.new("Folder")
+	item.Name = name
+	item.Parent = parent
+	return item
+end
+
+local function part(parent, name, size, cf, color, material, transparency, shape)
+	local item = Instance.new("Part")
+	item.Name = name
+	item.Size = size
+	item.CFrame = cf
+	item.Color = color
+	item.Material = material or Enum.Material.SmoothPlastic
+	item.Transparency = transparency or 0
+	item.Shape = shape or Enum.PartType.Block
+	item.Anchored = true
+	item.CanCollide = false
+	item.CanTouch = false
+	item.CanQuery = false
+	item.CastShadow = true
+	item.TopSurface = Enum.SurfaceType.Smooth
+	item.BottomSurface = Enum.SurfaceType.Smooth
+	item.Parent = parent
+	return item
+end
+
+local function block(parent, name, size, position, color, material, transparency)
+	return part(parent, name, size, CFrame.new(position), color, material, transparency)
+end
+
+local function cylinder(parent, name, height, diameter, position, color, material)
+	return part(
+		parent,
+		name,
+		Vector3.new(height, diameter, diameter),
+		CFrame.new(position) * CFrame.Angles(0, 0, math.rad(90)),
+		color,
+		material,
+		0,
+		Enum.PartType.Cylinder
+	)
+end
+
+local function addSurfaceText(parent, adornee, text, face, color)
+	local gui = Instance.new("SurfaceGui")
+	gui.Name = adornee.Name .. "Surface"
+	gui.Adornee = adornee
+	gui.Face = face or Enum.NormalId.Front
+	gui.AlwaysOnTop = false
+	gui.LightInfluence = 0.2
+	gui.PixelsPerStud = 42
+	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	gui.Parent = parent
+
+	local label = Instance.new("TextLabel")
+	label.Name = "Label"
+	label.Size = UDim2.fromScale(1, 1)
+	label.BackgroundTransparency = 1
+	label.Text = text
+	label.TextColor3 = color or COLORS.White
+	label.TextStrokeTransparency = 0.82
+	label.Font = Enum.Font.GothamBold
+	label.TextScaled = true
+	label.Parent = gui
+end
+
+local function addPalm(parent, name, position, height, yaw)
+	local palm = folder(parent, name)
+	local h = height or 7
+	cylinder(palm, "Trunk", h, 0.7, position + Vector3.new(0, h * 0.5, 0), COLORS.Wood, Enum.Material.Wood)
+
+	local crown = position + Vector3.new(0, h, 0)
+	for index = 1, 7 do
+		local angle = math.rad((index - 1) * (360 / 7) + (yaw or 0))
+		local leaf = block(
+			palm,
+			"Leaf" .. index,
+			Vector3.new(0.55, 0.22, 3.8),
+			crown + Vector3.new(math.cos(angle) * 1.25, 0.1, math.sin(angle) * 1.25),
+			COLORS.Green,
+			Enum.Material.Grass
+		)
+		leaf.CFrame *= CFrame.Angles(math.rad(-13), angle, 0)
+	end
+end
+
+local function addShrub(parent, name, position, diameter)
+	return part(
+		parent,
+		name,
+		Vector3.new(diameter, diameter, diameter),
+		CFrame.new(position),
+		COLORS.Green,
+		Enum.Material.Grass,
+		0,
+		Enum.PartType.Ball
+	)
+end
+
+local function addEntryDressing(root)
+	local area = folder(root, "EntryDressing")
+
+	local parkingSign = block(
+		area,
+		"ParkingIdentity",
+		Vector3.new(18, 3.2, 0.35),
+		Vector3.new(-22.5, 13.0, -30.35),
+		COLORS.Dark,
+		Enum.Material.Metal
+	)
+	addSurfaceText(area, parkingSign, "UPTOWN  P", Enum.NormalId.Front, COLORS.White)
+
+	-- Generic parking wayfinding only; no EV-charging identity.
+	local entrySign = block(
+		area,
+		"VehicleEntrySign",
+		Vector3.new(20, 2.0, 0.30),
+		Vector3.new(7, 8.8, -37.15),
+		COLORS.Teal,
+		Enum.Material.Neon
+	)
+	addSurfaceText(area, entrySign, "ENTRY  •  EXIT", Enum.NormalId.Front, COLORS.Dark)
+
+	for index, x in ipairs({-1, 5, 11, 17}) do
+		local bay = block(
+			area,
+			"ParkingBayMarker_" .. index,
+			Vector3.new(4.2, 1.7, 0.25),
+			Vector3.new(x, 5.6, -37.18),
+			index % 2 == 0 and COLORS.Bronze or COLORS.Teal,
+			Enum.Material.Neon
+		)
+		addSurfaceText(area, bay, string.format("P%d", index), Enum.NormalId.Front, COLORS.Dark)
+	end
+
+	for _, x in ipairs({-29, -25, -21}) do
+		cylinder(area, "PedestrianBollard_" .. tostring(x), 1.9, 0.3, Vector3.new(x, 0.95, -34.2), COLORS.ConcreteDark, Enum.Material.Metal)
+	end
+end
+
+local function addGreenCutDressing(root)
+	local area = folder(root, "GreenCutDressing")
+
+	local frontBeds = {
+		{y = 20.375, z = -32.0},
+		{y = 26.175, z = -32.0},
+		{y = 31.975, z = -32.0},
+	}
+	for level, bed in ipairs(frontBeds) do
+		for index, x in ipairs({-18, -14, -10, -6}) do
+			addShrub(area, "FrontCutShrub_" .. level .. "_" .. index, Vector3.new(x, bed.y + 0.45, bed.z), 1.35)
+		end
+	end
+	addPalm(area, "FrontCutPalm", Vector3.new(-12, 31.85, -32.0), 4.8, 10)
+
+	local rearBeds = {
+		{y = 32.175, z = 32.0},
+		{y = 37.675, z = 32.0},
+		{y = 43.175, z = 32.0},
+	}
+	for level, bed in ipairs(rearBeds) do
+		for index, x in ipairs({9, 13, 17, 20}) do
+			addShrub(area, "RearCutShrub_" .. level .. "_" .. index, Vector3.new(x, bed.y + 0.45, bed.z), 1.25)
+		end
+	end
+end
+
+local function addRooftopDressing(root)
+	local area = folder(root, "RooftopDressing")
+
+	-- Planter tops are Y=45.8. Embed greenery slightly into them.
+	for _, z in ipairs({-12, -4, 4, 12}) do
+		addShrub(area, "RoofLeftShrub_" .. tostring(z), Vector3.new(-27, 46.25, z), 1.5)
+	end
+	addPalm(area, "RoofLeftPalm", Vector3.new(-27, 45.65, 16), 5.0, 15)
+
+	for _, x in ipairs({-6, 2, 10, 18}) do
+		addShrub(area, "RoofRearShrub_" .. tostring(x), Vector3.new(x, 46.25, 23), 1.5)
+	end
+
+	local roofSign = block(
+		area,
+		"MobilityDeckSign",
+		Vector3.new(20, 2.0, 0.3),
+		Vector3.new(0, 50.45, -14.5),
+		COLORS.Teal,
+		Enum.Material.Neon
+	)
+	addSurfaceText(area, roofSign, "MOBILITY DECK", Enum.NormalId.Front, COLORS.Dark)
+end
+
+local function addRearDressing(root)
+	local area = folder(root, "RearDressing")
+	local sign = block(
+		area,
+		"ServiceSign",
+		Vector3.new(18, 1.8, 0.32),
+		Vector3.new(-16, 10.0, 36.65),
+		COLORS.Dark,
+		Enum.Material.Metal
+	)
+	addSurfaceText(area, sign, "SERVICE", Enum.NormalId.Back, COLORS.White)
+
+	for index, x in ipairs({-20, -12}) do
+		local bay = block(
+			area,
+			"ServiceBay_" .. index,
+			Vector3.new(3.5, 1.6, 0.26),
+			Vector3.new(x, 7.8, 30.75),
+			COLORS.Teal,
+			Enum.Material.Neon
+		)
+		addSurfaceText(area, bay, string.format("%02d", index), Enum.NormalId.Back, COLORS.Dark)
+	end
+end
+
+function Dressing.Apply(model)
+	assert(model and model:IsA("Model"), "LargeCityUptownParkingDressing.Apply expects a Model")
+
+	local existing = model:FindFirstChild("Dressing")
+	if existing then existing:Destroy() end
+	local root = folder(model, "Dressing")
+
+	addEntryDressing(root)
+	addGreenCutDressing(root)
+	addRooftopDressing(root)
+	addRearDressing(root)
+
+	model:SetAttribute("AssetPhase", 5)
+	model:SetAttribute("QualityGateA", "Approved")
+	model:SetAttribute("QualityGateB", "Approved")
+	model:SetAttribute("DressingRevision", "LargeCityUptownParking-Dressing-v2-NoEV")
+	model:SetAttribute("DressingStatus", "Approved")
+	model:SetAttribute("StandaloneImport", true)
+	model:SetAttribute("GreenCutVegetation", true)
+	model:SetAttribute("RooftopVegetation", true)
+	model:SetAttribute("GenericParkingWayfinding", true)
+	model:SetAttribute("HighContrastNeonText", true)
+	return model
+end
+
+return Dressing
+]]></string>
+      </Properties>
+    </Item>
+    <Item class="ModuleScript" referent="2">
+      <Properties>
+        <string name="Name">LargeCityUptownParkingGoldenMaster</string>
+        <string name="Source"><![CDATA[local specification = require(script.Parent:WaitForChild("LargeCityUptownParkingSpecification"))
+
+local Builder = {}
+
+local COLORS = {
+	Concrete = Color3.fromRGB(216, 216, 207),
+	ConcreteDark = Color3.fromRGB(165, 169, 165),
+	Dark = Color3.fromRGB(39, 46, 49),
+	DarkOpen = Color3.fromRGB(31, 39, 42),
+	Metal = Color3.fromRGB(175, 179, 177),
+	Bronze = Color3.fromRGB(154, 113, 72),
+	Glass = Color3.fromRGB(58, 101, 112),
+	Teal = Color3.fromRGB(57, 173, 178),
+	PlantBed = Color3.fromRGB(68, 84, 63),
+	Solar = Color3.fromRGB(42, 62, 70),
+}
+
+local LEVELS = {10.5, 16.0, 21.5, 27.0, 32.5, 38.0, 43.5}
+
+local function folder(parent, name)
+	local item = Instance.new("Folder")
+	item.Name = name
+	item.Parent = parent
+	return item
+end
+
+local function part(parent, name, size, cf, color, material, transparency, shape)
+	local item = Instance.new("Part")
+	item.Name = name
+	item.Size = size
+	item.CFrame = cf
+	item.Color = color
+	item.Material = material or Enum.Material.SmoothPlastic
+	item.Transparency = transparency or 0
+	item.Shape = shape or Enum.PartType.Block
+	item.Anchored = true
+	item.CanCollide = true
+	item.CanTouch = true
+	item.CanQuery = true
+	item.CastShadow = true
+	item.TopSurface = Enum.SurfaceType.Smooth
+	item.BottomSurface = Enum.SurfaceType.Smooth
+	item.Parent = parent
+	return item
+end
+
+local function block(parent, name, size, position, color, material, transparency)
+	return part(parent, name, size, CFrame.new(position), color, material, transparency)
+end
+
+local function cylinder(parent, name, height, diameter, position, color, material)
+	return part(
+		parent,
+		name,
+		Vector3.new(height, diameter, diameter),
+		CFrame.new(position) * CFrame.Angles(0, 0, math.rad(90)),
+		color,
+		material,
+		0,
+		Enum.PartType.Cylinder
+	)
+end
+
+local function addBase(group)
+	-- Open mobility base: strong enough to read at Kaiju scale, but not a sealed box.
+	block(group, "BaseSlab", Vector3.new(68, 1.0, 58), Vector3.new(0, 0.5, 0), COLORS.Concrete, Enum.Material.Concrete)
+	block(group, "BaseRoof", Vector3.new(68, 1.0, 58), Vector3.new(0, 9.5, 0), COLORS.Concrete, Enum.Material.Concrete)
+
+	for _, x in ipairs({-31, -18, 18, 31}) do
+		block(group, "FrontColumn_" .. x, Vector3.new(1.4, 9, 1.4), Vector3.new(x, 5, -26.5), COLORS.ConcreteDark, Enum.Material.Concrete)
+		block(group, "RearColumn_" .. x, Vector3.new(1.4, 9, 1.4), Vector3.new(x, 5, 26.5), COLORS.ConcreteDark, Enum.Material.Concrete)
+	end
+
+	-- Vehicle portal and vehicle-entry canopy on front.
+	block(group, "VehiclePortalBeam", Vector3.new(30, 2.0, 2.0), Vector3.new(7, 8.0, -29.2), COLORS.Dark, Enum.Material.Metal)
+	block(group, "VehicleCanopy", Vector3.new(28, 1.0, 8), Vector3.new(7, 8.8, -33.0), COLORS.Metal, Enum.Material.Metal)
+	for _, x in ipairs({-5, 19}) do
+		block(group, "VehicleCanopyPost_" .. x, Vector3.new(0.9, 8.0, 0.9), Vector3.new(x, 4.0, -36.3), COLORS.Metal, Enum.Material.Metal)
+	end
+
+	-- Pedestrian entry is separated from cars and tied to the glass core.
+	block(group, "PedestrianPortal", Vector3.new(11, 8, 2.4), Vector3.new(-38.5, 4.5, -25.2), COLORS.Dark, Enum.Material.Metal)
+	block(group, "PedestrianGlass", Vector3.new(8.5, 6.5, 0.6), Vector3.new(-38.5, 4.2, -26.6), COLORS.Glass, Enum.Material.Glass, 0.08)
+end
+
+local function addDeckStructure(group)
+	-- Seven slabs bound six ventilated parking levels.
+	for index, y in ipairs(LEVELS) do
+		block(group, "ParkingSlab_" .. index, Vector3.new(66, 0.9, 56), Vector3.new(0, y, 0), COLORS.Concrete, Enum.Material.Concrete)
+	end
+
+	-- Long horizontal edge beams make the open parking gaps explicit.
+	for level = 1, 6 do
+		local y = 12.9 + (level - 1) * 5.5
+		block(group, "FrontEdgeBeam_" .. level, Vector3.new(62, 0.75, 1.1), Vector3.new(0, y, -27.4), COLORS.ConcreteDark, Enum.Material.Concrete)
+		block(group, "RearEdgeBeam_" .. level, Vector3.new(62, 0.75, 1.1), Vector3.new(0, y, 27.4), COLORS.ConcreteDark, Enum.Material.Concrete)
+	end
+
+	-- Full-height columns give the garage a believable structural grid.
+	for _, x in ipairs({-29, -15, 0, 15, 29}) do
+		for _, z in ipairs({-24, 0, 24}) do
+			block(group, "StructuralColumn_" .. x .. "_" .. z, Vector3.new(1.2, 34, 1.2), Vector3.new(x, 27, z), COLORS.ConcreteDark, Enum.Material.Concrete)
+		end
+	end
+end
+
+local function addScreenVeil(group)
+	-- Front screen: leave the left-central green breathing cut open.
+	local frontZ = -29.2
+	local frontIndex = 0
+	for x = -31, 31, 2.8 do
+		local inGreenCut = x >= -21 and x <= -3
+		local inVehicleEntry = x >= -7 and x <= 20
+		if not inGreenCut and not inVehicleEntry then
+			frontIndex += 1
+			local color = frontIndex % 5 == 0 and COLORS.Bronze or COLORS.Metal
+			block(group, "FrontFin_" .. frontIndex, Vector3.new(0.65, 34, 1.1), Vector3.new(x, 27, frontZ), color, Enum.Material.Metal)
+		end
+	end
+
+	-- Rear screen: leave the upper-right breathing cut visually open.
+	local rearZ = 29.2
+	local rearIndex = 0
+	for x = -31, 31, 2.8 do
+		local inGreenCut = x >= 6 and x <= 22
+		if not inGreenCut then
+			rearIndex += 1
+			local color = rearIndex % 5 == 0 and COLORS.Bronze or COLORS.Metal
+			block(group, "RearFin_" .. rearIndex, Vector3.new(0.65, 34, 1.1), Vector3.new(x, 27, rearZ), color, Enum.Material.Metal)
+		end
+	end
+
+	-- Side fins preserve the layered/ventilated read without sealing the building.
+	for sideName, x in pairs({Left = -34.0, Right = 34.0}) do
+		local index = 0
+		for z = -24, 24, 3.3 do
+			index += 1
+			local color = index % 5 == 0 and COLORS.Bronze or COLORS.Metal
+			block(group, sideName .. "Fin_" .. index, Vector3.new(1.1, 34, 0.65), Vector3.new(x, 27, z), color, Enum.Material.Metal)
+		end
+	end
+end
+
+local function addGreenCuts(group)
+	-- Front planted breathing cut.
+	for index, y in ipairs({19.2, 25.0, 30.8}) do
+		block(group, "FrontGreenTerrace_" .. index, Vector3.new(18, 0.9, 6), Vector3.new(-12, y, -30.5), COLORS.Concrete, Enum.Material.Concrete)
+		block(group, "FrontGreenBed_" .. index, Vector3.new(15, 0.75, 3.2), Vector3.new(-12, y + 0.8, -32.0), COLORS.PlantBed, Enum.Material.Ground)
+		block(group, "FrontGreenRail_" .. index, Vector3.new(16.5, 1.3, 0.25), Vector3.new(-12, y + 1.5, -33.45), COLORS.Glass, Enum.Material.Glass, 0.18)
+	end
+
+	-- Rear-right planted breathing cut.
+	for index, y in ipairs({31.0, 36.5, 42.0}) do
+		block(group, "RearGreenTerrace_" .. index, Vector3.new(16, 0.9, 6), Vector3.new(14, y, 30.5), COLORS.Concrete, Enum.Material.Concrete)
+		block(group, "RearGreenBed_" .. index, Vector3.new(13, 0.75, 3.2), Vector3.new(14, y + 0.8, 32.0), COLORS.PlantBed, Enum.Material.Ground)
+		block(group, "RearGreenRail_" .. index, Vector3.new(14.5, 1.3, 0.25), Vector3.new(14, y + 1.5, 33.45), COLORS.Glass, Enum.Material.Glass, 0.18)
+	end
+end
+
+local function addExpressedRamp(group)
+	-- Six parallel sloped ramp plates at the front-right corner make circulation obvious.
+	local x = 24
+	local run = 18
+	local rise = 4.7
+	local angle = math.atan(rise / run)
+	local rampLength = math.sqrt(run * run + rise * rise)
+
+	for level = 1, 6 do
+		local baseY = 10.5 + (level - 1) * 5.5
+		local centerY = baseY + rise / 2
+		local centerZ = -17.0
+		part(
+			group,
+			"Ramp_" .. level,
+			Vector3.new(10, 0.75, rampLength),
+			CFrame.new(x, centerY, centerZ) * CFrame.Angles(-angle, 0, 0),
+			COLORS.ConcreteDark,
+			Enum.Material.Concrete
+		)
+		block(group, "RampEdgeOuter_" .. level, Vector3.new(0.7, 1.1, rampLength), Vector3.new(29.65, centerY, centerZ), COLORS.Bronze, Enum.Material.Metal)
+	end
+
+	-- Open corner frame keeps the ramps visually distinct from the screen veil.
+	for _, xPos in ipairs({18.5, 29.5}) do
+		block(group, "RampCornerColumn_" .. xPos, Vector3.new(1.0, 34, 1.0), Vector3.new(xPos, 27, -25.5), COLORS.Dark, Enum.Material.Metal)
+	end
+end
+
+local function addPedestrianCore(group)
+	-- Freestanding glass core sits just outside the garage's left deck edge.
+	-- v1 intersected the dark CoreMass with the concrete base/decks, producing
+	-- visible Z-fighting near the lower levels. The core now clears the deck
+	-- envelope by 0.5 studs while remaining visually attached to the building.
+	local coreX = -38.5
+	local coreZ = -18
+
+	block(group, "CoreMass", Vector3.new(10, 50, 12), Vector3.new(coreX, 25, coreZ), COLORS.Dark, Enum.Material.Metal)
+	block(group, "CoreGlassFront", Vector3.new(8.5, 47, 0.65), Vector3.new(coreX, 25, coreZ - 6.35), COLORS.Glass, Enum.Material.Glass, 0.07)
+	block(group, "CoreGlassSide", Vector3.new(0.65, 47, 10), Vector3.new(coreX - 5.35, 25, coreZ), COLORS.Glass, Enum.Material.Glass, 0.07)
+	for y = 6, 46, 6.5 do
+		block(group, "CoreHorizontal_" .. tostring(y), Vector3.new(9, 0.45, 0.8), Vector3.new(coreX, y, coreZ - 6.7), COLORS.Metal, Enum.Material.Metal)
+	end
+	block(group, "CoreTop", Vector3.new(11, 1.0, 13), Vector3.new(coreX, 50.5, coreZ), COLORS.Metal, Enum.Material.Metal)
+end
+
+local function addRooftopMobilityDeck(group)
+	block(group, "RoofDeck", Vector3.new(62, 1.0, 52), Vector3.new(0, 44.5, 0), COLORS.Concrete, Enum.Material.Concrete)
+
+	-- Light solar/pergola canopy.
+	for _, x in ipairs({-21, 21}) do
+		for _, z in ipairs({-12, 12}) do
+			block(group, "CanopyPost_" .. x .. "_" .. z, Vector3.new(0.8, 5.5, 0.8), Vector3.new(x, 47.5, z), COLORS.Metal, Enum.Material.Metal)
+		end
+	end
+
+	for index = 0, 7 do
+		local x = -20 + index * (40 / 7)
+		block(group, "SolarFin_" .. index, Vector3.new(4.4, 0.45, 28), Vector3.new(x, 50.1, 0), COLORS.Solar, Enum.Material.Metal)
+	end
+
+	-- Roof planting stays on the edge, leaving the mobility deck open.
+	block(group, "RoofPlantBedLeft", Vector3.new(5, 0.8, 38), Vector3.new(-27, 45.4, 2), COLORS.PlantBed, Enum.Material.Ground)
+	block(group, "RoofPlantBedRear", Vector3.new(36, 0.8, 5), Vector3.new(6, 45.4, 23), COLORS.PlantBed, Enum.Material.Ground)
+	block(group, "RoofTealEdge", Vector3.new(40, 0.45, 0.5), Vector3.new(0, 50.45, -14.2), COLORS.Teal, Enum.Material.Neon)
+end
+
+local function addRearService(group)
+	block(group, "RearServiceHeader", Vector3.new(20, 3.0, 1.0), Vector3.new(-16, 8.0, 29.8), COLORS.Dark, Enum.Material.Metal)
+	for index, x in ipairs({-20, -12}) do
+		block(group, "RearServiceDoor_" .. index, Vector3.new(7, 6.5, 0.6), Vector3.new(x, 4.0, 30.4), COLORS.DarkOpen, Enum.Material.Metal)
+	end
+	block(group, "RearServiceCanopy", Vector3.new(22, 1.0, 7), Vector3.new(-16, 10.0, 33.0), COLORS.Metal, Enum.Material.Metal)
+	block(group, "RearServiceApron", Vector3.new(28, 0.45, 12), Vector3.new(-16, 0.23, 36.0), COLORS.ConcreteDark, Enum.Material.Concrete)
+end
+
+local function countVisibleParts(model)
+	local count = 0
+	for _, item in ipairs(model:GetDescendants()) do
+		if item:IsA("BasePart") and item.Transparency < 1 then
+			count += 1
+		end
+	end
+	model:SetAttribute("VisiblePartCount", count)
+	model:SetAttribute("VisiblePartBudget", 780)
+	model:SetAttribute("VisiblePartBudgetPassed", count <= 780)
+end
+
+function Builder.Build(parent)
+	local existing = parent:FindFirstChild("LargeCity_UptownParking_L3_GoldenMaster")
+	if existing then existing:Destroy() end
+
+	local model = Instance.new("Model")
+	model.Name = "LargeCity_UptownParking_L3_GoldenMaster"
+	model:SetAttribute("AssetId", specification.AssetId)
+	model:SetAttribute("DisplayName", specification.DisplayName)
+	model:SetAttribute("AssetPhase", 4)
+	model:SetAttribute("QualityGateA", "Approved")
+	model:SetAttribute("QualityGateB", "Approved")
+	model:SetAttribute("GeometryRevision", "LargeCityUptownParking-v2-FreestandingPedestrianCore")
+	model:SetAttribute("MaxHealth", specification.ProposedGameplayMetadata.TargetMaxHealth)
+	model:SetAttribute("EnergyType", specification.ProposedGameplayMetadata.EnergyType)
+	model:SetAttribute("InstallerTag", specification.ProposedGameplayMetadata.InstallerTag)
+	model:SetAttribute("StandaloneImport", true)
+	model:SetAttribute("HasInterior", false)
+	model:SetAttribute("ParkingLevelCount", 6)
+	model:SetAttribute("VentilatedFacade", true)
+	model:SetAttribute("ExpressedRampVisible", true)
+	model:SetAttribute("GreenBreathingCuts", 2)
+	model:SetAttribute("RooftopSolarCanopy", true)
+	model:SetAttribute("RearServiceVisible", true)
+	model:SetAttribute("PedestrianCoreClearsDeckEnvelope", true)
+	model:SetAttribute("PedestrianCoreZFightingFix", true)
+	model:SetAttribute("EVChargingIdentity", false)
+	model.Parent = parent
+
+	local groups = folder(model, "DestructionGroups")
+	local d1 = folder(groups, "D1_VehicleEntry")
+	local d2 = folder(groups, "D2_LowerParkingDecks")
+	local d3 = folder(groups, "D3_UpperParkingDecks")
+	local d4 = folder(groups, "D4_ExpressedRamp")
+	local d5 = folder(groups, "D5_ScreenVeilAndGreenCuts")
+	local d6 = folder(groups, "D6_RooftopMobilityDeck")
+	local d7 = folder(groups, "D7_PedestrianCoreAndService")
+
+	addBase(d1)
+	addDeckStructure(d2)
+	-- Upper decks are still physically part of the same structure but grouped for destruction.
+	for _, y in ipairs({32.5, 38.0, 43.5}) do
+		block(d3, "UpperDeckReinforcement_" .. tostring(y), Vector3.new(62, 0.35, 52), Vector3.new(0, y + 0.62, 0), COLORS.ConcreteDark, Enum.Material.Concrete)
+	end
+	addExpressedRamp(d4)
+	addScreenVeil(d5)
+	addGreenCuts(d5)
+	addRooftopMobilityDeck(d6)
+	addPedestrianCore(d7)
+	addRearService(d7)
+
+	local pivot = part(model, "GroundPivot", Vector3.new(1, 1, 1), CFrame.new(0, 0.5, 0), Color3.new(1, 1, 1), Enum.Material.SmoothPlastic, 1)
+	pivot.CanCollide = false
+	pivot.CanTouch = false
+	pivot.CanQuery = false
+	pivot.CastShadow = false
+	model.PrimaryPart = pivot
+	model:PivotTo(CFrame.new())
+
+	countVisibleParts(model)
+	return model
+end
+
+return Builder
+]]></string>
+      </Properties>
+    </Item>
+    <Item class="ModuleScript" referent="3">
+      <Properties>
+        <string name="Name">LargeCityUptownParkingInstaller</string>
+        <string name="Source"><![CDATA[local CollectionService = game:GetService("CollectionService")
+
+local packageFolder = script.Parent
+
+local specification = require(packageFolder:WaitForChild("LargeCityUptownParkingSpecification"))
+local goldenMaster = require(packageFolder:WaitForChild("LargeCityUptownParkingGoldenMaster"))
+local dressing = require(packageFolder:WaitForChild("LargeCityUptownParkingDressing"))
+
+local Installer = {}
+
+local MODEL_NAME = specification.AssetId
+local GOLDEN_MASTER_NAME = "LargeCity_UptownParking_L3_GoldenMaster"
+local PACKAGE_VERSION = specification.ProposedGameplayMetadata.IntegrationPackageVersion
+local MAX_HEALTH = specification.ProposedGameplayMetadata.TargetMaxHealth
+local ENERGY_TYPE = specification.ProposedGameplayMetadata.EnergyType
+local BUILDING_TAG = specification.ProposedGameplayMetadata.InstallerTag
+
+local function validateDestructionGroups(model)
+	local groups = model:FindFirstChild("DestructionGroups")
+	assert(groups and groups:IsA("Folder"), "Large City Uptown Parking installer requires a DestructionGroups folder")
+
+	for _, groupName in ipairs(specification.PlannedDestructionGroups) do
+		local group = groups:FindFirstChild(groupName)
+		assert(group and group:IsA("Folder"), "Large City Uptown Parking is missing destruction group: " .. groupName)
+	end
+
+	return groups
+end
+
+local function lowestVisibleY(model)
+	local minimumY = math.huge
+	for _, item in ipairs(model:GetDescendants()) do
+		if item:IsA("BasePart") and item.Transparency < 1 then
+			local halfSize = item.Size * 0.5
+			local verticalExtent =
+				math.abs(item.CFrame.XVector.Y) * halfSize.X
+				+ math.abs(item.CFrame.YVector.Y) * halfSize.Y
+				+ math.abs(item.CFrame.ZVector.Y) * halfSize.Z
+			minimumY = math.min(minimumY, item.Position.Y - verticalExtent)
+		end
+	end
+	return minimumY
+end
+
+local function placeModel(model, options)
+	if options.CFrame then
+		assert(typeof(options.CFrame) == "CFrame", "Large City Uptown Parking options.CFrame must be a CFrame")
+		model:PivotTo(options.CFrame)
+		return
+	end
+
+	local groundCFrame = options.GroundCFrame or CFrame.new()
+	assert(typeof(groundCFrame) == "CFrame", "Large City Uptown Parking options.GroundCFrame must be a CFrame")
+	model:PivotTo(groundCFrame)
+
+	if options.AlignToGround == false then
+		return
+	end
+
+	local minimumY = lowestVisibleY(model)
+	if minimumY < math.huge then
+		local correction = groundCFrame.Position.Y - minimumY
+		model:PivotTo(model:GetPivot() + Vector3.new(0, correction, 0))
+		model:SetAttribute("GroundContactCorrection", correction)
+		model:SetAttribute("GroundContactY", groundCFrame.Position.Y)
+	end
+end
+
+local function applyIntegrationMetadata(model)
+	model.Name = MODEL_NAME
+	model:SetAttribute("AssetId", specification.AssetId)
+	model:SetAttribute("DisplayName", specification.DisplayName)
+	model:SetAttribute("City", specification.City)
+	model:SetAttribute("BuildingType", specification.BuildingType)
+	model:SetAttribute("CityTier", 4)
+	model:SetAttribute("MaxHealth", MAX_HEALTH)
+	model:SetAttribute("EnergyType", ENERGY_TYPE)
+	model:SetAttribute("AssetPhase", 6)
+	model:SetAttribute("PipelinePhase", 6)
+	model:SetAttribute("QualityGateA", "Approved")
+	model:SetAttribute("QualityGateB", "Approved")
+	model:SetAttribute("QualityGateC", "Pending")
+	model:SetAttribute("Phase6Status", "ExternalGameTestPending")
+	model:SetAttribute("DressingStatus", "Approved")
+	model:SetAttribute("PackageId", "LargeCityUptownParkingPackage")
+	model:SetAttribute("IntegrationPackageVersion", PACKAGE_VERSION)
+	model:SetAttribute("IntegrationPackageReady", true)
+	model:SetAttribute("InstallerReady", true)
+	model:SetAttribute("FinalInstallerReady", false)
+	model:SetAttribute("WorkshopOnly", false)
+	model:SetAttribute("HasInterior", false)
+	model:SetAttribute("DestructionGroupCount", #specification.PlannedDestructionGroups)
+	model:SetAttribute("ExternalCollapseIntegration", true)
+	model:SetAttribute("UsesSharedMainGameDestruction", true)
+
+	if not CollectionService:HasTag(model, BUILDING_TAG) then
+		CollectionService:AddTag(model, BUILDING_TAG)
+	end
+end
+
+function Installer.Validate(model)
+	assert(model and model:IsA("Model"), "LargeCityUptownParkingInstaller.Validate requires a Model")
+	validateDestructionGroups(model)
+	assert(model:GetAttribute("MaxHealth") == MAX_HEALTH, "Large City Uptown Parking MaxHealth metadata is invalid")
+	assert(model:GetAttribute("EnergyType") == ENERGY_TYPE, "Large City Uptown Parking EnergyType metadata is invalid")
+	assert(CollectionService:HasTag(model, BUILDING_TAG), "Large City Uptown Parking is missing tag: " .. BUILDING_TAG)
+	return true
+end
+
+function Installer.Install(parent, options)
+	assert(typeof(parent) == "Instance", "LargeCityUptownParkingInstaller.Install requires a parent Instance")
+	options = options or {}
+	assert(typeof(options) == "table", "LargeCityUptownParkingInstaller.Install options must be a table")
+
+	local existing = parent:FindFirstChild(MODEL_NAME)
+	if existing then
+		existing:Destroy()
+	end
+
+	local oldGoldenMaster = parent:FindFirstChild(GOLDEN_MASTER_NAME)
+	if oldGoldenMaster then
+		oldGoldenMaster:Destroy()
+	end
+
+	local model = goldenMaster.Build(parent)
+	dressing.Apply(model)
+	validateDestructionGroups(model)
+	applyIntegrationMetadata(model)
+	placeModel(model, options)
+	Installer.Validate(model)
+
+	return model
+end
+
+function Installer.Uninstall(parent)
+	assert(typeof(parent) == "Instance", "LargeCityUptownParkingInstaller.Uninstall requires a parent Instance")
+	local model = parent:FindFirstChild(MODEL_NAME)
+	if not model then
+		return false
+	end
+	model:Destroy()
+	return true
+end
+
+Installer.ModelName = MODEL_NAME
+Installer.PackageVersion = PACKAGE_VERSION
+Installer.MaxHealth = MAX_HEALTH
+Installer.EnergyType = ENERGY_TYPE
+Installer.RequiredTag = BUILDING_TAG
+Installer.QualityGateC = "Pending"
+
+return Installer
+]]></string>
+      </Properties>
+    </Item>
+    <Item class="ModuleScript" referent="4">
+      <Properties>
+        <string name="Name">LargeCityUptownParkingSpecification</string>
+        <string name="Source"><![CDATA[-- Phase 1 concept/specification for LC-55 Uptown Parking.
+-- Standalone building branch: no dependency on other Large City building branches.
+
+local Specification = {
+	AssetId = "LargeCity_UptownParking_L3",
+	DisplayName = "Uptown Parking",
+	LayoutId = "LC-55",
+	City = "LargeCity",
+	District = "Uptown",
+	BuildingType = "Parking Tower",
+	Phase = 6,
+	QualityGate = "C-Pending",
+	Branch = "largecity-uptown-parking-l3",
+
+	StandaloneImport = {
+		Required = true,
+		Rule = "This branch must remain independently importable into another project without depending on Stadium, Arena, Hospital, Resort, Summit Tower, Uptown Residences, Stadium Hotel, or any other building branch.",
+	},
+
+	LayoutReference = {
+		Position = Vector3.new(340, 24, 555),
+		Footprint = Vector2.new(70, 60),
+		Height = 54,
+		Yaw = 0,
+	},
+
+	Style = "Singapore mobility hub x Miami event-district parking architecture",
+	Role = "Premium event-district mobility hub serving Stadium, Arena and nearby Uptown towers",
+
+	Concept = {
+		Name = "Verdant Mobility Deck",
+		Read = "A compact sculptural parking tower wrapped in a breathable vertical screen, with a visible corner ramp, planted facade cuts, parking wayfinding identity and a lightweight rooftop mobility canopy.",
+		DoNotReadAs = {
+			"plain concrete parking garage",
+			"warehouse",
+			"office building",
+			"generic multi-storey car park",
+			"cyberpunk structure",
+			"solid featureless box",
+		},
+	},
+
+	Massing = {
+		Base = {
+			Footprint = Vector2.new(68, 58),
+			Height = 10,
+			Rule = "Ground-level mobility lobby and vehicle entrance with clearly readable in/out lanes, EV signage and pedestrian access.",
+		},
+		MainDecks = {
+			Footprint = Vector2.new(66, 56),
+			FromY = 10,
+			ToY = 44,
+			Rule = "Six parking levels form the main mass, but the exterior is broken by screened voids, planted cuts and a visible corner ramp.",
+		},
+		RooftopMobilityDeck = {
+			Footprint = Vector2.new(62, 52),
+			FromY = 44,
+			ToY = 54,
+			Rule = "Open rooftop mobility deck with solar/pergola canopy and planted edge, keeping the skyline light.",
+		},
+	},
+
+	SignatureFeatures = {
+		{
+			Name = "VerticalScreenVeil",
+			Description = "Alternating pale-metal and warm-bronze vertical fins wrap the garage, hiding parked cars while keeping the structure visibly ventilated.",
+		},
+		{
+			Name = "ExpressedCornerRamp",
+			Face = "front-right",
+			Description = "A diagonal/spiral-like ramp language is expressed on one corner through sloped slabs and screen breaks, making the building legible as parking.",
+		},
+		{
+			Name = "GreenBreathingCuts",
+			Description = "Two broad planted facade voids interrupt the screen and create visible tropical green pockets rather than a monotonous parking box.",
+		},
+		{
+			Name = "VehicleEntry",
+			Face = "-Z",
+			Description = "Ground-level vehicle entry / mobility bay with teal lighting and a clearly readable vehicle entrance.",
+		},
+		{
+			Name = "RooftopSolarCanopy",
+			Y = 46,
+			Description = "A lightweight solar/pergola canopy with open edges gives the roof a distinctive but practical silhouette.",
+		},
+		{
+			Name = "PedestrianCore",
+			Face = "front-left",
+			Description = "Glass stair/elevator tower creates a clear human-scale entrance and adds vertical contrast to the horizontal parking decks.",
+		},
+	},
+
+	Facade = {
+		Primary = "Warm pale concrete parking slabs",
+		Secondary = "Pale metal vertical screen fins",
+		Accent = "Warm bronze fins plus restrained teal EV lighting",
+		Openings = "Dark ventilated gaps between slab edges",
+		Rule = "Facade must remain visibly ventilated and layered. Fins sit outside the deck edges and align with structural bays; no decorative elements buried inside the parking mass.",
+	},
+
+	Roof = {
+		Rule = "Open rooftop mobility deck with solar/pergola structure and planting. Avoid a solid enclosed crown.",
+	},
+
+	Landscape = {
+		Phase = 5,
+		Includes = {
+			"entry palms",
+			"ground-level bioswale planters",
+			"planted facade cuts",
+			"rooftop edge planting",
+			"parking wayfinding signage",
+			"pedestrian bollards",
+		},
+	},
+
+	ProposedGameplayMetadata = {
+		TargetMaxHealth = 64000,
+		EnergyType = "Electric",
+		InstallerTag = "KaijuHouse",
+		ExternalCollapseIntegration = true,
+		IntegrationPackageVersion = 1,
+		FinalInstallerReady = false,
+	},
+
+	PlannedDestructionGroups = {
+		"D1_VehicleEntry",
+		"D2_LowerParkingDecks",
+		"D3_UpperParkingDecks",
+		"D4_ExpressedRamp",
+		"D5_ScreenVeilAndGreenCuts",
+		"D6_RooftopMobilityDeck",
+		"D7_PedestrianCoreAndService",
+	},
+
+	VisualTarget = {
+		Status = "Approved",
+		Revision = "LargeCityUptownParking-VisualTarget-v1",
+		Brief = {
+			"premium event-district parking tower in Singapore x Miami language",
+			"70x60 footprint and 54-stud height",
+			"clearly readable as multi-storey parking rather than office or apartment building",
+			"breathable facade with alternating vertical metal/bronze fins",
+			"dark open parking gaps visible behind the screen",
+			"one expressed corner ramp with sloped geometry",
+			"two planted facade breathing cuts",
+			"glass pedestrian stair/elevator core",
+			"strong vehicle entry and parking entry identity",
+			"light rooftop solar/pergola canopy with planted edge",
+			"daylight architectural concept board with front, three-quarter, side and rear cues",
+			"not cyberpunk, not warehouse, not plain concrete garage",
+		},
+	},
+
+
+
+	QualityGateA = {
+		Status = "Approved",
+		ApprovedTarget = "LargeCityUptownParking-VisualTarget-v1",
+		Notes = "Approved Verdant Mobility Deck concept with ventilated screen veil, expressed ramp corner, green breathing cuts, vehicle entry, glass pedestrian core and rooftop mobility canopy.",
+		NextPhase = 3,
+	},
+
+	TechnicalBreakdown = {
+		CoordinateSystem = {
+			Pivot = "ground center",
+			Front = "local -Z",
+			Rear = "local +Z",
+			LayoutYaw = 0,
+		},
+		Overall = {
+			TargetFootprint = Vector2.new(70, 60),
+			TargetHeight = 54,
+			GroundLevel = 0,
+		},
+		Base = {
+			Footprint = Vector2.new(68, 58),
+			Center = Vector3.new(0, 5, 0),
+			Height = 10,
+			VehicleEntryWidth = 22,
+			PedestrianCoreWidth = 10,
+		},
+		ParkingDecks = {
+			Footprint = Vector2.new(66, 56),
+			FromY = 10,
+			ToY = 44,
+			LevelCount = 6,
+			SlabThickness = 0.9,
+			ClearLevelHeight = 4.7,
+			OpenGapHeight = 3.0,
+		},
+		ScreenVeil = {
+			FinWidth = 0.65,
+			FinDepth = 1.1,
+			FinSpacing = 2.8,
+			BronzeAccentEvery = 5,
+			OffsetFromDeckEdge = 1.2,
+			Rule = "Screen fins remain clearly outside the deck edges and preserve visible ventilation gaps.",
+		},
+		ExpressedRamp = {
+			Corner = "front-right",
+			RampWidth = 10,
+			RisePerLevel = 4.7,
+			RunPerLevel = 18,
+			VisibleSlope = true,
+			Rule = "Ramp slabs must read as sloped circulation, not decorative diagonal bands.",
+		},
+		GreenBreathingCutOne = {
+			Face = "front",
+			CenterX = -12,
+			FromY = 18,
+			ToY = 32,
+			Width = 18,
+			Depth = 5,
+		},
+		GreenBreathingCutTwo = {
+			Face = "rear-right",
+			CenterX = 14,
+			FromY = 30,
+			ToY = 43,
+			Width = 16,
+			Depth = 5,
+		},
+		VehicleEntry = {
+			Face = "front",
+			BayCount = 4,
+			CanopyWidth = 28,
+			CanopyDepth = 8,
+			Accent = "teal",
+		},
+		PedestrianCore = {
+			Face = "front-left",
+			Footprint = Vector2.new(10, 12),
+			Height = 50,
+			Glazing = true,
+			Rule = "Glass core projects outside the screen veil and remains readable as stairs/lift access.",
+		},
+		RooftopMobilityDeck = {
+			BaseY = 44,
+			TopY = 54,
+			DeckFootprint = Vector2.new(62, 52),
+			CanopyFootprint = Vector2.new(46, 28),
+			CanopyHeight = 5.5,
+			SolarFinCount = 8,
+			PlantingDepth = 4,
+		},
+		RearService = {
+			DoorCount = 2,
+			DoorWidth = 7,
+			Rule = "Rear service access sits on true +Z exterior and stays visible behind the facade screen.",
+		},
+		PartBudget = {
+			TargetVisibleParts = 600,
+			MaximumVisibleParts = 780,
+		},
+	},
+
+	Phase2Status = {
+		Status = "Approved",
+		TargetRevision = "LargeCityUptownParking-VisualTarget-v1",
+		QualityGateA = "Approved",
+		ReviewFocus = {
+			"premium mobility-hub read",
+			"vertical screen veil",
+			"expressed corner ramp",
+			"two planted breathing cuts",
+			"clear vehicle entry",
+			"glass pedestrian core",
+			"light rooftop solar/pergola canopy",
+			"clear distinction from office, residential and warehouse architecture",
+		},
+	},
+
+
+	Phase4Status = {
+		Status = "Approved",
+		GeometryRevision = "LargeCityUptownParking-v2-FreestandingPedestrianCore",
+		QualityGateB = "Approved",
+		ReviewFocus = {
+			"immediate parking / mobility-hub readability",
+			"open six-level deck structure and visible ventilation gaps",
+			"screen veil sits outside the deck edges",
+			"front-right ramps read as real sloped circulation",
+			"two green breathing cuts remain visibly open",
+			"vehicle entry is prominent and unobstructed",
+			"glass pedestrian core projects clearly outside the screen",
+			"pedestrian glass core clears the concrete deck envelope with no black/concrete surface overlap or Z-fighting",
+			"rooftop solar/pergola canopy remains light and open",
+			"rear service remains visible on true +Z exterior",
+			"no coplanar deck or facade Z-fighting",
+		},
+	},
+
+
+	QualityGateB = {
+		Status = "Approved",
+		ApprovedGeometry = "LargeCityUptownParking-v2-FreestandingPedestrianCore",
+		Notes = "Ventilated parking decks, screen veil, expressed ramp, green breathing cuts, vehicle entry, freestanding pedestrian core and rooftop mobility canopy accepted.",
+		NextPhase = 5,
+	},
+
+	Phase5Status = {
+		Status = "Approved",
+		Revision = "LargeCityUptownParking-Dressing-v2-NoEV",
+		Includes = {
+			"Uptown Parking identity and parking wayfinding signage",
+			"high-contrast parking bay markers",
+			"green breathing-cut vegetation",
+			"rooftop planting and mobility-deck sign",
+			"rear service signage and bay markers",
+		},
+		QualityGateC = "Pending",
+		NextPhase = "ExternalGameTestPending",
+	},
+
+
+	Phase6Status = {
+		Status = "ExternalGameTestPending",
+		ExternalCollapseIntegration = true,
+		QualityGateC = "Pending",
+		Notes = "Workshop visual review approved after pedestrian-core Z-fighting and no-EV wayfinding refinements; destruction/collapse behaviour remains deferred to the main game's shared collapse system.",
+	},
+
+	Phase3Acceptance = {
+		"Base, six parking decks, ramp, screen veil, pedestrian core and rooftop deck use deterministic dimensions tied to LC-55.",
+		"Parking deck ventilation remains clearly visible behind the facade screen.",
+		"Expressed corner ramp is structurally readable as sloped circulation.",
+		"Both planted breathing cuts interrupt the facade mass and remain open/readable.",
+		"vehicle entry and pedestrian core are clearly identifiable from the front.",
+		"Rooftop solar/pergola canopy remains light and open.",
+		"Seven destruction groups map to coherent architectural masses.",
+		"Golden Master target remains below 780 visible parts.",
+	},
+
+	Phase1Acceptance = {
+		"Building reads immediately as premium parking / mobility infrastructure.",
+		"Vertical screen veil and expressed corner ramp create a distinctive silhouette at Kaiju gameplay distance.",
+		"At least two planted breathing cuts break the parking mass and connect it to Large City's tropical identity.",
+		"Vehicle entry, parking wayfinding and pedestrian core are clearly identifiable from the front.",
+		"Facade remains visibly ventilated rather than reading as a sealed office curtain wall.",
+		"Rooftop canopy adds interest without competing with nearby hotel and tower crowns.",
+		"Footprint and height remain compatible with LC-55.",
+	},
+}
+
+return Specification
+]]></string>
+      </Properties>
+    </Item>
+  </Item>
+</roblox>
