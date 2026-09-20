@@ -19,6 +19,9 @@
         },
         "LargeCityPowerUtilityGoldenMaster": {
           "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityPowerUtilityGoldenMaster.lua"
+        },
+        "LargeCityPowerUtilityDressing": {
+          "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityPowerUtilityDressing.lua"
         }
       }
     },
