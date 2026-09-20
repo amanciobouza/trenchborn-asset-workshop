@@ -8,8 +8,8 @@ local Specification = {
 	City = "LargeCity",
 	District = "MedicalTech",
 	BuildingType = "Power Utility",
-	Phase = 4,
-	QualityGate = "B-Pending",
+	Phase = 5,
+	QualityGate = "B-Approved",
 	Branch = "largecity-power-utility-l3",
 
 	StandaloneImport = {
@@ -301,9 +301,10 @@ local Specification = {
 
 
 	Phase4Status = {
-		Status = "GoldenMasterReview",
+		Status = "Approved",
 		GeometryRevision = "LargeCityPowerUtility-v5-WalkableParallelSwitchyard",
-		QualityGateB = "Pending",
+		QualityGateB = "Approved",
+		NextPhase = 5,
 		ReviewFocus = {
 			"power utility is immediately recognizable from silhouette and equipment",
 			"switchgear hall and converter hall have a clear stepped hierarchy",
@@ -324,6 +325,20 @@ local Specification = {
 			"no loading stations or unrelated service clutter block the transformer court",
 			"no facade, gantry, transformer or rooftop Z-fighting",
 			"visible part count stays below 1000",
+		},
+	},
+
+
+	Phase5Status = {
+		Status = "DressingPending",
+		QualityGateB = "Approved",
+		Scope = {
+			"Aureline Gridworks building signage and facility identity",
+			"control-entry plaza and restrained tropical landscaping",
+			"switchyard bay numbering and zone labels without obstructing walkable aisles",
+			"transformer and reactive-power identifiers mounted clear of equipment",
+			"subtle safety graphics attached to plausible electrical infrastructure",
+			"no changes to the approved walkable parallel-switchyard geometry",
 		},
 	},
 
