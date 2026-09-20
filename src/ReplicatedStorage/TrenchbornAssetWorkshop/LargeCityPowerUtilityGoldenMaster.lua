@@ -186,8 +186,8 @@ local function addTransformer(group, index, x, centerZ)
 		cylinderY(root, "BushingCap_" .. tostring(bushing), 0.7, 1.5, Vector3.new(bx, 27.1, centerZ), COLORS.Silver, Enum.Material.Metal)
 	end
 
-	-- Small amber safety stripe is physically attached to the transformer front.
-	block(root, "SafetyStripe", Vector3.new(11, 0.42, 0.30), Vector3.new(x, 5.5, centerZ - 6.18), COLORS.Amber, Enum.Material.Neon)
+	-- Small amber safety stripe is physically attached to the transformer REAR face so it is readable from behind.
+	block(root, "SafetyStripe", Vector3.new(11, 0.42, 0.30), Vector3.new(x, 5.5, centerZ + 6.18), COLORS.Amber, Enum.Material.Neon)
 end
 local function addCapacitorBank(parent, name, centerX, centerZ)
 	local root = folder(parent, name)
