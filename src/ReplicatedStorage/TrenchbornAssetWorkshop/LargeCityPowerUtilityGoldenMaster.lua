@@ -92,17 +92,17 @@ local function addControlEntrance(group)
 end
 
 local function addSwitchgearHall(group)
-	block(group, "SwitchgearHallMass", Vector3.new(68, 32, 72), Vector3.new(-38, 16, -5), COLORS.Concrete, Enum.Material.Concrete)
+	block(group, "SwitchgearHallMass", Vector3.new(68, 32, 44), Vector3.new(-38, 16, -19), COLORS.Concrete, Enum.Material.Concrete)
 
 	-- Dark lower service band.
 	block(group, "SwitchgearLowerFront", Vector3.new(64, 7.5, 0.8), Vector3.new(-38, 4.0, -41.45), COLORS.Graphite, Enum.Material.Metal)
-	block(group, "SwitchgearLowerRear", Vector3.new(64, 7.5, 0.8), Vector3.new(-38, 4.0, 31.45), COLORS.Graphite, Enum.Material.Metal)
+	block(group, "SwitchgearLowerRear", Vector3.new(64, 7.5, 0.8), Vector3.new(-38, 4.0, 3.45), COLORS.Graphite, Enum.Material.Metal)
 
 	-- Deep vertical fins create the switchgear rhythm from ground to roof.
 	for bay = 0, 8 do
 		local x = -68 + bay * 7.5
 		block(group, "SwitchgearFinFront_" .. bay, Vector3.new(1.0, 30, 2.2), Vector3.new(x, 16, -42.4), COLORS.GraphiteLight, Enum.Material.Metal)
-		block(group, "SwitchgearFinRear_" .. bay, Vector3.new(1.0, 30, 2.2), Vector3.new(x, 16, 32.4), COLORS.GraphiteLight, Enum.Material.Metal)
+		block(group, "SwitchgearFinRear_" .. bay, Vector3.new(1.0, 30, 2.2), Vector3.new(x, 16, 4.4), COLORS.GraphiteLight, Enum.Material.Metal)
 	end
 
 	-- Controlled equipment windows, deliberately smaller than office glazing.
@@ -116,16 +116,16 @@ local function addSwitchgearHall(group)
 end
 
 local function addConverterHall(group)
-	block(group, "ConverterHallMass", Vector3.new(62, 40, 70), Vector3.new(34, 20, -3), COLORS.Concrete, Enum.Material.Concrete)
+	block(group, "ConverterHallMass", Vector3.new(62, 40, 42), Vector3.new(34, 20, -17), COLORS.Concrete, Enum.Material.Concrete)
 
 	block(group, "ConverterLowerFront", Vector3.new(58, 8.0, 0.8), Vector3.new(34, 4.2, -38.45), COLORS.Graphite, Enum.Material.Metal)
-	block(group, "ConverterLowerRear", Vector3.new(58, 8.0, 0.8), Vector3.new(34, 4.2, 32.45), COLORS.Graphite, Enum.Material.Metal)
+	block(group, "ConverterLowerRear", Vector3.new(58, 8.0, 0.8), Vector3.new(34, 4.2, 4.45), COLORS.Graphite, Enum.Material.Metal)
 
 	-- Seven vertical converter bays line up consistently from bottom to top.
 	for bay = 0, 7 do
 		local x = 7 + bay * 7.7
 		block(group, "ConverterFinFront_" .. bay, Vector3.new(0.9, 38, 1.8), Vector3.new(x, 20, -39.25), COLORS.GraphiteLight, Enum.Material.Metal)
-		block(group, "ConverterFinRear_" .. bay, Vector3.new(0.9, 38, 1.8), Vector3.new(x, 20, 33.25), COLORS.GraphiteLight, Enum.Material.Metal)
+		block(group, "ConverterFinRear_" .. bay, Vector3.new(0.9, 38, 1.8), Vector3.new(x, 20, 5.25), COLORS.GraphiteLight, Enum.Material.Metal)
 	end
 
 	-- Two tall corner pylons anchor the higher mass.
@@ -161,17 +161,17 @@ local function addGridControlSpine(group)
 	block(group, "GridControlCyanUnderside", Vector3.new(15.5, 0.35, 9.0), Vector3.new(-2, 16.85, -36), COLORS.Cyan, Enum.Material.Neon)
 end
 
-local function addTransformer(group, index, x)
+local function addTransformer(group, index, x, centerZ)
 	local root = folder(group, "Transformer_" .. index)
-	local bodyCenter = Vector3.new(x, 9.0, 43)
+	local bodyCenter = Vector3.new(x, 9.0, centerZ)
 
 	block(root, "Body", Vector3.new(16, 18, 12), bodyCenter, COLORS.GraphiteLight, Enum.Material.Metal)
-	block(root, "TopCap", Vector3.new(17, 1.2, 13), Vector3.new(x, 18.6, 43), COLORS.Metal, Enum.Material.Metal)
-	block(root, "Base", Vector3.new(18, 1.0, 14), Vector3.new(x, 0.5, 43), COLORS.Graphite, Enum.Material.Metal)
+	block(root, "TopCap", Vector3.new(17, 1.2, 13), Vector3.new(x, 18.6, centerZ), COLORS.Metal, Enum.Material.Metal)
+	block(root, "Base", Vector3.new(18, 1.0, 14), Vector3.new(x, 0.5, centerZ), COLORS.Graphite, Enum.Material.Metal)
 
 	-- Cooling fins on both long sides.
 	for fin = -3, 3 do
-		local z = 43 + fin * 1.45
+		local z = centerZ + fin * 1.45
 		block(root, "CoolingFinL_" .. tostring(fin), Vector3.new(2.0, 13, 0.45), Vector3.new(x - 9.0, 8.5, z), COLORS.Metal, Enum.Material.Metal)
 		block(root, "CoolingFinR_" .. tostring(fin), Vector3.new(2.0, 13, 0.45), Vector3.new(x + 9.0, 8.5, z), COLORS.Metal, Enum.Material.Metal)
 	end
@@ -179,17 +179,16 @@ local function addTransformer(group, index, x)
 	-- Three ceramic bushings make each transformer unmistakably electrical.
 	for bushing = -1, 1 do
 		local bx = x + bushing * 4.2
-		cylinderY(root, "BushingStem_" .. tostring(bushing), 8.0, 1.2, Vector3.new(bx, 23.0, 43), COLORS.Ceramic, Enum.Material.SmoothPlastic)
+		cylinderY(root, "BushingStem_" .. tostring(bushing), 8.0, 1.2, Vector3.new(bx, 23.0, centerZ), COLORS.Ceramic, Enum.Material.SmoothPlastic)
 		for disc = 0, 3 do
-			cylinderY(root, "BushingDisc_" .. tostring(bushing) .. "_" .. disc, 0.45, 2.2, Vector3.new(bx, 20.4 + disc * 1.6, 43), COLORS.Ceramic, Enum.Material.SmoothPlastic)
+			cylinderY(root, "BushingDisc_" .. tostring(bushing) .. "_" .. disc, 0.45, 2.2, Vector3.new(bx, 20.4 + disc * 1.6, centerZ), COLORS.Ceramic, Enum.Material.SmoothPlastic)
 		end
-		cylinderY(root, "BushingCap_" .. tostring(bushing), 0.7, 1.5, Vector3.new(bx, 27.1, 43), COLORS.Silver, Enum.Material.Metal)
+		cylinderY(root, "BushingCap_" .. tostring(bushing), 0.7, 1.5, Vector3.new(bx, 27.1, centerZ), COLORS.Silver, Enum.Material.Metal)
 	end
 
-	-- Small amber safety stripe is physically attached to the transformer.
-	block(root, "SafetyStripe", Vector3.new(11, 0.42, 0.30), Vector3.new(x, 5.5, 36.82), COLORS.Amber, Enum.Material.Neon)
+	-- Small amber safety stripe is physically attached to the transformer front.
+	block(root, "SafetyStripe", Vector3.new(11, 0.42, 0.30), Vector3.new(x, 5.5, centerZ - 6.18), COLORS.Amber, Enum.Material.Neon)
 end
-
 local function addCapacitorBank(parent, name, centerX, centerZ)
 	local root = folder(parent, name)
 
@@ -218,11 +217,10 @@ local function addCapacitorBank(parent, name, centerX, centerZ)
 	block(root, "LiveIndicator", Vector3.new(10.5, 0.24, 0.24), Vector3.new(centerX, 9.2, centerZ - 0.65), COLORS.Cyan, Enum.Material.Neon)
 end
 
-local function addShuntReactor(parent, name, z)
+local function addShuntReactor(parent, name, x, z)
 	local root = folder(parent, name)
-	local x = 70.0
 
-	block(root, "Foundation", Vector3.new(10, 0.7, 12), Vector3.new(x, 0.35, z), COLORS.Ground, Enum.Material.Concrete)
+	block(root, "Foundation", Vector3.new(10, 0.7, 9), Vector3.new(x, 0.35, z), COLORS.Ground, Enum.Material.Concrete)
 	cylinderY(root, "ReactorBody", 14, 7.5, Vector3.new(x, 7.4, z), COLORS.GraphiteLight, Enum.Material.Metal)
 	cylinderY(root, "ReactorTop", 0.9, 8.4, Vector3.new(x, 14.85, z), COLORS.Metal, Enum.Material.Metal)
 
@@ -239,62 +237,68 @@ local function addShuntReactor(parent, name, z)
 		end
 	end
 
-	block(root, "ReactorLiveBand", Vector3.new(0.28, 8.0, 5.8), Vector3.new(65.95, 7.5, z), COLORS.Cyan, Enum.Material.Neon)
+	block(root, "ReactorLiveBand", Vector3.new(0.28, 8.0, 5.8), Vector3.new(x - 4.05, 7.5, z), COLORS.Cyan, Enum.Material.Neon)
 end
-
 local function addReactivePowerYard(group)
 	local reactive = folder(group, "ReactivePowerYard")
 
-	-- Campus-scale switchyard: almost the full LC-44 plot width and a deep rear
-	-- electrical apron. Large clear zones make the installation feel bigger than
-	-- simply adding more small props.
-	block(reactive, "MainSwitchyardPad", Vector3.new(148, 0.45, 20), Vector3.new(0, 0.23, 43), COLORS.Ground, Enum.Material.Concrete)
-	block(reactive, "EastElectricalApron", Vector3.new(12, 0.45, 46), Vector3.new(70, 0.23, 5), COLORS.Ground, Enum.Material.Concrete)
+	-- The yard starts immediately behind the shortened halls and extends to the
+	-- rear plot edge. It is one continuous walkable service surface.
+	block(reactive, "MainSwitchyardPad", Vector3.new(148, 0.45, 48), Vector3.new(0, 0.23, 29), COLORS.Ground, Enum.Material.Concrete)
 
-	-- Three large capacitor banks form a dedicated reactive-power zone on the
-	-- west side of the switchyard.
-	addCapacitorBank(reactive, "CapacitorBank_A", -61, 44)
-	addCapacitorBank(reactive, "CapacitorBank_B", -44, 44)
-	addCapacitorBank(reactive, "CapacitorBank_C", -27, 44)
+	-- Four deliberate pedestrian/service corridors separate the parallel fields.
+	-- They remain physically clear of switchgear, transformers and reactive banks.
+	local corridors = {
+		{name = "HallServiceAisle", z = 6.0, depth = 4.0},
+		{name = "SwitchAisle", z = 15.0, depth = 4.0},
+		{name = "TransformerAisle", z = 25.0, depth = 6.0},
+		{name = "ReactiveAisle", z = 42.0, depth = 4.0},
+	}
+	for _, corridor in ipairs(corridors) do
+		block(
+			reactive,
+			corridor.name,
+			Vector3.new(144, 0.16, corridor.depth),
+			Vector3.new(0, 0.53, corridor.z),
+			COLORS.ConcreteDark,
+			Enum.Material.Concrete
+		)
+	end
 
-	-- Two shunt reactors occupy the east-side electrical apron.
-	addShuntReactor(reactive, "ShuntReactor_A", -7)
-	addShuntReactor(reactive, "ShuntReactor_B", 13)
+	-- Rear row: four capacitor banks in parallel on the west half.
+	for index, x in ipairs({-60, -44, -28, -12}) do
+		addCapacitorBank(reactive, "CapacitorBank_" .. index, x, 48.5)
+	end
 
-	-- Large rigid reactive bus visually ties the capacitor field to the main yard.
-	cylinderX(reactive, "ReactiveBusbar", 58, 1.2, Vector3.new(-44, 12.0, 34.5), COLORS.Silver, Enum.Material.Metal)
-	block(reactive, "ReactiveLiveLine", Vector3.new(56, 0.22, 0.22), Vector3.new(-44, 12.65, 34.5), COLORS.Cyan, Enum.Material.Neon)
+	-- Three shunt reactors continue the same rear row across the east half.
+	for index, x in ipairs({30, 49, 68}) do
+		addShuntReactor(reactive, "ShuntReactor_" .. index, x, 48.5)
+	end
 
-	-- Broad maintenance corridors deliberately remain empty so the switchyard
-	-- reads at infrastructure scale instead of as a cluttered equipment pile.
-	block(reactive, "WestMaintenanceLane", Vector3.new(46, 0.16, 3.2), Vector3.new(-45, 0.53, 35), COLORS.ConcreteDark, Enum.Material.Concrete)
-	block(reactive, "MainMaintenanceLane", Vector3.new(86, 0.16, 3.2), Vector3.new(24, 0.53, 51), COLORS.ConcreteDark, Enum.Material.Concrete)
+	-- Rear reactive bus follows the full row while leaving the aisle in front clear.
+	cylinderX(reactive, "ReactiveBusbar", 132, 1.2, Vector3.new(2, 12.0, 44.0), COLORS.Silver, Enum.Material.Metal)
+	block(reactive, "ReactiveLiveLine", Vector3.new(130, 0.22, 0.22), Vector3.new(2, 12.65, 44.0), COLORS.Cyan, Enum.Material.Neon)
 end
 local function addTransformerCourt(group)
-	-- Four main power transformers occupy a broad central/east zone with clear
-	-- maintenance space between units. Their size stays unchanged, but their
-	-- spacing makes the yard read much larger.
-	local positions = {-10, 13, 36, 59}
+	-- Parallel transformer row with large walkable gaps between machines.
+	local positions = {-48, -16, 16, 48}
 	for index, x in ipairs(positions) do
-		addTransformer(group, index, x)
+		addTransformer(group, index, x, 34.0)
 	end
 end
-
 local function addBusbarGantries(group)
-	-- Three full-width portal rows make the switchyard read as a major urban
-	-- substation. The spans deliberately approach the LC-44 plot width.
+	-- Four parallel full-width portal rows establish real switchyard depth.
 	local gantries = {
-		{name = "Incoming", z = 35.0, height = 34},
-		{name = "Main", z = 43.0, height = 29},
-		{name = "Transfer", z = 50.0, height = 24},
+		{name = "Entry", z = 8.0, height = 35},
+		{name = "FieldA", z = 15.5, height = 32},
+		{name = "FieldB", z = 25.0, height = 29},
+		{name = "RearFeed", z = 43.0, height = 25},
 	}
 
 	local postXs = {-68, -34, 0, 34, 68}
 
 	for _, gantry in ipairs(gantries) do
 		local beamY = gantry.height
-
-		-- Repeated portal frames establish large-scale perspective across the yard.
 		for _, x in ipairs(postXs) do
 			block(group, gantry.name .. "Post_" .. tostring(x), Vector3.new(1.0, gantry.height, 1.0), Vector3.new(x, gantry.height / 2, gantry.z), COLORS.Graphite, Enum.Material.Metal)
 			block(group, gantry.name .. "Crossarm_" .. tostring(x), Vector3.new(12, 0.9, 1.2), Vector3.new(x, beamY, gantry.z), COLORS.Graphite, Enum.Material.Metal)
@@ -305,7 +309,6 @@ local function addBusbarGantries(group)
 			end
 		end
 
-		-- Full-width rigid conductors make the electrical field visibly continuous.
 		for phase = -1, 1 do
 			local phaseZ = gantry.z + phase * 2.5
 			cylinderX(group, gantry.name .. "Busbar_" .. tostring(phase), 136, 1.5, Vector3.new(0, beamY + 4.25, phaseZ), COLORS.Silver, Enum.Material.Metal)
@@ -313,25 +316,45 @@ local function addBusbarGantries(group)
 		end
 	end
 
-	-- Six large switch bays under the main portal row. Each bay has obvious
-	-- disconnectors rather than tiny decorative details.
-	for bay = 1, 6 do
-		local x = -55 + (bay - 1) * 22
-		for side = -1, 1, 2 do
-			local bx = x + side * 3.2
-			cylinderY(group, "DisconnectorInsulator_" .. bay .. "_" .. side, 7.0, 1.1, Vector3.new(bx, 4.0, 35.0), COLORS.Ceramic, Enum.Material.SmoothPlastic)
+	local function addSwitchRow(rowName, z)
+		for bay = 1, 6 do
+			local x = -55 + (bay - 1) * 22
+			local bayRoot = folder(group, rowName .. "_Bay_" .. bay)
+
+			block(bayRoot, "Base", Vector3.new(10, 0.6, 5), Vector3.new(x, 0.3, z), COLORS.GraphiteLight, Enum.Material.Metal)
+
+			for side = -1, 1, 2 do
+				local bx = x + side * 3.2
+				cylinderY(bayRoot, "DisconnectorInsulator_" .. side, 7.0, 1.1, Vector3.new(bx, 4.0, z), COLORS.Ceramic, Enum.Material.SmoothPlastic)
+				for disc = 0, 2 do
+					cylinderY(
+						bayRoot,
+						"DisconnectorDisc_" .. side .. "_" .. disc,
+						0.32,
+						1.7,
+						Vector3.new(bx, 2.0 + disc * 1.7, z),
+						COLORS.Ceramic,
+						Enum.Material.SmoothPlastic
+					)
+				end
+			end
+
+			block(bayRoot, "DisconnectorBlade", Vector3.new(7.2, 0.45, 0.7), Vector3.new(x, 7.7, z), COLORS.Silver, Enum.Material.Metal)
+			block(bayRoot, "LiveMarker", Vector3.new(6.2, 0.20, 0.20), Vector3.new(x, 8.25, z), COLORS.Cyan, Enum.Material.Neon)
 		end
-		block(group, "DisconnectorBlade_" .. bay, Vector3.new(7.2, 0.45, 0.7), Vector3.new(x, 7.7, 35.0), COLORS.Silver, Enum.Material.Metal)
-		block(group, "SwitchBayBase_" .. bay, Vector3.new(10, 0.6, 6), Vector3.new(x, 0.3, 35.0), COLORS.GraphiteLight, Enum.Material.Metal)
 	end
+
+	-- Two complete parallel switch-field rows with a clear walkable aisle between.
+	addSwitchRow("SwitchRowA", 10.5)
+	addSwitchRow("SwitchRowB", 19.5)
 end
 local function addRooftopAndService(group)
 	-- Four organized cooling modules split across both hall roofs.
 	local modules = {
-		{name = "SG_A", size = Vector3.new(18, 6, 12), pos = Vector3.new(-55, 35.8, -13), roofY = 32},
-		{name = "SG_B", size = Vector3.new(16, 6, 12), pos = Vector3.new(-28, 35.8, 8), roofY = 32},
-		{name = "CV_A", size = Vector3.new(18, 7, 12), pos = Vector3.new(22, 44.3, -11), roofY = 40},
-		{name = "CV_B", size = Vector3.new(18, 7, 12), pos = Vector3.new(48, 44.3, 8), roofY = 40},
+		{name = "SG_A", size = Vector3.new(18, 6, 12), pos = Vector3.new(-55, 35.8, -24), roofY = 32},
+		{name = "SG_B", size = Vector3.new(16, 6, 12), pos = Vector3.new(-28, 35.8, -10), roofY = 32},
+		{name = "CV_A", size = Vector3.new(18, 7, 12), pos = Vector3.new(22, 44.3, -23), roofY = 40},
+		{name = "CV_B", size = Vector3.new(18, 7, 12), pos = Vector3.new(48, 44.3, -8), roofY = 40},
 	}
 
 	for _, module in ipairs(modules) do
@@ -360,17 +383,14 @@ local function addRooftopAndService(group)
 	end
 
 	-- Three vent stacks rise from one shared converter-roof plinth, never floating.
-	block(group, "VentUtilityPlinth", Vector3.new(20, 2.5, 12), Vector3.new(36, 41.65, 22), COLORS.Graphite, Enum.Material.Metal)
+	block(group, "VentUtilityPlinth", Vector3.new(20, 2.5, 12), Vector3.new(36, 41.65, -1), COLORS.Graphite, Enum.Material.Metal)
 	for index, x in ipairs({30, 36, 42}) do
 		local height = 8 + index * 0.5
 		local baseY = 42.9
-		cylinderY(group, "VentStack_" .. index, height, 1.8, Vector3.new(x, baseY + height / 2, 22), COLORS.Silver, Enum.Material.Metal)
-		cylinderY(group, "VentCap_" .. index, 0.7, 2.5, Vector3.new(x, baseY + height + 0.35, 22), COLORS.Graphite, Enum.Material.Metal)
+		cylinderY(group, "VentStack_" .. index, height, 1.8, Vector3.new(x, baseY + height / 2, -1), COLORS.Silver, Enum.Material.Metal)
+		cylinderY(group, "VentCap_" .. index, 0.7, 2.5, Vector3.new(x, baseY + height + 0.35, -1), COLORS.Graphite, Enum.Material.Metal)
 	end
 
-	-- Small rear electrical-service screen, not a loading station.
-	block(group, "RearServiceScreen", Vector3.new(2.0, 10, 18), Vector3.new(66.0, 5, 22), COLORS.Graphite, Enum.Material.Metal)
-	block(group, "RearServiceCyanEdge", Vector3.new(0.28, 7.5, 14), Vector3.new(64.85, 5, 22), COLORS.Cyan, Enum.Material.Neon)
 end
 
 local function countVisibleParts(model)
@@ -381,8 +401,8 @@ local function countVisibleParts(model)
 		end
 	end
 	model:SetAttribute("VisiblePartCount", count)
-	model:SetAttribute("VisiblePartBudget", 900)
-	model:SetAttribute("VisiblePartBudgetPassed", count <= 900)
+	model:SetAttribute("VisiblePartBudget", 1000)
+	model:SetAttribute("VisiblePartBudgetPassed", count <= 1000)
 end
 
 function Builder.Build(parent)
@@ -396,19 +416,22 @@ function Builder.Build(parent)
 	model:SetAttribute("AssetPhase", 4)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Pending")
-	model:SetAttribute("GeometryRevision", "LargeCityPowerUtility-v4-ClearSwitchyard-RaisedRoofEquipment")
+	model:SetAttribute("GeometryRevision", "LargeCityPowerUtility-v5-WalkableParallelSwitchyard")
 	model:SetAttribute("MaxHealth", specification.ProposedGameplayMetadata.TargetMaxHealth)
 	model:SetAttribute("EnergyType", specification.ProposedGameplayMetadata.EnergyType)
 	model:SetAttribute("InstallerTag", specification.ProposedGameplayMetadata.InstallerTag)
 	model:SetAttribute("StandaloneImport", true)
 	model:SetAttribute("HasInterior", false)
 	model:SetAttribute("TransformerCount", 4)
-	model:SetAttribute("CapacitorBankCount", 3)
-	model:SetAttribute("ShuntReactorCount", 2)
+	model:SetAttribute("CapacitorBankCount", 4)
+	model:SetAttribute("ShuntReactorCount", 3)
 	model:SetAttribute("ExpandedReactivePowerYard", true)
-	model:SetAttribute("BusbarGantryCount", 3)
-	model:SetAttribute("SwitchBayCount", 6)
+	model:SetAttribute("BusbarGantryCount", 4)
+	model:SetAttribute("SwitchBayCount", 12)
 	model:SetAttribute("BroadSwitchyard", true)
+	model:SetAttribute("WalkableParallelSwitchyard", true)
+	model:SetAttribute("ParallelSwitchRows", 2)
+	model:SetAttribute("ServiceCorridorCount", 4)
 	model:SetAttribute("SwitchyardClearsHallEnvelope", true)
 	model:SetAttribute("RoofEquipmentPlinthsFullyAboveRoof", true)
 	model:SetAttribute("CoolingModuleCount", 4)
