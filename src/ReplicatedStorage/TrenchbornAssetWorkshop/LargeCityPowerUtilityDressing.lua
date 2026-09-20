@@ -243,22 +243,6 @@ local function addSwitchyardDressing(root)
 		addSurfaceText(area, sign, row.text, Enum.NormalId.Left, COLORS.White)
 	end
 
-	-- Small bay IDs are raised above each bay base and offset slightly toward the
-	-- outer side, leaving the service aisle itself unobstructed.
-	for rowIndex, rowZ in ipairs({10.5, 19.5}) do
-		for bay = 1, 6 do
-			local x = -55 + (bay - 1) * 22
-			local plate = block(
-				area,
-				"BayId_" .. rowIndex .. "_" .. bay,
-				Vector3.new(4.4, 1.4, 0.25),
-				Vector3.new(x, 9.4, rowZ - 2.9),
-				COLORS.Graphite,
-				Enum.Material.Metal
-			)
-			addSurfaceText(area, plate, string.format("%s-%02d", rowIndex == 1 and "A" or "B", bay), Enum.NormalId.Front, COLORS.White)
-		end
-	end
 
 	-- Ground-edge safety dashes visually define the HV rows while preserving the
 	-- full walking width of every service corridor.
@@ -278,89 +262,69 @@ local function addTransformerDressing(root)
 	local area = folder(root, "TransformerDressing")
 
 	for index, x in ipairs({-48, -16, 16, 48}) do
-		-- Plaques stand just in front of the transformer row, mounted high enough
-		-- to remain readable without narrowing the player corridor.
+		-- Transformer IDs are mounted on the REAR side of the transformer row.
+		-- This matches the amber safety stripe and keeps both readable when the
+		-- player approaches the installation from the rear.
 		local plate = block(
 			area,
 			"TransformerId_" .. index,
 			Vector3.new(9.0, 1.8, 0.28),
-			Vector3.new(x, 12.5, 27.55),
+			Vector3.new(x, 12.5, 40.45),
 			COLORS.Dark,
 			Enum.Material.Metal
 		)
-		addSurfaceText(area, plate, string.format("TX-%02d", index), Enum.NormalId.Front, COLORS.White)
+		addSurfaceText(area, plate, string.format("TX-%02d", index), Enum.NormalId.Back, COLORS.White)
 	end
 end
 
 local function addReactivePowerDressing(root)
 	local area = folder(root, "ReactivePowerDressing")
 
+	-- Rear-facing zone signs are mounted directly behind the equipment they name.
+	-- This makes the relationship obvious when the player walks the rear service edge.
 	local capacitorSign = block(
 		area,
 		"CapacitorZoneSign",
-		Vector3.new(20, 1.7, 0.30),
-		Vector3.new(-37, 14.0, 43.15),
+		Vector3.new(22, 1.8, 0.30),
+		Vector3.new(-36, 12.5, 53.2),
 		COLORS.Dark,
 		Enum.Material.Metal
 	)
-	addSurfaceText(area, capacitorSign, "CAPACITOR BANKS", Enum.NormalId.Front, COLORS.White)
+	addSurfaceText(area, capacitorSign, "HV  •  CAPACITOR BANKS", Enum.NormalId.Back, COLORS.White)
 
 	local reactorSign = block(
 		area,
 		"ReactorZoneSign",
-		Vector3.new(19, 1.7, 0.30),
-		Vector3.new(49, 22.0, 43.15),
+		Vector3.new(21, 1.8, 0.30),
+		Vector3.new(49, 19.5, 53.2),
 		COLORS.Dark,
 		Enum.Material.Metal
 	)
-	addSurfaceText(area, reactorSign, "SHUNT REACTORS", Enum.NormalId.Front, COLORS.White)
+	addSurfaceText(area, reactorSign, "HV  •  SHUNT REACTORS", Enum.NormalId.Back, COLORS.White)
 
-	-- Rear-zone safety markers stay outside the main reactive aisle.
-	for index, x in ipairs({-62, -42, -22, 18, 38, 58}) do
-		local marker = block(
-			area,
-			"ReactiveSafetyMarker_" .. index,
-			Vector3.new(5.5, 1.4, 0.25),
-			Vector3.new(x, 2.0, 52.0),
-			COLORS.Amber,
-			Enum.Material.Metal
-		)
-		addSurfaceText(area, marker, "HV", Enum.NormalId.Back, COLORS.Dark)
-	end
+	-- Amber rear-edge safety bars sit directly behind each reactive-power zone.
+	block(
+		area,
+		"CapacitorRearSafetyBar",
+		Vector3.new(54, 0.28, 0.28),
+		Vector3.new(-36, 2.2, 53.55),
+		COLORS.Amber,
+		Enum.Material.Neon
+	)
+	block(
+		area,
+		"ReactorRearSafetyBar",
+		Vector3.new(46, 0.28, 0.28),
+		Vector3.new(49, 2.2, 53.55),
+		COLORS.Amber,
+		Enum.Material.Neon
+	)
 end
-
 local function addRooftopDressing(root)
 	local area = folder(root, "RooftopDressing")
 
-	local labels = {
-		{name = "SG_A", x = -55, y = 35.8, z = -30.95, width = 11, text = "COOLING A"},
-		{name = "SG_B", x = -28, y = 35.8, z = -16.95, width = 11, text = "COOLING B"},
-		{name = "CV_A", x = 22, y = 44.3, z = -29.95, width = 11, text = "COOLING C"},
-		{name = "CV_B", x = 48, y = 44.3, z = -14.95, width = 11, text = "COOLING D"},
-	}
-
-	for _, label in ipairs(labels) do
-		for _, side in ipairs({-1, 1}) do
-			block(
-				area,
-				"CoolingLabelBracket_" .. label.name .. "_" .. tostring(side),
-				Vector3.new(0.35, 0.35, 1.25),
-				Vector3.new(label.x + side * 4.0, label.y, label.z + 0.45),
-				COLORS.Metal,
-				Enum.Material.Metal
-			)
-		end
-		local plaque = block(
-			area,
-			"CoolingLabel_" .. label.name,
-			Vector3.new(label.width, 1.2, 0.28),
-			Vector3.new(label.x, label.y, label.z),
-			COLORS.Dark,
-			Enum.Material.Metal
-		)
-		addSurfaceText(area, plaque, label.text, Enum.NormalId.Front, COLORS.White)
-	end
-
+	-- Cooling A-D text was intentionally removed. The rooftop equipment should
+	-- read through its form rather than through repeated labels.
 	local vent = block(
 		area,
 		"VentUtilityLabel",
@@ -371,7 +335,6 @@ local function addRooftopDressing(root)
 	)
 	addSurfaceText(area, vent, "VENT ARRAY", Enum.NormalId.Front, COLORS.White)
 end
-
 function Dressing.Apply(model)
 	assert(model and model:IsA("Model"), "LargeCityPowerUtilityDressing.Apply expects a Model")
 
@@ -389,7 +352,7 @@ function Dressing.Apply(model)
 	model:SetAttribute("AssetPhase", 5)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Approved")
-	model:SetAttribute("DressingRevision", "LargeCityPowerUtility-Dressing-v1")
+	model:SetAttribute("DressingRevision", "LargeCityPowerUtility-Dressing-v2-RearReadable")
 	model:SetAttribute("DressingStatus", "ReviewPending")
 	model:SetAttribute("StandaloneImport", true)
 	model:SetAttribute("AurelineGridworksSignage", true)
@@ -397,7 +360,9 @@ function Dressing.Apply(model)
 	model:SetAttribute("WalkableAislesUnobstructedByDressing", true)
 	model:SetAttribute("TransformerIdentifiers", true)
 	model:SetAttribute("ReactivePowerIdentifiers", true)
-	model:SetAttribute("RooftopLabelsStandOffMounted", true)
+	model:SetAttribute("RooftopCoolingTextRemoved", true)
+	model:SetAttribute("RearEquipmentLabelsReadable", true)
+	model:SetAttribute("BayNumberLabelsRemoved", true)
 	model:SetAttribute("NoGoldenMasterMassingChanges", true)
 	return model
 end
