@@ -66,16 +66,16 @@ if minY < math.huge then
 end
 
 model:SetAttribute("GroundContactY", groundY)
-model:SetAttribute("ReviewScene", "LargeCityPowerUtility_Isolated_Phase4_GoldenMasterReview")
+model:SetAttribute("ReviewScene", "LargeCityPowerUtility_Isolated_Phase5_DressingPending")
 
 workshop:SetAttribute("Pipeline", "Trenchborn-7-Phase")
 workshop:SetAttribute("CurrentAsset", specification.AssetId)
-workshop:SetAttribute("CurrentPhase", 4)
-workshop:SetAttribute("QualityStatus", "Phase4_GoldenMasterReview")
+workshop:SetAttribute("CurrentPhase", 5)
+workshop:SetAttribute("QualityStatus", "Phase5_DressingPending")
 workshop:SetAttribute("QualityGateA", "Approved")
-workshop:SetAttribute("QualityGateB", "Pending")
+workshop:SetAttribute("QualityGateB", "Approved")
 workshop:SetAttribute("GoldenMasterReviewTarget", model.Name)
 workshop:SetAttribute("StandaloneBuildingBranch", true)
 
-print("[Trenchborn Asset Workshop] Large City Power Utility Phase 4 Golden Master ready for review:", model:GetFullName())
+print("[Trenchborn Asset Workshop] Power Utility Golden Master approved; Phase 5 dressing pending:", model:GetFullName())
 print("[Trenchborn Asset Workshop] Power Utility ground contact Y/correction:", groundY, model:GetAttribute("GroundContactCorrection"))
