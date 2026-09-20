@@ -8,8 +8,8 @@ local Specification = {
 	City = "LargeCity",
 	District = "MedicalTech",
 	BuildingType = "Power Utility",
-	Phase = 5,
-	QualityGate = "B-Approved",
+	Phase = 6,
+	QualityGate = "C-Pending",
 	Branch = "largecity-power-utility-l3",
 
 	StandaloneImport = {
@@ -330,7 +330,7 @@ local Specification = {
 
 
 	Phase5Status = {
-		Status = "DressingReview",
+		Status = "Approved",
 		QualityGateB = "Approved",
 		DressingRevision = "LargeCityPowerUtility-Dressing-v2-RearReadable",
 		Scope = {
@@ -345,6 +345,27 @@ local Specification = {
 			"transformer and reactive-power identifiers mounted clear of equipment",
 			"subtle safety graphics attached to plausible electrical infrastructure",
 			"no changes to the approved walkable parallel-switchyard geometry",
+		},
+	},
+
+
+	QualityGateC = {
+		Status = "Pending",
+		Requirement = "External game test in the target project before final installer/package approval.",
+	},
+
+	Phase6Status = {
+		Status = "ExternalGameTestPending",
+		QualityGateC = "Pending",
+		ApprovedDressingRevision = "LargeCityPowerUtility-Dressing-v2-RearReadable",
+		TestFocus = {
+			"standalone import into the target game",
+			"walkability through all four service corridors",
+			"clearance around both parallel switch rows",
+			"transformer-row traversal and collision",
+			"reactive-power row traversal and rear-facing signage readability",
+			"MaxHealth 64000 and Electric energy metadata",
+			"destruction-group integration and runtime stability",
 		},
 	},
 
