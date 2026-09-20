@@ -246,18 +246,20 @@ local Specification = {
 			Rule = "Four large transformers remain fully visible, evenly spaced and unobstructed; no loading doors or unrelated clutter may sit behind them.",
 		},
 		ReactivePowerYard = {
-			PadSize = Vector2.new(144, 22),
+			PadSize = Vector2.new(148, 36),
 			CapacitorBankCount = 3,
 			CapacitorCansPerBank = 8,
 			ShuntReactorCount = 2,
-			Rule = "Reactive-power equipment fills the rear and right-side electrical yard so the installation reads as a major urban grid facility, not just two halls with transformers.",
+			Rule = "Reactive-power equipment fills a deep, nearly full-width switchyard with deliberate maintenance corridors so the installation reads at campus scale rather than as a building with attached equipment."
 		},
 		BusbarGantries = {
-			GantryCount = 2,
-			PrimaryHeight = 31,
-			SecondaryHeight = 25,
-			Span = 64,
-			BusbarDiameter = 1.4,
+			GantryCount = 3,
+			PrimaryHeight = 34,
+			SecondaryHeight = 29,
+			TertiaryHeight = 24,
+			Span = 136,
+			BusbarDiameter = 1.5,
+			SwitchBayCount = 6,
 			InsulatorHeight = 3.4,
 			Rule = "Busbars must read as rigid electrical conductors carried on insulators, not as plumbing or refinery pipework.",
 		},
@@ -284,8 +286,8 @@ local Specification = {
 			Rule = "Main control entrance sits on local -Z, centered beneath the glazed spine and remains clearly separate from the rear transformer court.",
 		},
 		PartBudget = {
-			TargetVisibleParts = 680,
-			MaximumVisibleParts = 900,
+			TargetVisibleParts = 780,
+			MaximumVisibleParts = 1000,
 		},
 	},
 
@@ -298,22 +300,24 @@ local Specification = {
 
 	Phase4Status = {
 		Status = "GoldenMasterReview",
-		GeometryRevision = "LargeCityPowerUtility-v2-ExpandedReactivePowerYard",
+		GeometryRevision = "LargeCityPowerUtility-v3-BroadSwitchyard",
 		QualityGateB = "Pending",
 		ReviewFocus = {
 			"power utility is immediately recognizable from silhouette and equipment",
 			"switchgear hall and converter hall have a clear stepped hierarchy",
 			"control spine visibly projects at the public facade instead of being buried inside the halls",
 			"four large transformers remain unobstructed in the true rear +Z court",
-			"three capacitor banks and two shunt reactors make the electrical yard substantially larger and more varied",
+			"three capacitor banks and two shunt reactors occupy dedicated zones inside a deep full-width switchyard",
 			"transformer cooling fins and ceramic bushings read clearly at gameplay distance",
 			"busbar gantries read as rigid electrical conductors carried by insulators, not as pipes",
+			"three full-width portal rows establish a large switchyard silhouette",
+			"six large disconnector bays add visible switching infrastructure beneath the incoming portal row",
 			"thin cyan live indicators stay physically attached to busbars and reactive-power equipment",
 			"rooftop cooling modules and three vent stacks are grounded on visible plinths and stay below 56 studs",
 			"cyan and amber accents remain restrained and physically attached to plausible electrical elements",
 			"no loading stations or unrelated service clutter block the transformer court",
 			"no facade, gantry, transformer or rooftop Z-fighting",
-			"visible part count stays below 900",
+			"visible part count stays below 1000",
 		},
 	},
 
@@ -325,7 +329,7 @@ local Specification = {
 		"Rooftop cooling and ventilation stay below the 56-stud plot target.",
 		"Public control entrance remains clearly separated from rear high-voltage equipment.",
 		"Seven destruction groups map to coherent architectural and electrical systems.",
-		"Golden Master target remains below 900 visible parts.",
+		"Golden Master target remains below 1000 visible parts.",
 	},
 
 	Phase1Acceptance = {
