@@ -12,6 +12,13 @@ local Specification = {
 	QualityGate = "A-Pending",
 	Branch = "largecity-technology-fire-station-l3",
 
+	ReusableFamily = {
+		FamilyId = "LargeCity_FireStation_Kit_v1",
+		Role = "Reference implementation for reusable Large City fire-station variants",
+		SiblingPlots = {"LC-17 Large City Fire HQ"},
+		Rule = "Future fire-station variants reuse the same procedural family and vary configuration/dressing rather than being redesigned from scratch.",
+	},
+
 	StandaloneImport = {
 		Required = true,
 		Rule = "This branch must remain independently importable into another project without depending on Hospital, Meridian Pharma, Power Utility, Research Offices, or any other building branch.",
