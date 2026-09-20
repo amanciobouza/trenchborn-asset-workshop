@@ -332,11 +332,15 @@ local Specification = {
 	Phase5Status = {
 		Status = "DressingReview",
 		QualityGateB = "Approved",
-		DressingRevision = "LargeCityPowerUtility-Dressing-v1",
+		DressingRevision = "LargeCityPowerUtility-Dressing-v2-RearReadable",
 		Scope = {
 			"Aureline Gridworks building signage and facility identity",
 			"control-entry plaza and restrained tropical landscaping",
-			"switchyard bay numbering and zone labels without obstructing walkable aisles",
+			"switchyard zone labels without obstructing walkable aisles",
+			"remove A/B bay-number plaques to reduce visual clutter",
+			"remove repeated COOLING A-D rooftop text",
+			"move transformer amber safety bars and TX labels to the rear-facing side",
+			"place HV zone signs directly behind the capacitor-bank and shunt-reactor equipment they identify",
 			"switchyard dressing preserves all four player service corridors",
 			"transformer and reactive-power identifiers mounted clear of equipment",
 			"subtle safety graphics attached to plausible electrical infrastructure",
