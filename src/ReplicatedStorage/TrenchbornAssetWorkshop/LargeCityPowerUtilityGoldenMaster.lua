@@ -190,10 +190,81 @@ local function addTransformer(group, index, x)
 	block(root, "SafetyStripe", Vector3.new(11, 0.42, 0.30), Vector3.new(x, 5.5, 36.82), COLORS.Amber, Enum.Material.Neon)
 end
 
-local function addTransformerCourt(group)
-	-- Four large units stay clear of doors and unrelated service clutter.
-	block(group, "TransformerCourtPad", Vector3.new(88, 0.5, 20), Vector3.new(22, 0.25, 43), COLORS.Ground, Enum.Material.Concrete)
+local function addCapacitorBank(parent, name, centerX, centerZ)
+	local root = folder(parent, name)
 
+	-- Raised rack makes each bank read as a dedicated reactive-power assembly.
+	block(root, "RackBase", Vector3.new(14, 0.8, 9), Vector3.new(centerX, 0.4, centerZ), COLORS.Graphite, Enum.Material.Metal)
+	for _, x in ipairs({centerX - 5.5, centerX + 5.5}) do
+		block(root, "RackPost_" .. tostring(x), Vector3.new(0.7, 8.0, 0.7), Vector3.new(x, 4.4, centerZ), COLORS.Graphite, Enum.Material.Metal)
+	end
+	block(root, "RackTop", Vector3.new(13, 0.7, 0.9), Vector3.new(centerX, 8.2, centerZ), COLORS.Graphite, Enum.Material.Metal)
+
+	-- Eight capacitor cans in two organized rows.
+	local canIndex = 0
+	for row = -1, 1, 2 do
+		for column = -3, 3, 2 do
+			canIndex += 1
+			local x = centerX + column * 1.75
+			local z = centerZ + row * 2.0
+			cylinderY(root, "CapacitorCan_" .. canIndex, 5.8, 1.8, Vector3.new(x, 3.3, z), COLORS.Silver, Enum.Material.Metal)
+			cylinderY(root, "CapacitorTop_" .. canIndex, 0.45, 2.2, Vector3.new(x, 6.45, z), COLORS.GraphiteLight, Enum.Material.Metal)
+			cylinderY(root, "CapacitorInsulator_" .. canIndex, 1.8, 0.65, Vector3.new(x, 7.55, z), COLORS.Ceramic, Enum.Material.SmoothPlastic)
+		end
+	end
+
+	-- Rigid upper bus and a restrained live indicator.
+	cylinderX(root, "CapacitorBusbar", 12, 0.9, Vector3.new(centerX, 9.2, centerZ), COLORS.Silver, Enum.Material.Metal)
+	block(root, "LiveIndicator", Vector3.new(10.5, 0.24, 0.24), Vector3.new(centerX, 9.2, centerZ - 0.65), COLORS.Cyan, Enum.Material.Neon)
+end
+
+local function addShuntReactor(parent, name, z)
+	local root = folder(parent, name)
+	local x = 70.0
+
+	block(root, "Foundation", Vector3.new(10, 0.7, 12), Vector3.new(x, 0.35, z), COLORS.Ground, Enum.Material.Concrete)
+	cylinderY(root, "ReactorBody", 14, 7.5, Vector3.new(x, 7.4, z), COLORS.GraphiteLight, Enum.Material.Metal)
+	cylinderY(root, "ReactorTop", 0.9, 8.4, Vector3.new(x, 14.85, z), COLORS.Metal, Enum.Material.Metal)
+
+	for fin = -3, 3 do
+		local localZ = z + fin * 1.3
+		block(root, "CoolingFin_" .. tostring(fin), Vector3.new(1.5, 10.5, 0.38), Vector3.new(x - 4.5, 7.2, localZ), COLORS.Metal, Enum.Material.Metal)
+	end
+
+	for phase = -1, 1 do
+		local bz = z + phase * 2.2
+		cylinderY(root, "Bushing_" .. tostring(phase), 5.5, 0.95, Vector3.new(x, 18.0, bz), COLORS.Ceramic, Enum.Material.SmoothPlastic)
+		for disc = 0, 2 do
+			cylinderY(root, "BushingDisc_" .. tostring(phase) .. "_" .. disc, 0.35, 1.8, Vector3.new(x, 16.2 + disc * 1.5, bz), COLORS.Ceramic, Enum.Material.SmoothPlastic)
+		end
+	end
+
+	block(root, "ReactorLiveBand", Vector3.new(0.28, 8.0, 5.8), Vector3.new(65.95, 7.5, z), COLORS.Cyan, Enum.Material.Neon)
+end
+
+local function addReactivePowerYard(group)
+	local reactive = folder(group, "ReactivePowerYard")
+
+	-- The rear yard now fills almost the entire plot width, making LC-44 read as
+	-- a major grid installation rather than a building with a few transformers.
+	block(reactive, "ReactivePowerPad", Vector3.new(144, 0.45, 22), Vector3.new(0, 0.23, 43), COLORS.Ground, Enum.Material.Concrete)
+
+	addCapacitorBank(reactive, "CapacitorBank_A", -61, 43)
+	addCapacitorBank(reactive, "CapacitorBank_B", -45, 43)
+	addCapacitorBank(reactive, "CapacitorBank_C", -29, 43)
+
+	-- Two shunt reactors occupy the narrow right-side electrical yard.
+	addShuntReactor(reactive, "ShuntReactor_A", 8)
+	addShuntReactor(reactive, "ShuntReactor_B", 24)
+
+	-- Low live-bus spine visually ties reactive-power equipment into the yard.
+	cylinderX(reactive, "ReactiveBusbar", 48, 1.2, Vector3.new(-45, 12.0, 34.5), COLORS.Silver, Enum.Material.Metal)
+	block(reactive, "ReactiveLiveLine", Vector3.new(46, 0.22, 0.22), Vector3.new(-45, 12.0, 33.8), COLORS.Cyan, Enum.Material.Neon)
+end
+
+local function addTransformerCourt(group)
+	-- Four main power transformers occupy the right/central half of a much larger
+	-- electrical yard. Their size remains unchanged; the facility grows around them.
 	local positions = {-8, 12, 32, 52}
 	for index, x in ipairs(positions) do
 		addTransformer(group, index, x)
@@ -221,6 +292,7 @@ local function addBusbarGantries(group)
 		for phase = -1, 1 do
 			local phaseZ = gantry.z + phase * 2.4
 			cylinderX(group, gantry.name .. "Busbar_" .. tostring(phase), 64, 1.4, Vector3.new(24, beamY + 4.1, phaseZ), COLORS.Silver, Enum.Material.Metal)
+			block(group, gantry.name .. "LiveLine_" .. tostring(phase), Vector3.new(62, 0.18, 0.18), Vector3.new(24, beamY + 4.75, phaseZ), COLORS.Cyan, Enum.Material.Neon)
 		end
 	end
 end
@@ -287,13 +359,16 @@ function Builder.Build(parent)
 	model:SetAttribute("AssetPhase", 4)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Pending")
-	model:SetAttribute("GeometryRevision", "LargeCityPowerUtility-v1-AurelineGridworks")
+	model:SetAttribute("GeometryRevision", "LargeCityPowerUtility-v2-ExpandedReactivePowerYard")
 	model:SetAttribute("MaxHealth", specification.ProposedGameplayMetadata.TargetMaxHealth)
 	model:SetAttribute("EnergyType", specification.ProposedGameplayMetadata.EnergyType)
 	model:SetAttribute("InstallerTag", specification.ProposedGameplayMetadata.InstallerTag)
 	model:SetAttribute("StandaloneImport", true)
 	model:SetAttribute("HasInterior", false)
 	model:SetAttribute("TransformerCount", 4)
+	model:SetAttribute("CapacitorBankCount", 3)
+	model:SetAttribute("ShuntReactorCount", 2)
+	model:SetAttribute("ExpandedReactivePowerYard", true)
 	model:SetAttribute("BusbarGantryCount", 2)
 	model:SetAttribute("CoolingModuleCount", 4)
 	model:SetAttribute("VentStackCount", 3)
@@ -308,7 +383,7 @@ function Builder.Build(parent)
 	local d4 = folder(groups, "D4_GridControlSpine")
 	local d5 = folder(groups, "D5_BusbarGantries")
 	local d6 = folder(groups, "D6_TransformerCourt")
-	local d7 = folder(groups, "D7_RooftopAndService")
+	local d7 = folder(groups, "D7_RooftopAndReactivePower")
 
 	addControlEntrance(d1)
 	addSwitchgearHall(d2)
@@ -316,6 +391,7 @@ function Builder.Build(parent)
 	addGridControlSpine(d4)
 	addBusbarGantries(d5)
 	addTransformerCourt(d6)
+	addReactivePowerYard(d7)
 	addRooftopAndService(d7)
 
 	local pivot = part(model, "GroundPivot", Vector3.new(1, 1, 1), CFrame.new(0, 0.5, 0), Color3.new(1, 1, 1), Enum.Material.SmoothPlastic, 1)
