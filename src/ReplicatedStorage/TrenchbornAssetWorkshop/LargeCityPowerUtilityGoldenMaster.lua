@@ -248,7 +248,7 @@ local function addReactivePowerYard(group)
 	-- Campus-scale switchyard: almost the full LC-44 plot width and a deep rear
 	-- electrical apron. Large clear zones make the installation feel bigger than
 	-- simply adding more small props.
-	block(reactive, "MainSwitchyardPad", Vector3.new(148, 0.45, 36), Vector3.new(0, 0.23, 35), COLORS.Ground, Enum.Material.Concrete)
+	block(reactive, "MainSwitchyardPad", Vector3.new(148, 0.45, 20), Vector3.new(0, 0.23, 43), COLORS.Ground, Enum.Material.Concrete)
 	block(reactive, "EastElectricalApron", Vector3.new(12, 0.45, 46), Vector3.new(70, 0.23, 5), COLORS.Ground, Enum.Material.Concrete)
 
 	-- Three large capacitor banks form a dedicated reactive-power zone on the
@@ -267,8 +267,8 @@ local function addReactivePowerYard(group)
 
 	-- Broad maintenance corridors deliberately remain empty so the switchyard
 	-- reads at infrastructure scale instead of as a cluttered equipment pile.
-	block(reactive, "WestMaintenanceLane", Vector3.new(46, 0.16, 3.2), Vector3.new(-45, 0.53, 27), COLORS.ConcreteDark, Enum.Material.Concrete)
-	block(reactive, "MainMaintenanceLane", Vector3.new(86, 0.16, 3.2), Vector3.new(24, 0.53, 27), COLORS.ConcreteDark, Enum.Material.Concrete)
+	block(reactive, "WestMaintenanceLane", Vector3.new(46, 0.16, 3.2), Vector3.new(-45, 0.53, 35), COLORS.ConcreteDark, Enum.Material.Concrete)
+	block(reactive, "MainMaintenanceLane", Vector3.new(86, 0.16, 3.2), Vector3.new(24, 0.53, 51), COLORS.ConcreteDark, Enum.Material.Concrete)
 end
 local function addTransformerCourt(group)
 	-- Four main power transformers occupy a broad central/east zone with clear
@@ -284,9 +284,9 @@ local function addBusbarGantries(group)
 	-- Three full-width portal rows make the switchyard read as a major urban
 	-- substation. The spans deliberately approach the LC-44 plot width.
 	local gantries = {
-		{name = "Incoming", z = 24.0, height = 34},
-		{name = "Main", z = 34.0, height = 29},
-		{name = "Transfer", z = 48.0, height = 24},
+		{name = "Incoming", z = 35.0, height = 34},
+		{name = "Main", z = 43.0, height = 29},
+		{name = "Transfer", z = 50.0, height = 24},
 	}
 
 	local postXs = {-68, -34, 0, 34, 68}
@@ -319,23 +319,32 @@ local function addBusbarGantries(group)
 		local x = -55 + (bay - 1) * 22
 		for side = -1, 1, 2 do
 			local bx = x + side * 3.2
-			cylinderY(group, "DisconnectorInsulator_" .. bay .. "_" .. side, 7.0, 1.1, Vector3.new(bx, 4.0, 22.0), COLORS.Ceramic, Enum.Material.SmoothPlastic)
+			cylinderY(group, "DisconnectorInsulator_" .. bay .. "_" .. side, 7.0, 1.1, Vector3.new(bx, 4.0, 35.0), COLORS.Ceramic, Enum.Material.SmoothPlastic)
 		end
-		block(group, "DisconnectorBlade_" .. bay, Vector3.new(7.2, 0.45, 0.7), Vector3.new(x, 7.7, 22.0), COLORS.Silver, Enum.Material.Metal)
-		block(group, "SwitchBayBase_" .. bay, Vector3.new(10, 0.6, 6), Vector3.new(x, 0.3, 22.0), COLORS.GraphiteLight, Enum.Material.Metal)
+		block(group, "DisconnectorBlade_" .. bay, Vector3.new(7.2, 0.45, 0.7), Vector3.new(x, 7.7, 35.0), COLORS.Silver, Enum.Material.Metal)
+		block(group, "SwitchBayBase_" .. bay, Vector3.new(10, 0.6, 6), Vector3.new(x, 0.3, 35.0), COLORS.GraphiteLight, Enum.Material.Metal)
 	end
 end
 local function addRooftopAndService(group)
 	-- Four organized cooling modules split across both hall roofs.
 	local modules = {
-		{name = "SG_A", size = Vector3.new(18, 6, 12), pos = Vector3.new(-55, 35.0, -13)},
-		{name = "SG_B", size = Vector3.new(16, 6, 12), pos = Vector3.new(-28, 35.0, 8)},
-		{name = "CV_A", size = Vector3.new(18, 7, 12), pos = Vector3.new(22, 43.5, -11)},
-		{name = "CV_B", size = Vector3.new(18, 7, 12), pos = Vector3.new(48, 43.5, 8)},
+		{name = "SG_A", size = Vector3.new(18, 6, 12), pos = Vector3.new(-55, 35.8, -13), roofY = 32},
+		{name = "SG_B", size = Vector3.new(16, 6, 12), pos = Vector3.new(-28, 35.8, 8), roofY = 32},
+		{name = "CV_A", size = Vector3.new(18, 7, 12), pos = Vector3.new(22, 44.3, -11), roofY = 40},
+		{name = "CV_B", size = Vector3.new(18, 7, 12), pos = Vector3.new(48, 44.3, 8), roofY = 40},
 	}
 
 	for _, module in ipairs(modules) do
-		block(group, "CoolingPlinth_" .. module.name, Vector3.new(module.size.X + 2, 0.6, module.size.Z + 2), Vector3.new(module.pos.X, module.pos.Y - module.size.Y / 2 - 0.3, module.pos.Z), COLORS.ConcreteDark, Enum.Material.Concrete)
+		local plinthHeight = 0.8
+		local plinthCenterY = module.roofY + plinthHeight / 2
+		block(
+			group,
+			"CoolingPlinth_" .. module.name,
+			Vector3.new(module.size.X + 2, plinthHeight, module.size.Z + 2),
+			Vector3.new(module.pos.X, plinthCenterY, module.pos.Z),
+			COLORS.ConcreteDark,
+			Enum.Material.Concrete
+		)
 		block(group, "CoolingModule_" .. module.name, module.size, module.pos, COLORS.Graphite, Enum.Material.Metal)
 
 		for fin = -2, 2 do
@@ -351,10 +360,10 @@ local function addRooftopAndService(group)
 	end
 
 	-- Three vent stacks rise from one shared converter-roof plinth, never floating.
-	block(group, "VentUtilityPlinth", Vector3.new(20, 2.5, 12), Vector3.new(36, 41.25, 22), COLORS.Graphite, Enum.Material.Metal)
+	block(group, "VentUtilityPlinth", Vector3.new(20, 2.5, 12), Vector3.new(36, 41.65, 22), COLORS.Graphite, Enum.Material.Metal)
 	for index, x in ipairs({30, 36, 42}) do
 		local height = 8 + index * 0.5
-		local baseY = 42.5
+		local baseY = 42.9
 		cylinderY(group, "VentStack_" .. index, height, 1.8, Vector3.new(x, baseY + height / 2, 22), COLORS.Silver, Enum.Material.Metal)
 		cylinderY(group, "VentCap_" .. index, 0.7, 2.5, Vector3.new(x, baseY + height + 0.35, 22), COLORS.Graphite, Enum.Material.Metal)
 	end
@@ -387,7 +396,7 @@ function Builder.Build(parent)
 	model:SetAttribute("AssetPhase", 4)
 	model:SetAttribute("QualityGateA", "Approved")
 	model:SetAttribute("QualityGateB", "Pending")
-	model:SetAttribute("GeometryRevision", "LargeCityPowerUtility-v3-BroadSwitchyard")
+	model:SetAttribute("GeometryRevision", "LargeCityPowerUtility-v4-ClearSwitchyard-RaisedRoofEquipment")
 	model:SetAttribute("MaxHealth", specification.ProposedGameplayMetadata.TargetMaxHealth)
 	model:SetAttribute("EnergyType", specification.ProposedGameplayMetadata.EnergyType)
 	model:SetAttribute("InstallerTag", specification.ProposedGameplayMetadata.InstallerTag)
@@ -400,6 +409,8 @@ function Builder.Build(parent)
 	model:SetAttribute("BusbarGantryCount", 3)
 	model:SetAttribute("SwitchBayCount", 6)
 	model:SetAttribute("BroadSwitchyard", true)
+	model:SetAttribute("SwitchyardClearsHallEnvelope", true)
+	model:SetAttribute("RoofEquipmentPlinthsFullyAboveRoof", true)
 	model:SetAttribute("CoolingModuleCount", 4)
 	model:SetAttribute("VentStackCount", 3)
 	model:SetAttribute("NoLoadingStations", true)
