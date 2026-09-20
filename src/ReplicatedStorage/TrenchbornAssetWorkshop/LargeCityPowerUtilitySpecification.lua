@@ -82,7 +82,15 @@ local Specification = {
 		{
 			Name = "TransformerCourt",
 			Face = "+Z",
-			Description = "Four large transformer units with cooling fins and vertical ceramic bushings provide an unmistakable power-utility read at Kaiju distance.",
+			Description = "Four large transformer units anchor a much broader high-voltage yard with cooling fins, ceramic bushings, capacitor banks and shunt reactors."
+		},
+		{
+			Name = "CapacitorBanks",
+			Description = "Three rear-yard capacitor banks use repeated metallic cans, ceramic insulators and rigid live busbars to make reactive-power equipment visible at gameplay distance.",
+		},
+		{
+			Name = "ShuntReactors",
+			Description = "Two tall cylindrical shunt reactors occupy the right-side electrical yard, adding another recognizable grid component beyond transformers.",
 		},
 		{
 			Name = "GridControlSpine",
@@ -128,7 +136,7 @@ local Specification = {
 		"D4_GridControlSpine",
 		"D5_BusbarGantries",
 		"D6_TransformerCourt",
-		"D7_RooftopAndService",
+		"D7_RooftopAndReactivePower",
 	},
 
 	Phase1Status = {
@@ -237,6 +245,13 @@ local Specification = {
 			MaintenanceClearance = 5,
 			Rule = "Four large transformers remain fully visible, evenly spaced and unobstructed; no loading doors or unrelated clutter may sit behind them.",
 		},
+		ReactivePowerYard = {
+			PadSize = Vector2.new(144, 22),
+			CapacitorBankCount = 3,
+			CapacitorCansPerBank = 8,
+			ShuntReactorCount = 2,
+			Rule = "Reactive-power equipment fills the rear and right-side electrical yard so the installation reads as a major urban grid facility, not just two halls with transformers.",
+		},
 		BusbarGantries = {
 			GantryCount = 2,
 			PrimaryHeight = 31,
@@ -283,15 +298,17 @@ local Specification = {
 
 	Phase4Status = {
 		Status = "GoldenMasterReview",
-		GeometryRevision = "LargeCityPowerUtility-v1-AurelineGridworks",
+		GeometryRevision = "LargeCityPowerUtility-v2-ExpandedReactivePowerYard",
 		QualityGateB = "Pending",
 		ReviewFocus = {
 			"power utility is immediately recognizable from silhouette and equipment",
 			"switchgear hall and converter hall have a clear stepped hierarchy",
 			"control spine visibly projects at the public facade instead of being buried inside the halls",
 			"four large transformers remain unobstructed in the true rear +Z court",
+			"three capacitor banks and two shunt reactors make the electrical yard substantially larger and more varied",
 			"transformer cooling fins and ceramic bushings read clearly at gameplay distance",
 			"busbar gantries read as rigid electrical conductors carried by insulators, not as pipes",
+			"thin cyan live indicators stay physically attached to busbars and reactive-power equipment",
 			"rooftop cooling modules and three vent stacks are grounded on visible plinths and stay below 56 studs",
 			"cyan and amber accents remain restrained and physically attached to plausible electrical elements",
 			"no loading stations or unrelated service clutter block the transformer court",
