@@ -1,0 +1,15 @@
+{
+  "name": "FireStationKit",
+  "tree": {
+    "$className": "Folder",
+    "FireStationKitSpecification": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/FireStationKitSpecification.lua"
+    },
+    "FireStationKitBuilder": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/FireStationKitBuilder.lua"
+    },
+    "FireStationKitInstaller": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/FireStationKitInstaller.lua"
+    }
+  }
+}
