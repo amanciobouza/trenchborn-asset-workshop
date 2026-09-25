@@ -1,5 +1,5 @@
 {
-  "name": "LargeCityTechnologyFireStationWorkshop",
+  "name": "FireStationKitWorkshop",
   "servePort": 34872,
   "tree": {
     "$className": "DataModel",
@@ -14,11 +14,23 @@
       "$className": "ReplicatedStorage",
       "TrenchbornAssetWorkshop": {
         "$className": "Folder",
-        "LargeCityTechnologyFireStationSpecification": {
-          "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityTechnologyFireStationSpecification.lua"
+        "FireStationKitSpecification": {
+          "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/FireStationKitSpecification.lua"
         },
-        "LargeCityFireStationFamily": {
-          "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityFireStationFamily.lua"
+        "FireStationKitBuilder": {
+          "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/FireStationKitBuilder.lua"
+        },
+        "FireStationKitInstaller": {
+          "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/FireStationKitInstaller.lua"
+        }
+      }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "TrenchbornAssetWorkshop": {
+        "$className": "Folder",
+        "FireStationKitPreview": {
+          "$path": "src/ServerScriptService/TrenchbornAssetWorkshop/FireStationKitPreview.server.lua"
         }
       }
     }
