@@ -9,11 +9,11 @@ Gate B wurde nach der Fassadenkorrektur mit „passt“ freigegeben. P5 ist umge
 - Statische weiss-rote Schranke, vier Schutzpoller, gelbe Zufahrtsmarkierungen und Richtungspfeil, seitlicher Zaun.
 - Erde und abgerundete Strauchgruppen in den bestehenden Pflanztrögen.
 
-343 vorhandene Parts plus 161 Details = 504 Parts inklusive unsichtbarem GroundPivot. Grundstück 176×128 und Maximalhöhe100 bleiben eingehalten. Alle neuen Details liegen unter PoliceDressing. Schilder und Lichtquellen sind Kinder ihrer Trägerparts. Dressing.Apply arbeitet relativ zum Modellpivot und ersetzt nur den bisherigen Dressing-Ordner.
+343 vorhandene Parts plus 242 Details = 585 Parts inklusive unsichtbarem GroundPivot. Grundstück 176×128 und Maximalhöhe100 bleiben eingehalten. Alle neuen Details liegen unter PoliceDressing. Schilder und Lichtquellen sind Kinder ihrer Trägerparts. Dressing.Apply arbeitet relativ zum Modellpivot und ersetzt nur den bisherigen Dressing-Ordner.
 
 ## Verifikation
 
-P4-Fenster-/Fassadenprüfungen erneut ausgeführt; 12 Frontfenster weiterhin 18×10, ohne bauliche Überdeckung. Export aus derselben Datenliste wie der Luau-Code erzeugt. XML erneut gelesen: 504 Parts, 12 PointLights, zwei SurfaceGuis, keine laufenden Scripts. Luau-kompatibles Dressing-Modul mit Lua5.4 syntaktisch geladen. Alle neuen Parts innerhalb Grundstück und Höhenlimit geprüft. Technische Ansichten kontrolliert; runde Parts sind dort nur als Hüllkörper dargestellt, GUI und Lichtwirkung nicht simuliert.
+P4-Fenster-/Fassadenprüfungen erneut ausgeführt; 12 Frontfenster weiterhin 18×10, ohne bauliche Überdeckung. Export aus derselben Datenliste wie der Luau-Code erzeugt. XML erneut gelesen: 585 Parts, 12 PointLights, zwei SurfaceGuis, keine laufenden Scripts. Luau-kompatibles Dressing-Modul mit Lua5.4 syntaktisch geladen. Alle neuen Parts innerhalb Grundstück und Höhenlimit geprüft. Technische Ansichten kontrolliert; runde Parts sind dort nur als Hüllkörper dargestellt, GUI und Lichtwirkung nicht simuliert.
 
 P5-Import und Aussehen in Roblox Studio stehen noch aus. Keine Behauptung eines Engine-/Performance-/Gameplaytests. Gate C bleibt offen; keine HP oder Energieart gesetzt. Eine bewegliche Schranke, Fahrzeuge und NPCs sind nicht enthalten.
 
@@ -22,3 +22,7 @@ P5-Import und Aussehen in Roblox Studio stehen noch aus. Keine Behauptung eines 
 `python3 tools/build_police_dressing.py --preview`
 
 Erzeugt P4-Basis, P5-Dressing-Modul, statischen P5-rbxmx-Export, Prüfbericht und technische Vorschau. Ohne --preview sind nur Python-Standardbibliotheken nötig.
+
+## Schüsselkorrektur P5-v2
+
+Die vom Nutzer als zwei Kugeln wahrgenommene Antenne wurde ersetzt. Der Reflektor besteht nun aus 64 geneigten flachen Metallsegmenten mit konkavem Profil (8 Studs Durchmesser, rund 1.44 Studs Tiefe), einem schmalen hellen Rand und einem kleinen eckigen Empfangskopf am versetzten Ausleger. Kein Dish-Part verwendet mehr Ball. Luau und XML verwenden identische Rz×Rx-Rotationen. Erneute Studio-Sichtprüfung ausstehend.

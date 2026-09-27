@@ -20,7 +20,7 @@ Alternativ `dist/LargeCityPoliceHQ_P5.rbxmx` direkt in Workspace importieren. Di
 
 Drei Hauptgeschosse, Mittelportal, Fahrzeugzugang, Funkaufbau, Vorplatz, Treppe und Rampe sind gebaut. Hauptkörper 128 × 72 × 60, Portal 32 × 8 × 68, Vordach 40 × 12 × 3, Fahrzeugzugang 32 × 24 × 24, Funkraum 32 × 24 × 16, Grundstück 176 × 128 Studs; Antennenspitze Y=100. Reihenfolge B × T × H.
 
-Polizeiwappen, Schüssel, Dachgeräte, Beleuchtung, Schranke, Poller und Begrünung sind ergänzt. Bitte Materialien, Wappen und Lichtwirkung in Studio beurteilen. Die Schranke bleibt statisch. Insgesamt 504 Parts und zwölf PointLights ohne Schatten.
+Polizeiwappen, Schüssel, Dachgeräte, Beleuchtung, Schranke, Poller und Begrünung sind ergänzt. Bitte Materialien, Wappen und Lichtwirkung in Studio beurteilen. Die Schranke bleibt statisch. Insgesamt 585 Parts und zwölf PointLights ohne Schatten.
 
 P5 besitzt noch keine Gameplay-Tags oder HP. Das gemeinsame Spielsystem wird erst in P6 angebunden; HP und Energieart sind offen. Die jüngste Vereinfachung der Feuerwache dient als Vorlage: ein Gebäude als Ganzes, keine separaten Bauteil-HP.
 

@@ -1,8 +1,8 @@
 {
-  "revision": "Police-P5-v1",
+  "revision": "Police-P5-v2",
   "base_parts": 343,
-  "dressing_parts": 161,
-  "total_parts": 504,
+  "dressing_parts": 242,
+  "total_parts": 585,
   "point_lights": 12,
   "shadow_lights": 0,
   "gate_b": "ApprovedByUser 2026-09-27",
