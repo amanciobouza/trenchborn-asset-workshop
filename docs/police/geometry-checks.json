@@ -1,5 +1,5 @@
 {
-  "parts": 359,
+  "parts": 343,
   "plot": [
     176,
     128
@@ -42,7 +42,9 @@
     "main and annex exact envelopes",
     "max height 100",
     "XML round-trip and count",
-    "no executable scripts"
+    "no executable scripts",
+    "12 equal front windows 18x10",
+    "front glass and blue bands do not intersect other main-building parts"
   ],
   "pending": [
     "Studio visual approval",

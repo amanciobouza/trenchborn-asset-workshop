@@ -18,6 +18,10 @@ Issue #4 / Gate A und P3 freigegeben. Main und sämtliche Branch-Namen wurden ge
 
 Generator kontrolliert positive Abmessungen, eindeutige Namen, Grundstücksgrenzen inklusive geneigter Rampe, Höhenlimit, exakte Haupt-/Vorbauhülle, XML-Lesbarkeit und Partanzahl. Technische Front-, Rück-, Seiten-, Aufsicht und erhöhte Ansicht aus derselben Partliste wurden geprüft. Keine Studio-, Physik- oder Laufzeitabnahme behauptet.
 
-Absichtliche Anschlüsse: tragende Pfeiler schneiden Deckenränder; Portal überlagert die geschlossene Hauptfassade; Vordach verbindet Portal und Eingang. Fenster sind eigene Flächen zwischen Pfeilern. Geschossdecken liegen innen, damit Aussenkanten nicht mit blauen Bändern flimmern.
+Absichtliche Anschlüsse: Vordach verbindet Portal und Eingang. Frontpfeiler und die Felder dazwischen sind räumlich getrennt. Geschossdecken enden an den inneren Wandflächen. Seiten- und Rückfassade schliessen an den Eckpfeilern an, ohne sich zu überdecken.
 
 Gate B bleibt Pending bis zur visuellen Rückmeldung. P5 ergänzt Wappen, Funkdetails, Materialwirkung, Licht, Schranke und Vegetation. Zielbild zeigt reichhaltigere Dekoration als dieser P4-Stand. Stadtplatzierung, Hauptspiel-Schaden und Standalone-Studio-Import noch offen.
+
+## Korrektur P4-v2 nach Studio-Rückmeldung
+
+Front gleichmässig: vier Fensterfelder pro Geschoss, je 18×10 Studs, symmetrisch links/rechts des Portals. Jedes Fenster sitzt vollständig zwischen 4 Studs breiten Pfeilern. Blaue Bänder sind getrennte Felder über den Fenstern und laufen nicht mehr durch Pfeiler oder Decken. Gläser sind 0.4 Studs hinter die Fassadenfläche gesetzt; Fensterrahmen liegen mit Abstand davor. Automatisch geprüft: alle zwölf Fenster gleich gross und keine Volumenüberschneidung der Frontgläser/Bänder mit anderen Hauptgebäudeteilen. Erneute Studio-Sichtprüfung ausstehend.
