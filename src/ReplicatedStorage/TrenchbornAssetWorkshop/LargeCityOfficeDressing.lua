@@ -67,12 +67,13 @@ function Dressing.Apply(model)
     end
     -- Benches sit behind front planters, leaving the central entrance clear.
     for i, x in ipairs({-39,39}) do
+        local benchFrame = CFrame.new(x,0,-46.2) * CFrame.Angles(0,math.pi,0)
         for k=0,2 do
-            part("Bench"..i.."Slat"..k,Vector3.new(12,.45,.7),CFrame.new(x,2.4,-47+k*.85),wood,Enum.Material.Wood)
+            part("Bench"..i.."Slat"..k,Vector3.new(12,.45,.7),benchFrame * CFrame.new(0,2.4,-.8+k*.85),wood,Enum.Material.Wood)
         end
-        part("Bench"..i.."Back",Vector3.new(12,2,.4),CFrame.new(x,3.7,-47.5),wood,Enum.Material.Wood)
+        part("Bench"..i.."Back",Vector3.new(12,2,.4),benchFrame * CFrame.new(0,3.7,-1.3),wood,Enum.Material.Wood)
         for j, dx in ipairs({-4.5,4.5}) do
-            part("Bench"..i.."Leg"..j,Vector3.new(.6,2.2,2.6),CFrame.new(x+dx,1.1,-46.2),dark,Enum.Material.Metal)
+            part("Bench"..i.."Leg"..j,Vector3.new(.6,2.2,2.6),benchFrame * CFrame.new(dx,1.1,0),dark,Enum.Material.Metal)
         end
     end
     local function light(name, x,y,z,range,brightness)
