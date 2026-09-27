@@ -244,7 +244,7 @@ function Builder.Build(parent, options)
  model.Name = "LargeCity_EmberlineResponseHQ_P4"
  model:SetAttribute("LayoutId", "LC-45")
  model:SetAttribute("Phase", 4)
- model:SetAttribute("QualityGateB", "Pending")
+ model:SetAttribute("QualityGateB", "ApprovedByUser")
  model:SetAttribute("BuildRevision", "Emberline-P4-v1")
  local pivot = Instance.new("Part")
  pivot.Name = "GroundPivot"

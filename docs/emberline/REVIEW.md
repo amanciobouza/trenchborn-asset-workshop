@@ -1,5 +1,7 @@
 # Emberline - Phase 4 / Revision v1
 
+**Nachtrag 27.09.2026:** Nutzer hat Import und Geometrie mit „ich seh es jetzt. passt“ bestätigt. Gate B damit freigegeben. Die folgenden Prüfnotizen dokumentieren den damaligen P4-Lieferstand; aktuelles Dressing siehe `DRESSING.md`.
+
 ## Umgesetzt
 
 - Vier getrennte geschlossene rote Fahrzeugtore mit dunklem Fensterband.

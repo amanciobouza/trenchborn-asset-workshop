@@ -1,7 +1,10 @@
 local modules = game:GetService("ReplicatedStorage"):WaitForChild("TrenchbornAssetWorkshop")
 local Builder = require(modules:WaitForChild("LargeCityEmberlineGoldenMaster"))
-local name = "LargeCity_EmberlineResponseHQ_P4"
-if not workspace:FindFirstChild(name) then
- Builder.Build(workspace, {GroundCFrame = CFrame.new(0, 0, 0)})
+local Dressing = require(modules:WaitForChild("LargeCityEmberlineDressing"))
+local model = workspace:FindFirstChild("LargeCity_EmberlineResponseHQ_P5")
+ or workspace:FindFirstChild("LargeCity_EmberlineResponseHQ_P4")
+if not model then
+ model = Builder.Build(workspace, {GroundCFrame = CFrame.new(0, 0, 0)})
 end
-print("Emberline P4 preview: Gate B pending; no gameplay integration attached.")
+Dressing.Apply(model)
+print("Emberline P5 ready: materials, 3 badges, 12 lights, roof equipment, bollards and planters. Gameplay pending.")

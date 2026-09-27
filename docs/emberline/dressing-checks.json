@@ -1,0 +1,55 @@
+{
+  "revision": "Emberline-P5-v1",
+  "base_parts": 236,
+  "dressing_parts": 115,
+  "lights": 12,
+  "symbol_badges": 3,
+  "parts": 351,
+  "door_bays": 4,
+  "training_levels": 6,
+  "plot": [
+    176,
+    112
+  ],
+  "hall": [
+    96,
+    64,
+    40
+  ],
+  "admin_main_body": [
+    48,
+    64,
+    40
+  ],
+  "tower": [
+    24,
+    32,
+    96
+  ],
+  "ground_y": 0,
+  "base_bottom_y": -1,
+  "gate_b": "User approved P4 2026-09-27",
+  "studio_import_test": "P4 confirmed by user; P5 not yet tested",
+  "checks": [
+    "unique group/part names",
+    "positive sizes",
+    "parts inside approved plot",
+    "maximum Y=96",
+    "hall and tower envelopes",
+    "four doors",
+    "six real open drill bays",
+    "XML parse and part count",
+    "no runtime scripts"
+  ],
+  "intentional_joins": [
+    "facade corners and structural slab/wall seams",
+    "entry portal over closed glazing",
+    "thin apron above base slab"
+  ],
+  "pending": [
+    "P5 Roblox Studio review",
+    "mobile readability and light/performance check",
+    "collision walkthrough",
+    "P6 balancing and destruction"
+  ]
+}

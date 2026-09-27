@@ -1,15 +1,17 @@
 -- Issue #3 supersedes the old three-bay / 34-stud family concept.
 return {
- AssetId = "LargeCity_EmberlineResponseHQ_P4",
+ AssetId = "LargeCity_EmberlineResponseHQ_P5",
  DisplayName = "Emberline Response HQ",
  LayoutId = "LC-45",
  City = "LargeCity",
  District = "MedicalTech",
- Phase = 4,
- QualityGate = "B-Pending",
+ Phase = 5,
+ QualityGate = "B-Approved; Dressing-Review-Pending",
  QualityGateA = "Approved",
  TechnicalBreakdown = "Approved",
  SingleBuilding = true,
+ Phase4UserApproval = "2026-09-27: ich seh es jetzt. passt",
+ Phase4StudioImportConfirmed = true,
  InstanceCount = 1,
  Issue = "https://github.com/amanciobouza/trenchborn-asset-workshop/issues/3",
  VisualTarget = "https://raw.githubusercontent.com/amanciobouza/trenchborn-asset-workshop/c022617aa7ea928ccc15c967a2e6c9acc521ee8b/docs/assets/large-city/fire-station/emberline-approved-target-2026-09-26.jpg",
@@ -27,5 +29,5 @@ return {
  -- Plan Z points north; do not treat these numbers as ready-made Roblox CFrames.
  -- City lies north of Large City; Mega City lies south.
  Gameplay = {Status = "P6 pending", MaxHealthApproved = false, EnergyTypeApproved = false},
- Export = {File = "dist/LargeCityEmberlineResponseHQ_P4.rbxmx", StudioImportVerified = false},
+ Export = {File = "dist/LargeCityEmberlineResponseHQ_P5.rbxmx", StudioImportVerified = false},
 }
