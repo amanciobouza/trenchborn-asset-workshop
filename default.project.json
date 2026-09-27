@@ -11,6 +11,12 @@
         },
         "LargeCityPoliceDressing": {
           "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityPoliceDressing.lua"
+        },
+        "LargeCityPoliceSpecification": {
+          "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityPoliceSpecification.lua"
+        },
+        "LargeCityPoliceInstaller": {
+          "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityPoliceInstaller.lua"
         }
       }
     },
