@@ -1,6 +1,6 @@
 # P4-Abnahme — Office Tower
 
-Stand: Office-P4-v1. Gate B offen.
+Stand: Office-P4-v1. Gate B vom Benutzer am 27.09.2026 mit „PASST“ freigegeben.
 
 In Studio bitte Proportionen, gleichmässige Fensterfelder, die beiden durchlaufenden Rippen, die nach hinten abfallende Dachkrone sowie Lobby und Anlieferung ansehen. Dachhöhe 324, Rippenspitzen 328 Studs. Keine Balkone.
 
