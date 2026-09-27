@@ -9,3 +9,5 @@ Rampenpfosten liegen bei Z=-38.3 und -29.7 mit0.4Studs Stärke; die lichte Breit
 Validierung: tatsächliche Builder-/Dressing-Module in Lua5.4-Hierarchiemock ausgeführt:1157BaseParts, fünf Lichter, eine Schriftfläche mit exakt COURTHOUSE; erneute Anwendung erzeugt keine Duplikate. Der Mock simuliert weder CFrame-Geometrie noch Roblox-Rendering/Physik. Rampenbegehung, Schrift, Symbol und Lichtwirkung müssen in Studio geprüft werden. Gate C im Hauptspiel bleibt offen.
 
 Das P4-XML bleibt ein Geometriearchiv. P5 über die Rojo-Vorschau starten. Importpaket und Gameplay-Werte folgen in P6.
+
+Leuchtenkorrektur: Eingangsleuchten auf Steinpfeilern X=-16/0/16 mit Wandhalterungen. Beide vorderen Leuchten erhalten Sockel vom Vorplatz Y0 bis zur Lampenunterkante Y8.5. Sockel stehen ausserhalb von Treppe und Rampe.

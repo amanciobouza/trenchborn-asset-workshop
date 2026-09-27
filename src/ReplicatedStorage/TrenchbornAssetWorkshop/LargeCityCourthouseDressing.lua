@@ -71,8 +71,16 @@ function Dressing.Apply(model)
   -- Explicit pitch about local Z aligns the long local X axis to the slope.
   p.CFrame=origin*CFrame.new(x,7.25,-55.25)*CFrame.Angles(0,-math.pi/2,0)*CFrame.Angles(0,0,math.atan(8/24))
  end
- for i,x in ipairs({-21.6,0,21.6}) do lamp("EntranceLamp"..i,x,18,-24.9,20,.7) end
- for i,x in ipairs({-39,39}) do lamp("StairLamp"..i,x,10,-43,15,.6) end
+ -- Full-height stone piers between the four glazed bays are centred at -16,0,16.
+ for i,x in ipairs({-16,0,16}) do
+  part("EntranceMount"..i,1.8,3.4,.2,x,18,-24.1,metal,Enum.Material.Metal)
+  lamp("EntranceLamp"..i,x,18,-24.9,20,.7)
+ end
+ for i,x in ipairs({-39,39}) do
+  part("StairLampBase"..i,5,1,5,x,.5,-43,stone)
+  part("StairLampPedestal"..i,4,7.5,4,x,4.75,-43,stone)
+  lamp("StairLamp"..i,x,10,-43,15,.6)
+ end
  -- Four blue flags placed outside stairs and ramp.
  for i,v in ipairs({{-82,-48},{82,-48},{-82,-66},{82,-66}}) do
   part("FlagBase"..i,3,1,3,v[1],.5,v[2],stone)
