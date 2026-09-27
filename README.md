@@ -21,7 +21,7 @@ Alternativ `dist/LargeCityOfficeTower_P4.rbxmx` als statisches Modell importiere
 
 18 Geschosse: 2 Podiumgeschosse à 18 Studs, 16 Bürogeschosse à 16 Studs. Podium 104×88×36, Turmkörper 72×64×256, Krone 72×64×32. Dachkante 324, Rippen maximal 328 Studs. Zwei Fassadenrippen je 4 Studs breit und 3 Studs vorstehend, geschossweise segmentiert. Parzelle 144×128. Eingang mit zurückgesetzter Lobby und Vordach 40×12×3; seitliche Anlieferung. Dachtechnik liegt innerhalb der Krone.
 
-P5 ergänzt dunklen Schiefersockel, blaues Architekturglas, Metallrahmen, fünf stilisierte Palmen, zwei Holzbänke und acht warme Lichtquellen. Keine Änderungen an globaler Beleuchtung. Das statische XML bleibt der archivierte P4-Stand; die aktuelle P6-Version wird via Rojo durch den Installer erzeugt. 64’000 HP, Electric, KaijuHouse-Tag und eine gemeinsame Zerstörungsgruppe D1_WholeBuilding. Der eigentliche Kollaps wird vom gemeinsamen Hauptspiel-System ausgeführt.
+P5 ergänzt hellen cremefarbenen Betonsockel, blaues Architekturglas, weissliche Metallrahmen und eine helle Dachkrone, fünf stilisierte Palmen, zwei Holzbänke und acht warme Lichtquellen. Keine Änderungen an globaler Beleuchtung. Das statische XML bleibt der archivierte P4-Stand; die aktuelle P6-Version wird via Rojo durch den Installer erzeugt. 64’000 HP, Electric, KaijuHouse-Tag und eine gemeinsame Zerstörungsgruppe D1_WholeBuilding. Der eigentliche Kollaps wird vom gemeinsamen Hauptspiel-System ausgeführt.
 
 ## Reproduktion und Prüfung
 

@@ -7,6 +7,7 @@ function Dressing.Apply(model)
     for _, p in ipairs(model:GetDescendants()) do
         if p:IsA("BasePart") and p.Name ~= "GroundPivot" then
             p.Material = Enum.Material.Metal
+            p.Color = Color3.fromRGB(224, 225, 218)
             p.Reflectance = 0
             p.Transparency = 0
             if string.find(p.Name, "Glass") or string.match(p.Name, "^Door%d") then
@@ -15,9 +16,16 @@ function Dressing.Apply(model)
                 p.Reflectance = 0.12
                 -- Opaque architectural glass avoids seeing the unfinished interior.
             elseif string.match(p.Parent.Name, "^Podium") then
-                p.Material = Enum.Material.Slate
+                p.Material = Enum.Material.Concrete
+                p.Color = Color3.fromRGB(231, 226, 212)
+            elseif p.Parent.Name == "Crown" then
+                p.Material = Enum.Material.Concrete
+                p.Color = Color3.fromRGB(232, 232, 222)
+            elseif p.Parent.Name == "FacadeRibs" then
+                p.Color = Color3.fromRGB(246, 245, 235)
             elseif p.Parent.Name == "Site" or p.Name == "Threshold" then
                 p.Material = Enum.Material.Concrete
+                p.Color = Color3.fromRGB(211, 207, 192)
             end
         end
     end
