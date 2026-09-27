@@ -1,0 +1,19 @@
+{
+  "revision": "Residential-P5-v1",
+  "base_parts": 914,
+  "dressing_parts": 308,
+  "total_parts": 1222,
+  "point_lights": 8,
+  "shadow_lights": 0,
+  "gate_b": "ApprovedByUser 2026-09-27",
+  "p5_review": "Pending",
+  "studio_import": "Pending",
+  "garage_gate": "Static; no animation",
+  "checks": [
+    "P4 facade checks rerun",
+    "plot and 232-stud height respected",
+    "XML count",
+    "8 lights / no remote assets",
+    "no scripts or remote assets"
+  ]
+}

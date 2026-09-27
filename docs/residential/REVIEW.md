@@ -1,6 +1,6 @@
 # Residential Tower — P4 Review
 
-Gate A und P3 sind laut Issue5 freigegeben. Gate B bleibt Pending bis zur Studio-Abnahme.
+Gate A und P3 sind laut Issue5 freigegeben. Gate B wurde vom Nutzer am 27.09.2026 freigegeben.
 
 ## Vorprüfung
 
@@ -37,4 +37,4 @@ Generator prüft14Geschoss-Hüllen, zehn reguläre Wohngeschosse, beide Staffelu
 
 Absichtliche Anschlüsse: Balkonplatten schliessen an die Geschossplatte an; die ersten Balkone liegen auf dem Sockeldach. Terrassen decken nur die freien Dachringe ausserhalb der nächsthöheren Hülle. Fassadenpfeiler, Scheiben und Decken enden an ihren Anschlussflächen. Eingangsvordach und Türgriffe sitzen vor der Lobby.
 
-Die Bilder sind technische Geometrievorschauen, keine Studio-Screenshots. Tatsächliche Darstellung, Rampenkollisionen, Mobile-Lesbarkeit und Performance müssen in Studio geprüft werden. Gate B / P5 / Gate C sind noch offen. P6 soll dem vereinfachten bisherigen Ablauf folgen: ein Gebäude als Ganzes; HP/Energieart erst später abstimmen.
+Die Bilder sind technische Geometrievorschauen, keine Studio-Screenshots. Tatsächliche Darstellung, Rampenkollisionen, Mobile-Lesbarkeit und Performance müssen in Studio geprüft werden. P4-Geometrie ist freigegeben; P5-Abnahme und Gate C sind noch offen. P6 soll dem vereinfachten bisherigen Ablauf folgen: ein Gebäude als Ganzes; HP/Energieart erst später abstimmen.

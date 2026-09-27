@@ -35,8 +35,8 @@
     128,
     112
   ],
-  "gate_b": "Pending",
-  "studio_test": "Pending",
+  "gate_b": "ApprovedByUser 2026-09-27",
+  "studio_test": "P4 confirmed by user",
   "garage_floor_y": -8,
   "terrain_cut": {
     "x": [

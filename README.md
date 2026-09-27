@@ -1,4 +1,4 @@
-# Large City Residential Tower — Phase 4
+# Large City Residential Tower — Phase 5
 
 Ein einzelnes Wohnhochhaus nach [Issue #5](https://github.com/amanciobouza/trenchborn-asset-workshop/issues/5): 14 Geschosse, 232 Studs Gesamthöhe, Balkonvorsprünge und zwei Staffelgeschosse. Modell für LC-14; spätere Kopien und Stadtplatzierung folgen nach der Master-Abnahme. Kein Kit.
 
@@ -14,11 +14,11 @@ rojo serve default.project.json
 
 Studio auf Port34872 neu verbinden, synchronisieren und Play starten. Bei bereits lokal vorhandenem Branch genügt `git switch largecity-residential-tower-l3` und `git pull --ff-only`.
 
-Im Explorer `LargeCity_ResidentialTower_P4` auswählen und F drücken. Output: `Residential Tower P4 ready`.
+Im Explorer `LargeCity_ResidentialTower_P5` auswählen und F drücken. Output: `Residential Tower P5 ready`.
 
 **Die Vorschau steht bewusst 12 Studs höher**, damit eine übliche Baseplate die unterirdische Rampe nicht füllt. Das Gebäude bleibt lokal 232 Studs hoch. Es wird kein vorhandenes Gelände gelöscht oder verändert. Diese Vorschauposition ist keine endgültige Stadtposition.
 
-Alternativ `dist/LargeCityResidentialTower_P4.rbxmx` in Workspace importieren. Der direkte Export enthält keine laufenden Scripts; Bodenbezug lokalY0. Bei vorhandener Bodenplatte das gesamte Modell für die Ansicht anheben oder in einem leeren Bereich platzieren.
+Alternativ `dist/LargeCityResidentialTower_P5.rbxmx` in Workspace importieren. Der direkte Export enthält keine laufenden Scripts; Bodenbezug lokalY0. Bei vorhandener Bodenplatte das gesamte Modell für die Ansicht anheben oder in einem leeren Bereich platzieren.
 
 ## Laufende Updates ohne Rojo-Neustart
 
@@ -32,17 +32,17 @@ Details: `docs/ROJO_WORKFLOW.md`.
 
 ## Zur Abnahme
 
-Bitte zuerst Form und Proportionen prüfen: zweigeschossiger Sockel, zehn reguläre Wohngeschosse, zwei Staffelgeschosse, 6-Stud-Balkone mit wechselnden Eckvorsprüngen, Eingang und seitliche Garagenrampe.
+Die Geometrie wurde vom Nutzer freigegeben. P5 ergänzt Beton-/Sandtöne, Glasgeländer, bepflanzte Balkone und Terrassen, drei kleine Bäume, Dachlüftungen, Torlamellen, gelbe Rampenränder und warme Beleuchtung.
 
-Der Bau hat 914 Parts inklusive GroundPivot. Materialien, Pflanzen, Geländerfüllungen, Rampenmarkierungen, Lüftungsdetails und Beleuchtung folgen nach Gate B in P5. HP und Energieart sind noch offen. Keine Gameplay-Tags oder Schadenslogik in P4.
+Bitte Glaswirkung, Begrünung, Eingang und Rampe in Studio prüfen. 1'222 Parts inklusive GroundPivot, acht PointLights ohne Schatten. HP/Energieart und Gameplay-Integration bleiben für P6 offen.
 
 [Freigegebenes Zielbild](https://raw.githubusercontent.com/amanciobouza/trenchborn-asset-workshop/1218e2efde244fbbaa7a3596d041678b63fac6db/docs/assets/large-city/residential-tower/residential-tower-approved-target-2026-09-26.jpg). Die explizit freigegebenen Geschosszahlen und Baumasse sind massgeblich, nicht die perspektivischen Bildpixel.
 
 ## Reproduzieren
 
 ```sh
-python3 tools/build_residential.py
-python3 tools/build_residential.py --preview
+python3 tools/build_residential_dressing.py
+python3 tools/build_residential_dressing.py --preview
 ```
 
-Nur die technische Vorschau braucht numpy/Pillow; sonst Python-Standardbibliothek. Beide Exporte verwenden dieselbe Partliste. Prüfungen und offene Studio-Abnahme stehen in `docs/residential/geometry-checks.json` und `docs/residential/REVIEW.md`.
+Nur die technische Vorschau braucht numpy/Pillow; sonst Python-Standardbibliothek. Beide Exporte verwenden dieselbe Partliste. Prüfungen und offene Studio-Abnahme stehen in `docs/residential/dressing-checks.json` und `docs/residential/DRESSING.md`.
