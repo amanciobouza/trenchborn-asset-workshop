@@ -1,5 +1,5 @@
 {
-  "revision": "Courthouse-P4-v1",
+  "revision": "Courthouse-P4-v2",
   "parts": 1037,
   "storeys": 3,
   "columns": 6,
@@ -42,6 +42,7 @@
     "six cylindrical columns",
     "plateau and all height limits",
     "sixteen steps",
-    "ramp clearance and continuous endpoint"
+    "ramp clearance and continuous endpoint",
+    "solid front and rear wing junctions"
   ]
 }
