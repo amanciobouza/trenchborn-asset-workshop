@@ -1,14 +1,16 @@
 local folder=game:GetService("ReplicatedStorage"):WaitForChild("TrenchbornAssetWorkshop",10)
-local source=folder and folder:WaitForChild("LargeCityCourthouseGoldenMaster",10)
-local dressing=folder and folder:WaitForChild("LargeCityCourthouseDressing",10)
-if not source or not dressing then
- warn("Courthouse source missing. Check branch and Rojo sync, then start Play again.")
+local source=folder and folder:WaitForChild("LargeCourthouseInstaller",10)
+if not source then
+ warn("Courthouse installer missing. Check branch and Rojo sync, then start Play again.")
  return
 end
-if workspace:FindFirstChild("LargeCity_Courthouse_P4") or workspace:FindFirstChild("LargeCity_Courthouse_P5") then
- warn("Existing Courthouse preserved; use a fresh Play session to rebuild.")
- return
+for _,name in ipairs({"LargeCity_Courthouse_P4","LargeCity_Courthouse_P5","LargeCity_Courthouse_L3"}) do
+ if workspace:FindFirstChild(name) then
+  warn("Existing Courthouse preserved; use a fresh Play session to rebuild.")
+  return
+ end
 end
-local model=require(source).Build(workspace)
-require(dressing).Apply(model)
-print("Courthouse P5 ready: six columns, plateau +8, wings 68 / centre 80 studs. Gate B approved; dressing review pending.")
+local installer=require(source)
+local model=installer.Install(workspace)
+installer.Validate(model)
+print("Courthouse P6 ready: 32000 HP / Electric / one whole-building group. Main-game tests (Gate C) pending.")
