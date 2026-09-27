@@ -1,0 +1,47 @@
+{
+  "revision": "Courthouse-P4-v1",
+  "parts": 1037,
+  "storeys": 3,
+  "columns": 6,
+  "column_diameter": 6,
+  "column_height": 40,
+  "plateau": 8,
+  "centre": [
+    64,
+    80,
+    72
+  ],
+  "wing": [
+    48,
+    72,
+    60
+  ],
+  "portico": [
+    64,
+    20,
+    48
+  ],
+  "maximum_height": 80,
+  "wing_top": 68,
+  "portico_top": 56,
+  "stairs": [
+    72,
+    24,
+    8
+  ],
+  "ramp_width": 8,
+  "ramp_length": 48,
+  "plot": [
+    192,
+    144
+  ],
+  "gate_b": "Pending",
+  "studio_test": "Pending",
+  "checks": [
+    "plot bounds",
+    "six cylindrical columns",
+    "plateau and all height limits",
+    "sixteen steps",
+    "ramp clearance and continuous endpoint"
+  ]
+}

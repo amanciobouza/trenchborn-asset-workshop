@@ -1,87 +1,32 @@
-# Trenchborn Asset Workshop
+# Courthouse — P4 / Issue #8
 
-Synchronized Roblox Studio workspace for specification-driven Trenchborn asset development and automated quality gates.
+Ein Gerichtsgebäude für LC-34, kein Kit. Gate A und P3 freigegeben; P4/Gate B wartet auf visuelle Studio-Abnahme.
 
-## Marshal-II Roadblock final installer
+## Studio
 
-`MarshalRoadblockInstaller` is the Phase 7 production API. It installs the approved model, dressing, fleet rig, gameplay, animations, combat VFX, and spatial sound pass. It does not install the workshop HUD, test buttons, or test targets.
+Play stoppen:
 
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("MarshalRoadblockInstaller"))
-
-local marshal, api = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	AnchorRoot = true,
-})
-
-api.RequestAbility:Invoke("RiotShield")
-api.RequestAbility:Invoke("PulseCannon", workspace.TargetPart)
-api.RequestAbility:Invoke("ContainmentNet", workspace.TargetPart)
-api.ApplyDamage:Invoke(500, true)
-api.Runtime.PlayAnimation("Walk")
+```sh
+git fetch origin
+git switch --track origin/largecity-courthouse-l3
 ```
 
-`GroundCFrame` is the desired ground position and orientation beneath the Guardian. The installer computes the correct vertical placement from the finished geometry. `AnchorRoot` defaults to `true`, which supports server-controlled movement through `Model:PivotTo()`; set it to `false` only when an external character controller supplies collision and physics.
+Rojo weiterlaufen lassen, Sync abwarten, Play starten. default.project.json ist unverändert vom Hotel-Branch übernommen. Falls kein Server läuft: `rojo serve default.project.json`, dann Studio verbinden. Spätere Updates: Play stoppen → `git pull --ff-only` → Sync → Play.
 
-Call `api.Runtime.Destroy()` before removing a live installation so its per-player animation bridge is cleaned up.
+Workspace: `LargeCity_Courthouse_P4`. Grundstückspivot Y0, Front lokal -Z. Endgültige Stadtplatzierung folgt später.
 
-## Warden-I Shepherd final installer
+## Geometrie
 
-`WardenShepherdInstaller` installs the approved Warden geometry, dressing, gameplay contract, and visual reactions without the workshop test console.
+Grundstück 192×144; Vorplatz Y0, Plateau Y8. Mittelbau 64×80×72 bis Y80, Seitenflügel je48×72×60 bis Y68. Drei Geschosse. Alle Dachgesimse sind in den Höhen enthalten. Vorhalle 64×20×48 bis Y56. Genau sechs runde Säulen mit maximal6Studs Durchmesser und40Studs Gesamthöhe: Basis3 + Schaft34 + Kapitell3. Schaftdurchmesser5.
 
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+Freitreppe 72×24×8 mit16 Stufen à0.5 Höhe und1.5 Tiefe. Seitliche Rampe rechts:48Studs Lauf,8Studs lichte Breite, Steigung1:6. Verlauf von X84/Y0 zu X36/Y8, Z=-38..-30. Ein4Studs langes Podest schliesst lückenlos an die Vorhalle bei X32 an. Geländer folgen in P5 ausserhalb der lichten Breite. Spielbarkeit von Rampe, Treppe und Säulenzwischenräumen muss in Studio geprüft werden.
 
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("WardenShepherdInstaller"))
+Heller Stein, dunkle Fenster und Rahmen als Grundfarben. Waage-Symbol, COURTHOUSE-Schriftzug, Geländer, Licht, Bänke, tropische Pflanzen und blaue Fahnen folgen in P5. Keine eingerichteten Gerichtssäle. HP/Energie werden vor P6 abgestimmt; später eine gemeinsame Ganzgebäude-Zerstörungsgruppe.
 
-local warden, gameplayApi = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	EnableVisualReactions = true,
-})
-```
+## Export / Nachweise
 
+`dist/LargeCityCourthouse_P4.rbxmx`: statisches Geometriemodell, keine automatisch laufenden Scripts. Alternativ zur Rojo-Vorschau importieren.
 
-## Aegis-III Interceptor final installer
+`python3 tools/build_courthouse.py --preview` reproduziert Lua, XML, Massbericht und sechs technische Ansichten. Vorschau benötigt Pillow/NumPy. Ansichten sind keine Studio-Screenshots. Prüfungen: Parzellengrenzen, sechs Säulen, Höhenbezüge, Stufen, Rampenfreiraum und Anschluss, XML-Teilzahl. Lua-5.4-Modulprüfung bestanden. Roblox-Runtime, Bewegung, Performance und Kollaps bleiben ungeprüft; Gate B und Gate C offen.
 
-`AegisInterceptorInstaller` installs the approved Phase 7 Aegis-III geometry, dressing, fleet rig, gameplay, production animations, combat VFX, spatial sounds, and targeted missile warning audio. Workshop HUDs and test targets are not included.
-
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("AegisInterceptorInstaller"))
-
-local aegis, api = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	AnchorRoot = true,
-})
-
-api.RequestAbility:Invoke("TwinIonCannons", workspace.TargetPart)
-api.RequestAbility:Invoke("ShoulderMissiles", workspace.TargetPart)
-api.RequestAbility:Invoke("DirectionalAegis")
-api.ApplyDamage:Invoke(5000, workspace.DamageSource)
-```
-
-The installed gameplay contract exposes 18,000 health, 150,000 shield points, directional frontal damage reduction, independent ability cooldowns, reset support, and explicit runtime cleanup through `api.Runtime.Destroy()`.
-
-## Sovereign-V Apex final installer
-
-`SovereignApexInstaller` installs the approved Sovereign-V geometry, dressing, fleet rig, gameplay contract, production animations, wing inertia, Apex Lance, Hunter Drones, Sovereign Lock, VFX, and spatial sound pass. It does not install the workshop HUD or test target.
-
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("SovereignApexInstaller"))
-
-local sovereign, api = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	AnchorRoot = true,
-})
-
-api.RequestAbility:Invoke("ApexLanceBeam", workspace.Kaiju)
-```
+Spezifikation/Zielbild: https://github.com/amanciobouza/trenchborn-asset-workshop/issues/8

@@ -1,6 +1,7 @@
 {
-  "name": "TrenchbornAssetWorkshop",
+  "name": "LargeCityCourthouseP4Source",
   "tree": {
+    "$className": "Folder",
     "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop"
   }
 }
