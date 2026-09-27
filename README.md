@@ -1,87 +1,38 @@
-# Trenchborn Asset Workshop
+# Large City Residential Tower — Phase 4
 
-Synchronized Roblox Studio workspace for specification-driven Trenchborn asset development and automated quality gates.
+Ein einzelnes Wohnhochhaus nach [Issue #5](https://github.com/amanciobouza/trenchborn-asset-workshop/issues/5): 14 Geschosse, 232 Studs Gesamthöhe, Balkonvorsprünge und zwei Staffelgeschosse. Modell für LC-14; spätere Kopien und Stadtplatzierung folgen nach der Master-Abnahme. Kein Kit.
 
-## Marshal-II Roadblock final installer
+## In Studio ansehen
 
-`MarshalRoadblockInstaller` is the Phase 7 production API. It installs the approved model, dressing, fleet rig, gameplay, animations, combat VFX, and spatial sound pass. It does not install the workshop HUD, test buttons, or test targets.
+Play und bisherigen Rojo-Server stoppen. Im bestehenden Repository:
 
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("MarshalRoadblockInstaller"))
-
-local marshal, api = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	AnchorRoot = true,
-})
-
-api.RequestAbility:Invoke("RiotShield")
-api.RequestAbility:Invoke("PulseCannon", workspace.TargetPart)
-api.RequestAbility:Invoke("ContainmentNet", workspace.TargetPart)
-api.ApplyDamage:Invoke(500, true)
-api.Runtime.PlayAnimation("Walk")
+```sh
+git fetch origin
+git switch --track origin/largecity-residential-tower-l3
+rojo serve default.project.json
 ```
 
-`GroundCFrame` is the desired ground position and orientation beneath the Guardian. The installer computes the correct vertical placement from the finished geometry. `AnchorRoot` defaults to `true`, which supports server-controlled movement through `Model:PivotTo()`; set it to `false` only when an external character controller supplies collision and physics.
+Studio auf Port34872 neu verbinden, synchronisieren und Play starten. Bei bereits lokal vorhandenem Branch genügt `git switch largecity-residential-tower-l3` und `git pull --ff-only`.
 
-Call `api.Runtime.Destroy()` before removing a live installation so its per-player animation bridge is cleaned up.
+Im Explorer `LargeCity_ResidentialTower_P4` auswählen und F drücken. Output: `Residential Tower P4 ready`.
 
-## Warden-I Shepherd final installer
+**Die Vorschau steht bewusst 12 Studs höher**, damit eine übliche Baseplate die unterirdische Rampe nicht füllt. Das Gebäude bleibt lokal 232 Studs hoch. Es wird kein vorhandenes Gelände gelöscht oder verändert. Diese Vorschauposition ist keine endgültige Stadtposition.
 
-`WardenShepherdInstaller` installs the approved Warden geometry, dressing, gameplay contract, and visual reactions without the workshop test console.
+Alternativ `dist/LargeCityResidentialTower_P4.rbxmx` in Workspace importieren. Der direkte Export enthält keine laufenden Scripts; Bodenbezug lokalY0. Bei vorhandener Bodenplatte das gesamte Modell für die Ansicht anheben oder in einem leeren Bereich platzieren.
 
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+## Zur Abnahme
 
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("WardenShepherdInstaller"))
+Bitte zuerst Form und Proportionen prüfen: zweigeschossiger Sockel, zehn reguläre Wohngeschosse, zwei Staffelgeschosse, 6-Stud-Balkone mit wechselnden Eckvorsprüngen, Eingang und seitliche Garagenrampe.
 
-local warden, gameplayApi = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	EnableVisualReactions = true,
-})
+Der Bau hat 914 Parts inklusive GroundPivot. Materialien, Pflanzen, Geländerfüllungen, Rampenmarkierungen, Lüftungsdetails und Beleuchtung folgen nach Gate B in P5. HP und Energieart sind noch offen. Keine Gameplay-Tags oder Schadenslogik in P4.
+
+[Freigegebenes Zielbild](https://raw.githubusercontent.com/amanciobouza/trenchborn-asset-workshop/1218e2efde244fbbaa7a3596d041678b63fac6db/docs/assets/large-city/residential-tower/residential-tower-approved-target-2026-09-26.jpg). Die explizit freigegebenen Geschosszahlen und Baumasse sind massgeblich, nicht die perspektivischen Bildpixel.
+
+## Reproduzieren
+
+```sh
+python3 tools/build_residential.py
+python3 tools/build_residential.py --preview
 ```
 
-
-## Aegis-III Interceptor final installer
-
-`AegisInterceptorInstaller` installs the approved Phase 7 Aegis-III geometry, dressing, fleet rig, gameplay, production animations, combat VFX, spatial sounds, and targeted missile warning audio. Workshop HUDs and test targets are not included.
-
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("AegisInterceptorInstaller"))
-
-local aegis, api = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	AnchorRoot = true,
-})
-
-api.RequestAbility:Invoke("TwinIonCannons", workspace.TargetPart)
-api.RequestAbility:Invoke("ShoulderMissiles", workspace.TargetPart)
-api.RequestAbility:Invoke("DirectionalAegis")
-api.ApplyDamage:Invoke(5000, workspace.DamageSource)
-```
-
-The installed gameplay contract exposes 18,000 health, 150,000 shield points, directional frontal damage reduction, independent ability cooldowns, reset support, and explicit runtime cleanup through `api.Runtime.Destroy()`.
-
-## Sovereign-V Apex final installer
-
-`SovereignApexInstaller` installs the approved Sovereign-V geometry, dressing, fleet rig, gameplay contract, production animations, wing inertia, Apex Lance, Hunter Drones, Sovereign Lock, VFX, and spatial sound pass. It does not install the workshop HUD or test target.
-
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("SovereignApexInstaller"))
-
-local sovereign, api = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	AnchorRoot = true,
-})
-
-api.RequestAbility:Invoke("ApexLanceBeam", workspace.Kaiju)
-```
+Nur die technische Vorschau braucht numpy/Pillow; sonst Python-Standardbibliothek. Beide Exporte verwenden dieselbe Partliste. Prüfungen und offene Studio-Abnahme stehen in `docs/residential/geometry-checks.json` und `docs/residential/REVIEW.md`.

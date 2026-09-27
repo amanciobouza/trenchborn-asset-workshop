@@ -1,27 +1,19 @@
 {
-  "name": "TrenchbornAssetWorkshop",
+  "name": "LargeCityResidentialWorkshop",
   "servePort": 34872,
   "tree": {
     "$className": "DataModel",
-    "Workspace": {
-      "$className": "Workspace",
-      "TrenchbornAssetWorkshop": {
-        "$className": "Folder",
-        "$path": "src/Workspace/TrenchbornAssetWorkshop"
-      }
-    },
     "ReplicatedStorage": {
-      "$className": "ReplicatedStorage",
       "TrenchbornAssetWorkshop": {
         "$className": "Folder",
-        "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop"
+        "LargeCityResidentialGoldenMaster": {
+          "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityResidentialGoldenMaster.lua"
+        }
       }
     },
     "ServerScriptService": {
-      "$className": "ServerScriptService",
-      "TrenchbornAssetWorkshop": {
-        "$className": "Folder",
-        "$path": "src/ServerScriptService/TrenchbornAssetWorkshop"
+      "ResidentialPreview": {
+        "$path": "src/ServerScriptService/ResidentialPreview.server.lua"
       }
     }
   }

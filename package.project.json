@@ -1,6 +1,9 @@
 {
-  "name": "TrenchbornAssetWorkshop",
+  "name": "LargeCityResidentialP4Source",
   "tree": {
-    "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop"
+    "$className": "Folder",
+    "LargeCityResidentialGoldenMaster": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityResidentialGoldenMaster.lua"
+    }
   }
 }

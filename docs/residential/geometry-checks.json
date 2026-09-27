@@ -1,0 +1,63 @@
+{
+  "revision": "Residential-P4-v1",
+  "parts": 914,
+  "storeys": 14,
+  "regular_residential": 10,
+  "setbacks": 2,
+  "podium": [
+    96,
+    80,
+    32
+  ],
+  "tower": [
+    64,
+    56,
+    160
+  ],
+  "setback_1": [
+    56,
+    48,
+    16
+  ],
+  "setback_2": [
+    48,
+    40,
+    16
+  ],
+  "roof": [
+    24,
+    16,
+    8
+  ],
+  "balcony_projection": 6,
+  "height": 232,
+  "plot": [
+    128,
+    112
+  ],
+  "gate_b": "Pending",
+  "studio_test": "Pending",
+  "garage_floor_y": -8,
+  "terrain_cut": {
+    "x": [
+      44,
+      62
+    ],
+    "z": [
+      -48,
+      16
+    ],
+    "y": [
+      -9,
+      0
+    ]
+  },
+  "checks": [
+    "14 exact floor envelopes",
+    "all front/rear balconies 6 studs",
+    "windows do not intersect piers",
+    "plot and height bounds including rotated ramp",
+    "XML count",
+    "no autorun scripts"
+  ]
+}
