@@ -18,6 +18,8 @@ Die P4-Geometrie und der Studio-Import wurden am 27.09.2026 vom Nutzer bestätig
 
 Das Preview-Script verwendet einen vorhandenen P4-/P5-Modellstand oder erzeugt genau ein neues Modell. Danach heisst es `LargeCity_EmberlineResponseHQ_P5`. In Studio zuerst den Play-Modus beenden, nach `git pull --ff-only` Rojo synchronisieren lassen und Play erneut starten. So werden auch die Module neu geladen.
 
+Bei `Infinite yield` bzw. einem fehlenden `LargeCityEmberlineDressing`: den Rojo-Server im Terminal mit Ctrl+C beenden, `git pull --ff-only` und `rojo serve default.project.json` ausführen. In Studio die Verbindung auf Port 34872 neu herstellen und synchronisieren. Vor Play muss `ReplicatedStorage > TrenchbornAssetWorkshop > LargeCityEmberlineDressing` als ModuleScript sichtbar sein. Das Preview-Script wartet höchstens zehn Sekunden pro Abhängigkeit und nennt bei fehlender Synchronisierung die nötigen Schritte; die P4-Geometrie bleibt bei fehlendem Dressing sichtbar.
+
 Der aktuelle Direktimport ist `dist/LargeCityEmberlineResponseHQ_P5.rbxmx`. Der frühere P4-Export bleibt als historischer Vergleich erhalten; beide Dateien sind Entwicklungsstände desselben Gebäudes, keine zusätzlichen Stadtinstanzen.
 
 ## Prüfung
