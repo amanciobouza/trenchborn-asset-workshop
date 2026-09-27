@@ -1,17 +1,28 @@
 # Emberline Response HQ - LC-45
 
-Einzelne Fire Station für Large City. **Phase 5: Materialien und Details ergänzt. P4 vom Nutzer freigegeben; P5-Sichtprüfung offen.**
+Einzelne Fire Station für Large City. **Phase 6: Integrationsstand für den Hauptspieltest. Gate C offen.**
 Dieser Branch ersetzt das alte Drei-Tore-/34-Stud-Konzept durch [Issue #3](https://github.com/amanciobouza/trenchborn-asset-workshop/issues/3).
 Kein Kit, keine Varianten, keine zweite Feuerwache auf LC-17.
 
-## Modell öffnen
+## Aktueller Stand: Phase 6
 
-1. `dist/LargeCityEmberlineResponseHQ_P5.rbxmx` herunterladen.
-2. In einem leeren Roblox-Studio-Projekt als Modell in `Workspace` einfügen.
-3. Das Modell `LargeCity_EmberlineResponseHQ_P5` auswählen und fokussieren.
-4. Front ist lokal **-Z**. Der unsichtbare `GroundPivot` liegt im Grundstückszentrum auf Bodenhöhe.
+P4-Geometrie und P5-Dressing sind vom Nutzer bestätigt. **32'000 HP, Thermal und KaijuHouse** sind integriert. Gate C / Hauptspieltest bleibt offen.
 
-Das Paket enthält echte, verankerte Parts, Baugruppen und das Fassadenschild. Es benötigt keine Scripts, externen Meshes, Bilder oder andere Gebäude. Der P4-Import wurde vom Nutzer in Studio bestätigt. Der neue P5-Export ist strukturell geprüft, aber noch nicht in Studio getestet.
+### Mit Git / Rojo
+
+Play stoppen, `git pull --ff-only`, den Rojo-Server vollständig neu starten (`rojo serve default.project.json`) und Studio auf Port 34872 neu verbinden. Nach Synchronisierung Play starten. Der Workshop baut `LargeCity_EmberlineResponseHQ_L3` und prüft sechs Zerstörungsgruppen auf separaten Kopien. Ein leeres Workshop-Projekt besitzt noch keine Hauptspiel-Angriffe.
+
+### Ohne Rojo
+
+`dist/LargeCityEmberlinePackage.rbxmx` als Folder in Workspace importieren und in der Command-Bar ausführen:
+
+```lua
+require(workspace.LargeCityEmberlinePackage.LargeCityEmberlineInstaller).Install(workspace)
+```
+
+Das Paket ist ein Quellmodul-Paket mit Installer. Die früheren P4/P5-Dateien bleiben historische Direktmodelle. Sie tragen noch keine P6-Integration.
+
+Siehe [Spielintegration, Gruppen, Tests und Gate C](docs/emberline/GAMEPLAY.md).
 
 ## Reproduzierbar bauen
 
@@ -19,16 +30,18 @@ Das Paket enthält echte, verankerte Parts, Baugruppen und das Fassadenschild. E
 python3 tools/build_emberline.py
 # Optional: sechs technische Ansichten, benötigt numpy und Pillow
 python3 tools/build_emberline.py --preview
+python3 tools/build_emberline_package.py
 ```
 
 Der Generator schreibt das statische `.rbxmx`, einen gleich aufgebauten Luau-Builder und den Prüfbericht. Phase-5-Details stehen in `tools/emberline_dressing.py`. Änderungen erfolgen an diesen Quellen; danach Ausgaben neu erzeugen und gemeinsam committen.
 
-Alternativ verbindet `default.project.json` den isolierten Emberline-Workshop mit Rojo. Beim Starten des Play-Modus erzeugt `EmberlinePreview` das Modell und wendet das Dressing an. Nach einem Update bitte Stop, Rojo-Synchronisierung, erneut Play. Es werden keine anderen Gebäude oder Guardian-Module geladen. `package.project.json` ist nur das optionale Quellmodul-Paket; das direkt sichtbare Gebäudemodell liegt in `dist/`.
+`default.project.json` verbindet den isolierten Emberline-Workshop mit Rojo. Beim Starten des Play-Modus erzeugt `EmberlinePreview` das Modell und wendet Dressing und Integration an. Nach einem Update mit neuen Modulen bitte Stop, Rojo-Server neu starten, synchronisieren und erneut Play. Es werden keine anderen Gebäude oder Guardian-Module geladen. `package.project.json` definiert das Quellmodul-Paket; historische direkte Geometriemodelle und das aktuelle Installer-Paket liegen in `dist/`.
 
 ```lua
 local builder = require(game.ReplicatedStorage.TrenchbornAssetWorkshop.LargeCityEmberlineGoldenMaster)
 local building = builder.Build(workspace, {GroundCFrame = CFrame.new(0, 0, 0)})
 require(game.ReplicatedStorage.TrenchbornAssetWorkshop.LargeCityEmberlineDressing).Apply(building)
+require(game.ReplicatedStorage.TrenchbornAssetWorkshop.LargeCityEmberlineInstaller).Attach(building)
 ```
 
 ## Review
@@ -39,6 +52,6 @@ Die Ansichten werden aus denselben Parts wie der Export berechnet, ausserhalb Ro
 
 Siehe [Review und Bauentscheidungen](docs/emberline/REVIEW.md) und [P5-Dressing](docs/emberline/DRESSING.md) und [automatische Prüfungen](docs/emberline/dressing-checks.json).
 
-**Gate B vom Nutzer freigegeben.** P5-Sichtprüfung, P6-Spielintegration und Gate C sind offen. `KaijuHouse`, `MaxHealth` und `EnergyType` sind absichtlich noch nicht gesetzt: die Werte sind nicht freigegeben. Es gibt keine Fahrzeuge, NPCs oder Feuerwehrlogik im Export.
+**Gate B und Dressing vom Nutzer freigegeben.** Gate C bleibt offen. Der Installer übernimmt die Metadaten und Zerstörungsgruppen nach dem vorhandenen Gebäude-Vertrag. Es gibt keine Fahrzeuge, NPCs oder Feuerwehrlogik im Paket. Der vollständige Schadens-/Energie-/Einsturztest benötigt das Hauptspiel.
 
 Die spätere Stadtposition ist LC-45. Der Plan v2.1 hat **City im Norden und Mega City im Süden**. Eine Stadtplatzierung ist noch nicht ausgeführt.

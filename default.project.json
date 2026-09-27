@@ -14,6 +14,9 @@
         },
         "LargeCityEmberlineDressing": {
           "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityEmberlineDressing.lua"
+        },
+        "LargeCityEmberlineInstaller": {
+          "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityEmberlineInstaller.lua"
         }
       }
     },

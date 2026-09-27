@@ -18,7 +18,8 @@ local function loadModule(name)
 end
 local Builder = loadModule("LargeCityEmberlineGoldenMaster")
 if not Builder then return end
-local model = workspace:FindFirstChild("LargeCity_EmberlineResponseHQ_P5")
+local model = workspace:FindFirstChild("LargeCity_EmberlineResponseHQ_L3")
+ or workspace:FindFirstChild("LargeCity_EmberlineResponseHQ_P5")
  or workspace:FindFirstChild("LargeCity_EmberlineResponseHQ_P4")
 if not model then
  model = Builder.Build(workspace, {GroundCFrame = CFrame.new(0, 0, 0)})
@@ -28,5 +29,12 @@ if not Dressing then
  warn("[Emberline] P5 wurde nicht angewendet. Der vorhandene Modellstand bleibt sichtbar.")
  return
 end
-Dressing.Apply(model)
-print("Emberline P5 ready: materials, 3 badges, 12 lights, roof equipment, bollards and planters. Gameplay pending.")
+if not model:GetAttribute("EmberlineIntegrationVersion") then Dressing.Apply(model) end
+local Installer = loadModule("LargeCityEmberlineInstaller")
+if not Installer then
+ warn("[Emberline] P6-Integration fehlt; sichtbarer Modellstand bleibt erhalten.")
+ return
+end
+Installer.Attach(model)
+Installer.TestGroupCleanup(model)
+print("Emberline P6 ready: 32000 HP, Thermal, KaijuHouse, six destruction groups. External gameplay test / Gate C pending.")

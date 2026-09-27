@@ -1,12 +1,13 @@
 -- Issue #3 supersedes the old three-bay / 34-stud family concept.
 return {
- AssetId = "LargeCity_EmberlineResponseHQ_P5",
+ AssetId = "LargeCity_EmberlineResponseHQ_L3",
  DisplayName = "Emberline Response HQ",
  LayoutId = "LC-45",
  City = "LargeCity",
  District = "MedicalTech",
- Phase = 5,
- QualityGate = "B-Approved; Dressing-Review-Pending",
+ Phase = 6,
+ QualityGate = "C-Pending",
+ DressingStatus = "ApprovedByUser",
  QualityGateA = "Approved",
  TechnicalBreakdown = "Approved",
  SingleBuilding = true,
@@ -28,6 +29,6 @@ return {
  CityPlanReference = {Version = "v2.1", PlanX = 1440, PlanZ = 470, Entrance = "East"},
  -- Plan Z points north; do not treat these numbers as ready-made Roblox CFrames.
  -- City lies north of Large City; Mega City lies south.
- Gameplay = {Status = "P6 pending", MaxHealthApproved = false, EnergyTypeApproved = false},
- Export = {File = "dist/LargeCityEmberlineResponseHQ_P5.rbxmx", StudioImportVerified = false},
+ Gameplay = {Status = "ExternalGameTestPending", MaxHealthApproved = true, EnergyTypeApproved = true, MaxHealth = 32000, EnergyType = "Thermal", RequiredTag = "KaijuHouse"},
+ Export = {File = "dist/LargeCityEmberlinePackage.rbxmx", StudioImportVerified = false},
 }

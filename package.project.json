@@ -1,5 +1,5 @@
 {
-  "name": "LargeCityEmberlineSourcePackage",
+  "name": "LargeCityEmberlinePackage",
   "tree": {
     "$className": "Folder",
     "LargeCityTechnologyFireStationSpecification": {
@@ -10,6 +10,9 @@
     },
     "LargeCityEmberlineDressing": {
       "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityEmberlineDressing.lua"
+    },
+    "LargeCityEmberlineInstaller": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityEmberlineInstaller.lua"
     }
   }
 }
