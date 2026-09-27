@@ -20,6 +20,16 @@ Im Explorer `LargeCity_ResidentialTower_P4` auswählen und F drücken. Output: `
 
 Alternativ `dist/LargeCityResidentialTower_P4.rbxmx` in Workspace importieren. Der direkte Export enthält keine laufenden Scripts; Bodenbezug lokalY0. Bei vorhandener Bodenplatte das gesamte Modell für die Ansicht anheben oder in einem leeren Bereich platzieren.
 
+## Laufende Updates ohne Rojo-Neustart
+
+Die Projektdatei bindet jetzt die Quellordner ein. Neue Module und Preview-Scripts in diesen Ordnern werden automatisch synchronisiert. Die Roblox-Pfade bleiben dieselben.
+
+Nach normalen Änderungen einschliesslich neuer Module: **Play stoppen → `git pull --ff-only` → Sync abwarten → Play starten**. Der bestehende Rojo-Server und die Studio-Verbindung bleiben bestehen. Play wird neu gestartet, weil der Gebäudegenerator beim Serverstart läuft.
+
+Für diese einmalige Umstellung nach dem Pull Rojo neu starten und Studio neu verbinden. Ältere Gebäudebranches besitzen teilweise noch andere Projektdateien; die Umstellung hier gilt zunächst für den Residential-Branch. Neue Gebäudebranches sollen dieselbe `default.project.json` übernehmen.
+
+Details: `docs/ROJO_WORKFLOW.md`.
+
 ## Zur Abnahme
 
 Bitte zuerst Form und Proportionen prüfen: zweigeschossiger Sockel, zehn reguläre Wohngeschosse, zwei Staffelgeschosse, 6-Stud-Balkone mit wechselnden Eckvorsprüngen, Eingang und seitliche Garagenrampe.
