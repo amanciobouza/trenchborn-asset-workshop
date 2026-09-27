@@ -1,0 +1,52 @@
+{
+  "revision": "CentralStation-P4-v1",
+  "parts": 830,
+  "portals": 3,
+  "tracks": 2,
+  "side_platforms": 2,
+  "gauge_clear": 8,
+  "rail_centre_spacing": 8.5,
+  "track_centre_spacing": 32,
+  "rail_top": 1.5,
+  "platform_top": 3,
+  "reception": [
+    80,
+    48,
+    56
+  ],
+  "wing": [
+    48,
+    48,
+    36
+  ],
+  "hall": [
+    112,
+    160,
+    64
+  ],
+  "plot": [
+    208,
+    272
+  ],
+  "rear_connectors": [
+    [
+      -16,
+      1.5,
+      136
+    ],
+    [
+      16,
+      1.5,
+      136
+    ]
+  ],
+  "gate_b": "Pending",
+  "studio_test": "Pending",
+  "checks": [
+    "plot bounds and height64",
+    "two tracks and clear gauge8",
+    "two20x144x3 side platforms",
+    "three unobstructed entrance portals",
+    "XML part count"
+  ]
+}

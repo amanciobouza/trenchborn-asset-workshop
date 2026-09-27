@@ -1,87 +1,49 @@
-# Trenchborn Asset Workshop
+# Central Station — P4 / Issue #9
 
-Synchronized Roblox Studio workspace for specification-driven Trenchborn asset development and automated quality gates.
+Kopfbahnhof für LC-11, ein Gebäude, kein Kit. Gate A/P3 freigegeben. Benutzer hat am27.09.2026 bestätigt, dass kein bestehendes Schienensystem existiert, und die Festlegung der Gleisgeometrie beauftragt. P4/Gate B wartet auf Studio-Abnahme.
 
-## Marshal-II Roadblock final installer
+## Studio
 
-`MarshalRoadblockInstaller` is the Phase 7 production API. It installs the approved model, dressing, fleet rig, gameplay, animations, combat VFX, and spatial sound pass. It does not install the workshop HUD, test buttons, or test targets.
+Play stoppen:
 
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("MarshalRoadblockInstaller"))
-
-local marshal, api = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	AnchorRoot = true,
-})
-
-api.RequestAbility:Invoke("RiotShield")
-api.RequestAbility:Invoke("PulseCannon", workspace.TargetPart)
-api.RequestAbility:Invoke("ContainmentNet", workspace.TargetPart)
-api.ApplyDamage:Invoke(500, true)
-api.Runtime.PlayAnimation("Walk")
+```sh
+git fetch origin
+git switch --track origin/largecity-central-station-l3
 ```
 
-`GroundCFrame` is the desired ground position and orientation beneath the Guardian. The installer computes the correct vertical placement from the finished geometry. `AnchorRoot` defaults to `true`, which supports server-controlled movement through `Model:PivotTo()`; set it to `false` only when an external character controller supplies collision and physics.
+Rojo weiterlaufen lassen, Sync abwarten, Play starten. default.project.json ist unverändert vom Courthouse-Branch übernommen. Wenn noch kein Server läuft: `rojo serve default.project.json`, dann Studio verbinden. Updates: Play stoppen → `git pull --ff-only` → Sync → Play.
 
-Call `api.Runtime.Destroy()` before removing a live installation so its per-player animation bridge is cleaned up.
+Workspace-Modell: `LargeCity_CentralStation_P4`. Pivot = Grundstücksmitte auf Vorplatzhöhe Y0, Front lokal -Z. Spätere Stadtplatzierung separat.
 
-## Warden-I Shepherd final installer
+## Baukörper und Wege
 
-`WardenShepherdInstaller` installs the approved Warden geometry, dressing, gameplay contract, and visual reactions without the workshop test console.
+Grundstück208×272, Empfangsfront176. Mittelbau80×48×56, Seitenflügel je48×48×36 mit zwei18Studs-Geschossen. Drei offene Portale je16Studs breit. Vordach96×16×3. Uhrplatzhalter12Studs Durchmesser. Zifferblatt/Zeiger und CENTRAL STATION folgen in P5.
 
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+Empfangsbau Z=-96..-48. Eine innere Rampe von Y0.5 zu Y3 verbindet den Eingang mit dem überdachten Querbahnsteig Z=-48..-32. Zwei Seitenbahnsteige je20×144×3: X=-44..-24 und24..44, Z=-32..112. Hallendach112×160×64, Z=-32..128, neun segmentierte Querträger und acht Dachfelder. Höchste Aussenkante inklusive Trägerdicke exakt64. Glas ist in P4 zur Geometrieprüfung opak; endgültige Darstellung folgt in P5.
 
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("WardenShepherdInstaller"))
+## Verbindliche Schienenschnittstelle dieses Assets
 
-local warden, gameplayApi = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	EnableVisualReactions = true,
-})
-```
+Alle Koordinaten relativ zum Grundstückspivot; Anschlussrichtung hinten +Z.
 
+| Parameter | Wert in Studs |
+| --- | --- |
+| Lichte Spurweite zwischen inneren Schienenflächen | 8 |
+| Schienenbreite | 0.5 |
+| Abstand der beiden Schienenmitten je Gleis | 8.5 |
+| Gleismittenabstand | 32 |
+| Gleismitten X | -16 und +16 |
+| Schienenoberkante Y | 1.5 |
+| Bahnsteigoberkante Y | 3 |
+| Anschlussmitten hinten | (-16,1.5,136), (16,1.5,136) |
+| Einzelne Schienenmitten X | -20.25, -11.75, 11.75, 20.25 |
+| Schienenverlauf Z | -24 bis136 |
 
-## Aegis-III Interceptor final installer
+Prellböcke stehen am vorderen Gleisende hinter dem Querbahnsteig. Keine Gleise durch Empfangsgebäude/Vorplatz. Keine Züge oder Verkehrslogik enthalten. Spätere Strecken und Fahrzeuge müssen an diese Schnittstelle angepasst werden.
 
-`AegisInterceptorInstaller` installs the approved Phase 7 Aegis-III geometry, dressing, fleet rig, gameplay, production animations, combat VFX, spatial sounds, and targeted missile warning audio. Workshop HUDs and test targets are not included.
+## Prüfungen / Export
 
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+`python3 tools/build_station.py --preview` erzeugt Luau, XML, Massbericht und sechs technische Ansichten (Pillow/NumPy für Preview). Geprüft: Parzellengrenzen, Höhenlimit64, drei freie Portale, zwei Gleise und Spurweite, zwei Seitenbahnsteige sowie XML-Teilzahl. Bilder sind technische Renderings, keine Studio-Screenshots. Bewegung, Glaswirkung, Performance und Kollaps hier nicht getestet.
 
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("AegisInterceptorInstaller"))
+`dist/LargeCityCentralStation_P4.rbxmx` ist alternativ zur Rojo-Vorschau importierbar; keine automatisch laufenden Scripts. Gate B offen. HP/Energie sowie Zerstörungsverhalten von Gleisen und Bahnsteigen werden vor P6 geklärt; Gate C bleibt offen.
 
-local aegis, api = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	AnchorRoot = true,
-})
-
-api.RequestAbility:Invoke("TwinIonCannons", workspace.TargetPart)
-api.RequestAbility:Invoke("ShoulderMissiles", workspace.TargetPart)
-api.RequestAbility:Invoke("DirectionalAegis")
-api.ApplyDamage:Invoke(5000, workspace.DamageSource)
-```
-
-The installed gameplay contract exposes 18,000 health, 150,000 shield points, directional frontal damage reduction, independent ability cooldowns, reset support, and explicit runtime cleanup through `api.Runtime.Destroy()`.
-
-## Sovereign-V Apex final installer
-
-`SovereignApexInstaller` installs the approved Sovereign-V geometry, dressing, fleet rig, gameplay contract, production animations, wing inertia, Apex Lance, Hunter Drones, Sovereign Lock, VFX, and spatial sound pass. It does not install the workshop HUD or test target.
-
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("SovereignApexInstaller"))
-
-local sovereign, api = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	AnchorRoot = true,
-})
-
-api.RequestAbility:Invoke("ApexLanceBeam", workspace.Kaiju)
-```
+Referenz: https://github.com/amanciobouza/trenchborn-asset-workshop/issues/9
