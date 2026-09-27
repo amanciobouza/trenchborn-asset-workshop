@@ -1,26 +1,17 @@
 {
-  "name": "LargeCityTechnologyFireStationWorkshop",
+  "name": "LargeCityEmberlineWorkshop",
   "servePort": 34872,
   "tree": {
     "$className": "DataModel",
-    "Workspace": {
-      "$className": "Workspace",
+    "ReplicatedStorage": {
       "TrenchbornAssetWorkshop": {
         "$className": "Folder",
-        "$ignoreUnknownInstances": true
+        "LargeCityTechnologyFireStationSpecification": {"$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityTechnologyFireStationSpecification.lua"},
+        "LargeCityEmberlineGoldenMaster": {"$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityEmberlineGoldenMaster.lua"}
       }
     },
-    "ReplicatedStorage": {
-      "$className": "ReplicatedStorage",
-      "TrenchbornAssetWorkshop": {
-        "$className": "Folder",
-        "LargeCityTechnologyFireStationSpecification": {
-          "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityTechnologyFireStationSpecification.lua"
-        },
-        "LargeCityFireStationFamily": {
-          "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityFireStationFamily.lua"
-        }
-      }
+    "ServerScriptService": {
+      "EmberlinePreview": {"$path": "src/ServerScriptService/EmberlinePreview.server.lua"}
     }
   }
 }

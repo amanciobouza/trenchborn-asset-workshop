@@ -1,0 +1,52 @@
+{
+  "revision": "Emberline-P4-v1",
+  "parts": 236,
+  "door_bays": 4,
+  "training_levels": 6,
+  "plot": [
+    176,
+    112
+  ],
+  "hall": [
+    96,
+    64,
+    40
+  ],
+  "admin_main_body": [
+    48,
+    64,
+    40
+  ],
+  "tower": [
+    24,
+    32,
+    96
+  ],
+  "ground_y": 0,
+  "base_bottom_y": -1,
+  "gate_b": "Pending",
+  "studio_import_test": "Not run",
+  "checks": [
+    "unique group/part names",
+    "positive sizes",
+    "parts inside approved plot",
+    "maximum Y=96",
+    "hall and tower envelopes",
+    "four doors",
+    "six real open drill bays",
+    "XML parse and part count",
+    "no runtime scripts"
+  ],
+  "intentional_joins": [
+    "facade corners and structural slab/wall seams",
+    "entry portal over closed glazing",
+    "thin apron above base slab"
+  ],
+  "pending": [
+    "Roblox Studio import",
+    "target-image review in Studio",
+    "collision walkthrough",
+    "P5 symbols, equipment, lights and landscaping",
+    "P6 balancing and destruction"
+  ]
+}

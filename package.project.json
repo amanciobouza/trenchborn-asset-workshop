@@ -1,12 +1,8 @@
 {
-  "name": "LargeCityTechnologyFireStationPackage",
+  "name": "LargeCityEmberlineSourcePackage",
   "tree": {
     "$className": "Folder",
-    "LargeCityTechnologyFireStationSpecification": {
-      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityTechnologyFireStationSpecification.lua"
-    },
-    "LargeCityFireStationFamily": {
-      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityFireStationFamily.lua"
-    }
+    "LargeCityTechnologyFireStationSpecification": {"$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityTechnologyFireStationSpecification.lua"},
+    "LargeCityEmberlineGoldenMaster": {"$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityEmberlineGoldenMaster.lua"}
   }
 }
