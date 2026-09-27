@@ -761,41 +761,38 @@ Installer.ModelName = "LargeCity_EmberlineResponseHQ_L3"
 Installer.MaxHealth = 32000
 Installer.EnergyType = "Thermal"
 Installer.RequiredTag = "KaijuHouse"
-Installer.PackageVersion = 1
+Installer.PackageVersion = 2
 Installer.QualityGateC = "Pending"
 
-local GROUPS = {
- "D1_VehicleBayDoors", "D2_VehicleHall", "D3_Administration",
- "D4_TrainingTower", "D5_Forecourt", "D6_ServiceAndLandscape",
-}
+local GROUPS = { "D1_WholeBuilding" }
 
 local function classify(source, name)
  if source:match("^BayDoor_%d+$") then return GROUPS[1] end
- if source == "VehicleHall" or source == "Signage" then return GROUPS[2] end
- if source == "Administration" then return GROUPS[3] end
- if source == "TrainingTower" or source:match("^TowerLevel_%d+$") then return GROUPS[4] end
- if source == "Site" or source == "Bollards" then return GROUPS[5] end
- if source == "Service" or source == "Planters" then return GROUPS[6] end
+ if source == "VehicleHall" or source == "Signage" then return GROUPS[1] end
+ if source == "Administration" then return GROUPS[1] end
+ if source == "TrainingTower" or source:match("^TowerLevel_%d+$") then return GROUPS[1] end
+ if source == "Site" or source == "Bollards" then return GROUPS[1] end
+ if source == "Service" or source == "Planters" then return GROUPS[1] end
  if source == "RoofEquipment" then
   local unit = tonumber(name:match("^HVAC(%d+)_"))
-  if unit then return unit &lt;= 2 and GROUPS[2] or GROUPS[3] end
-  if name:match("^AdminAntenna%d+$") then return GROUPS[3] end
+  if unit then return unit &lt;= 2 and GROUPS[1] or GROUPS[1] end
+  if name:match("^AdminAntenna%d+$") then return GROUPS[1] end
  elseif source == "FacadeDetails" then
-  if name == "HallSideBand" then return GROUPS[2] end
-  if name == "AdminRearBand" then return GROUPS[3] end
+  if name == "HallSideBand" then return GROUPS[1] end
+  if name == "AdminRearBand" then return GROUPS[1] end
  elseif source == "Emblems" then
-  if name == "HallPlaque" then return GROUPS[2] end
-  if name == "AdminPlaque" then return GROUPS[3] end
-  if name == "TowerPlaque" then return GROUPS[4] end
+  if name == "HallPlaque" then return GROUPS[1] end
+  if name == "AdminPlaque" then return GROUPS[1] end
+  if name == "TowerPlaque" then return GROUPS[1] end
  elseif source == "Lighting" then
   local wall = tonumber(name:match("^WallLight(%d+)_"))
   if wall then
-   if wall &lt;= 4 then return GROUPS[2] end
-   if wall &lt;= 6 then return GROUPS[3] end
-   return GROUPS[4]
+   if wall &lt;= 4 then return GROUPS[1] end
+   if wall &lt;= 6 then return GROUPS[1] end
+   return GROUPS[1]
   end
   local beacon = tonumber(name:match("^Beacon(%d+)_"))
-  if beacon then return beacon &lt;= 2 and GROUPS[4] or GROUPS[2] end
+  if beacon then return beacon &lt;= 2 and GROUPS[1] or GROUPS[1] end
  end
  return nil
 end
@@ -803,6 +800,7 @@ end
 local function validateGroups(model)
  local root = model:FindFirstChild("DestructionGroups")
  assert(root and root:IsA("Folder"), "Emberline: DestructionGroups missing")
+ assert(#root:GetChildren() == 1, "Emberline: requires one whole-building group")
  local valid = {}
  for _,name in ipairs(GROUPS) do
   local group = root:FindFirstChild(name)
@@ -837,18 +835,20 @@ function Installer.Attach(model)
   Installer.Validate(model)
   return model -- Never reset live health or reapply dressing to integrated geometry.
  end
- assert(not model:FindFirstChild("DestructionGroups"), "Emberline: unexpected existing destruction layout")
+ local oldRoot = model:FindFirstChild("DestructionGroups")
+ local migrating = model:GetAttribute("EmberlineIntegrationVersion") == 1
+ assert(not oldRoot or migrating, "Emberline: unexpected existing destruction layout")
  assert(model.PrimaryPart and model.PrimaryPart.Name == "GroundPivot", "Emberline: requires original ground pivot")
- assert(model:FindFirstChild("EmberlineDressing"), "Emberline: apply P5 dressing before integration")
+ assert(migrating or model:FindFirstChild("EmberlineDressing"), "Emberline: apply P5 dressing before integration")
 
  -- Resolve every part before changing any hierarchy; unknown additions fail explicitly.
  local assignments, sources, counts, names = {}, {}, {}, {}
  for _,obj in ipairs(model:GetDescendants()) do
   if obj:IsA("BasePart") and obj ~= model.PrimaryPart then
    local source = obj.Parent
-   local group = classify(source.Name, obj.Name)
+   local group = (migrating and source.Parent == oldRoot) and GROUPS[1] or classify(source.Name, obj.Name)
    assert(group, "Emberline: no destruction owner for " .. source.Name .. "/" .. obj.Name)
-   local newName = source.Name .. "__" .. obj.Name
+   local newName = migrating and obj.Name or source.Name .. "__" .. obj.Name
    local key = group .. "/" .. newName
    assert(not names[key], "Emberline: duplicate part " .. key)
    names[key] = true; sources[source] = true
@@ -870,6 +870,7 @@ function Installer.Attach(model)
  for source in pairs(sources) do
   if #source:GetChildren() == 0 then source:Destroy() end
  end
+ if oldRoot then oldRoot:Destroy() end
  local emptyDressing = model:FindFirstChild("EmberlineDressing")
  if emptyDressing and #emptyDressing:GetChildren() == 0 then emptyDressing:Destroy() end
  model.Name = Installer.ModelName
@@ -880,16 +881,16 @@ function Installer.Attach(model)
   Phase=6, AssetPhase=6, PipelinePhase=6,
   QualityGateA="Approved", QualityGateB="Approved", DressingStatus="Approved",
   DressingReview="ApprovedByUser", QualityGateC="Pending",
-  Phase6Status="ExternalGameTestPending", BuildRevision="Emberline-P6-v1",
-  IntegrationPackageVersion=1, EmberlineIntegrationVersion=1,
+  Phase6Status="ExternalGameTestPending", BuildRevision="Emberline-P6-v2",
+  IntegrationPackageVersion=2, EmberlineIntegrationVersion=2,
   PackageId="LargeCityEmberlinePackage", IntegrationPackageReady=true,
   InstallerReady=true, FinalInstallerReady=false, WorkshopOnly=false, HasInterior=false,
-  DestructionGroupCount=#GROUPS, ExternalCollapseIntegration=true, UsesSharedMainGameDestruction=true,
+  DestructionMode="WholeBuilding", DestructionGroupCount=#GROUPS, ExternalCollapseIntegration=true, UsesSharedMainGameDestruction=true,
  }
  for name,value in pairs(attributes) do model:SetAttribute(name,value) end
  local status = model:FindFirstChild("ReviewStatus")
  if status then
-  local values = {Phase="6", GateB="User approved", DressingReview="User approved", Revision="Emberline-P6-v1"}
+  local values = {Phase="6", GateB="User approved", DressingReview="User approved", Revision="Emberline-P6-v2"}
   for name,value in pairs(values) do
    local field = status:FindFirstChild(name)
    if field and field:IsA("StringValue") then field.Value = value end
@@ -937,7 +938,7 @@ function Installer.TestGroupCleanup(model)
   copy:Destroy(); passed = passed + 1
  end
  assert(#model:GetDescendants() == originalCount, "Emberline: cleanup test changed original")
- print("[Emberline] " .. passed .. "/6 group cleanup checks passed on detached copies. External gameplay test still required.")
+ print("[Emberline] " .. passed .. "/1 group cleanup checks passed on detached copies. External gameplay test still required.")
  return true
 end
 

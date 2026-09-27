@@ -6,22 +6,15 @@ P5 wurde im Gespräch am 27.09.2026 mit „passt“ bestätigt. Danach wurden **
 
 `LargeCityEmberlineInstaller` setzt den Tag `KaijuHouse`, numerisches `MaxHealth=32000`, `EnergyType="Thermal"`, CityTier 4 und die vorhandenen Integrations-/Qualitätsattribute entsprechend dem Central-Hospital-Installer. Aktueller Modellname: `LargeCity_EmberlineResponseHQ_L3`.
 
-Es gibt sechs echte Folder unter `DestructionGroups`. Alle 350 sichtbaren Parts liegen direkt in genau einem Folder. Der unsichtbare GroundPivot bleibt am Modell.
+Auf ausdrücklichen Nutzerwunsch wird das Gebäude als Ganzes zerstört. Es gibt genau einen Folder `D1_WholeBuilding` unter `DestructionGroups`. Alle 350 sichtbaren Parts gehören gemeinsam dazu: Halle, Tore, Verwaltung, Turm, Vorplatz, Service und Begrünung. Der unsichtbare GroundPivot bleibt am Modell. Es gibt keine separaten Bauteil-HP oder gestaffelten Einsturzgruppen.
 
-| Gruppe | Inhalt / mitgehörige Details |
-| --- | --- |
-| D1_VehicleBayDoors | Vier Tore mit Fensterbändern und Fugen |
-| D2_VehicleHall | Halle, Namensschild, Hallensymbol, Hallen-Dachtechnik, Hallenleuchten und Warnleuchten |
-| D3_Administration | Verwaltung, Eingang und Vordach, Verwaltungssymbol, eigene Dachtechnik und Eingangsleuchten |
-| D4_TrainingTower | Turm, alle sechs Ebenen, Geländer, Symbol, Antenne und zugehörige Leuchten |
-| D5_Forecourt | Grundstücksplatte, Vorplatz, Markierungen und Poller |
-| D6_ServiceAndLandscape | Technikschrank, Zaun und Pflanztröge samt Pflanzen |
+Version 2 führt vorhandene Version-1-Gruppen zusammen und erhält dabei die aktuelle Health. `DestructionMode="WholeBuilding"` dokumentiert die gewünschte Behandlung im gemeinsamen Spielsystem.
 
 Schilder und Leuchten bleiben Kinder ihres jeweiligen Parts. Es gibt keinen separaten Dekorationsordner, der beim Entfernen eines tragenden Gebäudeteils in der Luft stehen bleibt. Vor der Umordnung werden alle Parts geprüft; unbekannte Ergänzungen führen zu einem Fehler vor der Mutation. Wiederholtes Attach validiert nur und setzt keine aktuelle Health zurück.
 
 ## Was hier getestet wurde
 
-Ein Lua-5.4-Test mit einem ausdrücklich vereinfachten Roblox-Objektmodell lädt die echte P5-XML-Hierarchie und führt den unveränderten Installer-Code aus. Bestanden: Erhalt aller 351 Parts, sechs Gruppen, richtige Eigentümer für zwölf Leuchten/vier SurfaceGuis, unveränderte Health bei erneutem Attach, frühzeitige Ablehnung unbekannter Parts, vollständige Löschung jeder Gruppe auf separaten Testkopien. Dies prüft Logik und Hierarchie, **nicht** die Roblox-Engine.
+Ein Lua-5.4-Test mit einem ausdrücklich vereinfachten Roblox-Objektmodell lädt die echte P5-XML-Hierarchie und führt den unveränderten Installer-Code aus. Bestanden: Erhalt aller 351 Parts, eine gemeinsame Gruppe, richtige Eigentümer für zwölf Leuchten/vier SurfaceGuis, unveränderte Health bei erneutem Attach, frühzeitige Ablehnung unbekannter Parts, Migration bestehender Gruppen ohne Health-Reset, vollständige Löschung der Gesamtgruppe auf separaten Testkopien. Dies prüft Logik und Hierarchie, **nicht** die Roblox-Engine.
 
 Reproduktion bei installiertem Lua 5.4:
 
@@ -30,7 +23,7 @@ python3 tools/check_emberline_contract.py > /tmp/emberline-test.lua
 lua /tmp/emberline-test.lua
 ```
 
-In Studio führt der Workshop beim Play-Start zusätzlich `TestGroupCleanup` auf unparenteten Kopien aus. Der sichtbare Originalbau bleibt erhalten. Output soll `6/6 group cleanup checks passed` melden.
+In Studio führt der Workshop beim Play-Start zusätzlich `TestGroupCleanup` auf unparenteten Kopien aus. Der sichtbare Originalbau bleibt erhalten. Output soll `1/1 group cleanup checks passed` melden.
 
 ## Standalone-Paket
 
@@ -44,12 +37,13 @@ Für eine andere Position `Install(workspace, {GroundCFrame=CFrame.new(...)})` v
 
 ## Gate C bleibt offen
 
-Der Adapter verwendet den beobachteten Tag-/Attribut-/Folder-Vertrag vorhandener Gebäude. Der tatsächliche Hauptspiel-Schadens- und Einsturzcode ist im geprüften Workshop/Integration-Branch nicht enthalten. Deshalb gibt es hier keinen erfundenen parallelen Health-, Reward- oder Einsturzmechanismus und noch keinen Nachweis, wie die Hauptspiel-Engine die Gruppen verarbeitet.
+Der Adapter verwendet den beobachteten Tag-/Attribut-/Folder-Vertrag vorhandener Gebäude. Der tatsächliche Hauptspiel-Schadens- und Einsturzcode ist im geprüften Workshop/Integration-Branch nicht enthalten. Deshalb gibt es hier keinen erfundenen parallelen Health-, Reward- oder Einsturzmechanismus und noch keinen Nachweis, wie die Hauptspiel-Engine den Gesamteinsturz ausführt.
 
 Im Hauptspiel prüfen:
 
 - [ ] Tag registriert das Gebäude als Ziel; 32'000 HP und Thermal werden erkannt.
 - [ ] Alle vorhandenen Angriffe verringern Gesundheit über das gemeinsame System.
+- [ ] Das gesamte Gebäude bricht gemeinsam zusammen; keine separaten Bauteileinstürze.
 - [ ] Zerstörung und Energieausgabe laufen genau einmal über dieses System.
 - [ ] Schilder, Warn-/Wandleuchten, Dachgeräte und Pflanzen werden mit ihren Bauteilen entfernt.
 - [ ] Kollisionen, Geländeauflage, mobile Lesbarkeit und Performance sind passend.

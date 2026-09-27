@@ -37,4 +37,4 @@ if not Installer then
 end
 Installer.Attach(model)
 Installer.TestGroupCleanup(model)
-print("Emberline P6 ready: 32000 HP, Thermal, KaijuHouse, six destruction groups. External gameplay test / Gate C pending.")
+print("Emberline P6 ready: 32000 HP, Thermal, KaijuHouse, one whole-building destruction group. External gameplay test / Gate C pending.")

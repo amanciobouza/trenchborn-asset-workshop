@@ -31,10 +31,10 @@ local counts={};local total=0
 for _,group in ipairs(model.DestructionGroups:GetChildren()) do
  counts[group.Name]=#group:GetChildren();total=total+#group:GetChildren()
 end
-assert(#model.DestructionGroups:GetChildren()==6 and total==350)
-assert(counts.D1_VehicleBayDoors==48)
+assert(#model.DestructionGroups:GetChildren()==1 and total==350)
+assert(counts.D1_WholeBuilding==350)
 -- Lights and signs follow their host rather than a detached decoration bucket.
-local fixtures={D2_VehicleHall={6,2},D3_Administration={2,1},D4_TrainingTower={4,1}}
+local fixtures={D1_WholeBuilding={12,4}}
 for group,expected in pairs(fixtures) do
  local lights,signs=0,0
  for _,p in ipairs(model.DestructionGroups[group]:GetDescendants()) do
@@ -48,11 +48,23 @@ model:SetAttribute("Health",123)
 assert(Installer.Attach(model)==model and #model:GetDescendants()==count)
 assert(model:GetAttribute("Health")==123)
 assert(Installer.TestGroupCleanup(model))
+-- Migrate an existing v1 layout without resetting health or losing details.
+local old=fixture(); Installer.Attach(old)
+local root=old.DestructionGroups
+local extras={}
+for i=2,6 do local f=Instance.new("Folder"); f.Name="Legacy"..i; f.Parent=root; extras[i]=f end
+local parts=root.D1_WholeBuilding:GetChildren()
+for i,p in ipairs(parts) do if i%6>=2 then p.Parent=extras[i%6] end end
+old:SetAttribute("EmberlineIntegrationVersion",1); old:SetAttribute("Health",456)
+Installer.Attach(old)
+assert(old:GetAttribute("Health")==456 and old:GetAttribute("EmberlineIntegrationVersion")==2)
+assert(#old.DestructionGroups:GetChildren()==1 and #old.DestructionGroups.D1_WholeBuilding:GetChildren()==350)
+assert(Installer.TestGroupCleanup(old))
 local bad=fixture()
 local unknown=Instance.new("Part");unknown.Name="Unmapped";unknown.Parent=bad
 assert(not pcall(Installer.Attach,bad))
 assert(not bad:FindFirstChild("DestructionGroups"))
 assert(not CollectionService:HasTag(bad,"KaijuHouse"))
 assert(bad:GetAttribute("MaxHealth")==nil)
-print("PASS: 351 parts preserved; six owners; 12 lights/four SurfaceGuis attached to hosts; idempotence preserves health; unknown geometry rejected before mutation.")
+print("PASS: 351 parts preserved; one whole-building owner; 12 lights/four SurfaceGuis attached to hosts; idempotence preserves health; unknown geometry rejected before mutation.")
 ''')

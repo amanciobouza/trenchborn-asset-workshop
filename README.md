@@ -10,7 +10,7 @@ P4-Geometrie und P5-Dressing sind vom Nutzer bestätigt. **32'000 HP, Thermal un
 
 ### Mit Git / Rojo
 
-Play stoppen, `git pull --ff-only`, den Rojo-Server vollständig neu starten (`rojo serve default.project.json`) und Studio auf Port 34872 neu verbinden. Nach Synchronisierung Play starten. Der Workshop baut `LargeCity_EmberlineResponseHQ_L3` und prüft sechs Zerstörungsgruppen auf separaten Kopien. Ein leeres Workshop-Projekt besitzt noch keine Hauptspiel-Angriffe.
+Play stoppen, `git pull --ff-only`, den Rojo-Server vollständig neu starten (`rojo serve default.project.json`) und Studio auf Port 34872 neu verbinden. Nach Synchronisierung Play starten. Der Workshop baut `LargeCity_EmberlineResponseHQ_L3` und prüft die gemeinsame Zerstörungsgruppe des gesamten Gebäudes auf einer separaten Kopie. Ein leeres Workshop-Projekt besitzt noch keine Hauptspiel-Angriffe.
 
 ### Ohne Rojo
 
