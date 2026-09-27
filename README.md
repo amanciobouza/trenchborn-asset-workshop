@@ -1,4 +1,4 @@
-# Large City Residential Tower — Phase 5
+# Large City Residential Tower — Phase 6
 
 Ein einzelnes Wohnhochhaus nach [Issue #5](https://github.com/amanciobouza/trenchborn-asset-workshop/issues/5): 14 Geschosse, 232 Studs Gesamthöhe, Balkonvorsprünge und zwei Staffelgeschosse. Modell für LC-14; spätere Kopien und Stadtplatzierung folgen nach der Master-Abnahme. Kein Kit.
 
@@ -14,11 +14,17 @@ rojo serve default.project.json
 
 Studio auf Port34872 neu verbinden, synchronisieren und Play starten. Bei bereits lokal vorhandenem Branch genügt `git switch largecity-residential-tower-l3` und `git pull --ff-only`.
 
-Im Explorer `LargeCity_ResidentialTower_P5` auswählen und F drücken. Output: `Residential Tower P5 ready`.
+Im Explorer `LargeCity_ResidentialTower_L3` auswählen und F drücken. Output: `Residential Tower P6 ready`.
 
 **Die Vorschau steht bewusst 12 Studs höher**, damit eine übliche Baseplate die unterirdische Rampe nicht füllt. Das Gebäude bleibt lokal 232 Studs hoch. Es wird kein vorhandenes Gelände gelöscht oder verändert. Diese Vorschauposition ist keine endgültige Stadtposition.
 
-Alternativ `dist/LargeCityResidentialTower_P5.rbxmx` in Workspace importieren. Der direkte Export enthält keine laufenden Scripts; Bodenbezug lokalY0. Bei vorhandener Bodenplatte das gesamte Modell für die Ansicht anheben oder in einem leeren Bereich platzieren.
+Eigenständiges P6-Quellpaket: `dist/LargeCityResidentialPackage.rbxmx` als Folder in Workspace importieren, dann in der Studio-Command-Bar ausführen:
+
+```lua
+require(workspace.LargeCityResidentialPackage.LargeCityResidentialInstaller).Install(workspace)
+```
+
+Das Paket startet nichts automatisch. Bei vorhandener Bodenplatte für die Vorschau `{GroundCFrame=CFrame.new(0,12,0)}` als zweiten Parameter verwenden. Details zur Geländeöffnung und zum Paket stehen in `docs/residential/GAMEPLAY.md`. P4/P5-Direktexporte bleiben als visuelle Archive bestehen.
 
 ## Laufende Updates ohne Rojo-Neustart
 
@@ -30,11 +36,11 @@ Für diese einmalige Umstellung nach dem Pull Rojo neu starten und Studio neu ve
 
 Details: `docs/ROJO_WORKFLOW.md`.
 
-## Zur Abnahme
+## Aktueller Stand
 
-Die Geometrie wurde vom Nutzer freigegeben. P5 ergänzt Beton-/Sandtöne, Glasgeländer, bepflanzte Balkone und Terrassen, drei kleine Bäume, Dachlüftungen, Torlamellen, gelbe Rampenränder und warme Beleuchtung.
+Geometrie und Dressing wurden vom Nutzer freigegeben. P5 ergänzt Beton-/Sandtöne, Glasgeländer, bepflanzte Balkone und Terrassen, drei kleine Bäume, Dachlüftungen, Torlamellen, gelbe Rampenränder und warme Beleuchtung.
 
-Bitte Glaswirkung, Begrünung, Eingang und Rampe in Studio prüfen. 1'222 Parts inklusive GroundPivot, acht PointLights ohne Schatten. HP/Energieart und Gameplay-Integration bleiben für P6 offen.
+P6 integriert den gesamten Bau als eine Zerstörungsgruppe. 1'222 Parts inklusive GroundPivot, acht PointLights ohne Schatten. **Freigegeben:64’000 HP, Electric-Energie, ein gemeinsamer Einsturz.** Der echte Schadens-/Einsturztest im Hauptspiel bleibt offen; Gate C ist Pending.
 
 [Freigegebenes Zielbild](https://raw.githubusercontent.com/amanciobouza/trenchborn-asset-workshop/1218e2efde244fbbaa7a3596d041678b63fac6db/docs/assets/large-city/residential-tower/residential-tower-approved-target-2026-09-26.jpg). Die explizit freigegebenen Geschosszahlen und Baumasse sind massgeblich, nicht die perspektivischen Bildpixel.
 
@@ -43,6 +49,7 @@ Bitte Glaswirkung, Begrünung, Eingang und Rampe in Studio prüfen. 1'222 Parts 
 ```sh
 python3 tools/build_residential_dressing.py
 python3 tools/build_residential_dressing.py --preview
+python3 tools/build_residential_package.py
 ```
 
 Nur die technische Vorschau braucht numpy/Pillow; sonst Python-Standardbibliothek. Beide Exporte verwenden dieselbe Partliste. Prüfungen und offene Studio-Abnahme stehen in `docs/residential/dressing-checks.json` und `docs/residential/DRESSING.md`.
