@@ -1,9 +1,12 @@
 {
-  "name": "LargeCityPoliceP4Source",
+  "name": "LargeCityPoliceP5Source",
   "tree": {
     "$className": "Folder",
     "LargeCityPoliceGoldenMaster": {
       "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityPoliceGoldenMaster.lua"
+    },
+    "LargeCityPoliceDressing": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityPoliceDressing.lua"
     }
   }
 }

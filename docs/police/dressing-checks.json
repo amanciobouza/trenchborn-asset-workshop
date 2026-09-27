@@ -1,0 +1,19 @@
+{
+  "revision": "Police-P5-v1",
+  "base_parts": 343,
+  "dressing_parts": 161,
+  "total_parts": 504,
+  "point_lights": 12,
+  "shadow_lights": 0,
+  "gate_b": "ApprovedByUser 2026-09-27",
+  "p5_review": "Pending",
+  "studio_import": "Pending",
+  "barrier": "Static; no animation",
+  "checks": [
+    "P4 facade checks rerun",
+    "plot and 100-stud height respected",
+    "XML count",
+    "12 lights / 2 signs",
+    "no scripts or remote assets"
+  ]
+}

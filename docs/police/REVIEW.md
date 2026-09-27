@@ -20,8 +20,8 @@ Generator kontrolliert positive Abmessungen, eindeutige Namen, Grundstücksgrenz
 
 Absichtliche Anschlüsse: Vordach verbindet Portal und Eingang. Frontpfeiler und die Felder dazwischen sind räumlich getrennt. Geschossdecken enden an den inneren Wandflächen. Seiten- und Rückfassade schliessen an den Eckpfeilern an, ohne sich zu überdecken.
 
-Gate B bleibt Pending bis zur visuellen Rückmeldung. P5 ergänzt Wappen, Funkdetails, Materialwirkung, Licht, Schranke und Vegetation. Zielbild zeigt reichhaltigere Dekoration als dieser P4-Stand. Stadtplatzierung, Hauptspiel-Schaden und Standalone-Studio-Import noch offen.
+Gate B wurde vom Nutzer am 27.09.2026 nach der Fassadenkorrektur freigegeben. P5 ergänzt Wappen, Funkdetails, Materialwirkung, Licht, Schranke und Vegetation. Zielbild zeigt reichhaltigere Dekoration als dieser P4-Stand. Stadtplatzierung, Hauptspiel-Schaden und Standalone-Studio-Import noch offen.
 
 ## Korrektur P4-v2 nach Studio-Rückmeldung
 
-Front gleichmässig: vier Fensterfelder pro Geschoss, je 18×10 Studs, symmetrisch links/rechts des Portals. Jedes Fenster sitzt vollständig zwischen 4 Studs breiten Pfeilern. Blaue Bänder sind getrennte Felder über den Fenstern und laufen nicht mehr durch Pfeiler oder Decken. Gläser sind 0.4 Studs hinter die Fassadenfläche gesetzt; Fensterrahmen liegen mit Abstand davor. Automatisch geprüft: alle zwölf Fenster gleich gross und keine Volumenüberschneidung der Frontgläser/Bänder mit anderen Hauptgebäudeteilen. Erneute Studio-Sichtprüfung ausstehend.
+Front gleichmässig: vier Fensterfelder pro Geschoss, je 18×10 Studs, symmetrisch links/rechts des Portals. Jedes Fenster sitzt vollständig zwischen 4 Studs breiten Pfeilern. Blaue Bänder sind getrennte Felder über den Fenstern und laufen nicht mehr durch Pfeiler oder Decken. Gläser sind 0.4 Studs hinter die Fassadenfläche gesetzt; Fensterrahmen liegen mit Abstand davor. Automatisch geprüft: alle zwölf Fenster gleich gross und keine Volumenüberschneidung der Frontgläser/Bänder mit anderen Hauptgebäudeteilen. Erneute Studio-Sichtprüfung durch Nutzer mit „passt“ bestätigt.

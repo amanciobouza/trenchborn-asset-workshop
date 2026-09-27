@@ -8,6 +8,9 @@
         "$className": "Folder",
         "LargeCityPoliceGoldenMaster": {
           "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityPoliceGoldenMaster.lua"
+        },
+        "LargeCityPoliceDressing": {
+          "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityPoliceDressing.lua"
         }
       }
     },
