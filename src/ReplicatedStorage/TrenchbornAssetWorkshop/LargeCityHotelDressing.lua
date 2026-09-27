@@ -95,7 +95,8 @@ function Dressing.Apply(model)
   end
   local p=block("PlanterLamp"..i,1,.5,1,v[1]+2,2.1,v[2]+2,warm,Enum.Material.Neon);light(p,13,.45)
  end
- local p=block("DeliveryLamp",.3,1,3,-65.6,14,30,warm,Enum.Material.Neon);light(p,15,.5)
+ local deliveryZ=-26+(3+.5)*(76/5)
+ local p=block("DeliveryLamp",.3,1,3,-65.6,14,deliveryZ,warm,Enum.Material.Neon);light(p,15,.5)
  model.Name="LargeCity_CityHotel_P5"
  model:SetAttribute("Phase",5);model:SetAttribute("QualityGateB","Approved")
  model:SetAttribute("DressingReview","Pending");model:SetAttribute("BuildRevision","CityHotel-P5-v1")

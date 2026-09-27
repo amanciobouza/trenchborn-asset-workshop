@@ -77,10 +77,11 @@ beam('Entrance','Canopy',-36,36,20,26,-56,-28,'stone')
 for j,x in enumerate([-30,30]):
     for k,z in enumerate([-54,-30]):
         beam('Entrance',f'Column{j}{k}',x-2,x+2,0,20,z-2,z+2,'stone')
-# Delivery portal, immediately outside the left wall.
-beam('Delivery','Frame',-65,-64,0,15,24,36,'metal')
-beam('Delivery','Door',-65.4,-65,0,13,25,35,'roof')
-beam('Delivery','Canopy',-72,-64,16,18,23,37,'stone')
+# Centre portal on the fourth podium window bay (-26..50, five bays).
+delivery_z=-26+(3+.5)*(76/5)
+beam('Delivery','Frame',-65,-64,0,15,delivery_z-6,delivery_z+6,'metal')
+beam('Delivery','Door',-65.4,-65,0,13,delivery_z-5,delivery_z+5,'roof')
+beam('Delivery','Canopy',-72,-64,16,18,delivery_z-7,delivery_z+7,'stone')
 for j,(x,z,w,d) in enumerate([(-55,-65,34,10),(55,-65,34,10),(-78,20,8,36),(78,38,8,24)]):
     beam('Site',f'Planter{j}Base',x-w/2,x+w/2,0,1,z-d/2,z+d/2,'stone')
     for side,xx in [('L',x-w/2),('R',x+w/2-1)]:beam('Site',f'Planter{j}{side}',xx,xx+1,1,2,z-d/2,z+d/2,'silver')
