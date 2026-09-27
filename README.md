@@ -1,87 +1,32 @@
-# Trenchborn Asset Workshop
+# City Hotel — P4 / Issue #7
 
-Synchronized Roblox Studio workspace for specification-driven Trenchborn asset development and automated quality gates.
+Ein Stadthotel für LC-16: zwölf Geschosse, warmer heller Stein, regelmässige Zimmerfenster und vorspringender Mittelteil. Gate A/P3 freigegeben; P4/Gate B wartet auf die visuelle Studio-Abnahme. Bestehendes Stadium Hotel und Waterfront Resort sind separate Assets.
 
-## Marshal-II Roadblock final installer
+## Studio-Vorschau
 
-`MarshalRoadblockInstaller` is the Phase 7 production API. It installs the approved model, dressing, fleet rig, gameplay, animations, combat VFX, and spatial sound pass. It does not install the workshop HUD, test buttons, or test targets.
+Play stoppen:
 
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("MarshalRoadblockInstaller"))
-
-local marshal, api = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	AnchorRoot = true,
-})
-
-api.RequestAbility:Invoke("RiotShield")
-api.RequestAbility:Invoke("PulseCannon", workspace.TargetPart)
-api.RequestAbility:Invoke("ContainmentNet", workspace.TargetPart)
-api.ApplyDamage:Invoke(500, true)
-api.Runtime.PlayAnimation("Walk")
+```sh
+git fetch origin
+git switch --track origin/largecity-city-hotel-l3
 ```
 
-`GroundCFrame` is the desired ground position and orientation beneath the Guardian. The installer computes the correct vertical placement from the finished geometry. `AnchorRoot` defaults to `true`, which supports server-controlled movement through `Model:PivotTo()`; set it to `false` only when an external character controller supplies collision and physics.
+Rojo weiterlaufen lassen, Sync abwarten, Play starten. default.project.json ist unverändert vom Office-Branch übernommen. Bei noch nicht laufendem Server: `rojo serve default.project.json`, dann Studio verbinden. Spätere Updates: Play stoppen → `git pull --ff-only` → Sync → Play.
 
-Call `api.Runtime.Destroy()` before removing a live installation so its per-player animation bridge is cleaned up.
+Workspace-Modell: `LargeCity_CityHotel_P4`. Bodenpivot ist Grundstücksmitte Y=0, Front lokal -Z. Gebäudemitte liegt lokal bei Z=12, um Platz für die Vorfahrt zu schaffen. Die endgültige Stadtplatzierung folgt später.
 
-## Warden-I Shepherd final installer
+## Masse und Ausführung
 
-`WardenShepherdInstaller` installs the approved Warden geometry, dressing, gameplay contract, and visual reactions without the workshop test console.
+Sockel 128×80×36, zwei Geschosse à18. Zimmerbau 120×72×160, zehn Geschosse à16. Mittelteil 24 breit und 6 vorspringend, je Geschoss segmentiert. Dachgesims 128×80×8 bis Y204; Mittelabschluss maximal Y208. Vordach 72×28×6, Unterkante Y20. Grundstück 176×144.
 
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+Vier Säulen begrenzen die Vorfahrt; der durchgehende Fahrstreifen Z=-52 bis -32 bleibt von Y0 bis Y20 frei. Pflanzeninseln liegen ausserhalb dieses Streifens. Separater Lieferzugang links. Reale Fensteröffnungen mit zwei Scheiben pro Fenster, voneinander getrennten Rahmen und Mittelpfosten. Zimmer bleiben unmöbliert.
 
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("WardenShepherdInstaller"))
+P4 zeigt Geometrie und Grundfarben. HOTEL-Schriftzug, finale Materialien/Licht, Pflanzen sowie vereinfachte Lobby-/Restaurant-Innenwirkung folgen in P5. HP und Energie werden vor P6 abgestimmt; ein gemeinsames Gebäude für die spätere Zerstörung.
 
-local warden, gameplayApi = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	EnableVisualReactions = true,
-})
-```
+## Export und Prüfungen
 
+`dist/LargeCityHotel_P4.rbxmx` ist das statische P4-Modell ohne automatisch laufende Scripts. Alternativ zur Rojo-Vorschau importieren, nicht gleichzeitig am selben Ort.
 
-## Aegis-III Interceptor final installer
+`python3 tools/build_hotel.py --preview` reproduziert Luau, XML, Massbericht und sechs technische Ansichten (Preview benötigt Pillow/NumPy). Nachweise in docs/hotel. Die Bilder sind technische Renderings ausserhalb Studio. Geprüft werden Hauptmasse, Höhen, Fenster-/Wandvolumen, Parzellengrenzen und freie Vorfahrt sowie XML-Teilzahl. Roblox-Laufzeit, Performance und Kollaps noch nicht getestet. Gate B und später Gate C bleiben offen.
 
-`AegisInterceptorInstaller` installs the approved Phase 7 Aegis-III geometry, dressing, fleet rig, gameplay, production animations, combat VFX, spatial sounds, and targeted missile warning audio. Workshop HUDs and test targets are not included.
-
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("AegisInterceptorInstaller"))
-
-local aegis, api = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	AnchorRoot = true,
-})
-
-api.RequestAbility:Invoke("TwinIonCannons", workspace.TargetPart)
-api.RequestAbility:Invoke("ShoulderMissiles", workspace.TargetPart)
-api.RequestAbility:Invoke("DirectionalAegis")
-api.ApplyDamage:Invoke(5000, workspace.DamageSource)
-```
-
-The installed gameplay contract exposes 18,000 health, 150,000 shield points, directional frontal damage reduction, independent ability cooldowns, reset support, and explicit runtime cleanup through `api.Runtime.Destroy()`.
-
-## Sovereign-V Apex final installer
-
-`SovereignApexInstaller` installs the approved Sovereign-V geometry, dressing, fleet rig, gameplay contract, production animations, wing inertia, Apex Lance, Hunter Drones, Sovereign Lock, VFX, and spatial sound pass. It does not install the workshop HUD or test target.
-
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("SovereignApexInstaller"))
-
-local sovereign, api = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	AnchorRoot = true,
-})
-
-api.RequestAbility:Invoke("ApexLanceBeam", workspace.Kaiju)
-```
+Verbindliche Spezifikation und Zielbild: https://github.com/amanciobouza/trenchborn-asset-workshop/issues/7

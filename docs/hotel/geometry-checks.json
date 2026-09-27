@@ -1,0 +1,40 @@
+{
+  "revision": "CityHotel-P4-v1",
+  "parts": 3348,
+  "storeys": 12,
+  "room_storeys": 10,
+  "podium": [
+    128,
+    80,
+    36
+  ],
+  "rooms": [
+    120,
+    72,
+    160
+  ],
+  "roof_max": 204,
+  "max_height": 208,
+  "canopy": [
+    72,
+    28,
+    6
+  ],
+  "drive_clearance": 20,
+  "plot": [
+    176,
+    144
+  ],
+  "gate_b": "Pending",
+  "studio_test": "Pending",
+  "checks": [
+    "ten room floors",
+    "twelve storeys",
+    "208 height limit",
+    "204 roof cornice",
+    "20 stud clear vehicle lane",
+    "separated window and wall volumes",
+    "plot bounds",
+    "XML roundtrip"
+  ]
+}
