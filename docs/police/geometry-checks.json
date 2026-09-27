@@ -1,0 +1,53 @@
+{
+  "parts": 359,
+  "plot": [
+    176,
+    128
+  ],
+  "main": [
+    128,
+    72,
+    60
+  ],
+  "portal": [
+    32,
+    8,
+    68
+  ],
+  "canopy": [
+    40,
+    12,
+    3
+  ],
+  "vehicle": [
+    32,
+    24,
+    24
+  ],
+  "radio": [
+    32,
+    24,
+    16
+  ],
+  "max_height": 100,
+  "storeys": 3,
+  "gate_b": "Pending",
+  "studio_test": "Pending",
+  "front": "local -Z",
+  "pivot": "plot centre at ground Y=0",
+  "checks": [
+    "positive dimensions",
+    "unique names",
+    "all parts within plot",
+    "main and annex exact envelopes",
+    "max height 100",
+    "XML round-trip and count",
+    "no executable scripts"
+  ],
+  "pending": [
+    "Studio visual approval",
+    "P5 badge, dish, roof equipment, lights and landscape",
+    "collision walkthrough",
+    "P6 HP and energy decision"
+  ]
+}

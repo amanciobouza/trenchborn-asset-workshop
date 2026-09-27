@@ -1,27 +1,19 @@
 {
-  "name": "TrenchbornAssetWorkshop",
+  "name": "LargeCityPoliceWorkshop",
   "servePort": 34872,
   "tree": {
     "$className": "DataModel",
-    "Workspace": {
-      "$className": "Workspace",
-      "TrenchbornAssetWorkshop": {
-        "$className": "Folder",
-        "$path": "src/Workspace/TrenchbornAssetWorkshop"
-      }
-    },
     "ReplicatedStorage": {
-      "$className": "ReplicatedStorage",
       "TrenchbornAssetWorkshop": {
         "$className": "Folder",
-        "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop"
+        "LargeCityPoliceGoldenMaster": {
+          "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityPoliceGoldenMaster.lua"
+        }
       }
     },
     "ServerScriptService": {
-      "$className": "ServerScriptService",
-      "TrenchbornAssetWorkshop": {
-        "$className": "Folder",
-        "$path": "src/ServerScriptService/TrenchbornAssetWorkshop"
+      "PolicePreview": {
+        "$path": "src/ServerScriptService/PolicePreview.server.lua"
       }
     }
   }

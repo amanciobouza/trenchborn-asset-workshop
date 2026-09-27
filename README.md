@@ -1,87 +1,34 @@
-# Trenchborn Asset Workshop
+# Large City Police HQ — Phase 4
 
-Synchronized Roblox Studio workspace for specification-driven Trenchborn asset development and automated quality gates.
+Eigenständiges Polizeihauptquartier nach [Issue #4](https://github.com/amanciobouza/trenchborn-asset-workshop/issues/4). Geometrie zur visuellen Abnahme; Gate B offen. Ein Gebäude, kein Kit. Vorgesehen für LC-35, die endgültige Platzierung folgt gemeinsam mit den anderen Gebäuden.
 
-## Marshal-II Roadblock final installer
+## In Roblox Studio ansehen
 
-`MarshalRoadblockInstaller` is the Phase 7 production API. It installs the approved model, dressing, fleet rig, gameplay, animations, combat VFX, and spatial sound pass. It does not install the workshop HUD, test buttons, or test targets.
+Play stoppen und im bestehenden Repository ausführen:
 
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("MarshalRoadblockInstaller"))
-
-local marshal, api = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	AnchorRoot = true,
-})
-
-api.RequestAbility:Invoke("RiotShield")
-api.RequestAbility:Invoke("PulseCannon", workspace.TargetPart)
-api.RequestAbility:Invoke("ContainmentNet", workspace.TargetPart)
-api.ApplyDamage:Invoke(500, true)
-api.Runtime.PlayAnimation("Walk")
+```sh
+git fetch origin
+git switch --track origin/largecity-police-hq-l3
+rojo serve default.project.json
 ```
 
-`GroundCFrame` is the desired ground position and orientation beneath the Guardian. The installer computes the correct vertical placement from the finished geometry. `AnchorRoot` defaults to `true`, which supports server-controlled movement through `Model:PivotTo()`; set it to `false` only when an external character controller supplies collision and physics.
+Einen vorher laufenden Rojo-Server zuerst stoppen. Studio mit Port 34872 neu verbinden, synchronisieren und Play starten. Bei bereits lokal vorhandenem Branch genügt `git switch largecity-police-hq-l3` und `git pull --ff-only`. Der Output meldet `Police HQ P4 ready`. Das Modell heisst `LargeCity_PoliceHQ_P4` und erscheint am Ursprung. Im Explorer auswählen und mit F fokussieren.
 
-Call `api.Runtime.Destroy()` before removing a live installation so its per-player animation bridge is cleaned up.
+Alternativ `dist/LargeCityPoliceHQ_P4.rbxmx` direkt in Workspace importieren. Dieser Export enthält keine laufenden Scripts und ist ohne Rojo sichtbar. Nicht gleichzeitig mit dem Preview installieren.
 
-## Warden-I Shepherd final installer
+## Abnahme
 
-`WardenShepherdInstaller` installs the approved Warden geometry, dressing, gameplay contract, and visual reactions without the workshop test console.
+Drei Hauptgeschosse, Mittelportal, Fahrzeugzugang, Funkaufbau, Vorplatz, Treppe und Rampe sind gebaut. Hauptkörper 128 × 72 × 60, Portal 32 × 8 × 68, Vordach 40 × 12 × 3, Fahrzeugzugang 32 × 24 × 24, Funkraum 32 × 24 × 16, Grundstück 176 × 128 Studs; Antennenspitze Y=100. Reihenfolge B × T × H.
 
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+Bitte zuerst Proportionen und Silhouette beurteilen. Wappen, Schüssel, detaillierte Dachtechnik, Beleuchtung, Schranke und Begrünung folgen in P5. Der POLICE-Schriftzug ist bereits im Studio-Modell vorhanden.
 
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("WardenShepherdInstaller"))
+P4 besitzt keine Gameplay-Tags oder HP. Das gemeinsame Spielsystem wird erst in P6 angebunden; HP und Energieart sind offen. Die jüngste Vereinfachung der Feuerwache dient als Vorlage: ein Gebäude als Ganzes, keine separaten Bauteil-HP.
 
-local warden, gameplayApi = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	EnableVisualReactions = true,
-})
+## Reproduzieren
+
+```sh
+python3 tools/build_police.py
+python3 tools/build_police.py --preview
 ```
 
-
-## Aegis-III Interceptor final installer
-
-`AegisInterceptorInstaller` installs the approved Phase 7 Aegis-III geometry, dressing, fleet rig, gameplay, production animations, combat VFX, spatial sounds, and targeted missile warning audio. Workshop HUDs and test targets are not included.
-
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("AegisInterceptorInstaller"))
-
-local aegis, api = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	AnchorRoot = true,
-})
-
-api.RequestAbility:Invoke("TwinIonCannons", workspace.TargetPart)
-api.RequestAbility:Invoke("ShoulderMissiles", workspace.TargetPart)
-api.RequestAbility:Invoke("DirectionalAegis")
-api.ApplyDamage:Invoke(5000, workspace.DamageSource)
-```
-
-The installed gameplay contract exposes 18,000 health, 150,000 shield points, directional frontal damage reduction, independent ability cooldowns, reset support, and explicit runtime cleanup through `api.Runtime.Destroy()`.
-
-## Sovereign-V Apex final installer
-
-`SovereignApexInstaller` installs the approved Sovereign-V geometry, dressing, fleet rig, gameplay contract, production animations, wing inertia, Apex Lance, Hunter Drones, Sovereign Lock, VFX, and spatial sound pass. It does not install the workshop HUD or test target.
-
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("SovereignApexInstaller"))
-
-local sovereign, api = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	AnchorRoot = true,
-})
-
-api.RequestAbility:Invoke("ApexLanceBeam", workspace.Kaiju)
-```
+Der zweite Aufruf erzeugt sechs technische Ansichten mit numpy und Pillow. `docs/police/geometry-checks.json` dokumentiert Prüfungen und Grenzen. Die Vorschau stellt Exportgeometrie dar, keine Aufnahme aus Roblox Studio.
