@@ -1,87 +1,32 @@
-# Trenchborn Asset Workshop
+# Large City Office Tower — P4
 
-Synchronized Roblox Studio workspace for specification-driven Trenchborn asset development and automated quality gates.
+Isolierte Geometrie-Vorschau für Issue #6, Layout LC-19. Gate A und P3 freigegeben; P4/Gate B wartet auf visuelle Studio-Abnahme. P5-Dressing und P6-Integration folgen danach. Gate C im Hauptspiel bleibt offen.
 
-## Marshal-II Roadblock final installer
+## Studio
 
-`MarshalRoadblockInstaller` is the Phase 7 production API. It installs the approved model, dressing, fleet rig, gameplay, animations, combat VFX, and spatial sound pass. It does not install the workshop HUD, test buttons, or test targets.
+Play stoppen. Vom Residential-Branch wechseln:
 
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("MarshalRoadblockInstaller"))
-
-local marshal, api = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	AnchorRoot = true,
-})
-
-api.RequestAbility:Invoke("RiotShield")
-api.RequestAbility:Invoke("PulseCannon", workspace.TargetPart)
-api.RequestAbility:Invoke("ContainmentNet", workspace.TargetPart)
-api.ApplyDamage:Invoke(500, true)
-api.Runtime.PlayAnimation("Walk")
+```sh
+git fetch origin
+git switch --track origin/largecity-office-tower-l3
 ```
 
-`GroundCFrame` is the desired ground position and orientation beneath the Guardian. The installer computes the correct vertical placement from the finished geometry. `AnchorRoot` defaults to `true`, which supports server-controlled movement through `Model:PivotTo()`; set it to `false` only when an external character controller supplies collision and physics.
+Rojo weiterlaufen lassen, Sync abwarten, Play starten. Die default.project.json ist bytegleich mit dem aktuellen Residential-Branch. Falls noch kein Server läuft: `rojo serve default.project.json`, Studio verbinden. Bei späteren Updates: Play stoppen → `git pull --ff-only` → Sync abwarten → Play.
 
-Call `api.Runtime.Destroy()` before removing a live installation so its per-player animation bridge is cleaned up.
+In Workspace erscheint `LargeCity_OfficeTower_P4`. Vorderseite ist lokal -Z, Bodenpivot Y=0. Die Stadtplatzierung erfolgt später. Die Vorschau erzeugt genau dieses Gebäude.
 
-## Warden-I Shepherd final installer
+Alternativ `dist/LargeCityOfficeTower_P4.rbxmx` als statisches Modell importieren, ohne parallel die Vorschau zu starten.
 
-`WardenShepherdInstaller` installs the approved Warden geometry, dressing, gameplay contract, and visual reactions without the workshop test console.
+## Umfang
 
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+18 Geschosse: 2 Podiumgeschosse à 18 Studs, 16 Bürogeschosse à 16 Studs. Podium 104×88×36, Turmkörper 72×64×256, Krone 72×64×32. Dachkante 324, Rippen maximal 328 Studs. Zwei Fassadenrippen je 4 Studs breit und 3 Studs vorstehend, geschossweise segmentiert. Parzelle 144×128. Eingang mit zurückgesetzter Lobby und Vordach 40×12×3; seitliche Anlieferung. Dachtechnik liegt innerhalb der Krone.
 
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("WardenShepherdInstaller"))
+Farben dienen der Geometrieprüfung. Materialien, Beleuchtung, Pflanzen und Bänke folgen in P5. HP und Energie sind noch nicht festgelegt. Das Gebäude soll später als Ganzes zusammenbrechen.
 
-local warden, gameplayApi = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	EnableVisualReactions = true,
-})
-```
+## Reproduktion und Prüfung
 
+`python3 tools/build_office.py` erzeugt Luau, XML und Massprüfbericht. Mit `--preview` zusätzlich sechs technische Ansichten (Pillow und NumPy erforderlich).
 
-## Aegis-III Interceptor final installer
+Mass-/Volumenprüfungen, XML-Roundtrip und Lua-5.4-Syntaxprüfung bestanden: 989 BaseParts inklusive unsichtbarem Pivot. Siehe `docs/office/geometry-checks.json` und `docs/office/geometry-review.png`. Diese Ansichten sind technische Renderings, keine Studio-Screenshots. Roblox-Runtime, Kollaps, Kampf und Performance noch nicht getestet.
 
-`AegisInterceptorInstaller` installs the approved Phase 7 Aegis-III geometry, dressing, fleet rig, gameplay, production animations, combat VFX, spatial sounds, and targeted missile warning audio. Workshop HUDs and test targets are not included.
-
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("AegisInterceptorInstaller"))
-
-local aegis, api = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	AnchorRoot = true,
-})
-
-api.RequestAbility:Invoke("TwinIonCannons", workspace.TargetPart)
-api.RequestAbility:Invoke("ShoulderMissiles", workspace.TargetPart)
-api.RequestAbility:Invoke("DirectionalAegis")
-api.ApplyDamage:Invoke(5000, workspace.DamageSource)
-```
-
-The installed gameplay contract exposes 18,000 health, 150,000 shield points, directional frontal damage reduction, independent ability cooldowns, reset support, and explicit runtime cleanup through `api.Runtime.Destroy()`.
-
-## Sovereign-V Apex final installer
-
-`SovereignApexInstaller` installs the approved Sovereign-V geometry, dressing, fleet rig, gameplay contract, production animations, wing inertia, Apex Lance, Hunter Drones, Sovereign Lock, VFX, and spatial sound pass. It does not install the workshop HUD or test target.
-
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("SovereignApexInstaller"))
-
-local sovereign, api = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	AnchorRoot = true,
-})
-
-api.RequestAbility:Invoke("ApexLanceBeam", workspace.Kaiju)
-```
+Referenz: https://github.com/amanciobouza/trenchborn-asset-workshop/issues/6

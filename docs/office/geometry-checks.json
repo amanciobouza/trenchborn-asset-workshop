@@ -1,0 +1,48 @@
+{
+  "revision": "Office-P4-v1",
+  "parts": 989,
+  "storeys": 18,
+  "office_storeys": 16,
+  "podium": [
+    104,
+    88,
+    36
+  ],
+  "tower": [
+    72,
+    64,
+    256
+  ],
+  "crown": [
+    72,
+    64,
+    32
+  ],
+  "roof_max": 324,
+  "max_height": 328,
+  "ribs": 2,
+  "rib_segments": 40,
+  "rib_width": 4,
+  "rib_projection": 3,
+  "canopy": [
+    40,
+    12,
+    3
+  ],
+  "plot": [
+    144,
+    128
+  ],
+  "gate_b": "Pending",
+  "studio_test": "Pending",
+  "checks": [
+    "16 office floor envelopes",
+    "18 storeys",
+    "40 rib segments",
+    "separated office glass and frame volumes",
+    "rotated geometry plot bounds",
+    "roof324 and ribs328",
+    "XML roundtrip / part count",
+    "no autorun scripts"
+  ]
+}
