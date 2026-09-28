@@ -1,0 +1,45 @@
+{
+  "revision": "TropicalSignalTower-P4-v1",
+  "parts": 1032,
+  "podium": [
+    80,
+    80,
+    32
+  ],
+  "shaft_height": 304,
+  "shaft_diameter": [
+    28,
+    18
+  ],
+  "cabin": [
+    72,
+    24
+  ],
+  "platform": [
+    72,
+    8
+  ],
+  "signal_budget": 32,
+  "max_height": 400,
+  "height_marks": [
+    32,
+    336,
+    360,
+    368,
+    400
+  ],
+  "plot": [
+    112,
+    112
+  ],
+  "office_height_comparison": 328,
+  "gate_b": "Pending",
+  "studio_test": "Pending",
+  "checks": [
+    "plot bounds",
+    "height400",
+    "eight tapered shaft sections",
+    "height budgets",
+    "XML part count"
+  ]
+}

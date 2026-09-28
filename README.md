@@ -1,87 +1,46 @@
-# Trenchborn Asset Workshop
+# Tropical Signal Tower — P4 / Issue #12
 
-Synchronized Roblox Studio workspace for specification-driven Trenchborn asset development and automated quality gates.
+Ein Aussichtsturm für LC-41, kein Kit. Gate A/P3 freigegeben, P4 zur visuellen Abnahme. Gesamthöhe400Studs gemäss späterer Präzisierung des Zielbilds.
 
-## Marshal-II Roadblock final installer
+## Studio
 
-`MarshalRoadblockInstaller` is the Phase 7 production API. It installs the approved model, dressing, fleet rig, gameplay, animations, combat VFX, and spatial sound pass. It does not install the workshop HUD, test buttons, or test targets.
+Play stoppen:
 
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("MarshalRoadblockInstaller"))
-
-local marshal, api = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	AnchorRoot = true,
-})
-
-api.RequestAbility:Invoke("RiotShield")
-api.RequestAbility:Invoke("PulseCannon", workspace.TargetPart)
-api.RequestAbility:Invoke("ContainmentNet", workspace.TargetPart)
-api.ApplyDamage:Invoke(500, true)
-api.Runtime.PlayAnimation("Walk")
+```sh
+git fetch origin
+git switch --track origin/largecity-tropical-signal-tower-l3
 ```
 
-`GroundCFrame` is the desired ground position and orientation beneath the Guardian. The installer computes the correct vertical placement from the finished geometry. `AnchorRoot` defaults to `true`, which supports server-controlled movement through `Model:PivotTo()`; set it to `false` only when an external character controller supplies collision and physics.
+Rojo weiterlaufen lassen, Sync abwarten, Play starten. default.project.json ist bytegleich zum Convention Centre. Wenn noch kein Server läuft: `rojo serve default.project.json` und Studio verbinden. Weitere Updates: `git pull --ff-only` bei gestopptem Play.
 
-Call `api.Runtime.Destroy()` before removing a live installation so its per-player animation bridge is cleaned up.
+Workspace-Modell: `LargeCity_TropicalSignalTower_P4`. Pivot auf GrundstücksmitteY0, Front lokal-Z. Keine Gameplay-Tags oder anderen Gebäude in der Vorschau.
 
-## Warden-I Shepherd final installer
+## Masse und Aufbau
 
-`WardenShepherdInstaller` installs the approved Warden geometry, dressing, gameplay contract, and visual reactions without the workshop test console.
+| Bereich | Höhenbereich | Masse / Gestaltung |
+| --- | --- | --- |
+| Sockel |0–32| Rund,80Durchmesser innerhalb80×80; zwei16Studs-Geschosse, Panorama-Fassade und drei offene Eingangsbuchten |
+| Schaft |32–336|304hoch,28→18Durchmesser,16Facetten in acht38Studs-Abschnitten; echte durchgehende Verjüngung |
+| Kanzel |336–360|72Durchmesser,24hoch inkl. verbreiterter Unterschale336–343, Boden343–344, Glas344–359 und Dach359–360 |
+| Plattform |360–368|72Durchmesser, Boden360–362, offenes Geländer bis368; keine Dachhaube |
+| Signalaufbau |362–400| Zentraler Sockel beginnt auf Plattform, oberhalb368 bleiben32Studs; Spitze exakt400 |
 
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+Türkisring unter der Kanzel beiY342.35 innerhalb ihres Volumens. Dunkler Detailstreifen vor der Schaftoberfläche. Eingangsvordach32×12×2, Unterkante14, zwei Stützen. Grundstück112×112, vier Pflanzinseln ausserhalb des Haupteingangs. Bodenschwelle1Stud; keinen funktionierenden Aufzug oder Zugang zur Plattform zugesagt. Glastransparenz, Licht, Pflanzen und Bänke folgen nach Gate B in P5.
 
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("WardenShepherdInstaller"))
+Schaft-/Unterschalenflächen aus sauber triangulierten WedgeParts, Rundplatten aus nativen Cylindern, übrige Details aus Parts. Abschnitte sind eine interne Gliederung, keine bereits festgelegten Zerstörungsgruppen.
 
-local warden, gameplayApi = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	EnableVisualReactions = true,
-})
-```
+## Stadtplan / Skyline
 
+Aktueller Stadtplan v2.1: LC-41,112×112,H400, PlanmitteX1100/Z460, FrontWest. Alte Issue-Platzhalter510/245,H165 sind überholt. Keine Skalierung auf165, keine Änderung anderer Plots. Modell bleibt am lokalen Ursprung. Terrainhöhe und endgültige Rotation erst bei Stadtintegration.
 
-## Aegis-III Interceptor final installer
+Vom gleichen lokalen Bodenbezug ist die Spitze72Studs bzw.21.95% höher als der328Studs hohe Office Tower. Die Kanzel beginnt8Studs über dessen Maximum. Das bestätigt den Höhenvergleich, nicht eine freie Sicht bei unterschiedlichem Terrain oder anderen höheren Gebäuden.
 
-`AegisInterceptorInstaller` installs the approved Phase 7 Aegis-III geometry, dressing, fleet rig, gameplay, production animations, combat VFX, spatial sounds, and targeted missile warning audio. Workshop HUDs and test targets are not included.
+## Export / Prüfung
 
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+`python3 tools/build_signal.py --preview` erzeugt Luau, statisches `dist/LargeCityTropicalSignalTower_P4.rbxmx`, Massbericht und sechs technische Ansichten inklusive Kanzel-/Sockeldetails. Benötigt NumPy; Preview zusätzlich Pillow. Import des XML alternativ direkt in Studio, ohne automatisch laufende Scripts.1032 BaseParts inklusive GroundPivot.
 
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("AegisInterceptorInstaller"))
+Geprüft: Grundstücksgrenzen, Gesamthöhe400, Abschnittsbudgets, acht verjüngte Schaftabschnitte, XML-Teilzahl. Builder mit Lua5.4-Hierarchietest ausgeführt. Keine Roblox-Render-/Physik-/Performanceprüfung. Gate B zur Nutzerabnahme, Gate C und HP/Energie/Zerstörung noch offen.
 
-local aegis, api = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	AnchorRoot = true,
-})
+Zielbild: https://github.com/amanciobouza/trenchborn-asset-workshop/blob/ccaca2cf048f7a696beddb8feed07f8a14803802/docs/assets/large-city/tropical-signal-tower/approved-target-2026-09-27.jpg
 
-api.RequestAbility:Invoke("TwinIonCannons", workspace.TargetPart)
-api.RequestAbility:Invoke("ShoulderMissiles", workspace.TargetPart)
-api.RequestAbility:Invoke("DirectionalAegis")
-api.ApplyDamage:Invoke(5000, workspace.DamageSource)
-```
-
-The installed gameplay contract exposes 18,000 health, 150,000 shield points, directional frontal damage reduction, independent ability cooldowns, reset support, and explicit runtime cleanup through `api.Runtime.Destroy()`.
-
-## Sovereign-V Apex final installer
-
-`SovereignApexInstaller` installs the approved Sovereign-V geometry, dressing, fleet rig, gameplay contract, production animations, wing inertia, Apex Lance, Hunter Drones, Sovereign Lock, VFX, and spatial sound pass. It does not install the workshop HUD or test target.
-
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("SovereignApexInstaller"))
-
-local sovereign, api = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	AnchorRoot = true,
-})
-
-api.RequestAbility:Invoke("ApexLanceBeam", workspace.Kaiju)
-```
+Issue: https://github.com/amanciobouza/trenchborn-asset-workshop/issues/12
