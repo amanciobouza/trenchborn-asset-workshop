@@ -22,8 +22,8 @@ def glasswall(g,prefix,a,b,z,y0,y1,bays,doors=()):
     for i in range(bays):
         l=a+(b-a)*i/bays;r=a+(b-a)*(i+1)/bays
         if i not in doors:beam(g,prefix+str(i)+'Glass',l+.6,r-.6,y0+.6,y1-.6,z-.2,z+.2,'glass')
-        beam(g,prefix+str(i)+'Post',l,l+1.2,y0,y1,z-.6,z+.6,'metal')
-    beam(g,prefix+'End',b-1.2,b,y0,y1,z-.6,z+.6,'metal')
+        beam(g,prefix+str(i)+'Post',l,l+1.2,y0 if doors else y0+.6,y1-1,z-.6,z+.6,'metal')
+    beam(g,prefix+'End',b-1.2,b,y0 if doors else y0+.6,y1-1,z-.6,z+.6,'metal')
     beam(g,prefix+'Top',a,b,y1-1,y1,z-.6,z+.6,'metal')
     if not doors:beam(g,prefix+'Bottom',a,b,y0,y0+.6,z-.6,z+.6,'metal')
 # All floors have a low 0.5 Stud threshold; no high podium or floating entrances.
@@ -35,9 +35,9 @@ glasswall('Foyer','FrontLower',-79,79,-63.3,.5,18,10,(3,4,5,6))
 glasswall('Foyer','FrontUpper',-79,79,-63.3,18,34,10)
 for side,x in [('Left',-79),('Right',79)]:
     for j in range(4):
-        z=-64+j*8
+        z=-61+j*7.25
         beam('Foyer',side+f'Post{j}',x-.6,x+.6,.5,34,z,z+1,'metal')
-        beam('Foyer',side+f'Glass{j}',x-.2,x+.2,.5,34,z+1,z+8,'glass')
+        beam('Foyer',side+f'Glass{j}',x-.2,x+.2,.5,34,z+1,z+7.25,'glass')
 # Bright monumental facade fins outside the glazing plane, never across window centres.
 for i,x in enumerate([-78.4,-62.6,63.8,78.4]):
     beam('Foyer',f'Pier{i}',x-1.2,x+1.2,0,36,-64,-61,'stone')
@@ -54,8 +54,11 @@ for j in range(24):
 # A short enclosed link resolves the approved right-hall setback.
 beam('Link','Floor',8,80,0,.5,-32,-16,'stone')
 beam('Link','Roof',8,80,34,36,-32,-16,'silver')
-beam('Link','OuterGlass',79,80,.5,34,-32,-16,'glass')
-for j in range(3):beam('Link',f'OuterPost{j}',78.6,80,.5,34,-32+j*7.5,-31+j*7.5,'metal')
+for j in range(2):
+    z=-32+j*8
+    beam('Link',f'OuterGlass{j}',79.1,79.5,.5,34,z+1,z+8,'glass')
+    beam('Link',f'OuterPost{j}',78.6,80,.5,34,z,z+1,'metal')
+beam('Link','OuterPostEnd',78.6,80,.5,34,-16.5,-16,'metal')
 # V-column canopy: exactly112 x16 x4, underside28.
 beam('Entrance','Canopy',-56,56,28,32,-79.4,-64,'roofmetal')
 beam('Entrance','FrontFascia',-56,56,28,32,-80,-79.4,'metal')
@@ -70,12 +73,12 @@ for name,xmin,xmax,zmin,zmax,heights in halls:
     beam(name,'Floor',xmin,xmax,0,.5,zmin,zmax,'stone')
     # Side walls reach roof spring; shared wall assigned only to HallA.
     if name=='HallA':
-        beam(name,'OuterWall',xmin+.25,xmin+2,.5,heights[0]-1,zmin,zmax,'stone')
-        beam(name,'SharedWall',xmax-1,xmax+1,.5,heights[-1]-1,zmin,zmax,'stone')
-    else:beam(name,'OuterWall',xmax-2,xmax-.25,.5,heights[-1]-1,zmin,zmax,'stone')
+        beam(name,'OuterWall',xmin+.25,xmin+2,.5,heights[0]-1,zmin+.05,zmax-.05,'stone')
+        beam(name,'SharedWall',xmax-1,xmax+1,.5,heights[-1]-1,zmin+.05,zmax-.05,'stone')
+    else:beam(name,'OuterWall',xmax-2,xmax-.25,.5,heights[-1]-1,zmin+.05,zmax-.05,'stone')
     outer=xmin if name=='HallA' else xmax
     for k in range(6):
-        zz=zmin+2+(zmax-zmin-4)*k/5
+        zz=zmin+3+(zmax-zmin-6)*k/5
         if name=='HallA':beam(name,f'OuterPier{k}',outer,outer+2.5,.5,heights[0]-1,zz-1,zz+1,'silver')
         else:beam(name,f'OuterPier{k}',outer-2.5,outer,.5,heights[-1]-1,zz-1,zz+1,'silver')
     # Front clerestory above the open corridor. Large passage belowY18.
@@ -97,10 +100,10 @@ for name,xmin,xmax,zmin,zmax,heights in halls:
         angle=math.atan2(y2-y1,x2-x1);length=math.hypot(x2-x1,y2-y1)
         nx,ny=-math.sin(angle),math.cos(angle)
         # Top edge exactly follows the specified curve; section thickness stays below it.
-        part('RoofSegments',name+f'Panel{j}',(length,1,zmax-zmin-.2),((x1+x2)/2-nx*.5,(y1+y2)/2-ny*.5,(zmin+zmax)/2),'roofmetal',rz=angle)
+        part('RoofSegments',name+f'Panel{j}',(length,1,zmax-zmin-(.2 if j%2==0 else .32)),((x1+x2)/2-nx*.5,(y1+y2)/2-ny*.5,(zmin+zmax)/2),'roofmetal',rz=angle)
         for k in range(5):
-            z=zmin+1+(zmax-zmin-2)*k/4
-            part('RoofFrames',name+f'Rib{k}_{j}',(length,2.5,2),((x1+x2)/2-nx*2.25,(y1+y2)/2-ny*2.25,z),'metal',rz=angle)
+            z=zmin+3+(zmax-zmin-6)*k/4
+            part('RoofFrames',name+f'Rib{k}_{j}',(length-.8,2.5,2),((x1+x2)/2-nx*2.25,(y1+y2)/2-ny*2.25,z),'metal',rz=angle)
         # Front/back glazing shaped up to roof; no white stair-step openings.
         low=min(y1,y2)-1;high=max(y1,y2)-1;h=high-low
         for side,z,base in [('Front',zmin+1,20),('Rear',zmax-1,28)]:
@@ -109,7 +112,15 @@ for name,xmin,xmax,zmin,zmax,heights in halls:
             beam(name,side+f'Mullion{j}',x1,x1+.6,base,y1-1,z-.5,z+.5,'metal')
         # Roof edge fascia has same upper profile, darker beneath the roof surface.
         for side,z in [('Front',zmin+.65),('Rear',zmax-.65)]:
-            part('RoofFrames',name+side+f'Edge{j}',(length,2,1.3),((x1+x2)/2-nx*1.05,(y1+y2)/2-ny*1.05,z),'metal',rz=angle)
+            part('RoofFrames',name+side+f'Edge{j}',(length-.4,2,1.3),((x1+x2)/2-nx*1.05,(y1+y2)/2-ny*1.05,z),'metal',rz=angle)
+    # Recessed joint blocks cover the small mitre clearances without coplanar faces.
+    for j in range(1,8):
+        x,y=xs[j],heights[j]
+        for k in range(5):
+            z=zmin+3+(zmax-zmin-6)*k/4
+            part('RoofFrames',name+f'RibJoint{k}_{j}',(1.4,2.2,1.8),(x,y-2.35,z),'metal')
+        for side,z in [('Front',zmin+.65),('Rear',zmax-.65)]:
+            part('RoofFrames',name+side+f'EdgeJoint{j}',(.9,1.8,1.16),(x,y-1.2,z),'metal')
     # Distinct strong V braces behind each clerestory.
     for i in range(4):
         ix=2*i+1;x=xs[ix];top=heights[ix]-3
@@ -155,7 +166,7 @@ rows+=['}', '''function Builder.Build(parent,options)
  local model=Instance.new("Model");model.Name="LargeCity_CoastConventionCentre_P4"
  model:SetAttribute("LayoutId","LC-08");model:SetAttribute("Phase",4)
  model:SetAttribute("QualityGateA","Approved");model:SetAttribute("QualityGateB","Pending")
- model:SetAttribute("BuildRevision","CoastConventionCentre-P4-v1")
+ model:SetAttribute("BuildRevision","CoastConventionCentre-P4-v2")
  local pivot=Instance.new("Part");pivot.Name="GroundPivot";pivot.Size=Vector3.new(.1,.1,.1)
  pivot.Anchored=true;pivot.Transparency=1;pivot.CanCollide=false;pivot.CanQuery=false;pivot.CanTouch=false
  pivot.Parent=model;model.PrimaryPart=pivot
@@ -199,12 +210,12 @@ for p in [pivot]+parts:
     if cls=='Part':val(pr,'token','shape',2 if p['shape']=='Cylinder' else 1)
     if p is pivot:val(pr,'float','Transparency',1)
 meta,_=item(model,'Folder','ReviewStatus')
-for n,v in [('Phase','4'),('GateB','Pending'),('LayoutId','LC-08'),('Revision','CoastConventionCentre-P4-v1')]:
+for n,v in [('Phase','4'),('GateB','Pending'),('LayoutId','LC-08'),('Revision','CoastConventionCentre-P4-v2')]:
     _,pr=item(meta,'StringValue',n);val(pr,'string','Value',v)
 path=DEST/'LargeCityCoastConventionCentre_P4.rbxmx';E.ElementTree(root).write(path,encoding='utf-8',xml_declaration=True)
 t=E.parse(path);assert len(t.findall('.//Item[@class="Part"]'))+len(t.findall('.//Item[@class="WedgePart"]'))==len(parts)+1
 assert not t.findall('.//Item[@class="Script"]')
-report=dict(revision='CoastConventionCentre-P4-v1',parts=len(parts)+1,foyer=[160,32,36],hall_a=[96,112,56],hall_b=[80,96,48],hall_b_setback=16,rear_z=80,roof_segments=16,canopy=[112,16,4],delivery_yard=[112,24],delivery_gates=3,plot=[224,224],gate_b='Pending',studio_test='Pending',checks=['plot bounds','roof heights56/48','two halls','setback16/rear alignment','three gates','clear entry','XML part count'])
+report=dict(revision='CoastConventionCentre-P4-v2',parts=len(parts)+1,foyer=[160,32,36],hall_a=[96,112,56],hall_b=[80,96,48],hall_b_setback=16,rear_z=80,roof_segments=16,canopy=[112,16,4],delivery_yard=[112,24],delivery_gates=3,plot=[224,224],gate_b='Pending',studio_test='Pending',checks=['plot bounds','roof heights56/48','two halls','setback16/rear alignment','three gates','clear entry','XML part count'])
 (DOC/'geometry-checks.json').write_text(json.dumps(report,indent=2)+'\n')
 if '--preview' in sys.argv:
     import numpy as np
