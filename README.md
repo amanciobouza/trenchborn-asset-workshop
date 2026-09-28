@@ -1,87 +1,40 @@
-# Trenchborn Asset Workshop
+# Coast Convention Centre — P4 / Issue #11
 
-Synchronized Roblox Studio workspace for specification-driven Trenchborn asset development and automated quality gates.
+Ein Kongresszentrum für LC-08, kein Kit. Gate A/P3 freigegeben, P4 zur visuellen Abnahme. Eigenständiger Branch `largecity-coast-convention-centre-l3`.
 
-## Marshal-II Roadblock final installer
+## Studio
 
-`MarshalRoadblockInstaller` is the Phase 7 production API. It installs the approved model, dressing, fleet rig, gameplay, animations, combat VFX, and spatial sound pass. It does not install the workshop HUD, test buttons, or test targets.
+Play stoppen, dann:
 
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("MarshalRoadblockInstaller"))
-
-local marshal, api = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	AnchorRoot = true,
-})
-
-api.RequestAbility:Invoke("RiotShield")
-api.RequestAbility:Invoke("PulseCannon", workspace.TargetPart)
-api.RequestAbility:Invoke("ContainmentNet", workspace.TargetPart)
-api.ApplyDamage:Invoke(500, true)
-api.Runtime.PlayAnimation("Walk")
+```sh
+git fetch origin
+git switch --track origin/largecity-coast-convention-centre-l3
 ```
 
-`GroundCFrame` is the desired ground position and orientation beneath the Guardian. The installer computes the correct vertical placement from the finished geometry. `AnchorRoot` defaults to `true`, which supports server-controlled movement through `Model:PivotTo()`; set it to `false` only when an external character controller supplies collision and physics.
+Rojo weiterlaufen lassen, Sync abwarten, Play starten. `default.project.json` ist bytegleich zur Galleria: bei bereits laufendem Server kein Neustart. Wenn noch kein Server läuft: `rojo serve default.project.json` und Studio verbinden. Weitere Updates mit `git pull --ff-only` bei gestopptem Play.
 
-Call `api.Runtime.Destroy()` before removing a live installation so its per-player animation bridge is cleaned up.
+Workspace-Modell: `LargeCity_CoastConventionCentre_P4`. Grundstückspivot Y0, Front lokal -Z. Vorschau hat keine Gameplay-Tags und verändert kein anderes Gebäude.
 
-## Warden-I Shepherd final installer
+## Aufbau und Masse
 
-`WardenShepherdInstaller` installs the approved Warden geometry, dressing, gameplay contract, and visual reactions without the workshop test console.
+Grundstück224×224. Gemeinsames Foyer160×32×36 bei X±80/Z-64..-32, zwei18Studs-Ebenen. Links HalleA96×112×56 bei X-88..8/Z-32..80; rechts HalleB80×96×48 bei X8..88/Z-16..80. Die zweite Halle beginnt16Studs weiter hinten; beide enden beiZ80. Ein72×16-Verbindungsgang zwischen Foyer und rechter Halle löst den Versatz auf. Keine dritte Veranstaltungshalle.
 
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+Zwei geschlossene Metalldächer, jeweils acht grosse geknickte Segmente als vereinfachte Wellenkurve. Gesamthöhen inklusive Dach56/48. Je fünf Querrippen, dunkle Dachkanten und V-Streben hinter den oberen Glasbändern. Hallen bleiben offen, ohne Messestände. Linkes und rechtes Dach steigen nach rechts an und flachen am höchsten Punkt ab, entsprechend Zielbild.
 
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("WardenShepherdInstaller"))
+Vordach112×16×4, UnterkanteY28, mit zwei V-Stützen. Vier gleich breite offene Eingangsportale. FoyergalerieY18..19, hinten8Studs breit, Seitenarme8, vereinfachte Treppe links. BödenY0..0.5; dadurch nur niedrige Schwelle statt erhöhtem Vorplatz mit langer Treppe. Galerie, Treppe und Schwellen in Studio auf Begehbarkeit prüfen.
 
-local warden, gameplayApi = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	EnableVisualReactions = true,
-})
-```
+Anlieferungsfläche112×24 hinter den Hallen (X±56/Z80..104). Drei16×18-Liefertore, MittelpunkteX-44/-12/44. Rechte Lieferzufahrt24Studs breit (X88..112), mit Queranschluss an den Lieferhof. Pflanzinseln liegen ausserhalb dieser Zufahrt und der Eingangswege.
 
+## Stadtplan
 
-## Aegis-III Interceptor final installer
+Stadtplan v2.1: LC-08, Plot224×224, Höhe56, PlanmitteX=-860/Z=-40, FrontWest. Damit stimmen die neuen Masse bereits mit dem aktuellen Plan überein. Veraltete Issue-Platzhalter(-335/115,H46) wurden nicht übernommen. Plan-Z ist Norden; Weltrotation und Terrainhöhe erst bei Stadtintegration festlegen. Hier bleibt das Modell am lokalen Ursprung; keine Strassen oder Nachbarplots geändert.
 
-`AegisInterceptorInstaller` installs the approved Phase 7 Aegis-III geometry, dressing, fleet rig, gameplay, production animations, combat VFX, spatial sounds, and targeted missile warning audio. Workshop HUDs and test targets are not included.
+## Nachweise und Export
 
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+`python3 tools/build_convention.py --preview` erzeugt Builder, statisches `.rbxmx`, Massbericht und sechs technische Ansichten. Preview benötigt NumPy/Pillow. Geprüft: Grundstücksgrenzen, Dachhöhen, Hallenmasse,16Studs-Versatz, bündiger hinterer Abschluss, drei Tore, freie Eingangsportale und XML-Teilzahl. Keine Roblox-Laufzeit/Physikprüfung.
 
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("AegisInterceptorInstaller"))
+`dist/LargeCityCoastConventionCentre_P4.rbxmx` kann alternativ direkt in Studio importiert werden. Enthält nur das statische Modell, keine automatisch laufenden Scripts. P4 nutzt Grundfarben; transparente Materialien, Schriftzug COAST CONVENTION CENTRE, Licht, Bänke und Palmen folgen nach Geometriefreigabe in P5. HP/Energie und Zerstörung werden vor P6 abgestimmt. Gate B und Gate C offen.
 
-local aegis, api = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	AnchorRoot = true,
-})
+Verbindliches Zielbild: https://github.com/amanciobouza/trenchborn-asset-workshop/blob/f34d5e371d0397aaf06561d7c7c0c592d6ef5e88/docs/assets/large-city/coast-convention-centre/approved-target-2026-09-26.jpg
 
-api.RequestAbility:Invoke("TwinIonCannons", workspace.TargetPart)
-api.RequestAbility:Invoke("ShoulderMissiles", workspace.TargetPart)
-api.RequestAbility:Invoke("DirectionalAegis")
-api.ApplyDamage:Invoke(5000, workspace.DamageSource)
-```
-
-The installed gameplay contract exposes 18,000 health, 150,000 shield points, directional frontal damage reduction, independent ability cooldowns, reset support, and explicit runtime cleanup through `api.Runtime.Destroy()`.
-
-## Sovereign-V Apex final installer
-
-`SovereignApexInstaller` installs the approved Sovereign-V geometry, dressing, fleet rig, gameplay contract, production animations, wing inertia, Apex Lance, Hunter Drones, Sovereign Lock, VFX, and spatial sound pass. It does not install the workshop HUD or test target.
-
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("SovereignApexInstaller"))
-
-local sovereign, api = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	AnchorRoot = true,
-})
-
-api.RequestAbility:Invoke("ApexLanceBeam", workspace.Kaiju)
-```
+Issue: https://github.com/amanciobouza/trenchborn-asset-workshop/issues/11

@@ -1,0 +1,47 @@
+{
+  "revision": "CoastConventionCentre-P4-v1",
+  "parts": 418,
+  "foyer": [
+    160,
+    32,
+    36
+  ],
+  "hall_a": [
+    96,
+    112,
+    56
+  ],
+  "hall_b": [
+    80,
+    96,
+    48
+  ],
+  "hall_b_setback": 16,
+  "rear_z": 80,
+  "roof_segments": 16,
+  "canopy": [
+    112,
+    16,
+    4
+  ],
+  "delivery_yard": [
+    112,
+    24
+  ],
+  "delivery_gates": 3,
+  "plot": [
+    224,
+    224
+  ],
+  "gate_b": "Pending",
+  "studio_test": "Pending",
+  "checks": [
+    "plot bounds",
+    "roof heights56/48",
+    "two halls",
+    "setback16/rear alignment",
+    "three gates",
+    "clear entry",
+    "XML part count"
+  ]
+}
