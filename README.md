@@ -1,87 +1,38 @@
-# Trenchborn Asset Workshop
+# Ocean Galleria — P4 / Issue #10
 
-Synchronized Roblox Studio workspace for specification-driven Trenchborn asset development and automated quality gates.
+Ein Einkaufszentrum für LC-07, kein Kit. Gate A/P3 freigegeben; P4/Gate B zur visuellen Abnahme.
 
-## Marshal-II Roadblock final installer
+## Studio
 
-`MarshalRoadblockInstaller` is the Phase 7 production API. It installs the approved model, dressing, fleet rig, gameplay, animations, combat VFX, and spatial sound pass. It does not install the workshop HUD, test buttons, or test targets.
+Play stoppen:
 
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("MarshalRoadblockInstaller"))
-
-local marshal, api = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	AnchorRoot = true,
-})
-
-api.RequestAbility:Invoke("RiotShield")
-api.RequestAbility:Invoke("PulseCannon", workspace.TargetPart)
-api.RequestAbility:Invoke("ContainmentNet", workspace.TargetPart)
-api.ApplyDamage:Invoke(500, true)
-api.Runtime.PlayAnimation("Walk")
+```sh
+git fetch origin
+git switch --track origin/largecity-ocean-galleria-l3
 ```
 
-`GroundCFrame` is the desired ground position and orientation beneath the Guardian. The installer computes the correct vertical placement from the finished geometry. `AnchorRoot` defaults to `true`, which supports server-controlled movement through `Model:PivotTo()`; set it to `false` only when an external character controller supplies collision and physics.
+Rojo weiterlaufen lassen, Sync abwarten, Play starten. default.project.json unverändert vom Bahnhof. Wenn noch kein Server läuft: `rojo serve default.project.json`, dann Studio verbinden. Updates: Play stoppen → `git pull --ff-only` → Sync → Play.
 
-Call `api.Runtime.Destroy()` before removing a live installation so its per-player animation bridge is cleaned up.
+Workspace-Modell: `LargeCity_OceanGalleria_P4`. Grundstückspivot Y0, Front lokal -Z.
 
-## Warden-I Shepherd final installer
+## Masse / Aufbau
 
-`WardenShepherdInstaller` installs the approved Warden geometry, dressing, gameplay contract, and visual reactions without the workshop test console.
+Grundstück224×160; Gebäude192×96. Zwei Flügel je64×96×54 mit drei18Studs-Geschossen. Zentralatrium64×96×72, Dachansatz54, Scheitel inklusive Trägerdicke72. Sieben Querträger, sechs Glasdachfelder. Vordach80×16×4. Zwei Dachaggregate je24×16×8 auf Y54. Geschlossene Fassadenanschlüsse an X±32.
 
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+Atriumboden Y1; umlaufende Galerieplatten auf Y18 und36, je10Studs breit, mit grossem Innenraum. Die oberen Galerien dienen der sichtbaren Innenwirkung; Treppen/Einkaufsmechanik sind nicht zugesagt. Freies20Studs-Hauptportal. Glas bleibt in P4 für die Geometrieprüfung opak; Transparenz und Ladenwirkung folgen in P5.
 
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("WardenShepherdInstaller"))
+Rückwärtige Anlieferung64×24 bei X±32/Z48..72. Zwei16×14Studs-Liefertore an den Flügeln, Mitte X±44, mit kurzen Anschlussflächen. Seitlich bleibt ein16Studs-Streifen zwischen Gebäude und Grundstücksrand als Zugang zur Anlieferung. Vorplatz, Einfahrt und Zufahrten später in Studio prüfen.
 
-local warden, gameplayApi = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	EnableVisualReactions = true,
-})
-```
+## LC-07-Abgleich
 
+Der aktuelle Stadtplan v2 führt LC-07 bereits mit224×160 und72Studs Höhe, Plotmitte X=-860/Z=-380, FrontWest (gedrehter Platzbedarf160×224). Die älteren Issue-Koordinaten -315/-105 und Höhe38 sind nicht übernommen. Das Modell bleibt für diese Bauphase am lokalen Ursprung. Keine Strassen oder Nachbarplots geändert; Terrainhöhe und tatsächliche Platzierung/Zufahrt bleiben bei Stadtintegration zu prüfen.
 
-## Aegis-III Interceptor final installer
+## Nachweise
 
-`AegisInterceptorInstaller` installs the approved Phase 7 Aegis-III geometry, dressing, fleet rig, gameplay, production animations, combat VFX, spatial sounds, and targeted missile warning audio. Workshop HUDs and test targets are not included.
+`python3 tools/build_galleria.py --preview` erzeugt Luau, XML, Massbericht und sechs technische Ansichten (Pillow/NumPy für Preview). Geprüft: Parzellengrenzen, Höhe72, dreigeschossige Flügel, zwei Liefertore, freier Eingang und XML-Teilzahl. Lua-Modul geprüft. Keine Roblox-Runtime oder Performanceprüfung. Gate B/Gate C offen.
 
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+`dist/LargeCityOceanGalleria_P4.rbxmx` alternativ zur Rojo-Vorschau als statisches Modell importieren, ohne automatisch laufende Scripts. Bilder unter docs/galleria sind technische Renderings, keine Studio-Screenshots.
 
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("AegisInterceptorInstaller"))
+P5 ergänzt OCEAN GALLERIA-Schrift, Materialien, Ladenwirkung, Beleuchtung und tropische Vorplatzgestaltung. HP/Energie werden vor P6 abgestimmt.
 
-local aegis, api = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	AnchorRoot = true,
-})
-
-api.RequestAbility:Invoke("TwinIonCannons", workspace.TargetPart)
-api.RequestAbility:Invoke("ShoulderMissiles", workspace.TargetPart)
-api.RequestAbility:Invoke("DirectionalAegis")
-api.ApplyDamage:Invoke(5000, workspace.DamageSource)
-```
-
-The installed gameplay contract exposes 18,000 health, 150,000 shield points, directional frontal damage reduction, independent ability cooldowns, reset support, and explicit runtime cleanup through `api.Runtime.Destroy()`.
-
-## Sovereign-V Apex final installer
-
-`SovereignApexInstaller` installs the approved Sovereign-V geometry, dressing, fleet rig, gameplay contract, production animations, wing inertia, Apex Lance, Hunter Drones, Sovereign Lock, VFX, and spatial sound pass. It does not install the workshop HUD or test target.
-
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("SovereignApexInstaller"))
-
-local sovereign, api = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	AnchorRoot = true,
-})
-
-api.RequestAbility:Invoke("ApexLanceBeam", workspace.Kaiju)
-```
+Referenz: https://github.com/amanciobouza/trenchborn-asset-workshop/issues/10

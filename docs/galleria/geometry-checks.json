@@ -1,0 +1,41 @@
+{
+  "revision": "OceanGalleria-P4-v1",
+  "parts": 1360,
+  "storeys": 3,
+  "wing": [
+    64,
+    96,
+    54
+  ],
+  "atrium": [
+    64,
+    96,
+    72
+  ],
+  "canopy": [
+    80,
+    16,
+    4
+  ],
+  "roof_spring": 54,
+  "max_height": 72,
+  "delivery_yard": [
+    64,
+    24
+  ],
+  "delivery_gates": 2,
+  "plot": [
+    224,
+    160
+  ],
+  "gate_b": "Pending",
+  "studio_test": "Pending",
+  "checks": [
+    "plot bounds",
+    "height72",
+    "two three-storey wings",
+    "two loading gates",
+    "free entrance",
+    "XML part count"
+  ]
+}
