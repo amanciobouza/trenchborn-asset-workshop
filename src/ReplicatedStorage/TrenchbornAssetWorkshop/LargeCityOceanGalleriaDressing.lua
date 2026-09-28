@@ -25,6 +25,9 @@ function Dressing.Apply(model)
  local function part(n,w,h,d,x,y,z,c,m,ry)
   local p=Instance.new("Part");p.Name=n;p.Size=Vector3.new(w,h,d)
   p.CFrame=origin*CFrame.new(x,y,z)*CFrame.Angles(0,ry or 0,0)
+  local section="D2_Atrium"
+  if x < -32 then section="D1_LeftWing" elseif x > 32 then section="D3_RightWing" end
+  p:SetAttribute("PlannedDestructionGroup",section)
   p.Color=c;p.Material=m or Enum.Material.Concrete;p.Anchored=true;p.CanCollide=false;p.CanTouch=false
   p.TopSurface=Enum.SurfaceType.Smooth;p.BottomSurface=Enum.SurfaceType.Smooth;p.Parent=group;return p
  end

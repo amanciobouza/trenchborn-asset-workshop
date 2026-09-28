@@ -147,6 +147,13 @@ rows+=['}', '''function Builder.Build(parent,options)
  for _,d in ipairs(Parts) do
   if not groups[d[1]] then local g=Instance.new("Model");g.Name=d[1];g.Parent=model;groups[d[1]]=g end
   local p=Instance.new(d[16]=="Wedge" and "WedgePart" or "Part");p.Name=d[2];p.Size=Vector3.new(d[3],d[4],d[5])
+  local section="D2_Atrium"
+  if string.sub(d[1],1,8)=="LeftWing" then section="D1_LeftWing"
+  elseif string.sub(d[1],1,9)=="RightWing" then section="D3_RightWing"
+  elseif d[1]=="Site" or d[1]=="Delivery" or d[1]=="RoofPlant" then
+   if d[6]<-32 then section="D1_LeftWing" elseif d[6]>32 then section="D3_RightWing" end
+  end
+  p:SetAttribute("PlannedDestructionGroup",section)
   p.CFrame=CFrame.new(d[6],d[7],d[8])*CFrame.Angles(0,0,d[13])*CFrame.Angles(d[14],0,0)*CFrame.Angles(0,d[15],0)
   if d[16]=="Cylinder" then p.Shape=Enum.PartType.Cylinder end
   p.Color=Color3.fromRGB(d[9],d[10],d[11]);p.Anchored=true;p.CanCollide=d[12]
