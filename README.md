@@ -1,6 +1,6 @@
-# Coast Convention Centre — P4 / Issue #11
+# Coast Convention Centre — P5 / Issue #11
 
-Ein Kongresszentrum für LC-08, kein Kit. Gate A/P3 freigegeben, P4 zur visuellen Abnahme. Eigenständiger Branch `largecity-coast-convention-centre-l3`.
+Ein Kongresszentrum für LC-08, kein Kit. Gate A/P3 sowie P4-v2/Geometrie am28.09.2026 vom Benutzer freigegeben; P5 zur visuellen Abnahme. Eigenständiger Branch `largecity-coast-convention-centre-l3`.
 
 ## Studio
 
@@ -13,7 +13,7 @@ git switch --track origin/largecity-coast-convention-centre-l3
 
 Rojo weiterlaufen lassen, Sync abwarten, Play starten. `default.project.json` ist bytegleich zur Galleria: bei bereits laufendem Server kein Neustart. Wenn noch kein Server läuft: `rojo serve default.project.json` und Studio verbinden. Weitere Updates mit `git pull --ff-only` bei gestopptem Play.
 
-Workspace-Modell: `LargeCity_CoastConventionCentre_P4`. Grundstückspivot Y0, Front lokal -Z. Vorschau hat keine Gameplay-Tags und verändert kein anderes Gebäude.
+Workspace-Modell: `LargeCity_CoastConventionCentre_P5`. Grundstückspivot Y0, Front lokal -Z. Vorschau hat keine Gameplay-Tags und verändert kein anderes Gebäude.
 
 ## Aufbau und Masse
 
@@ -33,7 +33,7 @@ Stadtplan v2.1: LC-08, Plot224×224, Höhe56, PlanmitteX=-860/Z=-40, FrontWest. 
 
 `python3 tools/build_convention.py --preview` erzeugt Builder, statisches `.rbxmx`, Massbericht und sechs technische Ansichten. Preview benötigt NumPy/Pillow. Geprüft: Grundstücksgrenzen, Dachhöhen, Hallenmasse,16Studs-Versatz, bündiger hinterer Abschluss, drei Tore, freie Eingangsportale und XML-Teilzahl. Keine Roblox-Laufzeit/Physikprüfung.
 
-`dist/LargeCityCoastConventionCentre_P4.rbxmx` kann alternativ direkt in Studio importiert werden. Enthält nur das statische Modell, keine automatisch laufenden Scripts. P4 nutzt Grundfarben; transparente Materialien, Schriftzug COAST CONVENTION CENTRE, Licht, Bänke und Palmen folgen nach Geometriefreigabe in P5. HP/Energie und Zerstörung werden vor P6 abgestimmt. Gate B und Gate C offen.
+`dist/LargeCityCoastConventionCentre_P4.rbxmx` kann alternativ direkt in Studio importiert werden. Enthält nur das statische Modell, keine automatisch laufenden Scripts. Das statische P4-XML bleibt Geometriearchiv. Die Rojo-Vorschau ergänzt in P5 transparente Glasflächen, Metallmaterialien, den Schriftzug COAST CONVENTION CENTRE direkt auf dem Vordach,21 warme PointLights ohne Schatten, zwei zum Vorplatz gerichtete Bänke, drei Palmen und zurückhaltende Bepflanzung. HP/Energie und Zerstörung werden vor P6 abgestimmt. Gate B freigegeben; P5-Abnahme und Gate C offen.
 
 Verbindliches Zielbild: https://github.com/amanciobouza/trenchborn-asset-workshop/blob/f34d5e371d0397aaf06561d7c7c0c592d6ef5e88/docs/assets/large-city/coast-convention-centre/approved-target-2026-09-26.jpg
 

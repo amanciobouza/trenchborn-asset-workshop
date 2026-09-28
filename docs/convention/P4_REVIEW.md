@@ -1,6 +1,6 @@
 # Gate B — Coast Convention Centre
 
-Issue11, freigegebenes Zielbild26.09.2026. P4 erstellt28.09.2026. Gate B weiterhin Pending.
+Issue11, freigegebenes Zielbild26.09.2026. P4 erstellt28.09.2026. P4-v2 nach Korrekturen am28.09.2026 vom Benutzer mit „passt“ freigegeben.
 
 - Genau zwei offene Hallen mit16Studs-Versatz und bündigem Rückabschluss.
 - Hallen96×112×56 und80×96×48, gemeinsames Glasfoyer160×32×36.
