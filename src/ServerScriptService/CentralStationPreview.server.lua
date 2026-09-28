@@ -1,14 +1,10 @@
 local folder=game:GetService("ReplicatedStorage"):WaitForChild("TrenchbornAssetWorkshop",10)
-local source=folder and folder:WaitForChild("LargeCityCentralStationGoldenMaster",10)
-local dressing=folder and folder:WaitForChild("LargeCityCentralStationDressing",10)
-if not source or not dressing then
- warn("Central Station source missing. Check branch and Rojo sync, then start Play again.")
- return
+local source=folder and folder:WaitForChild("LargeCityCentralStationInstaller",10)
+if not source then warn("Station installer missing: check branch and Rojo sync, then restart Play.");return end
+for _,name in ipairs({"LargeCity_CentralStation_P4","LargeCity_CentralStation_P5","LargeCity_CentralStation_L3"}) do
+ if workspace:FindFirstChild(name) then warn("Existing station preserved; use a fresh Play session.");return end
 end
-if workspace:FindFirstChild("LargeCity_CentralStation_P4") or workspace:FindFirstChild("LargeCity_CentralStation_P5") then
- warn("Existing Central Station preserved; use a fresh Play session to rebuild.")
- return
-end
-local model=require(source).Build(workspace)
-require(dressing).Apply(model)
-print("Central Station P5 ready: three portals, two tracks, two side platforms, hall crown64. Gate B approved; dressing review pending.")
+local installer=require(source)
+local model=installer.Install(workspace)
+installer.Validate(model)
+print("Station P6 ready: 64000 HP / Electric; D1 MainBuilding then D2 TrackHall. Main-game sequencing and Gate C pending.")
