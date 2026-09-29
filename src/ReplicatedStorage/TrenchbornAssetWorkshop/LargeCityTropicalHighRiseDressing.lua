@@ -31,8 +31,8 @@ function Dressing.Apply(model)
   p:SetAttribute("DressingOwner",owner or "Site")
   p.TopSurface=Enum.SurfaceType.Smooth;p.BottomSurface=Enum.SurfaceType.Smooth;p.Parent=group;return p
  end
- local function light(p,color,range,brightness)
-  local l=Instance.new("PointLight");l.Name="DressingLight";l.Color=color;l.Range=range;l.Brightness=brightness;l.Shadows=false;l.Parent=p
+ local function light(p,range,brightness)
+  local l=Instance.new("PointLight");l.Name="DressingLight";l.Color=p.Color;l.Range=range;l.Brightness=brightness;l.Shadows=false;l.Parent=p
  end
  local function planting(n,x,z,w,d,y,owner,palm,palmHeight,leafLength)
   part(n.."Soil",w-1.2,.5,d-1.2,x,y+.8,z,Color3.fromRGB(85,73,50),Enum.Material.Ground,0,owner)
@@ -93,7 +93,7 @@ function Dressing.Apply(model)
  end
  model.Name="LargeCity_TropicalHighRise_P5";model:SetAttribute("Phase",5)
  model:SetAttribute("QualityGateB","Approved");model:SetAttribute("DressingReview","Pending")
- model:SetAttribute("BuildRevision","TropicalHighRise-P5-v1")
+ model:SetAttribute("BuildRevision","TropicalHighRise-P5-v2")
  return model
 end
 return Dressing

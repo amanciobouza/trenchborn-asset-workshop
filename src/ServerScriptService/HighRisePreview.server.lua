@@ -5,6 +5,8 @@ if not source or not dressing then warn("High-Rise source missing. Check branch 
 for _,name in ipairs({"LargeCity_TropicalHighRise_P4","LargeCity_TropicalHighRise_P5"}) do
  if workspace:FindFirstChild(name) then warn("Existing High-Rise preserved; use a fresh Play session.");return end
 end
-local model=require(source).Build(workspace)
-require(dressing).Apply(model)
-print("Tropical High-Rise P5 ready: Gate B approved, dressing review pending.")
+local model=require(source).Build(nil)
+local ok,err=pcall(function() require(dressing).Apply(model) end)
+if not ok then model:Destroy();warn("High-Rise dressing failed: "..tostring(err));return end
+model.Parent=workspace
+print("Tropical High-Rise P5-v2 ready: 12 palms, 18 planted troughs, 24 lights. Dressing review pending.")

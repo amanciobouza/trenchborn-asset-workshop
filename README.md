@@ -48,3 +48,9 @@ Zielbild: https://github.com/amanciobouza/trenchborn-asset-workshop/blob/489d33f
 Issue: https://github.com/amanciobouza/trenchborn-asset-workshop/issues/13
 
 P5 umfasst2353 BaseParts und24 schattenlose PointLights. Strukturprüfung mit tatsächlichem Builder/Dressing im Lua5.4-Testdouble bestanden, wiederholtes Apply ohne Duplikate. Glas- und Lichtwirkung sowie Performance in Studio noch zu prüfen.
+
+### P5-v2 / Fehlerbehebung
+
+Color3-Parameterfehler der Lichter behoben; vollständiges Dressing mit12 Palmen,18 bepflanzten Trögen und24 Lichtern. `python3 tools/check_highrise_dressing.py` erzeugt den Lua5.4-Test mit Color3-/Zahlenprüfung. Preview meldet `Tropical High-Rise P5-v2 ready`.
+
+Falls ein alter `ServerScriptService.TrenchbornAssetWorkshop.WorkshopBootstrap` auf `MarshalRoadblockSpecification` wartet: Dieser Script gehört nicht zu diesem isolierten Gebäude-Branch. Im Gebäude-Vorschauprojekt den alten Bootstrap deaktivieren (`Enabled=false`). Unbekannte Studio-Instanzen bleiben durch die bestehende Rojo-Konfiguration erhalten; keine unbekannten Scripts automatisch löschen.
