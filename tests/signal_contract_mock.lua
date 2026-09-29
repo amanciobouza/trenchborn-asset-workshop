@@ -8,6 +8,8 @@ local mt = {
   for _,c in ipairs(t._children) do if c.Name==k then return c end end
  end,
  __newindex=function(t,k,v)
+  if k=="Color" then assert(type(v)=="table" and v._robloxType=="Color3", "Color3 expected, got "..type(v)) end
+  if k=="Range" or k=="Brightness" then assert(type(v)=="number", k.." must be numeric") end
   if k~="Parent" then rawset(t,k,v);return end
   local old=rawget(t,"_parent")
   if old then for i,c in ipairs(old._children) do if c==t then table.remove(old._children,i);break end end end
@@ -57,7 +59,7 @@ function methods:GetPivot() return self._pivot or CFrame.new() end
 local cfmeta={__mul=function(a,b) return a end}
 CFrame={new=function() return setmetatable({},cfmeta) end,Angles=function() return setmetatable({},cfmeta) end}
 Vector3={new=function(...) return {...} end}
-Color3={fromRGB=function(...) return {...} end}
+Color3={fromRGB=function(...) return {_robloxType="Color3",...} end}
 Enum=setmetatable({}, {__index=function(t,k) local e=setmetatable({}, {__index=function(_,v) return v end});rawset(t,k,e);return e end})
 Vector2={new=function(...) return {...} end}
 UDim2={fromScale=function(...) return {...} end}

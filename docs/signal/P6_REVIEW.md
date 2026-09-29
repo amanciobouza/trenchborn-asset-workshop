@@ -7,3 +7,5 @@ Nutzerfreigabe29.09.2026:64.000 HP, Electric, gesamter Turm als eine Einheit. P4
 PASS: Builder/Dressing/Installer im Lua5.4-Instance-Testdouble; Wiederholung ohne Duplikate; vollständige Zuordnung; Cleanup der Gesamtgruppe ohne sichtbare Restteile/Lichter; Attach erhält Health; unbekannte Teile vor Mutation abgelehnt; öffentlicher Install-Pfad und Duplikatschutz. XML-Paket enthält alle vier vollständigen Module ohne automatisch laufende Scripts.
 
 Nicht geprüft: Roblox Studio-Import/Rendering, reale Transformationen, Kampf/Energieauszahlung, Kollapsphysik und Performance. Installer verwendet den bestehenden KaijuHouse-Vertrag und Gruppenmetadaten, implementiert keinen eigenen Collapse-Controller. Gate C Pending; StudioImportVerified=false.
+
+Korrektur29.09.2026: Farbargument bei den warmen Leuchten ergänzt. Typprüfender Test mit Color3-/Zahlvalidierung bestanden; Importpaket neu generiert. Der frühere Hierarchietest allein erkannte den Parameterfehler nicht. Keine Änderung an HP oder Gruppierung.
