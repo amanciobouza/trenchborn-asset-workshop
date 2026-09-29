@@ -1,5 +1,5 @@
 {
-  "name": "LargeCityTropicalSignalTowerP4Source",
+  "name": "LargeCityTropicalSignalTowerPackage",
   "tree": {
     "$className": "Folder",
     "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop"

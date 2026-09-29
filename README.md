@@ -1,6 +1,6 @@
-# Tropical Signal Tower — P5 / Issue #12
+# Tropical Signal Tower — P6 / Issue #12
 
-Ein Aussichtsturm für LC-41, kein Kit. Gate A/P3 freigegeben; P4-v2 mit verbreitertem Schaft am29.09.2026 vom Nutzer abgenommen. P5 zur visuellen Abnahme. Gesamthöhe400Studs gemäss späterer Präzisierung des Zielbilds.
+Ein Aussichtsturm für LC-41, kein Kit. Gate A/P3 freigegeben; P4-v2 mit verbreitertem Schaft am29.09.2026 vom Nutzer abgenommen. P5 und P6 mit64.000 HP/Electric/einer Zerstörungsgruppe am29.09.2026 freigegeben. Gesamthöhe400Studs gemäss späterer Präzisierung des Zielbilds.
 
 ## Studio
 
@@ -13,7 +13,7 @@ git switch --track origin/largecity-tropical-signal-tower-l3
 
 Rojo weiterlaufen lassen, Sync abwarten, Play starten. default.project.json ist bytegleich zum Convention Centre. Wenn noch kein Server läuft: `rojo serve default.project.json` und Studio verbinden. Weitere Updates: `git pull --ff-only` bei gestopptem Play.
 
-Workspace-Modell: `LargeCity_TropicalSignalTower_P5`. Pivot auf GrundstücksmitteY0, Front lokal-Z. Keine Gameplay-Tags oder anderen Gebäude in der Vorschau.
+Workspace-Modell: `LargeCity_TropicalSignalTower_L3`. Pivot auf GrundstücksmitteY0, Front lokal-Z. P6-Vorschau setzt KaijuHouse und Gameplay-Metadaten am Turm.
 
 ## Masse und Aufbau
 
@@ -39,7 +39,7 @@ Vom gleichen lokalen Bodenbezug ist die Spitze72Studs bzw.21.95% höher als der3
 
 `python3 tools/build_signal.py --preview` erzeugt Luau, statisches `dist/LargeCityTropicalSignalTower_P4.rbxmx`, Massbericht und sechs technische Ansichten inklusive Kanzel-/Sockeldetails. Benötigt NumPy; Preview zusätzlich Pillow. Import des XML alternativ direkt in Studio, ohne automatisch laufende Scripts.1039 BaseParts inklusive GroundPivot.
 
-Geprüft: Grundstücksgrenzen, Gesamthöhe400, Abschnittsbudgets, acht verjüngte Schaftabschnitte, XML-Teilzahl. Builder mit Lua5.4-Hierarchietest ausgeführt. Keine Roblox-Render-/Physik-/Performanceprüfung. Gate B freigegeben; P5-Abnahme, Gate C und HP/Energie/Zerstörung noch offen.
+Geprüft: Grundstücksgrenzen, Gesamthöhe400, Abschnittsbudgets, acht verjüngte Schaftabschnitte, XML-Teilzahl. Builder mit Lua5.4-Hierarchietest ausgeführt. Keine Roblox-Render-/Physik-/Performanceprüfung. Gate B freigegeben; P5 und P6-Werte freigegeben; Gate C offen.
 
 Zielbild: https://github.com/amanciobouza/trenchborn-asset-workshop/blob/ccaca2cf048f7a696beddb8feed07f8a14803802/docs/assets/large-city/tropical-signal-tower/approved-target-2026-09-27.jpg
 
@@ -50,3 +50,20 @@ Issue: https://github.com/amanciobouza/trenchborn-asset-workshop/issues/12
 Nutzerrückmeldung: Turm wirkt zu dünn, insbesondere unten. Schaft am Fuss von28 auf48Studs Durchmesser verbreitert, oben von18 auf22. An den Höhen32/70/108/146/184/222/260/298/336 sind die Durchmesser48/38/33/30/28/26/24/23/22. Dadurch kräftiger tragender Fuss und nach oben ruhiger auslaufender Schaft. Dunkler Detailstreifen folgt den neuen Flächen; Kanzelunterschale setzt am22Studs-Schaft an. Gesamthöhe400, Sockel80 und Kanzeldurchmesser72 unverändert. Diese Nutzerkorrektur ersetzt die ursprüngliche28→18-Schaftvorgabe. P4-v2 am29.09.2026 freigegeben.
 
 P5 wird über die Rojo-Vorschau erzeugt. Das statische P4-XML bleibt Geometriearchiv.22 schattenlose PointLights; Prüfung in Studio steht aus.
+
+## P6 / Import
+
+`dist/LargeCityTropicalSignalTowerPackage.rbxmx` in ReplicatedStorage importieren. Enthält vier Module ohne automatisch laufende Scripts. Studio Command Bar:
+
+```lua
+local package = game.ReplicatedStorage:WaitForChild("LargeCityTropicalSignalTowerPackage")
+local model = require(package.LargeCityTropicalSignalTowerInstaller).Install(workspace, {
+    GroundCFrame = CFrame.new(0, 0, 0),
+})
+```
+
+Gesamtmodell: `KaijuHouse`, MaxHealth=64000, EnergyType=Electric. `DestructionGroups/D1_WholeBuilding` besitzt alle1126 sichtbaren Parts: Sockel, Schaft, Kanzel, Plattform, Spitze, Vorplatz und Ausstattung.22 Lichter bleiben unter ihren tragenden Parts. Nur der unsichtbare GroundPivot liegt ausserhalb. Keine separate Zerstörung der tragenden Schaftabschnitte und keine mehrfachen HP-/Energie-Pools.
+
+Der Installer stellt Metadaten und Gruppierung für das gemeinsame Hauptspiel-System bereit; kein eigener Schadens-, Einsturz- oder Auszahlungscontroller. Gate C / echter Hauptspieltest Pending, FinalInstallerReady=false. Studio-Import, Kollapsphysik und Performance sind noch zu prüfen.
+
+Paketprüfung: `python3 tools/build_signal_package.py`. Hierarchietest: `python3 tools/check_signal_contract.py > /tmp/signal-contract.lua`, danach mit Lua5.4 ausführen. Testdouble prüft echte Module, aber keine Roblox-Transforms, Darstellung oder Physik.
