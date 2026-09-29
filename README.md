@@ -1,6 +1,6 @@
-# Tropical High-Rise — P4 / Issue #13
+# Tropical High-Rise — P5 / Issue #13
 
-Ein eigenes tropisches Hochhaus, kein Kit. Überarbeitete helle Zielbildfassung / Gate A sowie P3 freigegeben; P4 zur visuellen Abnahme.
+Ein eigenes tropisches Hochhaus, kein Kit. Überarbeitete helle Zielbildfassung / Gate A sowie P3 freigegeben; P4 am29.09.2026 vom Nutzer freigegeben; P5 zur visuellen Abnahme.
 
 ## Studio
 
@@ -13,7 +13,7 @@ git switch --track origin/largecity-tropical-high-rise-l3
 
 Rojo weiterlaufen lassen, Sync abwarten, Play starten. `default.project.json` ist bytegleich zum Signal Tower. Wenn noch kein Server läuft: `rojo serve default.project.json` und Studio verbinden. Spätere Updates: `git pull --ff-only` bei gestopptem Play.
 
-Workspace-Modell: `LargeCity_TropicalHighRise_P4`, BodenpivotY0 in Grundstücksmitte, Front lokal-Z. Kein anderes Hochhaus wird ersetzt; keine Gameplay-Tags in der P4-Vorschau.
+Workspace-Modell: `LargeCity_TropicalHighRise_P5`, BodenpivotY0 in Grundstücksmitte, Front lokal-Z. Kein anderes Hochhaus wird ersetzt; keine Gameplay-Tags in der P4-Vorschau.
 
 ## Masse
 
@@ -41,8 +41,10 @@ Signal Tower400 ist vom gleichen Bodenbezug20Studs höher. Unterschiedliche Terr
 
 2153 BaseParts inklusive GroundPivot. Geprüft:22Geschosse mit2/8/7/5-Verteilung, Dimensionen/Zentrierung,380Höhe,8Stud-Rücksprünge, offener Eingang, Parzellengrenzen und XML-Teilzahl. Builder in Lua5.4-Hierarchietest ausgeführt. Keine Roblox-Rendering-/Physik-/Performanceprüfung.
 
-P4 zeigt die Geometrie mit Grundfarben. Transparente Materialien, Pflanzen/Palmen, Bänke und Türkislicht folgen nach Gate B in P5. HP/Energie/Zerstörung vor P6 abstimmen. Gate B und Gate C offen.
+P5 ergänzt transparente blaugrüne Verglasung, bepflanzte Tröge an Sockel und beiden Hauptterrassen, einzelne Palmen, Dachbegrünung, vier Türkis-Akzente an der offenen Krone sowie Bänke und warme Beleuchtung. P4-XML bleibt das statische Geometriearchiv; P5 wird über die Rojo-Vorschau erzeugt. HP/Energie/Zerstörung vor P6 abstimmen. Gate B freigegeben; P5-Abnahme und Gate C offen.
 
 Zielbild: https://github.com/amanciobouza/trenchborn-asset-workshop/blob/489d33fc98a1a9c71c31aaf2e50bf0ae4dcae090/docs/assets/large-city/tropical-high-rise/approved-target-2026-09-27.jpg
 
 Issue: https://github.com/amanciobouza/trenchborn-asset-workshop/issues/13
+
+P5 umfasst2353 BaseParts und24 schattenlose PointLights. Strukturprüfung mit tatsächlichem Builder/Dressing im Lua5.4-Testdouble bestanden, wiederholtes Apply ohne Duplikate. Glas- und Lichtwirkung sowie Performance in Studio noch zu prüfen.

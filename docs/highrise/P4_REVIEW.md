@@ -1,6 +1,6 @@
 # Gate B — Tropical High-Rise
 
-Erstellt29.09.2026 nach zweiter tropischer Zielbildfassung. Gate B Pending.
+Erstellt29.09.2026 nach zweiter tropischer Zielbildfassung. Gate B am29.09.2026 vom Nutzer mit „passt“ freigegeben.
 
 2153 BaseParts inklusive GroundPivot;22 Geschosse(2+8+7+5),380Studs, zwei8Stud-Hauptterrassen und offene48×32×24-Krone. Warme helle Pfeiler, helles Blaugrün, kleine Bronzeanteile. Keine dunkle Goldkrone. Bauteile pro Geschoss getrennt statt durchgehender tragender Pfeiler.
 
