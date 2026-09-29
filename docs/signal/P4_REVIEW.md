@@ -1,6 +1,6 @@
 # Gate B — Tropical Signal Tower
 
-Zielbildgestaltung übernommen, danach bestätigte400Studs-Höhe massgeblich. P4 erstellt28.09.2026; Gate B Pending.
+Zielbildgestaltung übernommen, danach bestätigte400Studs-Höhe massgeblich. P4 erstellt28.09.2026; P4-v2 am29.09.2026 vom Nutzer freigegeben.
 
 1039 BaseParts inklusive GroundPivot. Zwei Sockelgeschosse, acht durchgehend verjüngte Schaftabschnitte, verbreiterte tragende Unterschale innerhalb der Kanzel, Panoramaebene, offene Plattform und kurze Signalspitze. Türkisring im Kanzelvolumen. Keine zweite geschlossene Ebene über der Kanzel.
 
@@ -12,4 +12,4 @@ In Studio prüfen: Schlankheit/Höhe, Schaftanschlüsse, Unterseite der Kanzel, 
 
 ## Proportionskorrektur vom29.09.2026
 
-Nutzerrückmeldung: Turm wirkt zu dünn, insbesondere unten. Schaft am Fuss von28 auf48Studs Durchmesser verbreitert, oben von18 auf22. An den Höhen32/70/108/146/184/222/260/298/336 sind die Durchmesser48/38/33/30/28/26/24/23/22. Dadurch kräftiger tragender Fuss und nach oben ruhiger auslaufender Schaft. Dunkler Detailstreifen folgt den neuen Flächen; Kanzelunterschale setzt am22Studs-Schaft an. Gesamthöhe400, Sockel80 und Kanzeldurchmesser72 unverändert. Diese Nutzerkorrektur ersetzt die ursprüngliche28→18-Schaftvorgabe. Gate B erneut zur visuellen Prüfung.
+Nutzerrückmeldung: Turm wirkt zu dünn, insbesondere unten. Schaft am Fuss von28 auf48Studs Durchmesser verbreitert, oben von18 auf22. An den Höhen32/70/108/146/184/222/260/298/336 sind die Durchmesser48/38/33/30/28/26/24/23/22. Dadurch kräftiger tragender Fuss und nach oben ruhiger auslaufender Schaft. Dunkler Detailstreifen folgt den neuen Flächen; Kanzelunterschale setzt am22Studs-Schaft an. Gesamthöhe400, Sockel80 und Kanzeldurchmesser72 unverändert. Diese Nutzerkorrektur ersetzt die ursprüngliche28→18-Schaftvorgabe. P4-v2 am29.09.2026 freigegeben.
