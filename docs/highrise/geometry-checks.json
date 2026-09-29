@@ -1,0 +1,61 @@
+{
+  "revision": "TropicalHighRise-P4-v1",
+  "parts": 2153,
+  "storeys": 22,
+  "storey_distribution": [
+    2,
+    8,
+    7,
+    5
+  ],
+  "podium": [
+    112,
+    96,
+    36
+  ],
+  "lower": [
+    88,
+    72,
+    128
+  ],
+  "middle": [
+    72,
+    56,
+    112
+  ],
+  "upper": [
+    56,
+    40,
+    80
+  ],
+  "crown": [
+    48,
+    32,
+    24
+  ],
+  "height_marks": [
+    36,
+    164,
+    276,
+    356,
+    380
+  ],
+  "max_height": 380,
+  "terrace_width": 8,
+  "plot": [
+    144,
+    128
+  ],
+  "gate_b": "Pending",
+  "studio_test": "Pending",
+  "checks": [
+    "plot bounds",
+    "height380",
+    "22storeys",
+    "centred sections",
+    "eightStud setbacks",
+    "open crown",
+    "clear entry",
+    "XML count"
+  ]
+}
