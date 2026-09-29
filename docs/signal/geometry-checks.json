@@ -1,6 +1,6 @@
 {
-  "revision": "TropicalSignalTower-P4-v1",
-  "parts": 1032,
+  "revision": "TropicalSignalTower-P4-v2",
+  "parts": 1039,
   "podium": [
     80,
     80,
@@ -8,8 +8,19 @@
   ],
   "shaft_height": 304,
   "shaft_diameter": [
+    48,
+    22
+  ],
+  "shaft_profile_diameters": [
+    48,
+    38,
+    33.0,
+    30,
     28,
-    18
+    26,
+    24,
+    23.0,
+    22
   ],
   "cabin": [
     72,

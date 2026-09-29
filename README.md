@@ -20,7 +20,7 @@ Workspace-Modell: `LargeCity_TropicalSignalTower_P4`. Pivot auf Grundstücksmitt
 | Bereich | Höhenbereich | Masse / Gestaltung |
 | --- | --- | --- |
 | Sockel |0–32| Rund,80Durchmesser innerhalb80×80; zwei16Studs-Geschosse, Panorama-Fassade und drei offene Eingangsbuchten |
-| Schaft |32–336|304hoch,28→18Durchmesser,16Facetten in acht38Studs-Abschnitten; echte durchgehende Verjüngung |
+| Schaft |32–336|304hoch,48→22Durchmesser,16Facetten in acht38Studs-Abschnitten; echte durchgehende Verjüngung |
 | Kanzel |336–360|72Durchmesser,24hoch inkl. verbreiterter Unterschale336–343, Boden343–344, Glas344–359 und Dach359–360 |
 | Plattform |360–368|72Durchmesser, Boden360–362, offenes Geländer bis368; keine Dachhaube |
 | Signalaufbau |362–400| Zentraler Sockel beginnt auf Plattform, oberhalb368 bleiben32Studs; Spitze exakt400 |
@@ -37,10 +37,14 @@ Vom gleichen lokalen Bodenbezug ist die Spitze72Studs bzw.21.95% höher als der3
 
 ## Export / Prüfung
 
-`python3 tools/build_signal.py --preview` erzeugt Luau, statisches `dist/LargeCityTropicalSignalTower_P4.rbxmx`, Massbericht und sechs technische Ansichten inklusive Kanzel-/Sockeldetails. Benötigt NumPy; Preview zusätzlich Pillow. Import des XML alternativ direkt in Studio, ohne automatisch laufende Scripts.1032 BaseParts inklusive GroundPivot.
+`python3 tools/build_signal.py --preview` erzeugt Luau, statisches `dist/LargeCityTropicalSignalTower_P4.rbxmx`, Massbericht und sechs technische Ansichten inklusive Kanzel-/Sockeldetails. Benötigt NumPy; Preview zusätzlich Pillow. Import des XML alternativ direkt in Studio, ohne automatisch laufende Scripts.1039 BaseParts inklusive GroundPivot.
 
 Geprüft: Grundstücksgrenzen, Gesamthöhe400, Abschnittsbudgets, acht verjüngte Schaftabschnitte, XML-Teilzahl. Builder mit Lua5.4-Hierarchietest ausgeführt. Keine Roblox-Render-/Physik-/Performanceprüfung. Gate B zur Nutzerabnahme, Gate C und HP/Energie/Zerstörung noch offen.
 
 Zielbild: https://github.com/amanciobouza/trenchborn-asset-workshop/blob/ccaca2cf048f7a696beddb8feed07f8a14803802/docs/assets/large-city/tropical-signal-tower/approved-target-2026-09-27.jpg
 
 Issue: https://github.com/amanciobouza/trenchborn-asset-workshop/issues/12
+
+## Proportionskorrektur vom29.09.2026
+
+Nutzerrückmeldung: Turm wirkt zu dünn, insbesondere unten. Schaft am Fuss von28 auf48Studs Durchmesser verbreitert, oben von18 auf22. An den Höhen32/70/108/146/184/222/260/298/336 sind die Durchmesser48/38/33/30/28/26/24/23/22. Dadurch kräftiger tragender Fuss und nach oben ruhiger auslaufender Schaft. Dunkler Detailstreifen folgt den neuen Flächen; Kanzelunterschale setzt am22Studs-Schaft an. Gesamthöhe400, Sockel80 und Kanzeldurchmesser72 unverändert. Diese Nutzerkorrektur ersetzt die ursprüngliche28→18-Schaftvorgabe. Gate B erneut zur visuellen Prüfung.

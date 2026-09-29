@@ -66,17 +66,18 @@ for floor,y0,y1 in [(0,1,16),(1,17,30)]:
 ring('Podium','TopBand',39.8,29.65,.6,.65,'metal')
 beam('Entrance','Canopy',-16,16,14,16,-49,-37,'silver')
 for i,x in enumerate([-14,14]):beam('Entrance',f'Column{i}',x-1,x+1,0,14,-45,-43,'metal')
-# Eight shaft sections, exactly 304 high, smoothly tapering28 to18 diameter.
+# User revision2026-09-29: broad flared foot and a stronger upper shaft.
+# Exact shared endpoints keep the eight sections connected.
+shaft_radii=[24,19,16.5,15,14,13,12,11.5,11]
 for j in range(8):
-    y0=32+38*j;y1=y0+38;r0=14-5*j/8;r1=14-5*(j+1)/8
+    y0=32+38*j;y1=y0+38;r0,r1=shaft_radii[j:j+2]
     frustum('Shaft'+str(j+1),'Facet',r0,r1,y0,y1)
-# Invisible interior is not modelled as an elevator. A narrow solid core closes the shaft.
+    length=math.hypot(38,r0-r1)
+    part('ShaftDetail',f'FrontStrip{j}',(3.5,length,.8),(0,(y0+y1)/2,-(r0+r1)/2-.1),'metal',rx=math.atan2(r0-r1,38))
+# Solid inner core remains fully inside every tapered section.
 disc('ShaftCore','Core',8.3,32,336,'stone')
-# Dark vertical detail strip follows the taper and is raised clear of the shaft face.
-length=math.hypot(304,5)
-part('ShaftDetail','FrontStrip',(3,length,.3),(0,184,-11.72),'metal',rx=math.atan2(5,304))
-# A flared structural underside is contained in the24-Stud-high observation volume.
-frustum('Cabin','UnderShell',9,35.7,336,343,32,'silver')
+# The under-shell starts at the widened shaft tip without a neck or gap.
+frustum('Cabin','UnderShell',11,35.7,336,343,32,'silver')
 disc('Cabin','Floor',36,343,344,'silver')
 ring('Cabin','LightRing',35.8,342.35,.7,.7,'teal')
 # Panorama level and its top slab. One glass layer, not two enclosed storeys.
@@ -135,7 +136,7 @@ rows+=['}', '''function Builder.Build(parent,options)
  local model=Instance.new("Model");model.Name="LargeCity_TropicalSignalTower_P4"
  model:SetAttribute("LayoutId","LC-41");model:SetAttribute("Phase",4)
  model:SetAttribute("QualityGateA","Approved");model:SetAttribute("QualityGateB","Pending")
- model:SetAttribute("BuildRevision","TropicalSignalTower-P4-v1")
+ model:SetAttribute("BuildRevision","TropicalSignalTower-P4-v2")
  local pivot=Instance.new("Part");pivot.Name="GroundPivot";pivot.Size=Vector3.new(.1,.1,.1)
  pivot.Anchored=true;pivot.Transparency=1;pivot.CanCollide=false;pivot.CanQuery=false;pivot.CanTouch=false
  pivot.Parent=model;model.PrimaryPart=pivot
@@ -179,12 +180,12 @@ for p in [pivot]+parts:
     if cls=='Part':val(pr,'token','shape',2 if p['shape']=='Cylinder' else 1)
     if p is pivot:val(pr,'float','Transparency',1)
 meta,_=item(model,'Folder','ReviewStatus')
-for n,v in [('Phase','4'),('GateB','Pending'),('LayoutId','LC-41'),('Revision','TropicalSignalTower-P4-v1')]:
+for n,v in [('Phase','4'),('GateB','Pending'),('LayoutId','LC-41'),('Revision','TropicalSignalTower-P4-v2')]:
     _,pr=item(meta,'StringValue',n);val(pr,'string','Value',v)
 path=DEST/'LargeCityTropicalSignalTower_P4.rbxmx';E.ElementTree(root).write(path,encoding='utf-8',xml_declaration=True)
 t=E.parse(path);assert len(t.findall('.//Item[@class="Part"]'))+len(t.findall('.//Item[@class="WedgePart"]'))==len(parts)+1
 assert not t.findall('.//Item[@class="Script"]')
-report=dict(revision='TropicalSignalTower-P4-v1',parts=len(parts)+1,podium=[80,80,32],shaft_height=304,shaft_diameter=[28,18],cabin=[72,24],platform=[72,8],signal_budget=32,max_height=400,height_marks=[32,336,360,368,400],plot=[112,112],office_height_comparison=328,gate_b='Pending',studio_test='Pending',checks=['plot bounds','height400','eight tapered shaft sections','height budgets','XML part count'])
+report=dict(revision='TropicalSignalTower-P4-v2',parts=len(parts)+1,podium=[80,80,32],shaft_height=304,shaft_diameter=[48,22],shaft_profile_diameters=[2*r for r in shaft_radii],cabin=[72,24],platform=[72,8],signal_budget=32,max_height=400,height_marks=[32,336,360,368,400],plot=[112,112],office_height_comparison=328,gate_b='Pending',studio_test='Pending',checks=['plot bounds','height400','eight tapered shaft sections','height budgets','XML part count'])
 (DOC/'geometry-checks.json').write_text(json.dumps(report,indent=2)+'\n')
 if '--preview' in sys.argv:
     import numpy as np
