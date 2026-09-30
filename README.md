@@ -1,87 +1,46 @@
-# Trenchborn Asset Workshop
+# Large City — vollständige Stadtvorschau
 
-Synchronized Roblox Studio workspace for specification-driven Trenchborn asset development and automated quality gates.
+21 Gebäudetypen auf **54 bebauten Parzellen**: 21 Master-Plätze, 33 Kopien. LC-17 bleibt eine Grünreserve. Enthält alle zehn bestehenden und alle elf neu erstellten Gebäudetypen in ihrer bisherigen Grösse.
 
-## Marshal-II Roadblock final installer
+## In Roblox Studio ansehen
 
-`MarshalRoadblockInstaller` is the Phase 7 production API. It installs the approved model, dressing, fleet rig, gameplay, animations, combat VFX, and spatial sound pass. It does not install the workshop HUD, test buttons, or test targets.
+Play stoppen, im Repository-Terminal:
 
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("MarshalRoadblockInstaller"))
-
-local marshal, api = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	AnchorRoot = true,
-})
-
-api.RequestAbility:Invoke("RiotShield")
-api.RequestAbility:Invoke("PulseCannon", workspace.TargetPart)
-api.RequestAbility:Invoke("ContainmentNet", workspace.TargetPart)
-api.ApplyDamage:Invoke(500, true)
-api.Runtime.PlayAnimation("Walk")
+```sh
+git fetch origin
+git switch --track origin/largecity-city-plan-assembly
 ```
 
-`GroundCFrame` is the desired ground position and orientation beneath the Guardian. The installer computes the correct vertical placement from the finished geometry. `AnchorRoot` defaults to `true`, which supports server-controlled movement through `Model:PivotTo()`; set it to `false` only when an external character controller supplies collision and physics.
+Rojo weiterlaufen lassen, vollständigen Sync abwarten, Play starten. `default.project.json` bleibt identisch zu den letzten Einzelgebäude-Branches. Auf diesem Branch künftig `git pull --ff-only` verwenden.
 
-Call `api.Runtime.Destroy()` before removing a live installation so its per-player animation bridge is cleaned up.
+Die Vorschau erscheint unter **Workspace → LargeCity_AssembledPreview**. `Buildings` enthält pro Parzelle ein eigenes Modell mit LC-ID im Namen. `PlanMarkers` enthält die Beschriftungen; `Roads` das Strassennetz und die Zugänge. Ein Spawn liegt im Zentrum. In Studio das Stadtmodell auswählen und mit **F** einrahmen, um die ganze Stadt zu sehen. Der Output meldet nach dem Aufbau `Ready: 54 buildings`.
 
-## Warden-I Shepherd final installer
+Norden = Roblox −Z = **City**. Süden = Roblox +Z = **Mega City**. Plan-X bleibt Roblox-X, Plan-Z wird negiert. Eingänge zeigen entsprechend N/E/S/W auf die im Plan definierten Zugänge. Die Vorschau liegt auf Y=12, damit Tiefgaragen oberhalb einer üblichen Studio-Baseplate bleiben. Endgültige Terrainhöhe und Weltposition sind noch offen.
 
-`WardenShepherdInstaller` installs the approved Warden geometry, dressing, gameplay contract, and visual reactions without the workshop test console.
+## Inhalt und Grenzen
 
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+- Alle Quellen sind auf konkrete Commits festgelegt: `docs/city/source-lock.json`.
+- Ein Master wird pro Gebäudetyp aufgebaut, danach werden unabhängige Modelle kopiert und als Ganzes gedreht/platziert. Keine Skalierung und keine erneute Dressing-Anwendung nach der Platzierung.
+- Stadtplan: `docs/city/city-plan.json`, abgeleitet aus Plan v2.1. Koordinaten, Parzellen und Ausrichtungen bleiben erhalten.
+- Power Utility enthält den vorhandenen Builder und das freigegebene Dressing. Auf seinem Quellbranch fehlt ein eigenständiger Installer; die Stadtvorschau verwendet diese beiden Module direkt.
+- Ein korrigierter Quellverweis im Courthouse-Installer: `LargeCourthouse…` → `LargeCityCourthouse…`. Nur die zusammengeführte Fassung ist hier korrigiert; der Einzelbranch bleibt unverändert.
+- Bodenplatten haben Aussparungen für alle Grundstücke. Die Tiefgaragen der Residential Towers werden nicht überdeckt. Ältere Gebäude erhalten einen Vorplatz innerhalb ihrer reservierten Parzelle. Strassenkreuzungen bestehen aus überlappungsfreien Flächen.
+- Diese Architekturvorschau entfernt `KaijuHouse`-Tags vor dem Einfügen in Workspace. HP/Energie- und Zerstörungsmetadaten der Quellen bleiben erhalten, aber es wird kein Kampf-, Belohnungs- oder Einsturzsystem gestartet. Das Stadion-Pong bleibt ausgeschaltet.
+- Gate C bleibt offen. Hauptspiel-Einbindung, Einsturz, Terrain, Strassendetails, finale Bahnanbindung und Performance sind noch zu prüfen. Die Stadt enthält rund **54.600 sichtbare Gebäude-Parts und 352 Lichter**, zusätzlich Boden, Wege und Beschriftungen; keine Aussage zur mobilen Bildrate.
 
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("WardenShepherdInstaller"))
+Falls ein alter `WorkshopBootstrap` auf `MarshalRoadblockSpecification` wartet, diesen alten Script im isolierten Vorschauprojekt deaktivieren (`Enabled=false`). Er gehört nicht zu diesem Branch. Unbekannte Studio-Objekte werden nicht automatisch gelöscht. Einen bereits vorhandenen Stadtaufbau überschreibt die Vorschau nicht; eine neue Play-Session verwenden.
 
-local warden, gameplayApi = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	EnableVisualReactions = true,
-})
+## Nachvollziehbare Prüfungen
+
+Benötigt Python 3 und `liblua5.4`. Die Produktion bleibt Luau; nur der lokale Test übersetzt einfache Luau-Zuweisungen für Lua 5.4.
+
+```sh
+python3 tools/build_city_plan.py
+python3 tools/check_city.py
+python3 tools/run_lua.py tests/generated_city_test.lua > docs/city/placement-test.txt
+python3 tools/validate_city_layout.py
 ```
 
+Geprüft mit den tatsächlichen Buildern/Dressings/Installern: 54 vollständige Platzierungen, 21 unterschiedliche Master, unabhängige Kopien, konkrete Modulreferenzen, alle vier Himmelsrichtungen, Höhe/Koordinatentransformation, Ablehnung doppelten Aufbaus und atomarer Abbruch bei fehlenden Abhängigkeiten. Numerische Vektor-/CFrame-Rechnung ergibt keine Gebäudeüberschneidungen, keine Überschneidungen mit den Hauptstrassen und keine überschrittenen Parzellenhüllen. Berichte: `docs/city/placement-report.json` und `placement-test.txt`.
 
-## Aegis-III Interceptor final installer
-
-`AegisInterceptorInstaller` installs the approved Phase 7 Aegis-III geometry, dressing, fleet rig, gameplay, production animations, combat VFX, spatial sounds, and targeted missile warning audio. Workshop HUDs and test targets are not included.
-
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("AegisInterceptorInstaller"))
-
-local aegis, api = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	AnchorRoot = true,
-})
-
-api.RequestAbility:Invoke("TwinIonCannons", workspace.TargetPart)
-api.RequestAbility:Invoke("ShoulderMissiles", workspace.TargetPart)
-api.RequestAbility:Invoke("DirectionalAegis")
-api.ApplyDamage:Invoke(5000, workspace.DamageSource)
-```
-
-The installed gameplay contract exposes 18,000 health, 150,000 shield points, directional frontal damage reduction, independent ability cooldowns, reset support, and explicit runtime cleanup through `api.Runtime.Destroy()`.
-
-## Sovereign-V Apex final installer
-
-`SovereignApexInstaller` installs the approved Sovereign-V geometry, dressing, fleet rig, gameplay contract, production animations, wing inertia, Apex Lance, Hunter Drones, Sovereign Lock, VFX, and spatial sound pass. It does not install the workshop HUD or test target.
-
-```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local packageFolder = ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local installer = require(packageFolder:WaitForChild("SovereignApexInstaller"))
-
-local sovereign, api = installer.Install(workspace, {
-	GroundCFrame = CFrame.new(0, 0, 0),
-	AnchorRoot = true,
-})
-
-api.RequestAbility:Invoke("ApexLanceBeam", workspace.Kaiju)
-```
+Diese Tests ersetzen keine Roblox-Rendering-, Physik-, Paketimport- oder Performanceprüfung.

@@ -3,3 +3,5 @@
 *.rbxm
 .DS_Store
 Thumbs.db
+
+tests/generated_city_test.lua
