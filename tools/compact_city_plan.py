@@ -1,5 +1,5 @@
 """One-time constrained compaction from the archived v3 plan (requires scipy).
-Keeps district/road topology and building scale; minimises distance to half-size plan.
+Keeps district/road topology and building scale; minimises distance to dense city blocks.
 """
 from pathlib import Path
 import json,itertools,math
@@ -17,7 +17,7 @@ for p in d['plots']:
   wz=2*max(-p['z']-b['min'][2],b['max'][2]+p['z'])+8
   p['world_width']=math.ceil(wx/2)*2;p['world_depth']=math.ceil(wz/2)*2
   p['width'],p['depth']=(p['world_width'],p['world_depth']) if p['front'] in ['N','S'] else (p['world_depth'],p['world_width'])
-for road in d['roads']:road[5]=48 if road[5]==64 else 28
+for road in d['roads']:road[5]=24 if road[5]==64 else 16
 axes=[sorted({0,*[p[k] for p in d['plots']],*[v for rd in d['roads'] for v in (rd[j],rd[j+2])]}) for k,j in [('x',1),('z',2)]]
 keys=[(a,v) for a,vals in enumerate(axes) for v in vals];ix={k:i for i,k in enumerate(keys)};n=len(keys)
 # A rectangle edge is (coordinate variable, constant offset).
@@ -39,14 +39,18 @@ for a,b in itertools.combinations(objects,2):
    gap=original(hi[1][axis])-original(lo[1][axis+2])
    if gap>=0:candidates.append((gap,lo[1][axis+2],hi[1][axis]))
  assert candidates,(a[0],b[0])
- _,left,right=max(candidates,key=lambda c:c[0]);constraint(left,right,6 if a[2] or b[2] else 12)
+ _,left,right=max(candidates,key=lambda c:c[0]);constraint(left,right,2 if a[2] or b[2] else 4)
 for axis,vals in enumerate(axes):
  for a,b in zip(vals,vals[1:]):constraint((ix[(axis,a)],0),(ix[(axis,b)],0),.1)
 for i,(_,v) in enumerate(keys):
- row=np.zeros(2*n);row[i]=1;row[n+i]=-1;A.append(row);B.append(v*.5)
- row=np.zeros(2*n);row[i]=-1;row[n+i]=-1;A.append(row);B.append(-v*.5)
+ row=np.zeros(2*n);row[i]=1;row[n+i]=-1;A.append(row);B.append(v*.2)
+ row=np.zeros(2*n);row[i]=-1;row[n+i]=-1;A.append(row);B.append(-v*.2)
 bounds=[(0,0) if v==0 else (None,None) for _,v in keys]+[(0,None)]*n
-res=linprog(np.r_[np.zeros(n),np.ones(n)],A_ub=np.array(A),b_ub=np.array(B),bounds=bounds,method='highs');assert res.success,res.message
+cost=np.r_[np.zeros(n),np.ones(n)]
+for axis,vals in enumerate(axes):
+ cost[ix[(axis,vals[0])]]-=100
+ cost[ix[(axis,vals[-1])]]+=100
+res=linprog(cost,A_ub=np.array(A),b_ub=np.array(B),bounds=bounds,method='highs');assert res.success,res.message
 maps=[{v:round(res.x[ix[(axis,v)]],3) for v in vals} for axis,vals in enumerate(axes)]
 for p in d['plots']:
  p['x']=maps[0][p['x']];p['z']=maps[1][p['z']]
@@ -58,8 +62,8 @@ for rd in d['roads']:
  for j in [2,4]:rd[j]=maps[1][rd[j]]
 for info in d['models'].values():
  p=next(p for p in d['plots'] if p['id']==info['master_plot']);info['width']=p['width'];info['depth']=p['depth']
-d['version']='Large City - compact assembled preview v4'
-d['note']='Dense layout requested by user. Unchanged building scale; reduced spacing, tighter old-model reservations, 48/28-stud roads. Flat preview; Gate C pending.'
+d['version']='Large City - compact assembled preview v5'
+d['note']='Dense layout requested by user. Unchanged building scale; reduced spacing, tighter old-model reservations, 24/16-stud roads. Flat preview; Gate C pending.'
 pzmin=min(p['z']-p['world_depth']/2 for p in d['plots']);pzmax=max(p['z']+p['world_depth']/2 for p in d['plots'])
 for rd in d['roads']:
  if rd[0]=='City Arrival Link':rd[4]=max(rd[4],pzmax+64)

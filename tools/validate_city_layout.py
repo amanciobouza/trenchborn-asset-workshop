@@ -18,6 +18,14 @@ for row in rows:
  p=plots[row['plot']];a=rect(row);q=[p['x']-p['world_width']/2,-p['z']-p['world_depth']/2,p['x']+p['world_width']/2,-p['z']+p['world_depth']/2]
  assert a[0]>=q[0]-.01 and a[1]>=q[1]-.01 and a[2]<=q[2]+.01 and a[3]<=q[3]+.01,row['plot']
  for name,road in roads:assert not overlap(a,road),(row['plot'],name)
+# Access corridors may not cut through another reserved plot.
+for p in data['plots']:
+ (x1,z1),(x2,z2)=p['access']
+ a=[min(x1,x2)-(8 if x1==x2 else 0),min(z1,z2)-(8 if z1==z2 else 0),max(x1,x2)+(8 if x1==x2 else 0),max(z1,z2)+(8 if z1==z2 else 0)]
+ for q in data['plots']:
+  if q['id']==p['id']:continue
+  b=[q['x']-q['world_width']/2,q['z']-q['world_depth']/2,q['x']+q['world_width']/2,q['z']+q['world_depth']/2]
+  assert not overlap(a,b),('access corridor',p['place_id'],q['place_id'])
 report=dict(preview_ground_y=12,buildings=len(rows),masters=len(set(x['model'] for x in rows)),copies=33,reserve='LC-17',visible_parts=sum(x['parts'] for x in rows),lights=sum(x['lights'] for x in rows),building_overlaps=0,main_road_overlaps=0,plot_overflows=0,scope='Numerical source execution and AABBs; no Roblox rendering/physics/performance validation',placements=rows)
 (r/'docs/city/placement-report.json').write_text(json.dumps(report,indent=2)+'\n')
 print({k:v for k,v in report.items() if k!='placements'})
