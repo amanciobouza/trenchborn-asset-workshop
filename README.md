@@ -13,7 +13,7 @@ git switch --track origin/largecity-city-plan-assembly
 
 Rojo weiterlaufen lassen, vollständigen Sync abwarten, Play starten. `default.project.json` bleibt identisch zu den letzten Einzelgebäude-Branches. Auf diesem Branch künftig `git pull --ff-only` verwenden.
 
-Die Vorschau erscheint unter **Workspace → LargeCity_AssembledPreview**. `Buildings` enthält pro Parzelle ein eigenes Modell mit LC-ID im Namen. `PlanMarkers` enthält die Beschriftungen; `Roads` das Strassennetz und die Zugänge. Ein Spawn liegt im Zentrum. In Studio das Stadtmodell auswählen und mit **F** einrahmen, um die ganze Stadt zu sehen. Der Output meldet nach dem Aufbau `Ready: 54 buildings`.
+Die Vorschau erscheint unter **Workspace → LargeCity_AssembledPreview**. `Buildings` enthält pro Parzelle ein eigenes Modell mit LC-ID im Namen. `PlanMarkers` enthält die Beschriftungen; `Roads` das Strassennetz und die Zugänge. Ein Spawn liegt an der östlichen Verbindungsstrasse. In Studio das Stadtmodell auswählen und mit **F** einrahmen, um die ganze Stadt zu sehen. Der Output meldet nach dem Aufbau `Ready: 54 buildings`.
 
 Norden = Roblox −Z = **City**. Süden = Roblox +Z = **Mega City**. Plan-X bleibt Roblox-X, Plan-Z wird negiert. Eingänge zeigen entsprechend N/E/S/W auf die im Plan definierten Zugänge. Die Vorschau liegt auf Y=12, damit Tiefgaragen oberhalb einer üblichen Studio-Baseplate bleiben. Endgültige Terrainhöhe und Weltposition sind noch offen.
 
@@ -21,7 +21,7 @@ Norden = Roblox −Z = **City**. Süden = Roblox +Z = **Mega City**. Plan-X blei
 
 - Alle Quellen sind auf konkrete Commits festgelegt: `docs/city/source-lock.json`.
 - Ein Master wird pro Gebäudetyp aufgebaut, danach werden unabhängige Modelle kopiert und als Ganzes gedreht/platziert. Keine Skalierung und keine erneute Dressing-Anwendung nach der Platzierung.
-- Stadtplan: `docs/city/city-plan.json`, abgeleitet aus Plan v2.1. Version v5 rückt die Parzellen deutlich zusammen. Gebäudetypen, Ausrichtungen und Stadtteil-/Strassentopologie bleiben erhalten; die Gebäude werden nicht skaliert. Boulevards sind 24 Studs, Nebenstrassen 16 Studs breit. Alte Grundstücksreserven sind auf die gemessene Geometrie mit Rand reduziert. Die vorherige Anordnung ist als `city-plan-v3.json` archiviert.
+- Stadtplan: `docs/city/city-plan.json`. V6 ersetzt das weitläufige Strassengitter durch drei dichte Häuserblöcke mit je zwei gegenüberliegenden Reihen. Alle 54 Gebäude, IDs, Grundstücksgrössen und die Grünreserve bleiben enthalten. Positionen und Ausrichtungen sind neu gepackt: Eingänge zeigen auf die neuen Blockstrassen; die Gebäude bleiben in Originalgrösse. City bleibt im Norden, Mega City im Süden. Seitliche Grundstücksabstände 2 Studs, Vorstreifen 1 Stud, Blockstrassen 12 Studs, östliche Verbindungsstrasse 16 Studs. Frühere Pläne sind als `city-plan-v3.json` und `city-plan-v5.json` archiviert.
 - Power Utility enthält den vorhandenen Builder und das freigegebene Dressing. Auf seinem Quellbranch fehlt ein eigenständiger Installer; die Stadtvorschau verwendet diese beiden Module direkt.
 - Ein korrigierter Quellverweis im Courthouse-Installer: `LargeCourthouse…` → `LargeCityCourthouse…`. Nur die zusammengeführte Fassung ist hier korrigiert; der Einzelbranch bleibt unverändert.
 - Bodenplatten haben Aussparungen für alle Grundstücke. Die Tiefgaragen der Residential Towers werden nicht überdeckt. Ältere Gebäude erhalten einen Vorplatz innerhalb ihrer reservierten Parzelle. Strassenkreuzungen bestehen aus überlappungsfreien Flächen.
@@ -45,6 +45,6 @@ Geprüft mit den tatsächlichen Buildern/Dressings/Installern: 54 vollständige 
 
 Diese Tests ersetzen keine Roblox-Rendering-, Physik-, Paketimport- oder Performanceprüfung.
 
-Die Verdichtung lässt sich mit `python3 tools/compact_city_plan.py` aus dem archivierten v3-Plan und Messbericht reproduzieren (zusätzlich SciPy erforderlich). Danach Plan generieren und Platzierungsprüfung ausführen.
+V6 lässt sich mit `python3 tools/pack_city_blocks.py` aus dem archivierten v5-Plan reproduzieren (Python-Standardbibliothek). Danach Plan generieren und Platzierungsprüfung ausführen. `compact_city_plan.py` reproduziert nur die ältere V5-Abstandsanpassung und wird für V6 nicht verwendet.
 
-V5 verdichtet erneut: Mindestabstand zwischen reservierten Grundstücken 4 Studs, zwischen Grundstück und Strasse 2 Studs. Die Optimierung minimiert zusätzlich die Stadtausdehnung. Diese Werte beziehen sich auf Parzellen; Abstand zu Fassaden hängt vom vorhandenen Gebäudevorplatz ab.
+Der bebaute Bereich ist 1.312 × 922 Studs gross. Die gesamte Vorschaufläche inklusive Verbindungen und Rand sinkt gegenüber V5 von 1.766 × 1.721 auf 1.345 × 1.006 Studs (rund 55 % weniger). Abstand zu den eigentlichen Fassaden hängt weiterhin vom vorhandenen Gebäudevorplatz ab. Die gemessenen Gebäudegeometrien überschneiden weder Nachbarn noch Strassen; Zugänge schneiden keine fremden Parzellen.

@@ -29,7 +29,7 @@ local function folder(parent,name)
 end
 local function road(parent,name,x1,z1,x2,z2,width,y,color)
  assert(x1==x2 or z1==z2,"Plan roads must be axis aligned")
- return part(parent,name,Vector3.new(math.max(math.abs(x2-x1),width),1,math.max(math.abs(z2-z1),width)),
+ return part(parent,name,Vector3.new(x1==x2 and width or math.abs(x2-x1),1,z1==z2 and width or math.abs(z2-z1)),
   CFrame.new((x1+x2)/2,y-.5,-(z1+z2)/2),color)
 end
 local function bounds(model)
@@ -114,7 +114,7 @@ function Assembly.Build(parent, options)
      CFrame.new(plot.x,y-.5,-plot.z),Color3.fromRGB(106,142,95))
    end
    local a,b=plot.access[1],plot.access[2]
-   road(roads,plot.place_id.."_Access",a[1],a[2],b[1],b[2],16,y-.05,Color3.fromRGB(158,159,145))
+   road(roads,plot.place_id.."_Access",a[1],a[2],b[1],b[2],8,y-.05,Color3.fromRGB(158,159,145))
    local p=part(markers,plot.place_id,Vector3.new(1,1,1),CFrame.new(b[1],y+1,-b[2]),Color3.fromRGB(237,207,120))
    p.CanCollide=false;label(p,plot.place_id.." · "..plot.name)
    if options.YieldBetweenPlots then task.wait() end
@@ -123,8 +123,9 @@ function Assembly.Build(parent, options)
   for _,entry in ipairs(Plan.connection_markers or {{"NORD · CITY",-1430},{"SÜD · MEGA CITY",1430}}) do
    local p=part(markers,entry[1],Vector3.new(8,2,8),CFrame.new(0,y+1,entry[2]),Color3.fromRGB(57,173,179));label(p,entry[1])
   end
-  local spawn=Instance.new("SpawnLocation");spawn.Name="CityReviewSpawn";spawn.Size=Vector3.new(20,1,20)
-  spawn.CFrame=CFrame.new(0,y+1,0);spawn.Anchored=true;spawn.Neutral=true;spawn.Duration=0
+  local spawn=Instance.new("SpawnLocation");spawn.Name="CityReviewSpawn";spawn.Size=Vector3.new(10,1,10)
+  local spawnAt=Plan.review_spawn or {0,0}
+  spawn.CFrame=CFrame.new(spawnAt[1],y+1,spawnAt[2]);spawn.Anchored=true;spawn.Neutral=true;spawn.Duration=0
   spawn.Color=Color3.fromRGB(220,213,190);spawn.Parent=city
   city:SetAttribute("BuildingCount",placed);city:SetAttribute("MasterCount",21)
   city:SetAttribute("CityToNorth",true);city:SetAttribute("MegaCityToSouth",true)
