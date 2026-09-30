@@ -1,6 +1,6 @@
-# Tropical High-Rise — P5 / Issue #13
+# Tropical High-Rise — P6 / Issue #13
 
-Ein eigenes tropisches Hochhaus, kein Kit. Überarbeitete helle Zielbildfassung / Gate A sowie P3 freigegeben; P4 am29.09.2026 vom Nutzer freigegeben; P5 zur visuellen Abnahme.
+Ein eigenes tropisches Hochhaus, kein Kit. Überarbeitete helle Zielbildfassung / Gate A sowie P3 freigegeben; P4 am29.09.2026 vom Nutzer freigegeben; P5 und P6-Konfiguration am 30.09.2026 vom Nutzer freigegeben.
 
 ## Studio
 
@@ -13,7 +13,7 @@ git switch --track origin/largecity-tropical-high-rise-l3
 
 Rojo weiterlaufen lassen, Sync abwarten, Play starten. `default.project.json` ist bytegleich zum Signal Tower. Wenn noch kein Server läuft: `rojo serve default.project.json` und Studio verbinden. Spätere Updates: `git pull --ff-only` bei gestopptem Play.
 
-Workspace-Modell: `LargeCity_TropicalHighRise_P5`, BodenpivotY0 in Grundstücksmitte, Front lokal-Z. Kein anderes Hochhaus wird ersetzt; keine Gameplay-Tags in der P4-Vorschau.
+Workspace-Modell: `LargeCity_TropicalHighRise_L3`, BodenpivotY0 in Grundstücksmitte, Front lokal-Z. Kein anderes Hochhaus wird ersetzt; P6 setzt den KaijuHouse-Tag für die bestehende Hauptspiel-Anbindung.
 
 ## Masse
 
@@ -41,16 +41,24 @@ Signal Tower400 ist vom gleichen Bodenbezug20Studs höher. Unterschiedliche Terr
 
 2153 BaseParts inklusive GroundPivot. Geprüft:22Geschosse mit2/8/7/5-Verteilung, Dimensionen/Zentrierung,380Höhe,8Stud-Rücksprünge, offener Eingang, Parzellengrenzen und XML-Teilzahl. Builder in Lua5.4-Hierarchietest ausgeführt. Keine Roblox-Rendering-/Physik-/Performanceprüfung.
 
-P5 ergänzt transparente blaugrüne Verglasung, bepflanzte Tröge an Sockel und beiden Hauptterrassen, einzelne Palmen, Dachbegrünung, vier Türkis-Akzente an der offenen Krone sowie Bänke und warme Beleuchtung. P4-XML bleibt das statische Geometriearchiv; P5 wird über die Rojo-Vorschau erzeugt. HP/Energie/Zerstörung vor P6 abstimmen. Gate B freigegeben; P5-Abnahme und Gate C offen.
+P5 ergänzt transparente blaugrüne Verglasung, bepflanzte Tröge an Sockel und beiden Hauptterrassen, einzelne Palmen, Dachbegrünung, vier Türkis-Akzente an der offenen Krone sowie Bänke und warme Beleuchtung. P4-XML bleibt das statische Geometriearchiv; P5 wird über die Rojo-Vorschau erzeugt. 256.000 HP, Electric und eine gemeinsame Zerstörungsgruppe sind freigegeben. Gate C bleibt offen.
 
 Zielbild: https://github.com/amanciobouza/trenchborn-asset-workshop/blob/489d33fc98a1a9c71c31aaf2e50bf0ae4dcae090/docs/assets/large-city/tropical-high-rise/approved-target-2026-09-27.jpg
 
 Issue: https://github.com/amanciobouza/trenchborn-asset-workshop/issues/13
 
-P5 umfasst2353 BaseParts und24 schattenlose PointLights. Strukturprüfung mit tatsächlichem Builder/Dressing im Lua5.4-Testdouble bestanden, wiederholtes Apply ohne Duplikate. Glas- und Lichtwirkung sowie Performance in Studio noch zu prüfen.
+P5 umfasst2353 BaseParts und24 schattenlose PointLights. Strukturprüfung mit tatsächlichem Builder/Dressing im Lua5.4-Testdouble bestanden, wiederholtes Apply ohne Duplikate. Glas- und Lichtwirkung vom Nutzer bestätigt; Performance im Hauptspiel noch zu prüfen.
 
 ### P5-v2 / Fehlerbehebung
 
-Color3-Parameterfehler der Lichter behoben; vollständiges Dressing mit12 Palmen,18 bepflanzten Trögen und24 Lichtern. `python3 tools/check_highrise_dressing.py` erzeugt den Lua5.4-Test mit Color3-/Zahlenprüfung. Preview meldet `Tropical High-Rise P5-v2 ready`.
+Color3-Parameterfehler der Lichter behoben; vollständiges Dressing mit12 Palmen,18 bepflanzten Trögen und24 Lichtern. `python3 tools/check_highrise_dressing.py` erzeugt den Lua5.4-Test mit Color3-/Zahlenprüfung. P6-Preview verwendet nun den Installer.
 
 Falls ein alter `ServerScriptService.TrenchbornAssetWorkshop.WorkshopBootstrap` auf `MarshalRoadblockSpecification` wartet: Dieser Script gehört nicht zu diesem isolierten Gebäude-Branch. Im Gebäude-Vorschauprojekt den alten Bootstrap deaktivieren (`Enabled=false`). Unbekannte Studio-Instanzen bleiben durch die bestehende Rojo-Konfiguration erhalten; keine unbekannten Scripts automatisch löschen.
+
+## P6 — Integration
+
+256.000 MaxHealth, Electric, KaijuHouse. Alle 2.352 sichtbaren Parts inklusive Terrassen, Pflanzen, Grundstück und Krone liegen in `DestructionGroups/D1_WholeBuilding`; alle 24 Lichter bleiben an ihren Besitzerteilen. GroundPivot bleibt ausserhalb. Keine separaten Abschnitts-HP und kein eigener Schadens-/Einsturzcontroller. Das gemeinsame Hauptspiel-System muss den Einsturz auslösen.
+
+Standalone: `dist/LargeCityTropicalHighRisePackage.rbxmx` enthält vier Module und keine automatisch laufenden Scripts. Nach Import explizit `require(package.LargeCityTropicalHighRiseInstaller).Install(workspace, {GroundCFrame=CFrame.new()})` aufrufen, wobei `package` auf den importierten Ordner zeigt. Rojo-Vorschau installiert automatisch.
+
+`python3 tools/build_highrise_package.py` erzeugt das Paket. `python3 tools/check_highrise_contract.py` erzeugt den Lua5.4-Strukturtest. Geprüft: vollständige Gruppenzuordnung, Lichtbesitzer, wiederholtes Dressing ohne Duplikate, Erhalt von Health bei erneutem Attach, Ablehnung unbekannter Teile vor Hierarchieänderung, echte Install-Modulreferenzen, Ablehnung doppelter Installation und vollständiges Entfernen der Gruppe bis auf den Pivot. Testdouble prüft keine Roblox-Physik/CFrame-Transformationen. Paketimport, Kampf, Einsturz und Performance im Hauptspiel bleiben Gate C / Pending.
