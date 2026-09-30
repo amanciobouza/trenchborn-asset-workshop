@@ -1,5 +1,5 @@
 {
-  "version": "Large City - compact assembled preview v4",
+  "version": "Large City - assembled preview v3",
   "date": "2026-09-30",
   "units": "studs",
   "city_connections": {
@@ -15,8 +15,8 @@
       "code": "RES",
       "name": "Waterfront Resort",
       "master_plot": 1,
-      "width": 106,
-      "depth": 134,
+      "width": 160,
+      "depth": 136,
       "height": null,
       "branch": "largecity-waterfront-resort-l3",
       "issue": null,
@@ -29,8 +29,8 @@
       "code": "HOS",
       "name": "Central Hospital",
       "master_plot": 42,
-      "width": 146,
-      "depth": 90,
+      "width": 180,
+      "depth": 136,
       "height": null,
       "branch": "largecity-central-hospital-l3",
       "issue": null,
@@ -43,8 +43,8 @@
       "code": "STD",
       "name": "Large City Stadium",
       "master_plot": 50,
-      "width": 234,
-      "depth": 202,
+      "width": 296,
+      "depth": 216,
       "height": 72,
       "branch": "largecity-stadium-l3",
       "issue": null,
@@ -57,8 +57,8 @@
       "code": "ARN",
       "name": "Uptown Arena",
       "master_plot": 51,
-      "width": 152,
-      "depth": 156,
+      "width": 190,
+      "depth": 152,
       "height": 58,
       "branch": "largecity-uptown-arena-l3",
       "issue": null,
@@ -71,8 +71,8 @@
       "code": "SUM",
       "name": "Summit Tower",
       "master_plot": 52,
-      "width": 72,
-      "depth": 92,
+      "width": 110,
+      "depth": 104,
       "height": 126,
       "branch": "largecity-summit-tower-l3",
       "issue": null,
@@ -85,8 +85,8 @@
       "code": "UPR",
       "name": "Uptown Residences",
       "master_plot": 53,
-      "width": 80,
-      "depth": 98,
+      "width": 118,
+      "depth": 106,
       "height": 92,
       "branch": "largecity-uptown-residences-l3",
       "issue": null,
@@ -99,8 +99,8 @@
       "code": "STH",
       "name": "Stadium Hotel",
       "master_plot": 54,
-      "width": 82,
-      "depth": 106,
+      "width": 118,
+      "depth": 104,
       "height": 82,
       "branch": "largecity-stadium-hotel-l3",
       "issue": null,
@@ -113,8 +113,8 @@
       "code": "PRK",
       "name": "Uptown Parking",
       "master_plot": 55,
-      "width": 98,
-      "depth": 92,
+      "width": 110,
+      "depth": 100,
       "height": 54,
       "branch": "largecity-uptown-parking-l3",
       "issue": null,
@@ -127,8 +127,8 @@
       "code": "PHA",
       "name": "Meridian Pharma",
       "master_plot": 43,
-      "width": 140,
-      "depth": 116,
+      "width": 176,
+      "depth": 136,
       "height": 48,
       "branch": "largecity-meridian-pharma-l3",
       "issue": null,
@@ -141,8 +141,8 @@
       "code": "PWR",
       "name": "Power Utility",
       "master_plot": 44,
-      "width": 160,
-      "depth": 118,
+      "width": 200,
+      "depth": 152,
       "height": 56,
       "branch": "largecity-power-utility-l3",
       "issue": null,
@@ -311,23 +311,23 @@
       "place_id": "LC-01",
       "name": "Trenchborn Bay Resort",
       "model": "B01",
-      "x": -763.0,
-      "z": -0.1,
+      "x": -1160,
+      "z": -40,
       "front": "E",
       "district": 0,
-      "width": 106,
-      "depth": 134,
-      "world_width": 134,
-      "world_depth": 106,
+      "width": 160,
+      "depth": 136,
+      "world_width": 136,
+      "world_depth": 160,
       "role": "Master",
       "access": [
         [
-          -696.0,
-          -0.1
+          -1092.0,
+          -40
         ],
         [
-          -676.0,
-          -0.1
+          -1020,
+          -40
         ]
       ]
     },
@@ -336,23 +336,23 @@
       "place_id": "LC-02",
       "name": "Ocean Crown Hotel",
       "model": "B01",
-      "x": -763.0,
-      "z": -236.1,
+      "x": -1160,
+      "z": -380,
       "front": "E",
       "district": 0,
-      "width": 106,
-      "depth": 134,
-      "world_width": 134,
-      "world_depth": 106,
+      "width": 160,
+      "depth": 136,
+      "world_width": 136,
+      "world_depth": 160,
       "role": "Kopie von LC-01",
       "access": [
         [
-          -696.0,
-          -236.1
+          -1092.0,
+          -380
         ],
         [
-          -676.0,
-          -236.1
+          -1020,
+          -380
         ]
       ]
     },
@@ -361,23 +361,23 @@
       "place_id": "LC-03",
       "name": "Coral Arc Hotel",
       "model": "B01",
-      "x": -763.0,
-      "z": 181.0,
+      "x": -1160,
+      "z": 300,
       "front": "E",
       "district": 0,
-      "width": 106,
-      "depth": 134,
-      "world_width": 134,
-      "world_depth": 106,
+      "width": 160,
+      "depth": 136,
+      "world_width": 136,
+      "world_depth": 160,
       "role": "Kopie von LC-01",
       "access": [
         [
-          -696.0,
-          181.0
+          -1092.0,
+          300
         ],
         [
-          -676.0,
-          181.0
+          -1020,
+          300
         ]
       ]
     },
@@ -386,23 +386,23 @@
       "place_id": "LC-04",
       "name": "Palm Vista Condos",
       "model": "B06",
-      "x": -544.0,
-      "z": -503.2,
+      "x": -860,
+      "z": -745,
       "front": "W",
       "district": 0,
-      "width": 80,
-      "depth": 98,
-      "world_width": 98,
-      "world_depth": 80,
+      "width": 118,
+      "depth": 106,
+      "world_width": 106,
+      "world_depth": 118,
       "role": "Kopie von LC-53",
       "access": [
         [
-          -593.0,
-          -503.2
+          -913.0,
+          -745
         ],
         [
-          -676.0,
-          -503.2
+          -1020,
+          -745
         ]
       ]
     },
@@ -411,23 +411,23 @@
       "place_id": "LC-05",
       "name": "Marina View Condos",
       "model": "B06",
-      "x": -544.0,
-      "z": 181.0,
+      "x": -860,
+      "z": 300,
       "front": "W",
       "district": 0,
-      "width": 80,
-      "depth": 98,
-      "world_width": 98,
-      "world_depth": 80,
+      "width": 118,
+      "depth": 106,
+      "world_width": 106,
+      "world_depth": 118,
       "role": "Kopie von LC-53",
       "access": [
         [
-          -593.0,
-          181.0
+          -913.0,
+          300
         ],
         [
-          -676.0,
-          181.0
+          -1020,
+          300
         ]
       ]
     },
@@ -436,8 +436,8 @@
       "place_id": "LC-06",
       "name": "Azure Residences",
       "model": "N03",
-      "x": -763.0,
-      "z": 514.2,
+      "x": -1160,
+      "z": 870,
       "front": "E",
       "district": 0,
       "width": 128,
@@ -447,12 +447,12 @@
       "role": "Kopie von LC-14",
       "access": [
         [
-          -707.0,
-          514.2
+          -1104.0,
+          870
         ],
         [
-          -676.0,
-          514.2
+          -1020,
+          870
         ]
       ]
     },
@@ -461,8 +461,8 @@
       "place_id": "LC-07",
       "name": "Ocean Galleria",
       "model": "N08",
-      "x": -544.0,
-      "z": -236.1,
+      "x": -860,
+      "z": -380,
       "front": "W",
       "district": 0,
       "width": 224,
@@ -472,12 +472,12 @@
       "role": "Master",
       "access": [
         [
-          -624.0,
-          -236.1
+          -940.0,
+          -380
         ],
         [
-          -676.0,
-          -236.1
+          -1020,
+          -380
         ]
       ]
     },
@@ -486,8 +486,8 @@
       "place_id": "LC-08",
       "name": "Coast Convention Centre",
       "model": "N09",
-      "x": -544.0,
-      "z": -0.1,
+      "x": -860,
+      "z": -40,
       "front": "W",
       "district": 0,
       "width": 224,
@@ -497,12 +497,12 @@
       "role": "Master",
       "access": [
         [
-          -656.0,
-          -0.1
+          -972.0,
+          -40
         ],
         [
-          -676.0,
-          -0.1
+          -1020,
+          -40
         ]
       ]
     },
@@ -511,23 +511,23 @@
       "place_id": "LC-09",
       "name": "Promenade Parking",
       "model": "B08",
-      "x": -763.0,
-      "z": -503.2,
+      "x": -1160,
+      "z": -745,
       "front": "E",
       "district": 0,
-      "width": 98,
-      "depth": 92,
-      "world_width": 92,
-      "world_depth": 98,
+      "width": 110,
+      "depth": 100,
+      "world_width": 100,
+      "world_depth": 110,
       "role": "Kopie von LC-55",
       "access": [
         [
-          -717.0,
-          -503.2
+          -1110.0,
+          -745
         ],
         [
-          -676.0,
-          -503.2
+          -1020,
+          -745
         ]
       ]
     },
@@ -536,23 +536,23 @@
       "place_id": "LC-10",
       "name": "Tideglass Suites",
       "model": "B07",
-      "x": -544.0,
-      "z": 514.2,
+      "x": -860,
+      "z": 870,
       "front": "W",
       "district": 0,
-      "width": 82,
-      "depth": 106,
-      "world_width": 106,
-      "world_depth": 82,
+      "width": 118,
+      "depth": 104,
+      "world_width": 104,
+      "world_depth": 118,
       "role": "Kopie von LC-54",
       "access": [
         [
-          -597.0,
-          514.2
+          -912.0,
+          870
         ],
         [
-          -676.0,
-          514.2
+          -1020,
+          870
         ]
       ]
     },
@@ -561,8 +561,8 @@
       "place_id": "LC-11",
       "name": "Large City Central Station",
       "model": "N07",
-      "x": -108.0,
-      "z": -751.2,
+      "x": -120,
+      "z": -1060,
       "front": "N",
       "district": 1,
       "width": 208,
@@ -572,12 +572,12 @@
       "role": "Master",
       "access": [
         [
-          -108.0,
-          -615.2
+          -120,
+          -924.0
         ],
         [
-          -108.0,
-          -595.2
+          -120,
+          -870
         ]
       ]
     },
@@ -586,23 +586,23 @@
       "place_id": "LC-12",
       "name": "Station Parking",
       "model": "B08",
-      "x": -300.0,
-      "z": -679.2,
+      "x": -480,
+      "z": -1040,
       "front": "N",
       "district": 1,
-      "width": 98,
-      "depth": 92,
-      "world_width": 98,
-      "world_depth": 92,
+      "width": 110,
+      "depth": 100,
+      "world_width": 110,
+      "world_depth": 100,
       "role": "Kopie von LC-55",
       "access": [
         [
-          -300.0,
-          -633.2
+          -480,
+          -990.0
         ],
         [
-          -300.0,
-          -595.2
+          -480,
+          -870
         ]
       ]
     },
@@ -611,8 +611,8 @@
       "place_id": "LC-13",
       "name": "Gateway Offices",
       "model": "N04",
-      "x": 80.0,
-      "z": -679.2,
+      "x": 160,
+      "z": -1040,
       "front": "N",
       "district": 1,
       "width": 144,
@@ -622,12 +622,12 @@
       "role": "Kopie von LC-19",
       "access": [
         [
-          80.0,
-          -615.2
+          160,
+          -976.0
         ],
         [
-          80.0,
-          -595.2
+          160,
+          -870
         ]
       ]
     },
@@ -636,8 +636,8 @@
       "place_id": "LC-14",
       "name": "Southline Apartments A",
       "model": "N03",
-      "x": -300.0,
-      "z": -503.2,
+      "x": -480,
+      "z": -745,
       "front": "S",
       "district": 1,
       "width": 128,
@@ -647,12 +647,12 @@
       "role": "Master",
       "access": [
         [
-          -300.0,
-          -559.2
+          -480,
+          -801.0
         ],
         [
-          -300.0,
-          -595.2
+          -480,
+          -870
         ]
       ]
     },
@@ -661,8 +661,8 @@
       "place_id": "LC-15",
       "name": "Southline Apartments B",
       "model": "N03",
-      "x": 268.0,
-      "z": -503.2,
+      "x": 480,
+      "z": -745,
       "front": "S",
       "district": 1,
       "width": 128,
@@ -672,12 +672,12 @@
       "role": "Kopie von LC-14",
       "access": [
         [
-          268.0,
-          -559.2
+          480,
+          -801.0
         ],
         [
-          268.0,
-          -595.2
+          480,
+          -870
         ]
       ]
     },
@@ -686,8 +686,8 @@
       "place_id": "LC-16",
       "name": "Grand Arrival Hotel",
       "model": "N05",
-      "x": -122.5,
-      "z": -503.2,
+      "x": -245,
+      "z": -745,
       "front": "S",
       "district": 1,
       "width": 176,
@@ -697,12 +697,12 @@
       "role": "Master",
       "access": [
         [
-          -122.5,
-          -575.2
+          -245,
+          -817.0
         ],
         [
-          -122.5,
-          -595.2
+          -245,
+          -870
         ]
       ]
     },
@@ -711,8 +711,8 @@
       "place_id": "LC-17",
       "name": "Gateway Green / Reserve",
       "model": "-",
-      "x": 104.0,
-      "z": -503.2,
+      "x": 210,
+      "z": -745,
       "front": "S",
       "district": 1,
       "width": 176,
@@ -722,12 +722,12 @@
       "role": "Reserve",
       "access": [
         [
-          104.0,
-          -575.2
+          210,
+          -817.0
         ],
         [
-          104.0,
-          -595.2
+          210,
+          -870
         ]
       ]
     },
@@ -736,8 +736,8 @@
       "place_id": "LC-18",
       "name": "Gateway Beacon",
       "model": "N11",
-      "x": 236.0,
-      "z": -679.2,
+      "x": 470,
+      "z": -1040,
       "front": "N",
       "district": 1,
       "width": 144,
@@ -747,12 +747,12 @@
       "role": "Kopie von LC-21",
       "access": [
         [
-          236.0,
-          -615.2
+          470,
+          -976.0
         ],
         [
-          236.0,
-          -595.2
+          470,
+          -870
         ]
       ]
     },
@@ -761,8 +761,8 @@
       "place_id": "LC-19",
       "name": "Meridian Tower",
       "model": "N04",
-      "x": -300.0,
-      "z": -275.1,
+      "x": -480,
+      "z": -420,
       "front": "N",
       "district": 2,
       "width": 144,
@@ -772,12 +772,12 @@
       "role": "Master",
       "access": [
         [
-          -300.0,
-          -211.10000000000002
+          -480,
+          -356.0
         ],
         [
-          -300.0,
-          -191.1
+          -480,
+          -270
         ]
       ]
     },
@@ -786,8 +786,8 @@
       "place_id": "LC-20",
       "name": "Equinox Tower",
       "model": "N04",
-      "x": -116.0,
-      "z": -275.1,
+      "x": -240,
+      "z": -420,
       "front": "N",
       "district": 2,
       "width": 144,
@@ -797,12 +797,12 @@
       "role": "Kopie von LC-19",
       "access": [
         [
-          -116.0,
-          -211.10000000000002
+          -240,
+          -356.0
         ],
         [
-          -116.0,
-          -191.1
+          -240,
+          -270
         ]
       ]
     },
@@ -811,8 +811,8 @@
       "place_id": "LC-21",
       "name": "Crown Financial",
       "model": "N11",
-      "x": 112.0,
-      "z": -275.1,
+      "x": 240,
+      "z": -420,
       "front": "N",
       "district": 2,
       "width": 144,
@@ -822,12 +822,12 @@
       "role": "Master",
       "access": [
         [
-          112.0,
-          -211.10000000000002
+          240,
+          -356.0
         ],
         [
-          112.0,
-          -191.1
+          240,
+          -270
         ]
       ]
     },
@@ -836,8 +836,8 @@
       "place_id": "LC-22",
       "name": "Skyline Exchange",
       "model": "N04",
-      "x": 268.0,
-      "z": -275.1,
+      "x": 480,
+      "z": -420,
       "front": "N",
       "district": 2,
       "width": 144,
@@ -847,12 +847,12 @@
       "role": "Kopie von LC-19",
       "access": [
         [
-          268.0,
-          -211.10000000000002
+          480,
+          -356.0
         ],
         [
-          268.0,
-          -191.1
+          480,
+          -270
         ]
       ]
     },
@@ -861,8 +861,8 @@
       "place_id": "LC-23",
       "name": "Harbour Axis",
       "model": "N11",
-      "x": -300.0,
-      "z": -99.1,
+      "x": -480,
+      "z": -140,
       "front": "E",
       "district": 2,
       "width": 144,
@@ -872,12 +872,12 @@
       "role": "Kopie von LC-21",
       "access": [
         [
-          -236.0,
-          -99.1
+          -416.0,
+          -140
         ],
         [
-          -208.0,
-          -99.1
+          -350,
+          -140
         ]
       ]
     },
@@ -886,8 +886,8 @@
       "place_id": "LC-24",
       "name": "Glasshouse One",
       "model": "N04",
-      "x": -300.0,
-      "z": 72.9,
+      "x": -480,
+      "z": 140,
       "front": "E",
       "district": 2,
       "width": 144,
@@ -897,12 +897,12 @@
       "role": "Kopie von LC-19",
       "access": [
         [
-          -236.0,
-          72.9
+          -416.0,
+          140
         ],
         [
-          -208.0,
-          72.9
+          -350,
+          140
         ]
       ]
     },
@@ -911,8 +911,8 @@
       "place_id": "LC-25",
       "name": "Glasshouse Two",
       "model": "N04",
-      "x": -300.0,
-      "z": 264.9,
+      "x": -480,
+      "z": 420,
       "front": "S",
       "district": 2,
       "width": 144,
@@ -922,12 +922,12 @@
       "role": "Kopie von LC-19",
       "access": [
         [
-          -300.0,
-          200.89999999999998
+          -480,
+          356.0
         ],
         [
-          -300.0,
-          180.9
+          -480,
+          270
         ]
       ]
     },
@@ -936,23 +936,23 @@
       "place_id": "LC-26",
       "name": "Central Residences",
       "model": "B06",
-      "x": -116.0,
-      "z": 264.9,
+      "x": -240,
+      "z": 420,
       "front": "S",
       "district": 2,
-      "width": 80,
-      "depth": 98,
-      "world_width": 80,
-      "world_depth": 98,
+      "width": 118,
+      "depth": 106,
+      "world_width": 118,
+      "world_depth": 106,
       "role": "Kopie von LC-53",
       "access": [
         [
-          -116.0,
-          215.89999999999998
+          -240,
+          367.0
         ],
         [
-          -116.0,
-          180.9
+          -240,
+          270
         ]
       ]
     },
@@ -961,8 +961,8 @@
       "place_id": "LC-27",
       "name": "Parkline Residences",
       "model": "N03",
-      "x": 0.0,
-      "z": 264.9,
+      "x": 0,
+      "z": 420,
       "front": "S",
       "district": 2,
       "width": 128,
@@ -972,12 +972,12 @@
       "role": "Kopie von LC-14",
       "access": [
         [
-          0.0,
-          208.89999999999998
+          0,
+          364.0
         ],
         [
-          0.0,
-          180.9
+          0,
+          270
         ]
       ]
     },
@@ -986,23 +986,23 @@
       "place_id": "LC-28",
       "name": "North Exchange",
       "model": "B05",
-      "x": 112.0,
-      "z": 264.9,
+      "x": 240,
+      "z": 420,
       "front": "S",
       "district": 2,
-      "width": 72,
-      "depth": 92,
-      "world_width": 72,
-      "world_depth": 92,
+      "width": 110,
+      "depth": 104,
+      "world_width": 110,
+      "world_depth": 104,
       "role": "Kopie von LC-52",
       "access": [
         [
-          112.0,
-          218.89999999999998
+          240,
+          368.0
         ],
         [
-          112.0,
-          180.9
+          240,
+          270
         ]
       ]
     },
@@ -1011,23 +1011,23 @@
       "place_id": "LC-29",
       "name": "Central Parking West",
       "model": "B08",
-      "x": -116.0,
-      "z": 72.9,
+      "x": -240,
+      "z": 140,
       "front": "W",
       "district": 2,
-      "width": 98,
-      "depth": 92,
-      "world_width": 92,
-      "world_depth": 98,
+      "width": 110,
+      "depth": 100,
+      "world_width": 100,
+      "world_depth": 110,
       "role": "Kopie von LC-55",
       "access": [
         [
-          -162.0,
-          72.9
+          -290.0,
+          140
         ],
         [
-          -208.0,
-          72.9
+          -350,
+          140
         ]
       ]
     },
@@ -1036,23 +1036,23 @@
       "place_id": "LC-30",
       "name": "Central Parking East",
       "model": "B08",
-      "x": 268.0,
-      "z": 264.9,
+      "x": 480,
+      "z": 420,
       "front": "S",
       "district": 2,
-      "width": 98,
-      "depth": 92,
-      "world_width": 98,
-      "world_depth": 92,
+      "width": 110,
+      "depth": 100,
+      "world_width": 110,
+      "world_depth": 100,
       "role": "Kopie von LC-55",
       "access": [
         [
-          268.0,
-          218.89999999999998
+          480,
+          370.0
         ],
         [
-          268.0,
-          180.9
+          480,
+          270
         ]
       ]
     },
@@ -1061,8 +1061,8 @@
       "place_id": "LC-31",
       "name": "Boulevard Hotel",
       "model": "N05",
-      "x": 268.0,
-      "z": 72.9,
+      "x": 480,
+      "z": 140,
       "front": "W",
       "district": 2,
       "width": 176,
@@ -1072,12 +1072,12 @@
       "role": "Kopie von LC-16",
       "access": [
         [
-          196.0,
-          72.9
+          408.0,
+          140
         ],
         [
-          150.0,
-          72.9
+          300,
+          140
         ]
       ]
     },
@@ -1086,8 +1086,8 @@
       "place_id": "LC-32",
       "name": "Axis Offices",
       "model": "N04",
-      "x": 268.0,
-      "z": -99.1,
+      "x": 480,
+      "z": -140,
       "front": "W",
       "district": 2,
       "width": 144,
@@ -1097,12 +1097,12 @@
       "role": "Kopie von LC-19",
       "access": [
         [
-          204.0,
-          -99.1
+          416.0,
+          -140
         ],
         [
-          150.0,
-          -99.1
+          300,
+          -140
         ]
       ]
     },
@@ -1111,8 +1111,8 @@
       "place_id": "LC-33",
       "name": "Hub View Tower",
       "model": "N11",
-      "x": -116.0,
-      "z": -99.1,
+      "x": -240,
+      "z": -140,
       "front": "W",
       "district": 2,
       "width": 144,
@@ -1122,12 +1122,12 @@
       "role": "Kopie von LC-21",
       "access": [
         [
-          -180.0,
-          -99.1
+          -304.0,
+          -140
         ],
         [
-          -208.0,
-          -99.1
+          -350,
+          -140
         ]
       ]
     },
@@ -1136,8 +1136,8 @@
       "place_id": "LC-34",
       "name": "Large City Courthouse",
       "model": "N06",
-      "x": 472.0,
-      "z": -275.2,
+      "x": 860,
+      "z": -435,
       "front": "E",
       "district": 3,
       "width": 192,
@@ -1147,12 +1147,12 @@
       "role": "Master",
       "access": [
         [
-          544.0,
-          -275.2
+          932.0,
+          -435
         ],
         [
-          564.0,
-          -275.2
+          980,
+          -435
         ]
       ]
     },
@@ -1161,8 +1161,8 @@
       "place_id": "LC-35",
       "name": "Large City Police HQ",
       "model": "N02",
-      "x": 648.0,
-      "z": -275.2,
+      "x": 1100,
+      "z": -435,
       "front": "W",
       "district": 3,
       "width": 176,
@@ -1172,12 +1172,12 @@
       "role": "Master",
       "access": [
         [
-          584.0,
-          -275.2
+          1036.0,
+          -435
         ],
         [
-          564.0,
-          -275.2
+          980,
+          -435
         ]
       ]
     },
@@ -1186,8 +1186,8 @@
       "place_id": "LC-36",
       "name": "Civic Administration",
       "model": "N04",
-      "x": 472.0,
-      "z": -87.0,
+      "x": 860,
+      "z": -130,
       "front": "E",
       "district": 3,
       "width": 144,
@@ -1197,12 +1197,12 @@
       "role": "Kopie von LC-19",
       "access": [
         [
-          536.0,
-          -87.0
+          924.0,
+          -130
         ],
         [
-          564.0,
-          -87.0
+          980,
+          -130
         ]
       ]
     },
@@ -1211,23 +1211,23 @@
       "place_id": "LC-37",
       "name": "Justice Square Tower",
       "model": "B05",
-      "x": 648.0,
-      "z": -87.0,
+      "x": 1100,
+      "z": -130,
       "front": "W",
       "district": 3,
-      "width": 72,
-      "depth": 92,
-      "world_width": 92,
-      "world_depth": 72,
+      "width": 110,
+      "depth": 104,
+      "world_width": 104,
+      "world_depth": 110,
       "role": "Kopie von LC-52",
       "access": [
         [
-          602.0,
-          -87.0
+          1048.0,
+          -130
         ],
         [
-          564.0,
-          -87.0
+          980,
+          -130
         ]
       ]
     },
@@ -1236,8 +1236,8 @@
       "place_id": "LC-38",
       "name": "Civic Grand Hotel",
       "model": "N05",
-      "x": 472.0,
-      "z": 85.0,
+      "x": 860,
+      "z": 170,
       "front": "E",
       "district": 3,
       "width": 176,
@@ -1247,12 +1247,12 @@
       "role": "Kopie von LC-16",
       "access": [
         [
-          544.0,
-          85.0
+          932.0,
+          170
         ],
         [
-          564.0,
-          85.0
+          980,
+          170
         ]
       ]
     },
@@ -1261,8 +1261,8 @@
       "place_id": "LC-39",
       "name": "Civic Residences",
       "model": "N03",
-      "x": 648.0,
-      "z": 85.0,
+      "x": 1100,
+      "z": 170,
       "front": "W",
       "district": 3,
       "width": 128,
@@ -1272,12 +1272,12 @@
       "role": "Kopie von LC-14",
       "access": [
         [
-          592.0,
-          85.0
+          1044.0,
+          170
         ],
         [
-          564.0,
-          85.0
+          980,
+          170
         ]
       ]
     },
@@ -1286,23 +1286,23 @@
       "place_id": "LC-40",
       "name": "Civic Parking",
       "model": "B08",
-      "x": 472.0,
-      "z": 265.0,
+      "x": 860,
+      "z": 460,
       "front": "E",
       "district": 3,
-      "width": 98,
-      "depth": 92,
-      "world_width": 92,
-      "world_depth": 98,
+      "width": 110,
+      "depth": 100,
+      "world_width": 100,
+      "world_depth": 110,
       "role": "Kopie von LC-55",
       "access": [
         [
-          518.0,
-          265.0
+          910.0,
+          460
         ],
         [
-          564.0,
-          265.0
+          980,
+          460
         ]
       ]
     },
@@ -1311,8 +1311,8 @@
       "place_id": "LC-41",
       "name": "Tropical Signal Tower",
       "model": "N10",
-      "x": 648.0,
-      "z": 265.0,
+      "x": 1100,
+      "z": 460,
       "front": "W",
       "district": 3,
       "width": 112,
@@ -1322,12 +1322,12 @@
       "role": "Master",
       "access": [
         [
-          592.0,
-          265.0
+          1044.0,
+          460
         ],
         [
-          564.0,
-          265.0
+          980,
+          460
         ]
       ]
     },
@@ -1336,23 +1336,23 @@
       "place_id": "LC-42",
       "name": "Large City Central Hospital",
       "model": "B02",
-      "x": 830.0,
-      "z": -275.2,
+      "x": 1440,
+      "z": -435,
       "front": "E",
       "district": 4,
-      "width": 146,
-      "depth": 90,
-      "world_width": 90,
-      "world_depth": 146,
+      "width": 180,
+      "depth": 136,
+      "world_width": 136,
+      "world_depth": 180,
       "role": "Master",
       "access": [
         [
-          875.0,
-          -275.2
+          1508.0,
+          -435
         ],
         [
-          908.0,
-          -275.2
+          1560,
+          -435
         ]
       ]
     },
@@ -1361,23 +1361,23 @@
       "place_id": "LC-43",
       "name": "Meridian Pharma",
       "model": "B09",
-      "x": 830.0,
-      "z": -87.0,
+      "x": 1440,
+      "z": -130,
       "front": "E",
       "district": 4,
-      "width": 140,
-      "depth": 116,
-      "world_width": 116,
-      "world_depth": 140,
+      "width": 176,
+      "depth": 136,
+      "world_width": 136,
+      "world_depth": 176,
       "role": "Master",
       "access": [
         [
-          888.0,
-          -87.0
+          1508.0,
+          -130
         ],
         [
-          908.0,
-          -87.0
+          1560,
+          -130
         ]
       ]
     },
@@ -1386,23 +1386,23 @@
       "place_id": "LC-44",
       "name": "Large City Power Utility",
       "model": "B10",
-      "x": 992.0,
-      "z": 85.1,
+      "x": 1670,
+      "z": 180,
       "front": "W",
       "district": 4,
-      "width": 160,
-      "depth": 118,
-      "world_width": 118,
-      "world_depth": 160,
+      "width": 200,
+      "depth": 152,
+      "world_width": 152,
+      "world_depth": 200,
       "role": "Master",
       "access": [
         [
-          933.0,
-          85.1
+          1594.0,
+          180
         ],
         [
-          908.0,
-          85.1
+          1560,
+          180
         ]
       ]
     },
@@ -1411,8 +1411,8 @@
       "place_id": "LC-45",
       "name": "Emberline Response HQ",
       "model": "N01",
-      "x": 830.0,
-      "z": 265.1,
+      "x": 1440,
+      "z": 470,
       "front": "E",
       "district": 4,
       "width": 176,
@@ -1422,12 +1422,12 @@
       "role": "Master",
       "access": [
         [
-          886.0,
-          265.1
+          1496.0,
+          470
         ],
         [
-          908.0,
-          265.1
+          1560,
+          470
         ]
       ]
     },
@@ -1436,8 +1436,8 @@
       "place_id": "LC-46",
       "name": "Research Offices",
       "model": "N04",
-      "x": 992.0,
-      "z": -87.0,
+      "x": 1670,
+      "z": -130,
       "front": "W",
       "district": 4,
       "width": 144,
@@ -1447,12 +1447,12 @@
       "role": "Kopie von LC-19",
       "access": [
         [
-          928.0,
-          -87.0
+          1606.0,
+          -130
         ],
         [
-          908.0,
-          -87.0
+          1560,
+          -130
         ]
       ]
     },
@@ -1461,23 +1461,23 @@
       "place_id": "LC-47",
       "name": "Volt Spire",
       "model": "B05",
-      "x": 830.0,
-      "z": 85.1,
+      "x": 1440,
+      "z": 180,
       "front": "E",
       "district": 4,
-      "width": 72,
-      "depth": 92,
-      "world_width": 92,
-      "world_depth": 72,
+      "width": 110,
+      "depth": 104,
+      "world_width": 104,
+      "world_depth": 110,
       "role": "Kopie von LC-52",
       "access": [
         [
-          876.0,
-          85.1
+          1492.0,
+          180
         ],
         [
-          908.0,
-          85.1
+          1560,
+          180
         ]
       ]
     },
@@ -1486,8 +1486,8 @@
       "place_id": "LC-48",
       "name": "MedTech Residences",
       "model": "N03",
-      "x": 992.0,
-      "z": 265.1,
+      "x": 1670,
+      "z": 470,
       "front": "W",
       "district": 4,
       "width": 128,
@@ -1497,12 +1497,12 @@
       "role": "Kopie von LC-14",
       "access": [
         [
-          936.0,
-          265.1
+          1614.0,
+          470
         ],
         [
-          908.0,
-          265.1
+          1560,
+          470
         ]
       ]
     },
@@ -1511,23 +1511,23 @@
       "place_id": "LC-49",
       "name": "Medical Parking",
       "model": "B08",
-      "x": 992.0,
-      "z": -275.2,
+      "x": 1670,
+      "z": -435,
       "front": "W",
       "district": 4,
-      "width": 98,
-      "depth": 92,
-      "world_width": 92,
-      "world_depth": 98,
+      "width": 110,
+      "depth": 100,
+      "world_width": 100,
+      "world_depth": 110,
       "role": "Kopie von LC-55",
       "access": [
         [
-          946.0,
-          -275.2
+          1620.0,
+          -435
         ],
         [
-          908.0,
-          -275.2
+          1560,
+          -435
         ]
       ]
     },
@@ -1536,23 +1536,23 @@
       "place_id": "LC-50",
       "name": "Large City Stadium",
       "model": "B03",
-      "x": 0.0,
-      "z": 514.1,
+      "x": 0,
+      "z": 840,
       "front": "S",
       "district": 5,
-      "width": 234,
-      "depth": 202,
-      "world_width": 234,
-      "world_depth": 202,
+      "width": 296,
+      "depth": 216,
+      "world_width": 296,
+      "world_depth": 216,
       "role": "Master",
       "access": [
         [
-          0.0,
-          413.1
+          0,
+          732.0
         ],
         [
-          0.0,
-          383.1
+          0,
+          620
         ]
       ]
     },
@@ -1561,23 +1561,23 @@
       "place_id": "LC-51",
       "name": "Uptown Arena",
       "model": "B04",
-      "x": -215.0,
-      "z": 514.1,
+      "x": -430,
+      "z": 840,
       "front": "S",
       "district": 5,
-      "width": 152,
-      "depth": 156,
-      "world_width": 152,
-      "world_depth": 156,
+      "width": 190,
+      "depth": 152,
+      "world_width": 190,
+      "world_depth": 152,
       "role": "Master",
       "access": [
         [
-          -215.0,
-          436.1
+          -430,
+          764.0
         ],
         [
-          -215.0,
-          383.1
+          -430,
+          620
         ]
       ]
     },
@@ -1586,23 +1586,23 @@
       "place_id": "LC-52",
       "name": "Summit Tower",
       "model": "B05",
-      "x": 215.0,
-      "z": 514.1,
+      "x": 430,
+      "z": 840,
       "front": "S",
       "district": 5,
-      "width": 72,
-      "depth": 92,
-      "world_width": 72,
-      "world_depth": 92,
+      "width": 110,
+      "depth": 104,
+      "world_width": 110,
+      "world_depth": 104,
       "role": "Master",
       "access": [
         [
-          215.0,
-          468.1
+          430,
+          788.0
         ],
         [
-          215.0,
-          383.1
+          430,
+          620
         ]
       ]
     },
@@ -1611,23 +1611,23 @@
       "place_id": "LC-53",
       "name": "Uptown Residences",
       "model": "B06",
-      "x": -215.0,
-      "z": 708.1,
+      "x": -430,
+      "z": 1120,
       "front": "S",
       "district": 5,
-      "width": 80,
-      "depth": 98,
-      "world_width": 80,
-      "world_depth": 98,
+      "width": 118,
+      "depth": 106,
+      "world_width": 118,
+      "world_depth": 106,
       "role": "Master",
       "access": [
         [
-          -215.0,
-          659.1
+          -430,
+          1067.0
         ],
         [
-          -215.0,
-          635.1
+          -430,
+          1000
         ]
       ]
     },
@@ -1636,23 +1636,23 @@
       "place_id": "LC-54",
       "name": "Stadium Hotel",
       "model": "B07",
-      "x": 135.0,
-      "z": 708.1,
+      "x": 270,
+      "z": 1120,
       "front": "S",
       "district": 5,
-      "width": 82,
-      "depth": 106,
-      "world_width": 82,
-      "world_depth": 106,
+      "width": 118,
+      "depth": 104,
+      "world_width": 118,
+      "world_depth": 104,
       "role": "Master",
       "access": [
         [
-          135.0,
-          655.1
+          270,
+          1068.0
         ],
         [
-          135.0,
-          635.1
+          270,
+          1000
         ]
       ]
     },
@@ -1661,23 +1661,23 @@
       "place_id": "LC-55",
       "name": "Uptown Parking",
       "model": "B08",
-      "x": 268.1,
-      "z": 708.1,
+      "x": 490,
+      "z": 1120,
       "front": "S",
       "district": 5,
-      "width": 98,
-      "depth": 92,
-      "world_width": 98,
-      "world_depth": 92,
+      "width": 110,
+      "depth": 100,
+      "world_width": 110,
+      "world_depth": 100,
       "role": "Master",
       "access": [
         [
-          268.1,
-          662.1
+          490,
+          1070.0
         ],
         [
-          268.1,
-          635.1
+          490,
+          1000
         ]
       ]
     }
@@ -1685,156 +1685,140 @@
   "roads": [
     [
       "West Boulevard",
-      -402.0,
-      -917.2,
-      -402.0,
-      708.2,
-      48
+      -640,
+      -1250,
+      -640,
+      1240,
+      64
     ],
     [
       "East Boulevard",
-      370.0,
-      -917.2,
-      370.0,
-      708.2,
-      48
+      640,
+      -1250,
+      640,
+      1240,
+      64
     ],
     [
       "Medical Boulevard",
-      742.0,
-      -401.2,
-      742.0,
-      383.1,
-      48
+      1240,
+      -620,
+      1240,
+      620,
+      64
     ],
     [
       "South Boulevard",
-      -763.1,
-      -401.2,
-      992.1,
-      -401.2,
-      48
+      -1360,
+      -620,
+      1790,
+      -620,
+      64
     ],
     [
       "North Boulevard",
-      -763.1,
-      383.1,
-      992.1,
-      383.1,
-      48
+      -1360,
+      620,
+      1790,
+      620,
+      64
     ],
     [
       "Coast Drive",
-      -676.0,
-      -595.2,
-      -676.0,
-      708.1,
-      28
+      -1020,
+      -870,
+      -1020,
+      1120,
+      40
     ],
     [
       "Gateway Avenue",
-      -402.0,
-      -595.2,
-      370.0,
-      -595.2,
-      28
+      -640,
+      -870,
+      640,
+      -870,
+      40
     ],
     [
       "Mega City Link",
-      0.0,
-      -951.2,
-      0.0,
-      -917.2,
-      48
+      0,
+      -1430,
+      0,
+      -1250,
+      64
     ],
     [
       "Arrival Junction",
-      0.0,
-      -917.2,
-      370.0,
-      -917.2,
-      48
+      0,
+      -1250,
+      640,
+      -1250,
+      64
     ],
     [
       "Core South",
-      -402.0,
-      -191.1,
-      370.0,
-      -191.1,
-      28
+      -640,
+      -270,
+      640,
+      -270,
+      40
     ],
     [
       "Core North",
-      -402.0,
-      180.9,
-      370.0,
-      180.9,
-      28
+      -640,
+      270,
+      640,
+      270,
+      40
     ],
     [
       "Core West",
-      -208.0,
-      -401.2,
-      -208.0,
-      383.1,
-      28
+      -350,
+      -620,
+      -350,
+      620,
+      40
     ],
     [
       "Core East",
-      150.0,
-      -191.1,
-      150.0,
-      180.9,
-      28
+      300,
+      -270,
+      300,
+      270,
+      40
     ],
     [
       "Civic Avenue",
-      564.0,
-      -401.2,
-      564.0,
-      383.1,
-      28
+      980,
+      -620,
+      980,
+      620,
+      40
     ],
     [
       "Technology Avenue",
-      908.0,
-      -401.2,
-      908.0,
-      383.1,
-      28
+      1560,
+      -620,
+      1560,
+      620,
+      40
     ],
     [
       "Uptown Avenue",
-      -402.0,
-      635.1,
-      370.0,
-      635.1,
-      28
+      -640,
+      1000,
+      640,
+      1000,
+      40
     ],
     [
       "City Arrival Link",
-      0.0,
-      635.1,
-      0.0,
-      825.1,
-      48
+      0,
+      1000,
+      0,
+      1430,
+      64
     ]
   ],
-  "note": "Dense layout requested by user. Unchanged building scale; reduced spacing, tighter old-model reservations, 48/28-stud roads. Flat preview; Gate C pending.",
-  "ground_bounds": [
-    -870,
-    -992,
-    1096,
-    866
-  ],
-  "connection_markers": [
-    [
-      "NORD · CITY",
-      -825.1
-    ],
-    [
-      "SÜD · MEGA CITY",
-      951.2
-    ]
-  ]
+  "note": "Provisional flat preview. Approved building scales retained. Final terrain and gameplay integration pending."
 }

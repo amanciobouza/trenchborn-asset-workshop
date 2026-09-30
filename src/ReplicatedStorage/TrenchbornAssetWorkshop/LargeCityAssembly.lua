@@ -120,7 +120,7 @@ function Assembly.Build(parent, options)
    if options.YieldBetweenPlots then task.wait() end
   end
   assert(placed==54,"Expected all 54 planned buildings")
-  for _,entry in ipairs({{"NORD · CITY",-1430},{"SÜD · MEGA CITY",1430}}) do
+  for _,entry in ipairs(Plan.connection_markers or {{"NORD · CITY",-1430},{"SÜD · MEGA CITY",1430}}) do
    local p=part(markers,entry[1],Vector3.new(8,2,8),CFrame.new(0,y+1,entry[2]),Color3.fromRGB(57,173,179));label(p,entry[1])
   end
   local spawn=Instance.new("SpawnLocation");spawn.Name="CityReviewSpawn";spawn.Size=Vector3.new(20,1,20)

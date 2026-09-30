@@ -21,7 +21,7 @@ Norden = Roblox −Z = **City**. Süden = Roblox +Z = **Mega City**. Plan-X blei
 
 - Alle Quellen sind auf konkrete Commits festgelegt: `docs/city/source-lock.json`.
 - Ein Master wird pro Gebäudetyp aufgebaut, danach werden unabhängige Modelle kopiert und als Ganzes gedreht/platziert. Keine Skalierung und keine erneute Dressing-Anwendung nach der Platzierung.
-- Stadtplan: `docs/city/city-plan.json`, abgeleitet aus Plan v2.1. Koordinaten, Parzellen und Ausrichtungen bleiben erhalten.
+- Stadtplan: `docs/city/city-plan.json`, abgeleitet aus Plan v2.1. Version v4 rückt die Parzellen deutlich zusammen. Gebäudetypen, Ausrichtungen und Stadtteil-/Strassentopologie bleiben erhalten; die Gebäude werden nicht skaliert. Boulevards sind 48 Studs, Nebenstrassen 28 Studs breit. Alte Grundstücksreserven sind auf die gemessene Geometrie mit Rand reduziert. Die vorherige Anordnung ist als `city-plan-v3.json` archiviert.
 - Power Utility enthält den vorhandenen Builder und das freigegebene Dressing. Auf seinem Quellbranch fehlt ein eigenständiger Installer; die Stadtvorschau verwendet diese beiden Module direkt.
 - Ein korrigierter Quellverweis im Courthouse-Installer: `LargeCourthouse…` → `LargeCityCourthouse…`. Nur die zusammengeführte Fassung ist hier korrigiert; der Einzelbranch bleibt unverändert.
 - Bodenplatten haben Aussparungen für alle Grundstücke. Die Tiefgaragen der Residential Towers werden nicht überdeckt. Ältere Gebäude erhalten einen Vorplatz innerhalb ihrer reservierten Parzelle. Strassenkreuzungen bestehen aus überlappungsfreien Flächen.
@@ -44,3 +44,5 @@ python3 tools/validate_city_layout.py
 Geprüft mit den tatsächlichen Buildern/Dressings/Installern: 54 vollständige Platzierungen, 21 unterschiedliche Master, unabhängige Kopien, konkrete Modulreferenzen, alle vier Himmelsrichtungen, Höhe/Koordinatentransformation, Ablehnung doppelten Aufbaus und atomarer Abbruch bei fehlenden Abhängigkeiten. Numerische Vektor-/CFrame-Rechnung ergibt keine Gebäudeüberschneidungen, keine Überschneidungen mit den Hauptstrassen und keine überschrittenen Parzellenhüllen. Berichte: `docs/city/placement-report.json` und `placement-test.txt`.
 
 Diese Tests ersetzen keine Roblox-Rendering-, Physik-, Paketimport- oder Performanceprüfung.
+
+Die Verdichtung lässt sich mit `python3 tools/compact_city_plan.py` aus dem archivierten v3-Plan und Messbericht reproduzieren (zusätzlich SciPy erforderlich). Danach Plan generieren und Platzierungsprüfung ausführen.
