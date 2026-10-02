@@ -1,0 +1,28 @@
+{
+  "package": "TrenchbornKaijuStageFourTest",
+  "version": "0.1.1-test",
+  "approvedGeometryRevision": "6badd010b0a0650bdbe0b7f21ab90e58d23741e7",
+  "phase": 6,
+  "testOnly": true,
+  "qualityGateC": "pending",
+  "files": {
+    "KaijuStageOneCombat.lua": "3cba21f532e0bea2539d0f10e8cd4ae928787a71e331fac1af4ce7dd20683b93",
+    "KaijuStageFourGoldenMaster.lua": "00c6de649e5a4e41e6bd0886fb076037365f422471391bac08ea0cd0eea1dca5",
+    "KaijuStageFourDressing.lua": "438d5e82c26088210cbb6c3dc537bdfe68f663a712064aa25df6dbb84ec0af64",
+    "KaijuBuildingTraversal.lua": "b474d2ceb89cdb47562d5fc3d3b74be201769de93ab9da30e792db59484dced3",
+    "KaijuPresentation.lua": "05aa0a1fcf03fa7eff1ccf8cb1c77bc9686becd788916447978b5375feb73d47",
+    "KaijuPresentationClient.client.lua": "cd44509fdd98ccaecac1903b792d96c1949280d34a324f4c2eb3f617c9949897",
+    "KaijuPresentationBootstrap.lua": "0d91ccd5470da47008efbe08b0b8be3f39d7e4ca96703235f4291dd6d90dbf94",
+    "KaijuSkeleton.lua": "b1d9a6e1f21ca5b316f19a75ae7068b5bd0fdfd68fd6c521376eca4367856226",
+    "KaijuStageFourTestInstaller.lua": "841935b7e4c29f810e24471084dc212806b95fdec2d795f1ee767678847babd3",
+    "KaijuStageThreeGoldenMaster.lua": "9a7d2d3c401329c8739feea895f94ff679ccfd2d01d5d6b5057bc20d81331170",
+    "KaijuStageTwoGoldenMaster.lua": "d26ec007799be683490721e7510422dbec28451c56dea2d07fd62f56a8e99a0a",
+    "KaijuEvolutionBlockout.lua": "4bdede7f9d298174679efc76ea63e5ab59905087ae03351eafb5b288af5a373f",
+    "KaijuStageOneRig.lua": "bfa8bea48772444b0dee75e533c3186f5f1e708a00c9fa56237691e04fcd199b",
+    "KaijuStageOneCombo.lua": "f5207919a5b955683af8f555d39def174fb843a70df18b37ad4419210481d5c5",
+    "KaijuStageOneJump.lua": "84938fbdd7e3bc64794e17d8325d0aa2bc745499f88e80c61317f744ba438b7e",
+    "KaijuStageFourInput.client.lua": "c5db2d19392f4aeb5e1fc5dff60b4d84dea0b573b0e34185d3bc4525f46f642e",
+    "KaijuStageOneJumpMotor.client.lua": "ce4d5ef9d90109df17d6517e0e4c406a1bc7856f76acc2cfee49f17c1588381f"
+  },
+  "artifactSha256": "0dab97476cba1c655ee4fcd29c09d5549634c89d3339ba76e237d75cba7363f7"
+}

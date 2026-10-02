@@ -1,0 +1,42 @@
+{
+  "name": "TrenchbornKaijuStageOne",
+  "tree": {
+    "$className": "Folder",
+    "KaijuStageOneInstaller": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuStageOneInstaller.lua"
+    },
+    "KaijuEvolutionBlockout": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuEvolutionBlockout.lua"
+    },
+    "KaijuStageOneRig": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuStageOneRig.lua"
+    },
+    "KaijuStageOneCombo": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuStageOneCombo.lua"
+    },
+    "KaijuStageOneJump": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuStageOneJump.lua"
+    },
+    "KaijuStageOneInput": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuStageOneInput.client.lua"
+    },
+    "KaijuStageOneJumpMotor": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuStageOneJumpMotor.client.lua"
+    },
+    "KaijuPresentation": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuPresentation.lua"
+    },
+    "KaijuPresentationClient": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuPresentationClient.client.lua"
+    },
+    "KaijuPresentationBootstrap": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuPresentationBootstrap.lua"
+    },
+    "KaijuSkeleton": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuSkeleton.lua"
+    },
+    "KaijuBuildingTraversal": {
+      "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/KaijuBuildingTraversal.lua"
+    }
+  }
+}
