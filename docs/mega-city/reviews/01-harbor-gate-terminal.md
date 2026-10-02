@@ -19,20 +19,15 @@ Nur dieses Gebäude wird jetzt umgesetzt. MC-02 bis MC-21 warten auf die jeweili
 
 `packages/mega-city/01-harbor-gate-terminal.rbxmx` herunterladen. In Studio im Explorer `Workspace` auswählen und über **Insert from File / Aus Datei einfügen** importieren. Das Modell ist sofort im Edit-Modus sichtbar. Im Play-Modus startet sein enthaltenes Server-Script die Gameplay-Schnittstelle.
 
-### Bestehendes Rojo-Projekt
+### Direkt mit Git und Rojo synchronisieren
 
-Die vier neuen Module und ein Bootstrap-Script liegen im vorhandenen `src/ReplicatedStorage/TrenchbornAssetWorkshop` und werden vom bestehenden `default.project.json` erfasst. Es wird nichts automatisch in eine bestehende Szene eingesetzt. Nach Sync in der Studio-Command-Bar ausführen:
+Das vollständige Modell wird jetzt direkt als `.rbxmx` in `Workspace.MegaCityHarborGateTerminal` synchronisiert. Alle Parts, Materialien, Schilder, Attribute und das enthaltene Gameplay-Script sind bereits im Modell gespeichert. Kein Installer, kein Command-Bar-Aufruf und kein Play-Start zum Erzeugen des Gebäudes nötig.
 
-```lua
-local folder = game.ReplicatedStorage:WaitForChild("TrenchbornAssetWorkshop")
-local model, api = require(folder:WaitForChild("MegaCityHarborGateInstaller")).Install(workspace, {
-    GroundCFrame = CFrame.new(0, 0, 0),
-    Scale = 1,
-})
-game:GetService("Selection"):Set({model})
-```
-
-Für eine leere separate Testszene: `rojo serve mega-city-harbor.project.json` (Port 34873); diese Projektdatei synchronisiert ausschliesslich die Harbor-Module samt Bootstrap. Wiederholtes Installieren erzeugt bewusst weitere Kopien; die vorherige Testkopie bei Bedarf manuell löschen.
+- Bestehendes Projekt: `default.project.json` bindet das Modell direkt ein (Port 34872).
+- Separate Testszene: `rojo serve mega-city-harbor.project.json` (Port 34873). Diese Projektdatei synchronisiert nur das vollständige Modell in den Workspace.
+- Nach dem Aktualisieren des Branches den Rojo-Server neu starten und synchronisieren. Das Gebäude ist sofort im Edit-Modus sichtbar.
+- Das enthaltene Server-Script startet die Schadens-/Reset-Schnittstelle erst bei Play. Es erzeugt keine Geometrie und benötigt keine Module aus ReplicatedStorage.
+- Bereits manuell erzeugte Testkopien vor dem Sync entfernen, um doppelte Gebäude zu vermeiden.
 
 ## Gameplay-Vertrag
 

@@ -8,6 +8,9 @@
       "TrenchbornAssetWorkshop": {
         "$className": "Folder",
         "$path": "src/Workspace/TrenchbornAssetWorkshop"
+      },
+      "MegaCityHarborGateTerminal": {
+        "$path": "packages/mega-city/01-harbor-gate-terminal.rbxmx"
       }
     },
     "ReplicatedStorage": {
