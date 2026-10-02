@@ -1,0 +1,17 @@
+{
+  "name": "MegaCityHarborReview",
+  "servePort": 34873,
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "TrenchbornAssetWorkshop": {
+        "$className": "Folder",
+        "MegaCityHarborGateInstaller": {"$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/MegaCityHarborGateInstaller.lua"},
+        "MegaCityHarborGateGeometry": {"$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/MegaCityHarborGateGeometry.lua"},
+        "MegaCityHarborGateSpecification": {"$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/MegaCityHarborGateSpecification.lua"},
+        "MegaCityBuildingRuntime": {"$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/MegaCityBuildingRuntime.lua"},
+        "MegaCityHarborBootstrap": {"$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/MegaCityHarborBootstrap.server.lua"}
+      }
+    }
+  }
+}
