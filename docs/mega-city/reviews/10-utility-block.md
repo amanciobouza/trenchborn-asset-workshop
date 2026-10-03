@@ -17,8 +17,8 @@ On feat/mega-city-harbor-gate: git pull --ff-only; stop previous Rojo server; ro
 
 ## Validation and gates
 
-XML parse, unique references, PrimaryPart, 558 anchored Parts including Origin, positive dimensions, orthonormal transforms, integer UDim offsets, six signs, metadata round-trip and Lua syntax passed off-engine. Roof vents rest on the roof and tank walkways have braces. Gate B awaits user visual acceptance in Studio. Gate C awaits gameplay testing. MC-11 has not been started.
+XML parse, unique references, PrimaryPart, 558 anchored Parts including Origin, positive dimensions, orthonormal transforms, integer UDim offsets, six signs, metadata round-trip and Lua syntax passed off-engine. Roof vents rest on the roof and tank walkways have braces. Gate B visually accepted by user on 2026-10-03 after the wall flicker correction. Gate C awaits gameplay testing. MC-11 authorized as the next building.
 
 ## Wall flicker correction
 
-Rebuilt rear/side wall corners and floor junctions as butt joints, removing coincident concrete/metal faces. Separated window-sill/header faces and brought UTILITY 10 forward of the sill. Heat-exchanger frame and ladder joints also no longer overlap with coplanar faces. Export validation passed; Studio visual confirmation pending.
+Rebuilt rear/side wall corners and floor junctions as butt joints, removing coincident concrete/metal faces. Separated window-sill/header faces and brought UTILITY 10 forward of the sill. Heat-exchanger frame and ladder joints also no longer overlap with coplanar faces. Export validation passed; Studio visual confirmation received on 2026-10-03.
