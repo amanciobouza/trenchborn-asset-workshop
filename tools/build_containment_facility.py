@@ -225,6 +225,9 @@ def export():
         if 'lightningSegment' in p:prop(pr,'BinaryString','AttributesSerialize',attrs({'LightningSegment':p['lightningSegment']}))
     runtime=(OUT/'MegaCityBuildingRuntime.lua').read_text()
     e,p=item(model,'Script','ContainmentRuntime');prop(p,'ProtectedString','Source','local function runtimeModule()\n'+runtime+'\nend\nlocal Runtime = runtimeModule()\nRuntime.Attach(script.Parent, '+lua(spec)+')\n')
+    motion=(OUT/'MegaCityContainmentMotion.lua').read_text()
+    source=p.find("ProtectedString[@name='Source']")
+    source.text += '\nlocal function motionModule()\n'+motion+'\nend\nmotionModule().Attach(script.Parent)\n'
     target=ROOT/'packages/mega-city/17-containment-facility.rbxmx';target.parent.mkdir(parents=True,exist_ok=True)
     ET.indent(root);ET.ElementTree(root).write(target,encoding='utf-8',xml_declaration=True)
     return target

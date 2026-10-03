@@ -16,3 +16,6 @@ XML, orthonormal geometry matrices, metadata round-trip, integer GUI offsets and
 Gate B: pending Studio visual acceptance. Gate C: damage, energy payout, collapse and reset require Studio playtest.
 
 Preview: `rojo serve mega-city-containment.project.json`, port 34873. Native import: `packages/mega-city/17-containment-facility.rbxmx`.
+
+## Core animation
+Four inner rings float ±3 studs with a six-second sine period and height-based phase. Both helical strands rotate together around the vessel axis once per 18 seconds. One 30 Hz Heartbeat loop updates the existing 224 Parts in model-local space. Animation pauses when Destroyed and resumes after reset; connection disconnects on model destruction. Static appearance retained in Edit mode. Lua/export checks passed; visual Play check pending.
