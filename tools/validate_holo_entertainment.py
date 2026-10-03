@@ -13,6 +13,12 @@ for p in scene:
         for j in range(3):
             assert abs(sum(m[k*3+i]*m[k*3+j] for k in range(3))-(i==j))<1e-8
 root=ET.parse(ROOT/'packages/mega-city/06-holo-entertainment-tower.rbxmx').getroot()
+# Roblox UDim offsets are signed integers, unlike scale components.
+for u in root.findall('.//UDim2'):
+    for key in ['XO','YO']:
+        value=u.find(key).text
+        assert str(int(value)) == value, f'Invalid integer UDim offset: {value}'
+        assert -(2**31) <= int(value) < 2**31
 parts=root.findall('.//Item[@class="Part"]')
 assert len(parts)==len(scene)+1
 refs=[x.attrib['referent'] for x in root.iter('Item')]

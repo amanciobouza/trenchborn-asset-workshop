@@ -214,7 +214,7 @@ def add_screen(parent,index):
         ET.SubElement(anchor,'X').text='.5';ET.SubElement(anchor,'Y').text='.5'
         for field,xx,yy in [('Position',x-left,y),('Size',w,hgt)]:
             u=ET.SubElement(pr,'UDim2',name=field)
-            for key,val in [('XS',0),('XO',xx),('YS',0),('YO',yy)]:ET.SubElement(u,key).text=str(val)
+            for key,val in [('XS',0),('XO',round(xx)),('YS',0),('YO',round(yy))]:ET.SubElement(u,key).text=str(val)
         c=ET.SubElement(pr,'Color3',name='BackgroundColor3')
         for key,val in zip('RGB',col):ET.SubElement(c,key).text=str(val/255)
     def line(name,a,b,width,col,layer=1):
