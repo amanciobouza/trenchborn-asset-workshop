@@ -40,10 +40,11 @@ def pipe(name,a,b,r=1.2):
 # MC-10: integrated workshop, twin fan bank and insulated thermal stores.
 PALETTE['insulation']=(103,117,131)
 part('Foundation',(190,4,130),(0,2,0),'concrete','Concrete')
-# Hollow workshop shell; two open bays face negative Z.
-part('WorkshopFloor',(124,2,112),(-25,5,0),'edge')
-part('WorkshopRear',(124,61,4),(-25,36,53),'metal')
-for x in [-85,35]:part('WorkshopSide',(4,61,108),(x,36,0),'concrete','Concrete')
+# Hollow workshop shell with butt-jointed walls: no coplanar overlapping corners.
+# Two open bays face negative Z.
+part('WorkshopFloor',(116,2,107),(-25,5,-2.5),'edge')
+part('WorkshopRear',(116,56,4),(-25,34,53),'metal')
+for x in [-85,35]:part('WorkshopSide',(4,56,105),(x,34,-1.5),'concrete','Concrete')
 for x in [-85,-45,-5,35]:
     part('FrontPier',(6,63,9),(x,36,-52),'edge')
     beam('Buttress',(x,6,-65),(x,65,-51),5,'concrete')
@@ -74,7 +75,7 @@ part('EntryWall',(32,34,3),(15,22,-51),'metal')
 part('ServiceDoor',(15,24,1),(15,18,-53),'edge')
 part('DoorInset',(10,15,.5),(15,20,-53.8),'dark')
 trim('DoorLamp',(11,1.5,1),(15,31,-55),'warm')
-sign('UtilityName','UTILITY 10',(31,7,1),(15,39,-57),'snow')
+sign('UtilityName','UTILITY 10',(31,7,1),(15,39,-58.8),'snow')
 for i in range(4):part('EntryStep',(20,1,3),(15,4.5-i,-57-i*3),'concrete','Concrete')
 # Upper control room glazing has real empty volume behind it.
 part('ControlFloor',(116,2,102),(-25,42,0),'edge')
@@ -84,7 +85,7 @@ for x in range(-75,30,15):
     trim('ControlWarm',(11,.6,.6),(x,57,-50),'warm')
     part('Console',(9,4,5),(x,45,-42),'metal')
     trim('ConsoleScreen',(6,2,.5),(x,48,-44.8),'cyan')
-part('WindowSill',(122,3,9),(-25,42,-53),'edge')
+part('WindowSill',(122,3,9.6),(-25,42,-53),'edge')
 snow('SillSnow',122,3,-25,43.8,-57)
 part('MainRoof',(131,4,118),(-25,64,0),'edge')
 snow('MainRoofSnow',131,118,-25,66.3,0)
@@ -162,7 +163,7 @@ for x in [-60,-10]:
 # Orange heat exchanger banks on the right exterior, framed and supported.
 for z in [-29,4,38]:
     part('HeatExchanger',(9,30,24),(89,21,z),'dark')
-    for zz in [z-12,z+12]:part('ExchangerFrame',(12,33,2),(89,21,zz),'edge')
+    for zz in [z-12,z+12]:part('ExchangerFrame',(12,32.5,2),(89,20.75,zz),'edge')
     for y in range(8,35,3):trim('ThermalFin',(.8,1,20),(94, y,z),'warm')
     part('ExchangerTop',(12,2,26),(89,38,z),'edge')
     snow('ExchangerSnow',12,26,89,39.3,z)
@@ -176,7 +177,7 @@ for x in [-70,13]:
     for y in [79,82,85]:part('StackLouvre',(7,1,.6),(x,y,41.6),'dark')
 # Ladder on outer rear wall.
 for x in [75,82]:part('LadderRail',(1,57,1),(x,33,60),'warm')
-for y in range(6,62,4):part('LadderRung',(8,.8,1),(78.5,y,60),'edge')
+for y in range(6,62,4):part('LadderRung',(6,.8,.8),(78.5,y,60),'edge')
 
 def matrix(p):
     if 'beam' in p:
