@@ -17,8 +17,8 @@ On feat/mega-city-harbor-gate: git pull --ff-only; stop previous Rojo server; ro
 
 ## Verification and gates
 
-XML parse, unique referents, PrimaryPart, positive dimensions, orthonormal shell transforms, integer UDim offsets, metadata round-trip and Lua syntax passed. Two exported SteamOutlet Attachments verified. Geometry inspected from front, side and rear; offline rendering does not reproduce steam, transparency, neon or text. Gate B awaits Studio visual acceptance, especially both continuous white wind-shifted plumes. Gate C awaits in-engine damage/reset and performance checks. MC-13 has not started.
+XML parse, unique referents, PrimaryPart, positive dimensions, orthonormal shell transforms, integer UDim offsets, metadata round-trip and Lua syntax passed. Two exported SteamOutlet Attachments verified. Geometry inspected from front, side and rear; offline rendering does not reproduce steam, transparency, neon or text. Gate B visually accepted by user on 2026-10-03 after the radioactive visual treatment. Gate C awaits in-engine damage/reset and performance checks. MC-13 authorized as the next building.
 
 ## Radioactive visual treatment
 
-User requested a more radioactive appearance. Added vivid green outer/inner tower rings, glowing coolant couplings and inspection strips, green access indicators and a native-Part trefoil plaque. White steam retained. Gameplay EnergyType remains Thermal as specified; this change is visual. Studio visual acceptance pending.
+User requested a more radioactive appearance. Added vivid green outer/inner tower rings, glowing coolant couplings and inspection strips, green access indicators and a native-Part trefoil plaque. White steam retained. Gameplay EnergyType remains Thermal as specified; this change is visual. User visually accepted on 2026-10-03.

@@ -2,7 +2,7 @@
 
 **Stadtteil:** Reactor Works  
 **EnergyType:** `Electric`  
-**Status:** Konzept und Zielbild bestätigt; Umsetzung offen.
+**Status:** Modell und Dressing erstellt; Studio-Abnahme offen.
 
 ## Freigegebenes Konzept
 
@@ -29,16 +29,17 @@ Gesamte Anlage inklusive Kontrollgebäude und Sockel gemeinsam.
 - [x] P1: Konzeptbrief im Chat bestätigt.
 - [x] P2 / Gate A: Zielbild im Chat bestätigt (2026-09-30 bis 2026-10-02).
 - [ ] Stadtplan-Abhängigkeit: Fussabdruck, Höhe und Platzierung freigeben.
-- [ ] P3: Technical Breakdown, Geometrie/Materialien, HP, Effekte und Part-Budget definieren.
+- [x] P3: Technical Breakdown, Geometrie/Materialien, HP, Effekte und Part-Budget definieren.
 - [ ] P4 / Gate B: Golden Master erstellen und gegen freigegebenes Bild aus drei Ansichten prüfen.
-- [ ] P5: Dressing, Neon, Schnee und freigegebene Effekte ergänzen.
+- [x] P5: Dressing, Neon, Schnee und freigegebene Effekte ergänzen.
 - [ ] P6 / Gate C: Energie, Schaden, gemeinsame Zerstörung und Reset in Studio prüfen.
 - [ ] P7: Final Installer und separat importierbares Asset bereitstellen.
 
-Status: Konzept freigegeben; Modellierung NICHT begonnen. Dieser Commit archiviert Planung und Zielbilder und startet keine Modellierung.
+Status 2026-10-03: MC-13 als direkt synchronisiertes rbxmx erstellt. [Technical Breakdown und Review](../reviews/13-grid-substation.md). Masse und HP bleiben vorläufig. Gate B und Gate C warten auf Studio-Abnahme. Direkte Vorschau: `mega-city-grid.project.json`.
 
 ## GitHub-Task
 
 [Issue #27](https://github.com/amanciobouza/trenchborn-asset-workshop/issues/27)
 
 Abhängigkeit: [Stadtplan #14](https://github.com/amanciobouza/trenchborn-asset-workshop/issues/14).
+
