@@ -11,6 +11,9 @@
       },
       "MegaCityElevatedTransitStation": {
         "$path": "packages/mega-city/03-elevated-transit-station.rbxmx"
+      },
+      "MegaCityElevatedRailStraight80": {
+        "$path": "packages/mega-city/03-elevated-rail-straight-80.rbxmx"
       }
     },
     "ReplicatedStorage": {

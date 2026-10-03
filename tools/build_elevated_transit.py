@@ -91,7 +91,17 @@ for x in [-77,0,77]:
     for sx in [x-24,x+24]:part('ClerestoryEnd',(2,6,12),(sx,80,0),'metal')
     part('ClerestoryCap',(52,2,16),(x,84,0),'edge')
     snow('ClerestorySnow',52,16,x,85.3,0)
-    vent(x,80,20,11)
+    # Mount the complete vent assembly flush on the rear roof plane.
+    first = len(parts)
+    vent(0,0,0,11)
+    angle = math.radians(12)
+    for v in parts[first:]:
+        vx,vy,vz = v['pos']
+        # Turn louvres outward (+Z), then align with the pitched roof.
+        ly,lz = vy + 4.5, -vz + 4
+        v['pos'] = [x-vx, 72+ly*math.cos(angle)-lz*math.sin(angle),
+                    16+ly*math.sin(angle)+lz*math.cos(angle)]
+        v['rotation'] = [12,180,0]
 # Open rail mouths at both ends. Headers sit above train clearance.
 for x in [-116,116]:
     for z in [-20,20]:part('EndPanel',(2,19,16),(x,57,z),'glass','Glass',alpha=.45)
