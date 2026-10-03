@@ -1,0 +1,2942 @@
+{
+  "status": "Draft; Studio traversal and camera untested",
+  "axis": "positive Z inland; compass orientation unspecified",
+  "buildings": [
+    {
+      "id": "MC-01-01",
+      "asset": 1,
+      "district": "Transit Nexus",
+      "center": [
+        -600,
+        74.8,
+        500
+      ],
+      "ground": 20,
+      "size": [
+        168.0,
+        109.6,
+        105.09180275412393
+      ],
+      "source": {
+        "package": "packages/mega-city/01-harbor-gate-terminal.rbxmx",
+        "min": [
+          -84.0,
+          0.0,
+          -47.0
+        ],
+        "max": [
+          84.0,
+          109.6,
+          58.09180275412393
+        ],
+        "size": [
+          168.0,
+          109.6,
+          105.09180275412393
+        ]
+      }
+    },
+    {
+      "id": "MC-02-01",
+      "asset": 2,
+      "district": "Transit Nexus",
+      "center": [
+        -1040,
+        75.8,
+        500
+      ],
+      "ground": 20,
+      "size": [
+        244.0,
+        111.6,
+        110.61472661137364
+      ],
+      "source": {
+        "package": "packages/mega-city/02-cargo-logistics-hub.rbxmx",
+        "min": [
+          -126.0,
+          0.0,
+          -56.61472661137365
+        ],
+        "max": [
+          118.0,
+          111.6,
+          54.0
+        ],
+        "size": [
+          244.0,
+          111.6,
+          110.61472661137364
+        ]
+      }
+    },
+    {
+      "id": "MC-02-02",
+      "asset": 2,
+      "district": "Transit Nexus",
+      "center": [
+        -1480,
+        75.8,
+        500
+      ],
+      "ground": 20,
+      "size": [
+        244.0,
+        111.6,
+        110.61472661137364
+      ],
+      "source": {
+        "package": "packages/mega-city/02-cargo-logistics-hub.rbxmx",
+        "min": [
+          -126.0,
+          0.0,
+          -56.61472661137365
+        ],
+        "max": [
+          118.0,
+          111.6,
+          54.0
+        ],
+        "size": [
+          244.0,
+          111.6,
+          110.61472661137364
+        ]
+      }
+    },
+    {
+      "id": "MC-02-03",
+      "asset": 2,
+      "district": "Transit Nexus",
+      "center": [
+        -600,
+        75.8,
+        940
+      ],
+      "ground": 20,
+      "size": [
+        244.0,
+        111.6,
+        110.61472661137364
+      ],
+      "source": {
+        "package": "packages/mega-city/02-cargo-logistics-hub.rbxmx",
+        "min": [
+          -126.0,
+          0.0,
+          -56.61472661137365
+        ],
+        "max": [
+          118.0,
+          111.6,
+          54.0
+        ],
+        "size": [
+          244.0,
+          111.6,
+          110.61472661137364
+        ]
+      }
+    },
+    {
+      "id": "MC-02-04",
+      "asset": 2,
+      "district": "Transit Nexus",
+      "center": [
+        -1040,
+        75.8,
+        940
+      ],
+      "ground": 20,
+      "size": [
+        244.0,
+        111.6,
+        110.61472661137364
+      ],
+      "source": {
+        "package": "packages/mega-city/02-cargo-logistics-hub.rbxmx",
+        "min": [
+          -126.0,
+          0.0,
+          -56.61472661137365
+        ],
+        "max": [
+          118.0,
+          111.6,
+          54.0
+        ],
+        "size": [
+          244.0,
+          111.6,
+          110.61472661137364
+        ]
+      }
+    },
+    {
+      "id": "MC-02-05",
+      "asset": 2,
+      "district": "Transit Nexus",
+      "center": [
+        -1480,
+        75.8,
+        940
+      ],
+      "ground": 20,
+      "size": [
+        244.0,
+        111.6,
+        110.61472661137364
+      ],
+      "source": {
+        "package": "packages/mega-city/02-cargo-logistics-hub.rbxmx",
+        "min": [
+          -126.0,
+          0.0,
+          -56.61472661137365
+        ],
+        "max": [
+          118.0,
+          111.6,
+          54.0
+        ],
+        "size": [
+          244.0,
+          111.6,
+          110.61472661137364
+        ]
+      }
+    },
+    {
+      "id": "MC-03-01",
+      "asset": 3,
+      "district": "Transit Nexus",
+      "center": [
+        -600,
+        74.8,
+        1380
+      ],
+      "ground": 20,
+      "size": [
+        307.5,
+        109.6,
+        89.0656543782842
+      ],
+      "source": {
+        "package": "packages/mega-city/03-elevated-transit-station.rbxmx",
+        "min": [
+          -117.5,
+          0.0,
+          -56.5
+        ],
+        "max": [
+          190.0,
+          109.6,
+          32.565654378284194
+        ],
+        "size": [
+          307.5,
+          109.6,
+          89.0656543782842
+        ]
+      }
+    },
+    {
+      "id": "MC-03-02",
+      "asset": 3,
+      "district": "Transit Nexus",
+      "center": [
+        -1040,
+        74.8,
+        1380
+      ],
+      "ground": 20,
+      "size": [
+        307.5,
+        109.6,
+        89.0656543782842
+      ],
+      "source": {
+        "package": "packages/mega-city/03-elevated-transit-station.rbxmx",
+        "min": [
+          -117.5,
+          0.0,
+          -56.5
+        ],
+        "max": [
+          190.0,
+          109.6,
+          32.565654378284194
+        ],
+        "size": [
+          307.5,
+          109.6,
+          89.0656543782842
+        ]
+      }
+    },
+    {
+      "id": "MC-03-03",
+      "asset": 3,
+      "district": "Transit Nexus",
+      "center": [
+        -1480,
+        74.8,
+        1380
+      ],
+      "ground": 20,
+      "size": [
+        307.5,
+        109.6,
+        89.0656543782842
+      ],
+      "source": {
+        "package": "packages/mega-city/03-elevated-transit-station.rbxmx",
+        "min": [
+          -117.5,
+          0.0,
+          -56.5
+        ],
+        "max": [
+          190.0,
+          109.6,
+          32.565654378284194
+        ],
+        "size": [
+          307.5,
+          109.6,
+          89.0656543782842
+        ]
+      }
+    },
+    {
+      "id": "MC-04-01",
+      "asset": 4,
+      "district": "Neon Quarter",
+      "center": [
+        -600,
+        97.025,
+        1920
+      ],
+      "ground": 40,
+      "size": [
+        243.5,
+        114.05,
+        127.13787175450271
+      ],
+      "source": {
+        "package": "packages/mega-city/04-neon-galleria.rbxmx",
+        "min": [
+          -118.0,
+          0.0,
+          -66.13787175450271
+        ],
+        "max": [
+          125.5,
+          114.05,
+          61.0
+        ],
+        "size": [
+          243.5,
+          114.05,
+          127.13787175450271
+        ]
+      }
+    },
+    {
+      "id": "MC-04-02",
+      "asset": 4,
+      "district": "Neon Quarter",
+      "center": [
+        -1000,
+        97.025,
+        1920
+      ],
+      "ground": 40,
+      "size": [
+        243.5,
+        114.05,
+        127.13787175450271
+      ],
+      "source": {
+        "package": "packages/mega-city/04-neon-galleria.rbxmx",
+        "min": [
+          -118.0,
+          0.0,
+          -66.13787175450271
+        ],
+        "max": [
+          125.5,
+          114.05,
+          61.0
+        ],
+        "size": [
+          243.5,
+          114.05,
+          127.13787175450271
+        ]
+      }
+    },
+    {
+      "id": "MC-04-03",
+      "asset": 4,
+      "district": "Neon Quarter",
+      "center": [
+        -1400,
+        97.025,
+        1920
+      ],
+      "ground": 40,
+      "size": [
+        243.5,
+        114.05,
+        127.13787175450271
+      ],
+      "source": {
+        "package": "packages/mega-city/04-neon-galleria.rbxmx",
+        "min": [
+          -118.0,
+          0.0,
+          -66.13787175450271
+        ],
+        "max": [
+          125.5,
+          114.05,
+          61.0
+        ],
+        "size": [
+          243.5,
+          114.05,
+          127.13787175450271
+        ]
+      }
+    },
+    {
+      "id": "MC-04-04",
+      "asset": 4,
+      "district": "Neon Quarter",
+      "center": [
+        -1800,
+        97.025,
+        1920
+      ],
+      "ground": 40,
+      "size": [
+        243.5,
+        114.05,
+        127.13787175450271
+      ],
+      "source": {
+        "package": "packages/mega-city/04-neon-galleria.rbxmx",
+        "min": [
+          -118.0,
+          0.0,
+          -66.13787175450271
+        ],
+        "max": [
+          125.5,
+          114.05,
+          61.0
+        ],
+        "size": [
+          243.5,
+          114.05,
+          127.13787175450271
+        ]
+      }
+    },
+    {
+      "id": "MC-05-01",
+      "asset": 5,
+      "district": "Neon Quarter",
+      "center": [
+        -600,
+        199.4736131594583,
+        2250
+      ],
+      "ground": 40,
+      "size": [
+        136.0,
+        318.9472263189166,
+        129.0
+      ],
+      "source": {
+        "package": "packages/mega-city/05-prism-hotel.rbxmx",
+        "min": [
+          -68.0,
+          0.0,
+          -72.0
+        ],
+        "max": [
+          68.0,
+          318.9472263189166,
+          57.0
+        ],
+        "size": [
+          136.0,
+          318.9472263189166,
+          129.0
+        ]
+      }
+    },
+    {
+      "id": "MC-05-02",
+      "asset": 5,
+      "district": "Neon Quarter",
+      "center": [
+        -1000,
+        199.4736131594583,
+        2250
+      ],
+      "ground": 40,
+      "size": [
+        136.0,
+        318.9472263189166,
+        129.0
+      ],
+      "source": {
+        "package": "packages/mega-city/05-prism-hotel.rbxmx",
+        "min": [
+          -68.0,
+          0.0,
+          -72.0
+        ],
+        "max": [
+          68.0,
+          318.9472263189166,
+          57.0
+        ],
+        "size": [
+          136.0,
+          318.9472263189166,
+          129.0
+        ]
+      }
+    },
+    {
+      "id": "MC-05-03",
+      "asset": 5,
+      "district": "Neon Quarter",
+      "center": [
+        -1400,
+        199.4736131594583,
+        2250
+      ],
+      "ground": 40,
+      "size": [
+        136.0,
+        318.9472263189166,
+        129.0
+      ],
+      "source": {
+        "package": "packages/mega-city/05-prism-hotel.rbxmx",
+        "min": [
+          -68.0,
+          0.0,
+          -72.0
+        ],
+        "max": [
+          68.0,
+          318.9472263189166,
+          57.0
+        ],
+        "size": [
+          136.0,
+          318.9472263189166,
+          129.0
+        ]
+      }
+    },
+    {
+      "id": "MC-05-04",
+      "asset": 5,
+      "district": "Neon Quarter",
+      "center": [
+        -1800,
+        199.4736131594583,
+        2250
+      ],
+      "ground": 40,
+      "size": [
+        136.0,
+        318.9472263189166,
+        129.0
+      ],
+      "source": {
+        "package": "packages/mega-city/05-prism-hotel.rbxmx",
+        "min": [
+          -68.0,
+          0.0,
+          -72.0
+        ],
+        "max": [
+          68.0,
+          318.9472263189166,
+          57.0
+        ],
+        "size": [
+          136.0,
+          318.9472263189166,
+          129.0
+        ]
+      }
+    },
+    {
+      "id": "MC-05-05",
+      "asset": 5,
+      "district": "Neon Quarter",
+      "center": [
+        -600,
+        199.4736131594583,
+        2580
+      ],
+      "ground": 40,
+      "size": [
+        136.0,
+        318.9472263189166,
+        129.0
+      ],
+      "source": {
+        "package": "packages/mega-city/05-prism-hotel.rbxmx",
+        "min": [
+          -68.0,
+          0.0,
+          -72.0
+        ],
+        "max": [
+          68.0,
+          318.9472263189166,
+          57.0
+        ],
+        "size": [
+          136.0,
+          318.9472263189166,
+          129.0
+        ]
+      }
+    },
+    {
+      "id": "MC-05-06",
+      "asset": 5,
+      "district": "Neon Quarter",
+      "center": [
+        -1000,
+        199.4736131594583,
+        2580
+      ],
+      "ground": 40,
+      "size": [
+        136.0,
+        318.9472263189166,
+        129.0
+      ],
+      "source": {
+        "package": "packages/mega-city/05-prism-hotel.rbxmx",
+        "min": [
+          -68.0,
+          0.0,
+          -72.0
+        ],
+        "max": [
+          68.0,
+          318.9472263189166,
+          57.0
+        ],
+        "size": [
+          136.0,
+          318.9472263189166,
+          129.0
+        ]
+      }
+    },
+    {
+      "id": "MC-06-01",
+      "asset": 6,
+      "district": "Neon Quarter",
+      "center": [
+        -1400,
+        171.3,
+        2580
+      ],
+      "ground": 40,
+      "size": [
+        164.0,
+        262.6,
+        159.0
+      ],
+      "source": {
+        "package": "packages/mega-city/06-holo-entertainment-tower.rbxmx",
+        "min": [
+          -82.0,
+          0.0,
+          -79.5
+        ],
+        "max": [
+          82.0,
+          262.6,
+          79.5
+        ],
+        "size": [
+          164.0,
+          262.6,
+          159.0
+        ]
+      }
+    },
+    {
+      "id": "MC-06-02",
+      "asset": 6,
+      "district": "Neon Quarter",
+      "center": [
+        -1800,
+        171.3,
+        2580
+      ],
+      "ground": 40,
+      "size": [
+        164.0,
+        262.6,
+        159.0
+      ],
+      "source": {
+        "package": "packages/mega-city/06-holo-entertainment-tower.rbxmx",
+        "min": [
+          -82.0,
+          0.0,
+          -79.5
+        ],
+        "max": [
+          82.0,
+          262.6,
+          79.5
+        ],
+        "size": [
+          164.0,
+          262.6,
+          159.0
+        ]
+      }
+    },
+    {
+      "id": "MC-07-01",
+      "asset": 7,
+      "district": "Neon Quarter",
+      "center": [
+        -600,
+        75.525,
+        2910
+      ],
+      "ground": 40,
+      "size": [
+        239.0,
+        71.05,
+        138.0
+      ],
+      "source": {
+        "package": "packages/mega-city/07-waterfront-market-hall.rbxmx",
+        "min": [
+          -119.5,
+          0.0,
+          -68.0
+        ],
+        "max": [
+          119.5,
+          71.05,
+          70.0
+        ],
+        "size": [
+          239.0,
+          71.05,
+          138.0
+        ]
+      }
+    },
+    {
+      "id": "MC-07-02",
+      "asset": 7,
+      "district": "Neon Quarter",
+      "center": [
+        -1000,
+        75.525,
+        2910
+      ],
+      "ground": 40,
+      "size": [
+        239.0,
+        71.05,
+        138.0
+      ],
+      "source": {
+        "package": "packages/mega-city/07-waterfront-market-hall.rbxmx",
+        "min": [
+          -119.5,
+          0.0,
+          -68.0
+        ],
+        "max": [
+          119.5,
+          71.05,
+          70.0
+        ],
+        "size": [
+          239.0,
+          71.05,
+          138.0
+        ]
+      }
+    },
+    {
+      "id": "MC-07-03",
+      "asset": 7,
+      "district": "Neon Quarter",
+      "center": [
+        -1400,
+        75.525,
+        2910
+      ],
+      "ground": 40,
+      "size": [
+        239.0,
+        71.05,
+        138.0
+      ],
+      "source": {
+        "package": "packages/mega-city/07-waterfront-market-hall.rbxmx",
+        "min": [
+          -119.5,
+          0.0,
+          -68.0
+        ],
+        "max": [
+          119.5,
+          71.05,
+          70.0
+        ],
+        "size": [
+          239.0,
+          71.05,
+          138.0
+        ]
+      }
+    },
+    {
+      "id": "MC-07-04",
+      "asset": 7,
+      "district": "Neon Quarter",
+      "center": [
+        -1800,
+        75.525,
+        2910
+      ],
+      "ground": 40,
+      "size": [
+        239.0,
+        71.05,
+        138.0
+      ],
+      "source": {
+        "package": "packages/mega-city/07-waterfront-market-hall.rbxmx",
+        "min": [
+          -119.5,
+          0.0,
+          -68.0
+        ],
+        "max": [
+          119.5,
+          71.05,
+          70.0
+        ],
+        "size": [
+          239.0,
+          71.05,
+          138.0
+        ]
+      }
+    },
+    {
+      "id": "MC-07-05",
+      "asset": 7,
+      "district": "Neon Quarter",
+      "center": [
+        -600,
+        75.525,
+        3100
+      ],
+      "ground": 40,
+      "size": [
+        239.0,
+        71.05,
+        138.0
+      ],
+      "source": {
+        "package": "packages/mega-city/07-waterfront-market-hall.rbxmx",
+        "min": [
+          -119.5,
+          0.0,
+          -68.0
+        ],
+        "max": [
+          119.5,
+          71.05,
+          70.0
+        ],
+        "size": [
+          239.0,
+          71.05,
+          138.0
+        ]
+      }
+    },
+    {
+      "id": "MC-08-01",
+      "asset": 8,
+      "district": "Stack District",
+      "center": [
+        -600,
+        213.55,
+        3540
+      ],
+      "ground": 60,
+      "size": [
+        160.0,
+        307.1,
+        141.7
+      ],
+      "source": {
+        "package": "packages/mega-city/08-stacked-habitat.rbxmx",
+        "min": [
+          -80.0,
+          0.0,
+          -69.5
+        ],
+        "max": [
+          80.0,
+          307.1,
+          72.2
+        ],
+        "size": [
+          160.0,
+          307.1,
+          141.7
+        ]
+      }
+    },
+    {
+      "id": "MC-08-02",
+      "asset": 8,
+      "district": "Stack District",
+      "center": [
+        -1000,
+        213.55,
+        3540
+      ],
+      "ground": 60,
+      "size": [
+        160.0,
+        307.1,
+        141.7
+      ],
+      "source": {
+        "package": "packages/mega-city/08-stacked-habitat.rbxmx",
+        "min": [
+          -80.0,
+          0.0,
+          -69.5
+        ],
+        "max": [
+          80.0,
+          307.1,
+          72.2
+        ],
+        "size": [
+          160.0,
+          307.1,
+          141.7
+        ]
+      }
+    },
+    {
+      "id": "MC-08-03",
+      "asset": 8,
+      "district": "Stack District",
+      "center": [
+        -1400,
+        213.55,
+        3540
+      ],
+      "ground": 60,
+      "size": [
+        160.0,
+        307.1,
+        141.7
+      ],
+      "source": {
+        "package": "packages/mega-city/08-stacked-habitat.rbxmx",
+        "min": [
+          -80.0,
+          0.0,
+          -69.5
+        ],
+        "max": [
+          80.0,
+          307.1,
+          72.2
+        ],
+        "size": [
+          160.0,
+          307.1,
+          141.7
+        ]
+      }
+    },
+    {
+      "id": "MC-08-04",
+      "asset": 8,
+      "district": "Stack District",
+      "center": [
+        -1800,
+        213.55,
+        3540
+      ],
+      "ground": 60,
+      "size": [
+        160.0,
+        307.1,
+        141.7
+      ],
+      "source": {
+        "package": "packages/mega-city/08-stacked-habitat.rbxmx",
+        "min": [
+          -80.0,
+          0.0,
+          -69.5
+        ],
+        "max": [
+          80.0,
+          307.1,
+          72.2
+        ],
+        "size": [
+          160.0,
+          307.1,
+          141.7
+        ]
+      }
+    },
+    {
+      "id": "MC-08-05",
+      "asset": 8,
+      "district": "Stack District",
+      "center": [
+        -600,
+        213.55,
+        3870
+      ],
+      "ground": 60,
+      "size": [
+        160.0,
+        307.1,
+        141.7
+      ],
+      "source": {
+        "package": "packages/mega-city/08-stacked-habitat.rbxmx",
+        "min": [
+          -80.0,
+          0.0,
+          -69.5
+        ],
+        "max": [
+          80.0,
+          307.1,
+          72.2
+        ],
+        "size": [
+          160.0,
+          307.1,
+          141.7
+        ]
+      }
+    },
+    {
+      "id": "MC-08-06",
+      "asset": 8,
+      "district": "Stack District",
+      "center": [
+        -1000,
+        213.55,
+        3870
+      ],
+      "ground": 60,
+      "size": [
+        160.0,
+        307.1,
+        141.7
+      ],
+      "source": {
+        "package": "packages/mega-city/08-stacked-habitat.rbxmx",
+        "min": [
+          -80.0,
+          0.0,
+          -69.5
+        ],
+        "max": [
+          80.0,
+          307.1,
+          72.2
+        ],
+        "size": [
+          160.0,
+          307.1,
+          141.7
+        ]
+      }
+    },
+    {
+      "id": "MC-08-07",
+      "asset": 8,
+      "district": "Stack District",
+      "center": [
+        -1400,
+        213.55,
+        3870
+      ],
+      "ground": 60,
+      "size": [
+        160.0,
+        307.1,
+        141.7
+      ],
+      "source": {
+        "package": "packages/mega-city/08-stacked-habitat.rbxmx",
+        "min": [
+          -80.0,
+          0.0,
+          -69.5
+        ],
+        "max": [
+          80.0,
+          307.1,
+          72.2
+        ],
+        "size": [
+          160.0,
+          307.1,
+          141.7
+        ]
+      }
+    },
+    {
+      "id": "MC-08-08",
+      "asset": 8,
+      "district": "Stack District",
+      "center": [
+        -1800,
+        213.55,
+        3870
+      ],
+      "ground": 60,
+      "size": [
+        160.0,
+        307.1,
+        141.7
+      ],
+      "source": {
+        "package": "packages/mega-city/08-stacked-habitat.rbxmx",
+        "min": [
+          -80.0,
+          0.0,
+          -69.5
+        ],
+        "max": [
+          80.0,
+          307.1,
+          72.2
+        ],
+        "size": [
+          160.0,
+          307.1,
+          141.7
+        ]
+      }
+    },
+    {
+      "id": "MC-08-09",
+      "asset": 8,
+      "district": "Stack District",
+      "center": [
+        -600,
+        213.55,
+        4200
+      ],
+      "ground": 60,
+      "size": [
+        160.0,
+        307.1,
+        141.7
+      ],
+      "source": {
+        "package": "packages/mega-city/08-stacked-habitat.rbxmx",
+        "min": [
+          -80.0,
+          0.0,
+          -69.5
+        ],
+        "max": [
+          80.0,
+          307.1,
+          72.2
+        ],
+        "size": [
+          160.0,
+          307.1,
+          141.7
+        ]
+      }
+    },
+    {
+      "id": "MC-08-10",
+      "asset": 8,
+      "district": "Stack District",
+      "center": [
+        -1000,
+        213.55,
+        4200
+      ],
+      "ground": 60,
+      "size": [
+        160.0,
+        307.1,
+        141.7
+      ],
+      "source": {
+        "package": "packages/mega-city/08-stacked-habitat.rbxmx",
+        "min": [
+          -80.0,
+          0.0,
+          -69.5
+        ],
+        "max": [
+          80.0,
+          307.1,
+          72.2
+        ],
+        "size": [
+          160.0,
+          307.1,
+          141.7
+        ]
+      }
+    },
+    {
+      "id": "MC-08-11",
+      "asset": 8,
+      "district": "Stack District",
+      "center": [
+        -1400,
+        213.55,
+        4200
+      ],
+      "ground": 60,
+      "size": [
+        160.0,
+        307.1,
+        141.7
+      ],
+      "source": {
+        "package": "packages/mega-city/08-stacked-habitat.rbxmx",
+        "min": [
+          -80.0,
+          0.0,
+          -69.5
+        ],
+        "max": [
+          80.0,
+          307.1,
+          72.2
+        ],
+        "size": [
+          160.0,
+          307.1,
+          141.7
+        ]
+      }
+    },
+    {
+      "id": "MC-08-12",
+      "asset": 8,
+      "district": "Stack District",
+      "center": [
+        -1800,
+        213.55,
+        4200
+      ],
+      "ground": 60,
+      "size": [
+        160.0,
+        307.1,
+        141.7
+      ],
+      "source": {
+        "package": "packages/mega-city/08-stacked-habitat.rbxmx",
+        "min": [
+          -80.0,
+          0.0,
+          -69.5
+        ],
+        "max": [
+          80.0,
+          307.1,
+          72.2
+        ],
+        "size": [
+          160.0,
+          307.1,
+          141.7
+        ]
+      }
+    },
+    {
+      "id": "MC-08-13",
+      "asset": 8,
+      "district": "Stack District",
+      "center": [
+        -600,
+        213.55,
+        4530
+      ],
+      "ground": 60,
+      "size": [
+        160.0,
+        307.1,
+        141.7
+      ],
+      "source": {
+        "package": "packages/mega-city/08-stacked-habitat.rbxmx",
+        "min": [
+          -80.0,
+          0.0,
+          -69.5
+        ],
+        "max": [
+          80.0,
+          307.1,
+          72.2
+        ],
+        "size": [
+          160.0,
+          307.1,
+          141.7
+        ]
+      }
+    },
+    {
+      "id": "MC-08-14",
+      "asset": 8,
+      "district": "Stack District",
+      "center": [
+        -1000,
+        213.55,
+        4530
+      ],
+      "ground": 60,
+      "size": [
+        160.0,
+        307.1,
+        141.7
+      ],
+      "source": {
+        "package": "packages/mega-city/08-stacked-habitat.rbxmx",
+        "min": [
+          -80.0,
+          0.0,
+          -69.5
+        ],
+        "max": [
+          80.0,
+          307.1,
+          72.2
+        ],
+        "size": [
+          160.0,
+          307.1,
+          141.7
+        ]
+      }
+    },
+    {
+      "id": "MC-09-01",
+      "asset": 9,
+      "district": "Stack District",
+      "center": [
+        -1400,
+        214.55,
+        4530
+      ],
+      "ground": 60,
+      "size": [
+        180.0,
+        309.1,
+        126.35
+      ],
+      "source": {
+        "package": "packages/mega-city/09-twin-habitat-towers.rbxmx",
+        "min": [
+          -90.0,
+          0.0,
+          -64.0
+        ],
+        "max": [
+          90.0,
+          309.1,
+          62.35
+        ],
+        "size": [
+          180.0,
+          309.1,
+          126.35
+        ]
+      }
+    },
+    {
+      "id": "MC-09-02",
+      "asset": 9,
+      "district": "Stack District",
+      "center": [
+        -1800,
+        214.55,
+        4530
+      ],
+      "ground": 60,
+      "size": [
+        180.0,
+        309.1,
+        126.35
+      ],
+      "source": {
+        "package": "packages/mega-city/09-twin-habitat-towers.rbxmx",
+        "min": [
+          -90.0,
+          0.0,
+          -64.0
+        ],
+        "max": [
+          90.0,
+          309.1,
+          62.35
+        ],
+        "size": [
+          180.0,
+          309.1,
+          126.35
+        ]
+      }
+    },
+    {
+      "id": "MC-09-03",
+      "asset": 9,
+      "district": "Stack District",
+      "center": [
+        -600,
+        214.55,
+        4860
+      ],
+      "ground": 60,
+      "size": [
+        180.0,
+        309.1,
+        126.35
+      ],
+      "source": {
+        "package": "packages/mega-city/09-twin-habitat-towers.rbxmx",
+        "min": [
+          -90.0,
+          0.0,
+          -64.0
+        ],
+        "max": [
+          90.0,
+          309.1,
+          62.35
+        ],
+        "size": [
+          180.0,
+          309.1,
+          126.35
+        ]
+      }
+    },
+    {
+      "id": "MC-09-04",
+      "asset": 9,
+      "district": "Stack District",
+      "center": [
+        -1000,
+        214.55,
+        4860
+      ],
+      "ground": 60,
+      "size": [
+        180.0,
+        309.1,
+        126.35
+      ],
+      "source": {
+        "package": "packages/mega-city/09-twin-habitat-towers.rbxmx",
+        "min": [
+          -90.0,
+          0.0,
+          -64.0
+        ],
+        "max": [
+          90.0,
+          309.1,
+          62.35
+        ],
+        "size": [
+          180.0,
+          309.1,
+          126.35
+        ]
+      }
+    },
+    {
+      "id": "MC-09-05",
+      "asset": 9,
+      "district": "Stack District",
+      "center": [
+        -1400,
+        214.55,
+        4860
+      ],
+      "ground": 60,
+      "size": [
+        180.0,
+        309.1,
+        126.35
+      ],
+      "source": {
+        "package": "packages/mega-city/09-twin-habitat-towers.rbxmx",
+        "min": [
+          -90.0,
+          0.0,
+          -64.0
+        ],
+        "max": [
+          90.0,
+          309.1,
+          62.35
+        ],
+        "size": [
+          180.0,
+          309.1,
+          126.35
+        ]
+      }
+    },
+    {
+      "id": "MC-09-06",
+      "asset": 9,
+      "district": "Stack District",
+      "center": [
+        -1800,
+        214.55,
+        4860
+      ],
+      "ground": 60,
+      "size": [
+        180.0,
+        309.1,
+        126.35
+      ],
+      "source": {
+        "package": "packages/mega-city/09-twin-habitat-towers.rbxmx",
+        "min": [
+          -90.0,
+          0.0,
+          -64.0
+        ],
+        "max": [
+          90.0,
+          309.1,
+          62.35
+        ],
+        "size": [
+          180.0,
+          309.1,
+          126.35
+        ]
+      }
+    },
+    {
+      "id": "MC-09-07",
+      "asset": 9,
+      "district": "Stack District",
+      "center": [
+        -600,
+        214.55,
+        5190
+      ],
+      "ground": 60,
+      "size": [
+        180.0,
+        309.1,
+        126.35
+      ],
+      "source": {
+        "package": "packages/mega-city/09-twin-habitat-towers.rbxmx",
+        "min": [
+          -90.0,
+          0.0,
+          -64.0
+        ],
+        "max": [
+          90.0,
+          309.1,
+          62.35
+        ],
+        "size": [
+          180.0,
+          309.1,
+          126.35
+        ]
+      }
+    },
+    {
+      "id": "MC-10-01",
+      "asset": 10,
+      "district": "Stack District",
+      "center": [
+        -1000,
+        117.525,
+        5190
+      ],
+      "ground": 60,
+      "size": [
+        190.0,
+        115.05,
+        132.5
+      ],
+      "source": {
+        "package": "packages/mega-city/10-utility-block.rbxmx",
+        "min": [
+          -95.0,
+          0.0,
+          -67.5
+        ],
+        "max": [
+          95.0,
+          115.05,
+          65.0
+        ],
+        "size": [
+          190.0,
+          115.05,
+          132.5
+        ]
+      }
+    },
+    {
+      "id": "MC-10-02",
+      "asset": 10,
+      "district": "Stack District",
+      "center": [
+        -1400,
+        117.525,
+        5190
+      ],
+      "ground": 60,
+      "size": [
+        190.0,
+        115.05,
+        132.5
+      ],
+      "source": {
+        "package": "packages/mega-city/10-utility-block.rbxmx",
+        "min": [
+          -95.0,
+          0.0,
+          -67.5
+        ],
+        "max": [
+          95.0,
+          115.05,
+          65.0
+        ],
+        "size": [
+          190.0,
+          115.05,
+          132.5
+        ]
+      }
+    },
+    {
+      "id": "MC-10-03",
+      "asset": 10,
+      "district": "Stack District",
+      "center": [
+        -1800,
+        117.525,
+        5190
+      ],
+      "ground": 60,
+      "size": [
+        190.0,
+        115.05,
+        132.5
+      ],
+      "source": {
+        "package": "packages/mega-city/10-utility-block.rbxmx",
+        "min": [
+          -95.0,
+          0.0,
+          -67.5
+        ],
+        "max": [
+          95.0,
+          115.05,
+          65.0
+        ],
+        "size": [
+          190.0,
+          115.05,
+          132.5
+        ]
+      }
+    },
+    {
+      "id": "MC-10-04",
+      "asset": 10,
+      "district": "Stack District",
+      "center": [
+        -600,
+        117.525,
+        5500
+      ],
+      "ground": 60,
+      "size": [
+        190.0,
+        115.05,
+        132.5
+      ],
+      "source": {
+        "package": "packages/mega-city/10-utility-block.rbxmx",
+        "min": [
+          -95.0,
+          0.0,
+          -67.5
+        ],
+        "max": [
+          95.0,
+          115.05,
+          65.0
+        ],
+        "size": [
+          190.0,
+          115.05,
+          132.5
+        ]
+      }
+    },
+    {
+      "id": "MC-11-01",
+      "asset": 11,
+      "district": "Reactor Works",
+      "center": [
+        650,
+        116.55,
+        650
+      ],
+      "ground": 20,
+      "size": [
+        278.0,
+        193.1,
+        156.0
+      ],
+      "source": {
+        "package": "packages/mega-city/11-major-power-station.rbxmx",
+        "min": [
+          -139.0,
+          0.0,
+          -78.0
+        ],
+        "max": [
+          139.0,
+          193.1,
+          78.0
+        ],
+        "size": [
+          278.0,
+          193.1,
+          156.0
+        ]
+      }
+    },
+    {
+      "id": "MC-11-02",
+      "asset": 11,
+      "district": "Reactor Works",
+      "center": [
+        1200,
+        116.55,
+        650
+      ],
+      "ground": 20,
+      "size": [
+        278.0,
+        193.1,
+        156.0
+      ],
+      "source": {
+        "package": "packages/mega-city/11-major-power-station.rbxmx",
+        "min": [
+          -139.0,
+          0.0,
+          -78.0
+        ],
+        "max": [
+          139.0,
+          193.1,
+          78.0
+        ],
+        "size": [
+          278.0,
+          193.1,
+          156.0
+        ]
+      }
+    },
+    {
+      "id": "MC-12-01",
+      "asset": 12,
+      "district": "Reactor Works",
+      "center": [
+        1750,
+        97.675,
+        650
+      ],
+      "ground": 20,
+      "size": [
+        246.0,
+        155.35,
+        150.0
+      ],
+      "source": {
+        "package": "packages/mega-city/12-cooling-plant.rbxmx",
+        "min": [
+          -123.0,
+          0.0,
+          -75.0
+        ],
+        "max": [
+          123.0,
+          155.35,
+          75.0
+        ],
+        "size": [
+          246.0,
+          155.35,
+          150.0
+        ]
+      }
+    },
+    {
+      "id": "MC-12-02",
+      "asset": 12,
+      "district": "Reactor Works",
+      "center": [
+        650,
+        97.675,
+        1180
+      ],
+      "ground": 20,
+      "size": [
+        246.0,
+        155.35,
+        150.0
+      ],
+      "source": {
+        "package": "packages/mega-city/12-cooling-plant.rbxmx",
+        "min": [
+          -123.0,
+          0.0,
+          -75.0
+        ],
+        "max": [
+          123.0,
+          155.35,
+          75.0
+        ],
+        "size": [
+          246.0,
+          155.35,
+          150.0
+        ]
+      }
+    },
+    {
+      "id": "MC-12-03",
+      "asset": 12,
+      "district": "Reactor Works",
+      "center": [
+        1200,
+        97.675,
+        1180
+      ],
+      "ground": 20,
+      "size": [
+        246.0,
+        155.35,
+        150.0
+      ],
+      "source": {
+        "package": "packages/mega-city/12-cooling-plant.rbxmx",
+        "min": [
+          -123.0,
+          0.0,
+          -75.0
+        ],
+        "max": [
+          123.0,
+          155.35,
+          75.0
+        ],
+        "size": [
+          246.0,
+          155.35,
+          150.0
+        ]
+      }
+    },
+    {
+      "id": "MC-12-04",
+      "asset": 12,
+      "district": "Reactor Works",
+      "center": [
+        1750,
+        97.675,
+        1180
+      ],
+      "ground": 20,
+      "size": [
+        246.0,
+        155.35,
+        150.0
+      ],
+      "source": {
+        "package": "packages/mega-city/12-cooling-plant.rbxmx",
+        "min": [
+          -123.0,
+          0.0,
+          -75.0
+        ],
+        "max": [
+          123.0,
+          155.35,
+          75.0
+        ],
+        "size": [
+          246.0,
+          155.35,
+          150.0
+        ]
+      }
+    },
+    {
+      "id": "MC-13-01",
+      "asset": 13,
+      "district": "Reactor Works",
+      "center": [
+        650,
+        105.8967336986197,
+        2300
+      ],
+      "ground": 40,
+      "size": [
+        244.0,
+        131.7934673972394,
+        179.0
+      ],
+      "source": {
+        "package": "packages/mega-city/13-grid-substation.rbxmx",
+        "min": [
+          -122.0,
+          0.0,
+          -100.5
+        ],
+        "max": [
+          122.0,
+          131.7934673972394,
+          78.5
+        ],
+        "size": [
+          244.0,
+          131.7934673972394,
+          179.0
+        ]
+      }
+    },
+    {
+      "id": "MC-13-02",
+      "asset": 13,
+      "district": "Reactor Works",
+      "center": [
+        1200,
+        105.8967336986197,
+        2300
+      ],
+      "ground": 40,
+      "size": [
+        244.0,
+        131.7934673972394,
+        179.0
+      ],
+      "source": {
+        "package": "packages/mega-city/13-grid-substation.rbxmx",
+        "min": [
+          -122.0,
+          0.0,
+          -100.5
+        ],
+        "max": [
+          122.0,
+          131.7934673972394,
+          78.5
+        ],
+        "size": [
+          244.0,
+          131.7934673972394,
+          179.0
+        ]
+      }
+    },
+    {
+      "id": "MC-13-03",
+      "asset": 13,
+      "district": "Reactor Works",
+      "center": [
+        1750,
+        105.8967336986197,
+        2300
+      ],
+      "ground": 40,
+      "size": [
+        244.0,
+        131.7934673972394,
+        179.0
+      ],
+      "source": {
+        "package": "packages/mega-city/13-grid-substation.rbxmx",
+        "min": [
+          -122.0,
+          0.0,
+          -100.5
+        ],
+        "max": [
+          122.0,
+          131.7934673972394,
+          78.5
+        ],
+        "size": [
+          244.0,
+          131.7934673972394,
+          179.0
+        ]
+      }
+    },
+    {
+      "id": "MC-13-04",
+      "asset": 13,
+      "district": "Reactor Works",
+      "center": [
+        650,
+        105.8967336986197,
+        2850
+      ],
+      "ground": 40,
+      "size": [
+        244.0,
+        131.7934673972394,
+        179.0
+      ],
+      "source": {
+        "package": "packages/mega-city/13-grid-substation.rbxmx",
+        "min": [
+          -122.0,
+          0.0,
+          -100.5
+        ],
+        "max": [
+          122.0,
+          131.7934673972394,
+          78.5
+        ],
+        "size": [
+          244.0,
+          131.7934673972394,
+          179.0
+        ]
+      }
+    },
+    {
+      "id": "MC-13-05",
+      "asset": 13,
+      "district": "Reactor Works",
+      "center": [
+        1200,
+        105.8967336986197,
+        2850
+      ],
+      "ground": 40,
+      "size": [
+        244.0,
+        131.7934673972394,
+        179.0
+      ],
+      "source": {
+        "package": "packages/mega-city/13-grid-substation.rbxmx",
+        "min": [
+          -122.0,
+          0.0,
+          -100.5
+        ],
+        "max": [
+          122.0,
+          131.7934673972394,
+          78.5
+        ],
+        "size": [
+          244.0,
+          131.7934673972394,
+          179.0
+        ]
+      }
+    },
+    {
+      "id": "MC-13-06",
+      "asset": 13,
+      "district": "Reactor Works",
+      "center": [
+        1750,
+        105.8967336986197,
+        2850
+      ],
+      "ground": 40,
+      "size": [
+        244.0,
+        131.7934673972394,
+        179.0
+      ],
+      "source": {
+        "package": "packages/mega-city/13-grid-substation.rbxmx",
+        "min": [
+          -122.0,
+          0.0,
+          -100.5
+        ],
+        "max": [
+          122.0,
+          131.7934673972394,
+          78.5
+        ],
+        "size": [
+          244.0,
+          131.7934673972394,
+          179.0
+        ]
+      }
+    },
+    {
+      "id": "MC-14-01",
+      "asset": 14,
+      "district": "Research Enclave",
+      "center": [
+        650,
+        133.0,
+        3650
+      ],
+      "ground": 60,
+      "size": [
+        274.0,
+        146.0,
+        204.5
+      ],
+      "source": {
+        "package": "packages/mega-city/14-nuclear-research-facility.rbxmx",
+        "min": [
+          -137.0,
+          0.0,
+          -99.5
+        ],
+        "max": [
+          137.0,
+          146.0,
+          105.0
+        ],
+        "size": [
+          274.0,
+          146.0,
+          204.5
+        ]
+      }
+    },
+    {
+      "id": "MC-15-01",
+      "asset": 15,
+      "district": "Research Enclave",
+      "center": [
+        1200,
+        134.75,
+        3650
+      ],
+      "ground": 60,
+      "size": [
+        240.0,
+        149.5,
+        188.5
+      ],
+      "source": {
+        "package": "packages/mega-city/15-data-center.rbxmx",
+        "min": [
+          -120.0,
+          0.0,
+          -94.0
+        ],
+        "max": [
+          120.0,
+          149.5,
+          94.5
+        ],
+        "size": [
+          240.0,
+          149.5,
+          188.5
+        ]
+      }
+    },
+    {
+      "id": "MC-15-02",
+      "asset": 15,
+      "district": "Research Enclave",
+      "center": [
+        1750,
+        134.75,
+        3650
+      ],
+      "ground": 60,
+      "size": [
+        240.0,
+        149.5,
+        188.5
+      ],
+      "source": {
+        "package": "packages/mega-city/15-data-center.rbxmx",
+        "min": [
+          -120.0,
+          0.0,
+          -94.0
+        ],
+        "max": [
+          120.0,
+          149.5,
+          94.5
+        ],
+        "size": [
+          240.0,
+          149.5,
+          188.5
+        ]
+      }
+    },
+    {
+      "id": "MC-15-03",
+      "asset": 15,
+      "district": "Research Enclave",
+      "center": [
+        650,
+        134.75,
+        4300
+      ],
+      "ground": 60,
+      "size": [
+        240.0,
+        149.5,
+        188.5
+      ],
+      "source": {
+        "package": "packages/mega-city/15-data-center.rbxmx",
+        "min": [
+          -120.0,
+          0.0,
+          -94.0
+        ],
+        "max": [
+          120.0,
+          149.5,
+          94.5
+        ],
+        "size": [
+          240.0,
+          149.5,
+          188.5
+        ]
+      }
+    },
+    {
+      "id": "MC-15-04",
+      "asset": 15,
+      "district": "Research Enclave",
+      "center": [
+        1200,
+        134.75,
+        4300
+      ],
+      "ground": 60,
+      "size": [
+        240.0,
+        149.5,
+        188.5
+      ],
+      "source": {
+        "package": "packages/mega-city/15-data-center.rbxmx",
+        "min": [
+          -120.0,
+          0.0,
+          -94.0
+        ],
+        "max": [
+          120.0,
+          149.5,
+          94.5
+        ],
+        "size": [
+          240.0,
+          149.5,
+          188.5
+        ]
+      }
+    },
+    {
+      "id": "MC-15-05",
+      "asset": 15,
+      "district": "Research Enclave",
+      "center": [
+        1750,
+        134.75,
+        4300
+      ],
+      "ground": 60,
+      "size": [
+        240.0,
+        149.5,
+        188.5
+      ],
+      "source": {
+        "package": "packages/mega-city/15-data-center.rbxmx",
+        "min": [
+          -120.0,
+          0.0,
+          -94.0
+        ],
+        "max": [
+          120.0,
+          149.5,
+          94.5
+        ],
+        "size": [
+          240.0,
+          149.5,
+          188.5
+        ]
+      }
+    },
+    {
+      "id": "MC-16-01",
+      "asset": 16,
+      "district": "Research Enclave",
+      "center": [
+        650,
+        146.775,
+        4950
+      ],
+      "ground": 60,
+      "size": [
+        280.0,
+        173.55,
+        218.5
+      ],
+      "source": {
+        "package": "packages/mega-city/16-guardian-robotics-lab.rbxmx",
+        "min": [
+          -140.0,
+          0.0,
+          -104.5
+        ],
+        "max": [
+          140.0,
+          173.55,
+          114.0
+        ],
+        "size": [
+          280.0,
+          173.55,
+          218.5
+        ]
+      }
+    },
+    {
+      "id": "MC-16-02",
+      "asset": 16,
+      "district": "Research Enclave",
+      "center": [
+        1200,
+        146.775,
+        4950
+      ],
+      "ground": 60,
+      "size": [
+        280.0,
+        173.55,
+        218.5
+      ],
+      "source": {
+        "package": "packages/mega-city/16-guardian-robotics-lab.rbxmx",
+        "min": [
+          -140.0,
+          0.0,
+          -104.5
+        ],
+        "max": [
+          140.0,
+          173.55,
+          114.0
+        ],
+        "size": [
+          280.0,
+          173.55,
+          218.5
+        ]
+      }
+    },
+    {
+      "id": "MC-16-03",
+      "asset": 16,
+      "district": "Research Enclave",
+      "center": [
+        1750,
+        146.775,
+        4950
+      ],
+      "ground": 60,
+      "size": [
+        280.0,
+        173.55,
+        218.5
+      ],
+      "source": {
+        "package": "packages/mega-city/16-guardian-robotics-lab.rbxmx",
+        "min": [
+          -140.0,
+          0.0,
+          -104.5
+        ],
+        "max": [
+          140.0,
+          173.55,
+          114.0
+        ],
+        "size": [
+          280.0,
+          173.55,
+          218.5
+        ]
+      }
+    },
+    {
+      "id": "MC-17-01",
+      "asset": 17,
+      "district": "Research Enclave",
+      "center": [
+        650,
+        154.75,
+        5470
+      ],
+      "ground": 60,
+      "size": [
+        264.0,
+        189.5,
+        222.7
+      ],
+      "source": {
+        "package": "packages/mega-city/17-containment-facility.rbxmx",
+        "min": [
+          -132.0,
+          0.0,
+          -109.7
+        ],
+        "max": [
+          132.0,
+          189.5,
+          113.0
+        ],
+        "size": [
+          264.0,
+          189.5,
+          222.7
+        ]
+      }
+    },
+    {
+      "id": "MC-18-01",
+      "asset": 18,
+      "district": "Corporate Heights",
+      "center": [
+        -650,
+        248.5,
+        6100
+      ],
+      "ground": 80,
+      "size": [
+        232.0,
+        337.0,
+        179.5
+      ],
+      "source": {
+        "package": "packages/mega-city/18-corporate-headquarters.rbxmx",
+        "min": [
+          -116.0,
+          0.0,
+          -96.5
+        ],
+        "max": [
+          116.0,
+          337.0,
+          83.0
+        ],
+        "size": [
+          232.0,
+          337.0,
+          179.5
+        ]
+      }
+    },
+    {
+      "id": "MC-18-02",
+      "asset": 18,
+      "district": "Corporate Heights",
+      "center": [
+        -1150,
+        248.5,
+        6100
+      ],
+      "ground": 80,
+      "size": [
+        232.0,
+        337.0,
+        179.5
+      ],
+      "source": {
+        "package": "packages/mega-city/18-corporate-headquarters.rbxmx",
+        "min": [
+          -116.0,
+          0.0,
+          -96.5
+        ],
+        "max": [
+          116.0,
+          337.0,
+          83.0
+        ],
+        "size": [
+          232.0,
+          337.0,
+          179.5
+        ]
+      }
+    },
+    {
+      "id": "MC-18-03",
+      "asset": 18,
+      "district": "Corporate Heights",
+      "center": [
+        -1650,
+        248.5,
+        6100
+      ],
+      "ground": 80,
+      "size": [
+        232.0,
+        337.0,
+        179.5
+      ],
+      "source": {
+        "package": "packages/mega-city/18-corporate-headquarters.rbxmx",
+        "min": [
+          -116.0,
+          0.0,
+          -96.5
+        ],
+        "max": [
+          116.0,
+          337.0,
+          83.0
+        ],
+        "size": [
+          232.0,
+          337.0,
+          179.5
+        ]
+      }
+    },
+    {
+      "id": "MC-19-01",
+      "asset": 19,
+      "district": "Corporate Heights",
+      "center": [
+        -650,
+        305.5,
+        6480
+      ],
+      "ground": 80,
+      "size": [
+        160.0,
+        451.0,
+        153.5
+      ],
+      "source": {
+        "package": "packages/mega-city/19-financial-spire.rbxmx",
+        "min": [
+          -80.0,
+          0.0,
+          -82.5
+        ],
+        "max": [
+          80.0,
+          451.0,
+          71.0
+        ],
+        "size": [
+          160.0,
+          451.0,
+          153.5
+        ]
+      }
+    },
+    {
+      "id": "MC-19-02",
+      "asset": 19,
+      "district": "Corporate Heights",
+      "center": [
+        -1150,
+        305.5,
+        6480
+      ],
+      "ground": 80,
+      "size": [
+        160.0,
+        451.0,
+        153.5
+      ],
+      "source": {
+        "package": "packages/mega-city/19-financial-spire.rbxmx",
+        "min": [
+          -80.0,
+          0.0,
+          -82.5
+        ],
+        "max": [
+          80.0,
+          451.0,
+          71.0
+        ],
+        "size": [
+          160.0,
+          451.0,
+          153.5
+        ]
+      }
+    },
+    {
+      "id": "MC-19-03",
+      "asset": 19,
+      "district": "Corporate Heights",
+      "center": [
+        -1650,
+        305.5,
+        6480
+      ],
+      "ground": 80,
+      "size": [
+        160.0,
+        451.0,
+        153.5
+      ],
+      "source": {
+        "package": "packages/mega-city/19-financial-spire.rbxmx",
+        "min": [
+          -80.0,
+          0.0,
+          -82.5
+        ],
+        "max": [
+          80.0,
+          451.0,
+          71.0
+        ],
+        "size": [
+          160.0,
+          451.0,
+          153.5
+        ]
+      }
+    },
+    {
+      "id": "MC-19-04",
+      "asset": 19,
+      "district": "Corporate Heights",
+      "center": [
+        650,
+        305.5,
+        6100
+      ],
+      "ground": 80,
+      "size": [
+        160.0,
+        451.0,
+        153.5
+      ],
+      "source": {
+        "package": "packages/mega-city/19-financial-spire.rbxmx",
+        "min": [
+          -80.0,
+          0.0,
+          -82.5
+        ],
+        "max": [
+          80.0,
+          451.0,
+          71.0
+        ],
+        "size": [
+          160.0,
+          451.0,
+          153.5
+        ]
+      }
+    },
+    {
+      "id": "MC-19-05",
+      "asset": 19,
+      "district": "Corporate Heights",
+      "center": [
+        1150,
+        305.5,
+        6100
+      ],
+      "ground": 80,
+      "size": [
+        160.0,
+        451.0,
+        153.5
+      ],
+      "source": {
+        "package": "packages/mega-city/19-financial-spire.rbxmx",
+        "min": [
+          -80.0,
+          0.0,
+          -82.5
+        ],
+        "max": [
+          80.0,
+          451.0,
+          71.0
+        ],
+        "size": [
+          160.0,
+          451.0,
+          153.5
+        ]
+      }
+    },
+    {
+      "id": "MC-20-01",
+      "asset": 20,
+      "district": "Corporate Heights",
+      "center": [
+        1650,
+        268.75,
+        6100
+      ],
+      "ground": 80,
+      "size": [
+        264.0,
+        377.5,
+        156.5
+      ],
+      "source": {
+        "package": "packages/mega-city/20-skybridge-towers.rbxmx",
+        "min": [
+          -132.0,
+          0.0,
+          -83.5
+        ],
+        "max": [
+          132.0,
+          377.5,
+          73.0
+        ],
+        "size": [
+          264.0,
+          377.5,
+          156.5
+        ]
+      }
+    },
+    {
+      "id": "MC-20-02",
+      "asset": 20,
+      "district": "Corporate Heights",
+      "center": [
+        650,
+        268.75,
+        6480
+      ],
+      "ground": 80,
+      "size": [
+        264.0,
+        377.5,
+        156.5
+      ],
+      "source": {
+        "package": "packages/mega-city/20-skybridge-towers.rbxmx",
+        "min": [
+          -132.0,
+          0.0,
+          -83.5
+        ],
+        "max": [
+          132.0,
+          377.5,
+          73.0
+        ],
+        "size": [
+          264.0,
+          377.5,
+          156.5
+        ]
+      }
+    },
+    {
+      "id": "MC-20-03",
+      "asset": 20,
+      "district": "Corporate Heights",
+      "center": [
+        1150,
+        268.75,
+        6480
+      ],
+      "ground": 80,
+      "size": [
+        264.0,
+        377.5,
+        156.5
+      ],
+      "source": {
+        "package": "packages/mega-city/20-skybridge-towers.rbxmx",
+        "min": [
+          -132.0,
+          0.0,
+          -83.5
+        ],
+        "max": [
+          132.0,
+          377.5,
+          73.0
+        ],
+        "size": [
+          264.0,
+          377.5,
+          156.5
+        ]
+      }
+    },
+    {
+      "id": "MC-21-01",
+      "asset": 21,
+      "district": "Corporate Heights",
+      "center": [
+        0,
+        393.0,
+        7700
+      ],
+      "ground": 80,
+      "size": [
+        290.0,
+        626.0,
+        250.0
+      ],
+      "source": {
+        "package": "packages/mega-city/21-mega-tower.rbxmx",
+        "min": [
+          -145.0,
+          0.0,
+          -125.0
+        ],
+        "max": [
+          145.0,
+          626.0,
+          125.0
+        ],
+        "size": [
+          290.0,
+          626.0,
+          250.0
+        ]
+      }
+    }
+  ],
+  "pillars": [
+    {
+      "x": -2190,
+      "z": 1550,
+      "radius": 200,
+      "ground": 20
+    },
+    {
+      "x": -2190,
+      "z": 3350,
+      "radius": 200,
+      "ground": 50
+    },
+    {
+      "x": -2190,
+      "z": 5700,
+      "radius": 200,
+      "ground": 70
+    },
+    {
+      "x": 2190,
+      "z": 1550,
+      "radius": 200,
+      "ground": 20
+    },
+    {
+      "x": 2190,
+      "z": 3350,
+      "radius": 200,
+      "ground": 50
+    },
+    {
+      "x": 2190,
+      "z": 5700,
+      "radius": 200,
+      "ground": 70
+    }
+  ],
+  "districtCounts": {
+    "Transit Nexus": 9,
+    "Neon Quarter": 17,
+    "Stack District": 25,
+    "Reactor Works": 12,
+    "Research Enclave": 10,
+    "Corporate Heights": 12
+  }
+}

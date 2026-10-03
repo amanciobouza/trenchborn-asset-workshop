@@ -72,4 +72,6 @@ Cyberpunk-Dichte vorwiegend durch gestaffelte Fassaden, mehrere Baureihen und H�
 5. HP innerhalb der Mega-City-Progression und Energieverteilung festlegen. Aktuelle Vorschau-HP sind keine finale Balance.
 6. Streaming, Render-, Effekt- und Laufzeitbudgets anhand der Gesamtstadt prüfen. Anschliessend Terrain, Eisdecke, Schnee und Beleuchtung ausarbeiten.
 
-Kein fertiger räumlicher Blockout oder Studio-Spieltest mit diesem Dokument behauptet.
+## Erster räumlicher Entwurf
+
+Ein grober nativer Blockout mit 85 masshaltigen Gebäudekörpern ist jetzt verfügbar. [Draufsicht](../plans/00-glacier-layout.svg), [Bauplätze](../plans/00-glacier-layout.json) und [Prüfstand/Startanleitung](../reviews/00-glacier-city-blockout.md). Landschaft und Infrastruktur sind vereinfachte Platzhalter. Keine Studio-Abnahme oder Kaiju-/Kameraprüfung behauptet.

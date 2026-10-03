@@ -1,0 +1,248 @@
+<?xml version='1.0' encoding='utf-8'?>
+<roblox version="4">
+  <Item class="Model" referent="M">
+    <Properties>
+      <string name="Name">MegaCityIceCeiling</string>
+    </Properties>
+    <Item class="Part" referent="P0">
+      <Properties>
+        <string name="Name">GlacierCeiling</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">272</token>
+        <Color3uint8 name="Color3uint8">4288994029</Color3uint8>
+        <Vector3 name="size">
+          <X>1950</X>
+          <Y>150</Y>
+          <Z>1600</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-1425</X>
+          <Y>1070</Y>
+          <Z>800.0</Z>
+          <R00>1</R00>
+          <R01>0</R01>
+          <R02>0</R02>
+          <R10>0</R10>
+          <R11>1.0</R11>
+          <R12>-0.0</R12>
+          <R20>0</R20>
+          <R21>0.0</R21>
+          <R22>1.0</R22>
+        </CoordinateFrame>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="P1">
+      <Properties>
+        <string name="Name">GlacierCeiling</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">272</token>
+        <Color3uint8 name="Color3uint8">4288994029</Color3uint8>
+        <Vector3 name="size">
+          <X>1950</X>
+          <Y>150</Y>
+          <Z>1400</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-1425</X>
+          <Y>1090</Y>
+          <Z>2500.0</Z>
+          <R00>1</R00>
+          <R01>0</R01>
+          <R02>0</R02>
+          <R10>0</R10>
+          <R11>1.0</R11>
+          <R12>-0.0</R12>
+          <R20>0</R20>
+          <R21>0.0</R21>
+          <R22>1.0</R22>
+        </CoordinateFrame>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="P2">
+      <Properties>
+        <string name="Name">GlacierCeiling</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">272</token>
+        <Color3uint8 name="Color3uint8">4288994029</Color3uint8>
+        <Vector3 name="size">
+          <X>1950</X>
+          <Y>150</Y>
+          <Z>2200</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-1425</X>
+          <Y>1110</Y>
+          <Z>4500.0</Z>
+          <R00>1</R00>
+          <R01>0</R01>
+          <R02>0</R02>
+          <R10>0</R10>
+          <R11>1.0</R11>
+          <R12>-0.0</R12>
+          <R20>0</R20>
+          <R21>0.0</R21>
+          <R22>1.0</R22>
+        </CoordinateFrame>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="P3">
+      <Properties>
+        <string name="Name">GlacierCeiling</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">272</token>
+        <Color3uint8 name="Color3uint8">4288994029</Color3uint8>
+        <Vector3 name="size">
+          <X>1950</X>
+          <Y>150</Y>
+          <Z>2350</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-1425</X>
+          <Y>1130</Y>
+          <Z>6975.0</Z>
+          <R00>1</R00>
+          <R01>0</R01>
+          <R02>0</R02>
+          <R10>0</R10>
+          <R11>1.0</R11>
+          <R12>-0.0</R12>
+          <R20>0</R20>
+          <R21>0.0</R21>
+          <R22>1.0</R22>
+        </CoordinateFrame>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="P4">
+      <Properties>
+        <string name="Name">GlacierCeiling</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">272</token>
+        <Color3uint8 name="Color3uint8">4288994029</Color3uint8>
+        <Vector3 name="size">
+          <X>1950</X>
+          <Y>150</Y>
+          <Z>1600</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>1425</X>
+          <Y>1070</Y>
+          <Z>800.0</Z>
+          <R00>1</R00>
+          <R01>0</R01>
+          <R02>0</R02>
+          <R10>0</R10>
+          <R11>1.0</R11>
+          <R12>-0.0</R12>
+          <R20>0</R20>
+          <R21>0.0</R21>
+          <R22>1.0</R22>
+        </CoordinateFrame>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="P5">
+      <Properties>
+        <string name="Name">GlacierCeiling</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">272</token>
+        <Color3uint8 name="Color3uint8">4288994029</Color3uint8>
+        <Vector3 name="size">
+          <X>1950</X>
+          <Y>150</Y>
+          <Z>1400</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>1425</X>
+          <Y>1090</Y>
+          <Z>2500.0</Z>
+          <R00>1</R00>
+          <R01>0</R01>
+          <R02>0</R02>
+          <R10>0</R10>
+          <R11>1.0</R11>
+          <R12>-0.0</R12>
+          <R20>0</R20>
+          <R21>0.0</R21>
+          <R22>1.0</R22>
+        </CoordinateFrame>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="P6">
+      <Properties>
+        <string name="Name">GlacierCeiling</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">272</token>
+        <Color3uint8 name="Color3uint8">4288994029</Color3uint8>
+        <Vector3 name="size">
+          <X>1950</X>
+          <Y>150</Y>
+          <Z>2200</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>1425</X>
+          <Y>1110</Y>
+          <Z>4500.0</Z>
+          <R00>1</R00>
+          <R01>0</R01>
+          <R02>0</R02>
+          <R10>0</R10>
+          <R11>1.0</R11>
+          <R12>-0.0</R12>
+          <R20>0</R20>
+          <R21>0.0</R21>
+          <R22>1.0</R22>
+        </CoordinateFrame>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="P7">
+      <Properties>
+        <string name="Name">GlacierCeiling</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">272</token>
+        <Color3uint8 name="Color3uint8">4288994029</Color3uint8>
+        <Vector3 name="size">
+          <X>1950</X>
+          <Y>150</Y>
+          <Z>2350</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>1425</X>
+          <Y>1130</Y>
+          <Z>6975.0</Z>
+          <R00>1</R00>
+          <R01>0</R01>
+          <R02>0</R02>
+          <R10>0</R10>
+          <R11>1.0</R11>
+          <R12>-0.0</R12>
+          <R20>0</R20>
+          <R21>0.0</R21>
+          <R22>1.0</R22>
+        </CoordinateFrame>
+      </Properties>
+    </Item>
+  </Item>
+</roblox>
