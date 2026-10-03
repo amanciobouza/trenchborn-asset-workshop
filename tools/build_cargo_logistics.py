@@ -44,9 +44,9 @@ part('RearWall',(166,48,3),(-14,29,44),'metal')
 for x in [-96,68]:part('EndWall',(3,48,90),(x,29,0),'metal')
 # Three real openings with recessed cargo interiors.
 for i,x in enumerate([-64,-12,40],1):
-    y=57-(i-1)*3
-    part('BayRoof',(53,3,96),(x,y,0),'edge')
-    snow('BayRoofSnow',53,96,x,y+1.8,0)
+    y=54 # All three hall roofs match the approved height of hall 2.
+    part('BayRoof',(52,3,96),(x,y,0),'edge')
+    snow('BayRoofSnow',52,96,x,y+1.8,0)
     part('BayHeader',(50,15,5),(x,46,-44),'metal')
     part('InnerBayCeiling',(44,2,72),(x,38,3),'dark')
     sign('BayNumber',f'{i:02}',(9,10,.6),(x-16,48,-47),'cyan')
