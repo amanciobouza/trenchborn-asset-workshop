@@ -19,8 +19,8 @@ On feat/mega-city-harbor-gate: git pull --ff-only; stop the previous server; roj
 
 1,039 anchored Parts including Origin; XML references and PrimaryPart; finite sizes, orthonormal transforms; Thermal metadata, integer UDim offsets and Lua syntax passed. Ten SciFi signs checked. Three geometry views inspected; final text, glass, lighting and pipe appearance require Studio.
 
-Gate B awaits user visual acceptance of silhouettes, balcony bands, winter gardens and heating lines. Gate C awaits in-engine damage/reset and performance tests. MC-10 waits for approval.
+Gate B visually accepted by user on 2026-10-03 after the sign clearance correction. Gate C awaits in-engine damage/reset and performance tests. MC-10 authorized as the next building.
 
 ## Sign clearance correction
 
-HABITAT/09 signage, carrier and neon frame moved 13 studs forward as one assembly. Carrier rear face at Z=-38.5 clears the deepest conservatory roof edge (Z=-36.5) by 2 studs. Two brackets connect the carrier to the front pier between balcony levels. Studio visual confirmation pending.
+HABITAT/09 signage, carrier and neon frame moved 13 studs forward as one assembly. Carrier rear face at Z=-38.5 clears the deepest conservatory roof edge (Z=-36.5) by 2 studs. Two brackets connect the carrier to the front pier between balcony levels. Studio visual confirmation received from user on 2026-10-03.
