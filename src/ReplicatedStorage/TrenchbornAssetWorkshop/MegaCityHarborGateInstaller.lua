@@ -44,8 +44,10 @@ function Installer.Install(parent, options)
             local gui = Instance.new("SurfaceGui")
             gui.Name = "Sign"
             gui.Face = Enum.NormalId.Front
-            gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
-            gui.PixelsPerStud = 30
+            gui.SizingMode = Enum.SurfaceGuiSizingMode.FixedSize
+            local _, lineBreaks = string.gsub(d.text, "\n", "")
+            local canvasHeight = 100 * (lineBreaks + 1)
+            gui.CanvasSize = Vector2.new(canvasHeight * d.size[1] / d.size[2], canvasHeight)
             gui.LightInfluence = 0
             gui.MaxDistance = 600
             gui.Parent = p

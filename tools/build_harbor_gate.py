@@ -84,7 +84,7 @@ for x in [51,58,65,72,79]:
 part('ControlRoof',(38,3,40),(65,89,17),'metal')
 snow('ControlRoofSnow',38,40,65,90.8,17)
 trim('ControlRoofEdge',(36,.6,.7),(65,89, -3.3))
-sign('HarborVertical','H\nA\nR\nB\nO\nR\n\nG\nA\nT\nE',(10,48,.8),(65,44,2.8),'pink')
+sign('HarborVertical','H\nA\nR\nB\nO\nR\nG\nA\nT\nE',(14,54,.8),(65,44,2.8),'pink')
 for x,h in [(57,12),(72,18)]:
     part('Antenna',(0.6,h,.6),(x,91+h/2,17),'edge')
     trim('AntennaBeacon',(1.2,1.2,1.2),(x,91+h,17),'pink')
@@ -96,8 +96,8 @@ for x in [-33,-19,-5,9]:
 part('EntryCanopy',(80,2.5,20),(-8,23,39),'edge')
 snow('CanopySnow',80,20,-8,24.6,39)
 trim('EntryCanopyCyan',(79,.7,.7),(-8,23,49.3))
-sign('CityName','HARBOR GATE',(64,5,.8),(-8,26.8,42),'cyan',(0,180,0))
-sign('DepartureBoard','DEPARTURES\n01  NEON QUARTER    2 MIN\n02  CORPORATE HEIGHTS    5 MIN\n03  RESEARCH ENCLAVE    8 MIN',(64,13,.8),(-8,37,32),'cyan',(0,180,0))
+sign('CityName','HARBOR GATE',(76,6,.8),(-8,26.8,42),'cyan',(0,180,0))
+sign('DepartureBoard','DEPARTURES\n01  NEON QUARTER    2 MIN\n02  CORPORATE HEIGHTS    5 MIN\n03  RESEARCH ENCLAVE    8 MIN',(68,15,.8),(-8,39,32),'cyan',(0,180,0))
 for i in range(6):
     part('EntryStep',(62,1,2),(-8,6-i*.8,46+i*2),'concrete','Concrete')
 for x in [-41,25]:beam('StairRail',(x,10,44),(x,5.5,58),.6)
@@ -112,7 +112,7 @@ for z in [-22,-6,10,25]:
 for x in [-68,-50,40]:
     part('RearServiceDoor',(10,12,.8),(x,11,33),'edge')
     trim('RearDoorLight',(7,.7,.8),(x,18,33.6),'warm')
-sign('SeaNumber','01',(9,10,.7),(45,19,-34),'cyan')
+sign('SeaNumber','01',(12,13,.7),(45,19,-34),'cyan')
 # Snow only on attached ledges; no terrain or coastal path is included.
 for x in [-67,-30,9,45]:snow('FoundationSnow',25,3,x,4.3,-44)
 
@@ -162,7 +162,12 @@ def attrs(d):
         else:b+=b'\x06'+struct.pack('<d',v)
     return base64.b64encode(b).decode()
 def add_sign(parent,p):
-    gui,g=item(parent,'SurfaceGui','Sign');prop(g,'token','Face',5);prop(g,'float','PixelsPerStud',30);prop(g,'token','SizingMode',1)
+    gui,g=item(parent,'SurfaceGui','Sign');prop(g,'token','Face',5);prop(g,'token','SizingMode',0)
+    # Keep each text row within TextScaled's font-size ceiling.
+    height = 100 * (p['text'].count('\n') + 1)
+    canvas = ET.SubElement(g,'Vector2',name='CanvasSize')
+    ET.SubElement(canvas,'X').text = str(height * p['size'][0] / p['size'][1])
+    ET.SubElement(canvas,'Y').text = str(height)
     prop(g,'bool','AlwaysOnTop','false');prop(g,'float','LightInfluence',0);prop(g,'float','MaxDistance',600)
     lab,l=item(gui,'TextLabel','Text');prop(l,'string','Text',p['text']);prop(l,'float','BackgroundTransparency',1)
     size=ET.SubElement(l,'UDim2',name='Size')

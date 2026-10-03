@@ -4504,8 +4504,8 @@
         <Color3uint8 name="Color3uint8">4279179042</Color3uint8>
         <token name="shape">1</token>
         <Vector3 name="size">
-          <X>10</X>
-          <Y>48</Y>
+          <X>14</X>
+          <Y>54</Y>
           <Z>0.8</Z>
         </Vector3>
         <CoordinateFrame name="CFrame">
@@ -4527,8 +4527,11 @@
         <Properties>
           <string name="Name">Sign</string>
           <token name="Face">5</token>
-          <float name="PixelsPerStud">30</float>
-          <token name="SizingMode">1</token>
+          <token name="SizingMode">0</token>
+          <Vector2 name="CanvasSize">
+            <X>259.25925925925924</X>
+            <Y>1000</Y>
+          </Vector2>
           <bool name="AlwaysOnTop">false</bool>
           <float name="LightInfluence">0</float>
           <float name="MaxDistance">600</float>
@@ -4542,7 +4545,6 @@ R
 B
 O
 R
-
 G
 A
 T
@@ -5123,8 +5125,8 @@ E</string>
         <Color3uint8 name="Color3uint8">4279179042</Color3uint8>
         <token name="shape">1</token>
         <Vector3 name="size">
-          <X>64</X>
-          <Y>5</Y>
+          <X>76</X>
+          <Y>6</Y>
           <Z>0.8</Z>
         </Vector3>
         <CoordinateFrame name="CFrame">
@@ -5146,8 +5148,11 @@ E</string>
         <Properties>
           <string name="Name">Sign</string>
           <token name="Face">5</token>
-          <float name="PixelsPerStud">30</float>
-          <token name="SizingMode">1</token>
+          <token name="SizingMode">0</token>
+          <Vector2 name="CanvasSize">
+            <X>1266.6666666666667</X>
+            <Y>100</Y>
+          </Vector2>
           <bool name="AlwaysOnTop">false</bool>
           <float name="LightInfluence">0</float>
           <float name="MaxDistance">600</float>
@@ -5188,13 +5193,13 @@ E</string>
         <Color3uint8 name="Color3uint8">4279179042</Color3uint8>
         <token name="shape">1</token>
         <Vector3 name="size">
-          <X>64</X>
-          <Y>13</Y>
+          <X>68</X>
+          <Y>15</Y>
           <Z>0.8</Z>
         </Vector3>
         <CoordinateFrame name="CFrame">
           <X>-8</X>
-          <Y>37</Y>
+          <Y>39</Y>
           <Z>32</Z>
           <R00>-1.0</R00>
           <R01>0.0</R01>
@@ -5211,8 +5216,11 @@ E</string>
         <Properties>
           <string name="Name">Sign</string>
           <token name="Face">5</token>
-          <float name="PixelsPerStud">30</float>
-          <token name="SizingMode">1</token>
+          <token name="SizingMode">0</token>
+          <Vector2 name="CanvasSize">
+            <X>1813.3333333333333</X>
+            <Y>400</Y>
+          </Vector2>
           <bool name="AlwaysOnTop">false</bool>
           <float name="LightInfluence">0</float>
           <float name="MaxDistance">600</float>
@@ -7330,8 +7338,8 @@ E</string>
         <Color3uint8 name="Color3uint8">4279179042</Color3uint8>
         <token name="shape">1</token>
         <Vector3 name="size">
-          <X>9</X>
-          <Y>10</Y>
+          <X>12</X>
+          <Y>13</Y>
           <Z>0.7</Z>
         </Vector3>
         <CoordinateFrame name="CFrame">
@@ -7353,8 +7361,11 @@ E</string>
         <Properties>
           <string name="Name">Sign</string>
           <token name="Face">5</token>
-          <float name="PixelsPerStud">30</float>
-          <token name="SizingMode">1</token>
+          <token name="SizingMode">0</token>
+          <Vector2 name="CanvasSize">
+            <X>92.3076923076923</X>
+            <Y>100</Y>
+          </Vector2>
           <bool name="AlwaysOnTop">false</bool>
           <float name="LightInfluence">0</float>
           <float name="MaxDistance">600</float>
