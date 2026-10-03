@@ -24,3 +24,6 @@ Moved NUCLEAR RESEARCH plate from Z -82 to -88. Its rear surface now clears the 
 
 ## Approved 24-stripe pattern
 Changed to 24 radial sectors with two white and one dark stripe repeated eight times. Omitted snow in sector i modulo 3 = 1 throughout all four dome bands. Front sectors 11 and 12 both remain white. Dome profile and 16 lamps retained. This supersedes the uniform 32-sector correction.
+
+## User visual acceptance
+2026-10-03: User accepted MC-14 ("passt") after entrance sign clearance and the 24-stripe dome with white front pair. Visual gate accepted; separate gameplay verification remains pending.
