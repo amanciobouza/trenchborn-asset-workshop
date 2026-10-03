@@ -1,0 +1,31 @@
+{
+  "name": "MegaCitySkybridgeReview",
+  "servePort": 34873,
+  "tree": {
+    "$className": "DataModel",
+    "Workspace": {
+      "$className": "Workspace",
+      "TrenchbornAssetWorkshop": {
+        "$className": "Folder",
+        "$ignoreUnknownInstances": false
+      },
+      "MegaCitySkybridgeTowers": {
+        "$path": "packages/mega-city/20-skybridge-towers.rbxmx"
+      }
+    },
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "TrenchbornAssetWorkshop": {
+        "$className": "Folder",
+        "$ignoreUnknownInstances": false
+      }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "TrenchbornAssetWorkshop": {
+        "$className": "Folder",
+        "$ignoreUnknownInstances": false
+      }
+    }
+  }
+}

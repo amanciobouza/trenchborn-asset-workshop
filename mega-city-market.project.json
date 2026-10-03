@@ -1,0 +1,31 @@
+{
+  "name": "MegaCityMarketReview",
+  "servePort": 34873,
+  "tree": {
+    "$className": "DataModel",
+    "Workspace": {
+      "$className": "Workspace",
+      "TrenchbornAssetWorkshop": {
+        "$className": "Folder",
+        "$ignoreUnknownInstances": false
+      },
+      "MegaCityWaterfrontMarketHall": {
+        "$path": "packages/mega-city/07-waterfront-market-hall.rbxmx"
+      }
+    },
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "TrenchbornAssetWorkshop": {
+        "$className": "Folder",
+        "$ignoreUnknownInstances": false
+      }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "TrenchbornAssetWorkshop": {
+        "$className": "Folder",
+        "$ignoreUnknownInstances": false
+      }
+    }
+  }
+}

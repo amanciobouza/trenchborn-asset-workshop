@@ -2,7 +2,7 @@
 
 **Stadtteil:** Stack District  
 **EnergyType:** `Thermal`  
-**Status:** Konzept und Zielbild bestätigt; Umsetzung offen.
+**Status:** Modell und Dressing erstellt; Studio-Abnahme offen.
 
 ## Freigegebenes Konzept
 
@@ -29,16 +29,17 @@ Tanks, Lüfter und Rohre integriert in eine Einheit.
 - [x] P1: Konzeptbrief im Chat bestätigt.
 - [x] P2 / Gate A: Zielbild im Chat bestätigt (2026-09-30 bis 2026-10-02).
 - [ ] Stadtplan-Abhängigkeit: Fussabdruck, Höhe und Platzierung freigeben.
-- [ ] P3: Technical Breakdown, Geometrie/Materialien, HP, Effekte und Part-Budget definieren.
+- [x] P3: Technical Breakdown, Geometrie/Materialien, HP, Effekte und Part-Budget definieren.
 - [ ] P4 / Gate B: Golden Master erstellen und gegen freigegebenes Bild aus drei Ansichten prüfen.
-- [ ] P5: Dressing, Neon, Schnee und freigegebene Effekte ergänzen.
+- [x] P5: Dressing, Neon, Schnee und freigegebene Effekte ergänzen.
 - [ ] P6 / Gate C: Energie, Schaden, gemeinsame Zerstörung und Reset in Studio prüfen.
 - [ ] P7: Final Installer und separat importierbares Asset bereitstellen.
 
-Status: Konzept freigegeben; Modellierung NICHT begonnen. Dieser Commit archiviert Planung und Zielbilder und startet keine Modellierung.
+Status 2026-10-03: MC-10 als direkt synchronisiertes rbxmx erstellt. Technischer Breakdown mit vorläufigen Massen und HP: [Review](../reviews/10-utility-block.md). P4/Gate B wartet auf Studio-Sichtprüfung; Gate C auf Gameplay-Test. Kein Installer nötig: `mega-city-utility.project.json` referenziert das fertige Modell.
 
 ## GitHub-Task
 
 [Issue #24](https://github.com/amanciobouza/trenchborn-asset-workshop/issues/24)
 
 Abhängigkeit: [Stadtplan #14](https://github.com/amanciobouza/trenchborn-asset-workshop/issues/14).
+

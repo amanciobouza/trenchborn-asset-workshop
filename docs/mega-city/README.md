@@ -2,7 +2,13 @@
 
 ## Freigabestand
 
-Alle **21 Gebäudekonzepte und Zielbilder** wurden von Amancio im Chat bestätigt (30. September bis 2. Oktober 2026). Dies ist die archivierte Konzeptbasis, **keine fertigen Roblox-Modelle**. Erst wurden alle Konzepte entwickelt; Modellierung erfolgt danach, nach Festlegung der Dimensionen im Stadtplan.
+Alle **21 Gebäudekonzepte und Zielbilder** sind bestätigt und als native Roblox-Vorschauen gebaut und gepusht. Die native Stadtzusammenstellung mit 85 echten Gebäuden, durchmischten Quartieren, Strassennetz und Terrain-Markierungen ist gebaut. Terrain-Arbeit in Studio, finale Dimensionierung/HP und Gameplay-Abnahme bleiben offen. Am 3. Oktober 2026 wurden Gletscherhöhle, Meereszugang per Kanagawa-Welle und 85 Gebäudeinstanzen als Planungsrahmen vereinbart.
+
+## Zusammengesetzte Stadt
+
+`rojo serve mega-city-final.project.json` öffnet die gesamte Stadt auf Port 34873. Gebäude, Strassen, Rissdetails, Terrain-Markierungen und temporäre Landschaft liegen in getrennten Gruppen. Die vorhandenen Gebäudeskripte und Schriften bleiben erhalten. Native Terrain-Daten werden nicht überschrieben.
+
+[Studio- und Terrain-Anleitung](reviews/00-mega-city-final-assembly.md) · [Draufsicht](plans/00-mega-city-final-layout.svg) · [Platzierungen](plans/00-mega-city-final-layout.json)
 
 ## Stadtidentität
 
@@ -12,7 +18,7 @@ Dunkles Petrol/Violett, blaues Glas, Beton und Metall; Cyan und Magenta als Neon
 
 ## Zugang und räumliche Leitplanken
 
-Der Spieler kommt von Large City **entlang der Küste**, zwischen Meer und verschneiten Felsen. Nach einer Kurve öffnet sich der Blick über die Bucht auf die Skyline. Der Weg führt seitlich am Harbor Gate Terminal vorbei zum Transit Nexus und zur Waterfront. Kein Schwimmweg, kein Gebirgstunnel als Hauptzugang. Exakte Küsten-Himmelsrichtung noch offen; Mega City liegt südlich von Large City auf der Gesamtkarte.
+Der Spieler erreicht Mega City **über das Meer per Kanagawa-Welle**. Eine offene Meereszufahrt führt in einen vereisten Fjord zum Harbor Gate. Bebaute Felsterrassen liegen unter einer teilweise aufgebrochenen Gletscherdecke, getragen von sechs gewaltigen Eissäulen. Der Fjord geht in einen tiefen zentralen Riss über, der vor dem Guardian-Platz endet. Dies ersetzt den früher vorgesehenen Küstenweg als Haupteingang. Exakte Orientierung noch offen; Mega City liegt südlich von Large City.
 
 Hauptachse: Waterfront/Transit Nexus → Neon Quarter → Corporate Heights. Mega Tower am Ende hinter dem Guardian-Platz, als höchstes Wahrzeichen sichtbar. Seitliche Schleifen erschliessen Stack District, Reactor Works und Research Enclave. Breite bodennahe Kampfräume und Kamerafreiraum für den grössten Kaiju erhalten. Industrielle und kommerzielle Waterfront unterscheiden.
 
@@ -44,7 +50,9 @@ Hauptachse: Waterfront/Transit Nexus → Neon Quarter → Corporate Heights. Meg
 
 ## Gemeinsame Umsetzungsvorgaben
 
-- 21 Grundmodelle; Anzahl der platzierten Gebäude, Kopien, Abmessungen und HP noch offen.
+- **Verbindliche Typografie für MC-01 bis MC-21 (2026-10-03): futuristische Schrift `Enum.Font.SciFi`, maximal gross innerhalb der jeweiligen Schildfläche.** Gilt für Gebäudenamen, vertikale Reklamen, Nummern und Informationstafeln. Text vollständig sichtbar, ohne Abschneiden oder unnötige Leerzeilen. `TextScaled` nutzt die gesamte Schildfläche; SurfaceGui-Canvas passend zum Seitenverhältnis und zur Zeilenzahl dimensionieren, damit das Schriftgrössenlimit nicht zu kleiner Schrift führt. MC-01 ist die vom Nutzer abgenommene Referenz.
+
+- 21 Grundmodelle; Planungsziel 85 platzierte Gebäudeinstanzen (gewünschter Rahmen 80–90). Verteilung und vorgeschlagene Kopien siehe MC-00. Finale Abmessungen, Positionen und HP noch offen.
 - Jedes Gebäude kollabiert als eine Einheit, einschliesslich zugehöriger Türme, Brücken, Technik und Sockel. Kai, Promenaden, Strassen und weiterführende Hochbahn bleiben separate Stadtumgebung.
 - **Cooling Plant: Beide oberen Kühlturmöffnungen müssen kontinuierlich sichtbar animierte weisse Dampffahnen emittieren, leicht vom Wind versetzt.** Dies ist eine verbindliche Laufzeitanforderung, keine reine Bilddekoration.
 - Roblox Studio, keine Blender-Abhängigkeit. Grosse klare Formen, lesbare Silhouetten, kontrollierte Detaildichte. Bildansichten sind künstlerische Referenzen; geometrische Widersprüche vor dem Golden Master auflösen.
@@ -58,3 +66,4 @@ Hauptachse: Waterfront/Transit Nexus → Neon Quarter → Corporate Heights. Meg
 ## Bildprovenienz
 
 Die PNGs unter `images/` sind die **unveränderten Original-Zielbilder aus dieser Konzeptserie**. [manifest.json](manifest.json) ordnet IDs, Dateipfade, Tasks und Git-Blob-Prüfsummen zu. Bilder zeigen keine bereits implementierte Funktion. Freigabe umfasst die visuelle Richtung; Massstab und technische Machbarkeit werden in P3/P4 konkretisiert.
+

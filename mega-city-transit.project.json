@@ -1,0 +1,34 @@
+{
+  "name": "MegaCityTransitReview",
+  "servePort": 34873,
+  "tree": {
+    "$className": "DataModel",
+    "Workspace": {
+      "$className": "Workspace",
+      "TrenchbornAssetWorkshop": {
+        "$className": "Folder",
+        "$ignoreUnknownInstances": false
+      },
+      "MegaCityElevatedTransitStation": {
+        "$path": "packages/mega-city/03-elevated-transit-station.rbxmx"
+      },
+      "MegaCityElevatedRailStraight80": {
+        "$path": "packages/mega-city/03-elevated-rail-straight-80.rbxmx"
+      }
+    },
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "TrenchbornAssetWorkshop": {
+        "$className": "Folder",
+        "$ignoreUnknownInstances": false
+      }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "TrenchbornAssetWorkshop": {
+        "$className": "Folder",
+        "$ignoreUnknownInstances": false
+      }
+    }
+  }
+}

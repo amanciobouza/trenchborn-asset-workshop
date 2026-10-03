@@ -1,0 +1,31 @@
+{
+  "name": "MegaCityHeadquartersReview",
+  "servePort": 34873,
+  "tree": {
+    "$className": "DataModel",
+    "Workspace": {
+      "$className": "Workspace",
+      "TrenchbornAssetWorkshop": {
+        "$className": "Folder",
+        "$ignoreUnknownInstances": false
+      },
+      "MegaCityCorporateHeadquarters": {
+        "$path": "packages/mega-city/18-corporate-headquarters.rbxmx"
+      }
+    },
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "TrenchbornAssetWorkshop": {
+        "$className": "Folder",
+        "$ignoreUnknownInstances": false
+      }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "TrenchbornAssetWorkshop": {
+        "$className": "Folder",
+        "$ignoreUnknownInstances": false
+      }
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "MegaCityHoloReview",
+  "servePort": 34873,
+  "tree": {
+    "$className": "DataModel",
+    "Workspace": {
+      "$className": "Workspace",
+      "TrenchbornAssetWorkshop": {
+        "$className": "Folder",
+        "$ignoreUnknownInstances": false
+      },
+      "MegaCityHoloEntertainmentTower": {
+        "$path": "packages/mega-city/06-holo-entertainment-tower.rbxmx"
+      }
+    },
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "TrenchbornAssetWorkshop": {
+        "$className": "Folder",
+        "$ignoreUnknownInstances": false
+      }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "TrenchbornAssetWorkshop": {
+        "$className": "Folder",
+        "$ignoreUnknownInstances": false
+      }
+    }
+  }
+}

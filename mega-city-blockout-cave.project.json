@@ -1,0 +1,16 @@
+{
+  "name": "MegaCityGlacierCaveBlockout",
+  "servePort": 34873,
+  "tree": {
+    "$className": "DataModel",
+    "Workspace": {
+      "$className": "Workspace",
+      "MegaCityBlockout": {
+        "$path": "packages/mega-city/00-glacier-city-blockout.rbxmx"
+      },
+      "MegaCityIceCeiling": {
+        "$path": "packages/mega-city/00-glacier-ceiling-blockout.rbxmx"
+      }
+    }
+  }
+}
