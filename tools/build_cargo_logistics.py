@@ -100,14 +100,23 @@ sign('RearBrand','TRN\nLOGISTICS',(24,17,.6),(-110,29,45),'cyan',(0,180,0))
 part('ControlTower',(27,24,26),(29,65,24),'metal')
 for x in [14,44]:part('TowerRib',(3,25,28),(x,65,24),'edge')
 part('ControlDeck',(48,3,36),(29,78,24),'edge')
-part('ControlCore',(42,12,30),(29,85,24),'dark')
+# Hollow cabin: no opaque solid behind the glazing.
+for z in [8.5,39.5]:
+    part('ControlSill',(48,1,1),(29,80,z),'edge')
+    part('ControlHeader',(48,1,1),(29,90,z),'edge')
+for x in [7.5,50.5]:
+    part('SideSill',(1,1,30),(x,80,24),'edge')
+    part('SideHeader',(1,1,30),(x,90,24),'edge')
+for x in [19,39]:
+    part('ControlConsole',(9,2,5),(x,80.5,16),'edge')
+    trim('ConsoleScreen',(7,.2,3),(x,81.6,16),'cyan')
 for z in [8.5,39.5]:
     for x in [10,18,26,34,42,50]:
-        part('ControlWindow',(7,9,.6),(x,85,z),'glass','Glass',alpha=.2)
+        part('ControlWindow',(7,9,.6),(x,85,z),'glass','Glass',alpha=.45)
         trim('ControlWarm',(6,.6,.7),(x,81,z),'warm')
         part('WindowMullion',(.7,11,1),(x-4,85,z),'edge')
 for x in [7.5,50.5]:
-    part('SideControlGlass',(.6,9,28),(x,85,24),'glass','Glass',alpha=.2)
+    part('SideControlGlass',(.6,9,28),(x,85,24),'glass','Glass',alpha=.45)
     for z in [13,24,35]:part('SideMullion',(1,11,.7),(x,85,z),'edge')
 part('ControlRoof',(50,3,38),(29,92,24),'metal')
 snow('ControlSnow',50,38,29,93.8,24)
@@ -133,7 +142,7 @@ part('MovingGantry',(40,5,7),(94.5,59,0),'metal')
 part('Trolley',(12,5,12),(94.5,55,0),'edge')
 for x in [90,99]:pipe('HoistCable',(x,54,0),(x,36,0),.25)
 part('ContainerSpreader',(22,3,10),(94.5,35,0),'warm')
-for x in [85,104]:part('SpreaderJaw',(2,5,10),(x,32,0),'edge')
+for x in [85,104]:part('SpreaderJaw',(2,5,8),(x,32,0),'edge') # inset faces avoid z-fighting at the joint
 for z in [-27,27]:
     part('SideContainer',(26,12,16),(94,13,z),'metal')
     for x in range(83,107,4):part('ContainerRib',(.6,11,16.4),(x,13,z),'edge',solid=False)

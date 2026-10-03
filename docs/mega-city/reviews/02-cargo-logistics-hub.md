@@ -6,7 +6,7 @@ Built from the approved target: three open loading bays, stepped roofs, raised g
 
 ## Technical breakdown
 
-- Parts-only, no meshes or external dependencies. 427 visible parts, budget 650; 9 SurfaceGui signs; one embedded server runtime.
+- Parts-only, no meshes or external dependencies. 438 visible parts, budget 650; 9 SurfaceGui signs; one embedded server runtime.
 - Provisional foundation 244 x 108 studs; top approximately 112 studs. Origin at ground level; loading face toward -Z. Dimensions await city-plan approval.
 - Electric; KaijuHouse tag. Provisional MaxHealth 1,000,000, pending city-plan balancing.
 - Hall, tower, crane and attached loading deck form one model and collapse together.
@@ -18,9 +18,13 @@ On feat/mega-city-harbor-gate, run `git pull --ff-only`, stop the old server and
 
 ## Verification and acceptance
 
-- Export parsed: 428 anchored Parts including Origin; valid unique references and PrimaryPart.
+- Export parsed: 439 anchored Parts including Origin; valid unique references and PrimaryPart.
 - Dimensions finite and positive; orientation matrices orthonormal; attributes round-trip verified.
 - Embedded runtime and source Lua syntax checked off-engine.
 - Three geometry views inspected; these previews do not render Roblox text, glass or lighting faithfully.
 - Gate B remains pending user visual acceptance in Studio. Gate C remains pending Studio damage/reset playtest.
 - MC-03 is not started until the user accepts MC-02.
+
+## Studio feedback fixes
+
+The spreader jaws are inset by 1 stud on both depth faces, removing coplanar faces at their beam joints. The solid ControlCore was replaced with sill/header framing and low consoles; all cabin windows now use 0.45 transparency. Export and Lua checks passed; the corrected view from outside and the joints require Studio visual confirmation.
