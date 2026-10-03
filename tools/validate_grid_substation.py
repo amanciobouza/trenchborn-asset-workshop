@@ -51,3 +51,12 @@ for name,src in sources.items():
     if result:raise AssertionError(lib.lua_tolstring(state,-1,None).decode())
     lib.lua_close(state)
 print(json.dumps({'visibleParts':len(scene),'xmlParts':len(parts),'signs':6,'luaSyntaxChecked':len(sources),'attributes':'round-trip OK','studioPlaytest':False}))
+# Regression: plates must sit fully in front of the radiator fins.
+fins=[p for p in scene if p['name']=='RadiatorFin']
+for sign in [p for p in scene if p['name']=='TransformerId']:
+    assert sign['pos'][2]+sign['size'][2]/2 < min(p['pos'][2]-p['size'][2]/2 for p in fins)
+arcs=[p for p in scene if 'lightningSegment' in p]
+assert len(arcs)==64 and set(p['lightningSegment'] for p in arcs)==set(range(1,33))
+assert all(not p['solid'] and p['material']=='Neon' for p in arcs)
+assert len(root.findall('.//Item[@class="Part"]/Properties/BinaryString[@name="AttributesSerialize"]'))==64
+print('Number clearance and four exported lightning paths: OK')

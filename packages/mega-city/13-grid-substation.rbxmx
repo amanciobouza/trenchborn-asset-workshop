@@ -5,7 +5,7 @@
       <string name="Name">MegaCityGridSubstation</string>
       <Ref name="PrimaryPart">RBX2</Ref>
       <BinaryString name="Tags">S2FpanVIb3VzZQ==</BinaryString>
-      <BinaryString name="AttributesSerialize">CQAAAAcAAABBc3NldElkAgUAAABNQy0xMwoAAABFbmVyZ3lUeXBlAggAAABFbGVjdHJpYwkAAABNYXhIZWFsdGgGAAAAAICELkEGAAAASGVhbHRoBgAAAACAhC5BCQAAAERlc3Ryb3llZAMADAAAAFF1YWxpdHlHYXRlQgIHAAAAUGVuZGluZwwAAABRdWFsaXR5R2F0ZUMCBwAAAFBlbmRpbmcQAAAAVmlzaWJsZVBhcnRDb3VudAYAAAAAAHB6QBEAAABWaXNpYmxlUGFydEJ1ZGdldAYAAAAAAOCVQA==</BinaryString>
+      <BinaryString name="AttributesSerialize">CQAAAAcAAABBc3NldElkAgUAAABNQy0xMwoAAABFbmVyZ3lUeXBlAggAAABFbGVjdHJpYwkAAABNYXhIZWFsdGgGAAAAAICELkEGAAAASGVhbHRoBgAAAACAhC5BCQAAAERlc3Ryb3llZAMADAAAAFF1YWxpdHlHYXRlQgIHAAAAUGVuZGluZwwAAABRdWFsaXR5R2F0ZUMCBwAAAFBlbmRpbmcQAAAAVmlzaWJsZVBhcnRDb3VudAYAAAAAAHB+QBEAAABWaXNpYmxlUGFydEJ1ZGdldAYAAAAAAOCVQA==</BinaryString>
     </Properties>
     <Item class="Part" referent="RBX2">
       <Properties>
@@ -3722,14 +3722,14 @@
         <Color3uint8 name="Color3uint8">4279179042</Color3uint8>
         <token name="shape">1</token>
         <Vector3 name="size">
-          <X>8</X>
-          <Y>5</Y>
+          <X>12</X>
+          <Y>7</Y>
           <Z>1</Z>
         </Vector3>
         <CoordinateFrame name="CFrame">
-          <X>-60</X>
+          <X>-62</X>
           <Y>49</Y>
-          <Z>-49.5</Z>
+          <Z>-54</Z>
           <R00>1.0</R00>
           <R01>-0.0</R01>
           <R02>0.0</R02>
@@ -3747,7 +3747,7 @@
           <token name="Face">5</token>
           <token name="SizingMode">0</token>
           <Vector2 name="CanvasSize">
-            <X>160.0</X>
+            <X>171.42857142857142</X>
             <Y>100</Y>
           </Vector2>
           <bool name="AlwaysOnTop">false</bool>
@@ -5796,14 +5796,14 @@
         <Color3uint8 name="Color3uint8">4279179042</Color3uint8>
         <token name="shape">1</token>
         <Vector3 name="size">
-          <X>8</X>
-          <Y>5</Y>
+          <X>12</X>
+          <Y>7</Y>
           <Z>1</Z>
         </Vector3>
         <CoordinateFrame name="CFrame">
-          <X>-5</X>
+          <X>-7</X>
           <Y>54</Y>
-          <Z>-49.5</Z>
+          <Z>-54</Z>
           <R00>1.0</R00>
           <R01>-0.0</R01>
           <R02>0.0</R02>
@@ -5821,7 +5821,7 @@
           <token name="Face">5</token>
           <token name="SizingMode">0</token>
           <Vector2 name="CanvasSize">
-            <X>160.0</X>
+            <X>171.42857142857142</X>
             <Y>100</Y>
           </Vector2>
           <bool name="AlwaysOnTop">false</bool>
@@ -7870,14 +7870,14 @@
         <Color3uint8 name="Color3uint8">4279179042</Color3uint8>
         <token name="shape">1</token>
         <Vector3 name="size">
-          <X>8</X>
-          <Y>5</Y>
+          <X>12</X>
+          <Y>7</Y>
           <Z>1</Z>
         </Vector3>
         <CoordinateFrame name="CFrame">
-          <X>50</X>
+          <X>48</X>
           <Y>59</Y>
-          <Z>-49.5</Z>
+          <Z>-54</Z>
           <R00>1.0</R00>
           <R01>-0.0</R01>
           <R02>0.0</R02>
@@ -7895,7 +7895,7 @@
           <token name="Face">5</token>
           <token name="SizingMode">0</token>
           <Vector2 name="CanvasSize">
-            <X>160.0</X>
+            <X>171.42857142857142</X>
             <Y>100</Y>
           </Vector2>
           <bool name="AlwaysOnTop">false</bool>
@@ -11088,6 +11088,2246 @@
     </Item>
     <Item class="Part" referent="RBX331">
       <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>5.333587998774617</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-86.375</X>
+          <Y>83.91341716182545</Y>
+          <Z>-31.9</Z>
+          <R00>0.7622153549597315</R00>
+          <R01>0.609345903873093</R01>
+          <R02>0.21846125994485613</R02>
+          <R10>-0.6473235301328158</R10>
+          <R11>0.7174971753592719</R11>
+          <R12>0.25723539936769135</R12>
+          <R20>0.0</R20>
+          <R21>-0.33748388522202016</R21>
+          <R22>0.9413313057661741</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAAPA/</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX332">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>5.333587998774617</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-86.375</X>
+          <Y>83.91341716182545</Y>
+          <Z>-31.9</Z>
+          <R00>0.7622153549597315</R00>
+          <R01>0.609345903873093</R01>
+          <R02>0.21846125994485613</R02>
+          <R10>-0.6473235301328158</R10>
+          <R11>0.7174971753592719</R11>
+          <R12>0.25723539936769135</R12>
+          <R20>0.0</R20>
+          <R21>-0.33748388522202016</R21>
+          <R22>0.9413313057661741</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAAPA/</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX333">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>5.8350279284724</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-83.125</X>
+          <Y>87.44895106775819</Y>
+          <Z>-31.0</Z>
+          <R00>0.7064786318755728</R00>
+          <R01>0.5569810530197145</R01>
+          <R02>-0.4366463663884869</R02>
+          <R10>-0.7077343729841152</R10>
+          <R11>0.5559927952331002</R11>
+          <R12>-0.43587161979838174</R12>
+          <R20>0.0</R20>
+          <R21>0.6169636279602987</R21>
+          <R22>0.7869916656318959</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAAABA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX334">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>5.8350279284724</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-83.125</X>
+          <Y>87.44895106775819</Y>
+          <Z>-31.0</Z>
+          <R00>0.7064786318755728</R00>
+          <R01>0.5569810530197145</R01>
+          <R02>-0.4366463663884869</R02>
+          <R10>-0.7077343729841152</R10>
+          <R11>0.5559927952331002</R11>
+          <R12>-0.43587161979838174</R12>
+          <R20>0.0</R20>
+          <R21>0.6169636279602987</R21>
+          <R22>0.7869916656318959</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAAABA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX335">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>5.312395182183808</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-79.875</X>
+          <Y>90.15493156848918</Y>
+          <Z>-31.0</Z>
+          <R00>0.5548881797600143</R00>
+          <R01>0.6117767764904863</R01>
+          <R02>0.5637626129050486</R02>
+          <R10>-0.8319249413033715</R10>
+          <R11>0.4080508770351483</R11>
+          <R12>0.37602576213369765</R12>
+          <R20>0.0</R20>
+          <R21>-0.6776604293433075</R21>
+          <R22>0.7353749672801245</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAAAhA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX336">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>5.312395182183808</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-79.875</X>
+          <Y>90.15493156848918</Y>
+          <Z>-31.0</Z>
+          <R00>0.5548881797600143</R00>
+          <R01>0.6117767764904863</R01>
+          <R02>0.5637626129050486</R02>
+          <R10>-0.8319249413033715</R10>
+          <R11>0.4080508770351483</R11>
+          <R12>0.37602576213369765</R12>
+          <R20>0.0</R20>
+          <R21>-0.6776604293433075</R21>
+          <R22>0.7353749672801245</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAAAhA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX337">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>4.909371910649059</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-76.625</X>
+          <Y>91.61939766255644</Y>
+          <Z>-31.0</Z>
+          <R00>0.22804533059717083</R00>
+          <R01>0.6619991435055739</R01>
+          <R02>-0.7139695099867457</R02>
+          <R10>-0.9736505159413346</R10>
+          <R11>0.15505133624852788</R11>
+          <R12>-0.1672236703780864</R12>
+          <R20>0.0</R20>
+          <R21>0.7332913589600198</R21>
+          <R22>0.6799145408612521</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAABBA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX338">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>4.909371910649059</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-76.625</X>
+          <Y>91.61939766255644</Y>
+          <Z>-31.0</Z>
+          <R00>0.22804533059717083</R00>
+          <R01>0.6619991435055739</R01>
+          <R02>-0.7139695099867457</R02>
+          <R10>-0.9736505159413346</R10>
+          <R11>0.15505133624852788</R11>
+          <R12>-0.1672236703780864</R12>
+          <R20>0.0</R20>
+          <R21>0.7332913589600198</R21>
+          <R22>0.6799145408612521</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAABBA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX339">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>4.909371910649059</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-73.375</X>
+          <Y>91.61939766255644</Y>
+          <Z>-31.0</Z>
+          <R00>-0.22804533059717083</R00>
+          <R01>0.6619991435055739</R01>
+          <R02>0.7139695099867457</R02>
+          <R10>-0.9736505159413346</R10>
+          <R11>-0.15505133624852788</R11>
+          <R12>-0.1672236703780864</R12>
+          <R20>0.0</R20>
+          <R21>-0.7332913589600198</R21>
+          <R22>0.6799145408612521</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAABRA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX340">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>4.909371910649059</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-73.375</X>
+          <Y>91.61939766255644</Y>
+          <Z>-31.0</Z>
+          <R00>-0.22804533059717083</R00>
+          <R01>0.6619991435055739</R01>
+          <R02>0.7139695099867457</R02>
+          <R10>-0.9736505159413346</R10>
+          <R11>-0.15505133624852788</R11>
+          <R12>-0.1672236703780864</R12>
+          <R20>0.0</R20>
+          <R21>-0.7332913589600198</R21>
+          <R22>0.6799145408612521</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAABRA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX341">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>5.312395182183808</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-70.125</X>
+          <Y>90.15493156848918</Y>
+          <Z>-31.0</Z>
+          <R00>-0.5548881797600143</R00>
+          <R01>0.6117767764904863</R01>
+          <R02>-0.5637626129050486</R02>
+          <R10>-0.8319249413033715</R10>
+          <R11>-0.4080508770351483</R11>
+          <R12>0.37602576213369765</R12>
+          <R20>0.0</R20>
+          <R21>0.6776604293433075</R21>
+          <R22>0.7353749672801245</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAABhA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX342">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>5.312395182183808</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-70.125</X>
+          <Y>90.15493156848918</Y>
+          <Z>-31.0</Z>
+          <R00>-0.5548881797600143</R00>
+          <R01>0.6117767764904863</R01>
+          <R02>-0.5637626129050486</R02>
+          <R10>-0.8319249413033715</R10>
+          <R11>-0.4080508770351483</R11>
+          <R12>0.37602576213369765</R12>
+          <R20>0.0</R20>
+          <R21>0.6776604293433075</R21>
+          <R22>0.7353749672801245</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAABhA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX343">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>5.8350279284724</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-66.875</X>
+          <Y>87.44895106775819</Y>
+          <Z>-31.0</Z>
+          <R00>-0.7064786318755728</R00>
+          <R01>0.5569810530197145</R01>
+          <R02>0.4366463663884869</R02>
+          <R10>-0.7077343729841152</R10>
+          <R11>-0.5559927952331002</R11>
+          <R12>-0.43587161979838174</R12>
+          <R20>0.0</R20>
+          <R21>-0.6169636279602987</R21>
+          <R22>0.7869916656318959</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAABxA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX344">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>5.8350279284724</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-66.875</X>
+          <Y>87.44895106775819</Y>
+          <Z>-31.0</Z>
+          <R00>-0.7064786318755728</R00>
+          <R01>0.5569810530197145</R01>
+          <R02>0.4366463663884869</R02>
+          <R10>-0.7077343729841152</R10>
+          <R11>-0.5559927952331002</R11>
+          <R12>-0.43587161979838174</R12>
+          <R20>0.0</R20>
+          <R21>-0.6169636279602987</R21>
+          <R22>0.7869916656318959</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAABxA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX345">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>5.333587998774617</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-63.625</X>
+          <Y>83.91341716182545</Y>
+          <Z>-31.9</Z>
+          <R00>-0.7622153549597315</R00>
+          <R01>0.609345903873093</R01>
+          <R02>-0.21846125994485613</R02>
+          <R10>-0.6473235301328158</R10>
+          <R11>-0.7174971753592719</R11>
+          <R12>0.25723539936769135</R12>
+          <R20>0.0</R20>
+          <R21>0.33748388522202016</R21>
+          <R22>0.9413313057661741</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAACBA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX346">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>5.333587998774617</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-63.625</X>
+          <Y>83.91341716182545</Y>
+          <Z>-31.9</Z>
+          <R00>-0.7622153549597315</R00>
+          <R01>0.609345903873093</R01>
+          <R02>-0.21846125994485613</R02>
+          <R10>-0.6473235301328158</R10>
+          <R11>-0.7174971753592719</R11>
+          <R12>0.25723539936769135</R12>
+          <R20>0.0</R20>
+          <R21>0.33748388522202016</R21>
+          <R22>0.9413313057661741</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAACBA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX347">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>5.333587998774617</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-31.375</X>
+          <Y>88.91341716182545</Y>
+          <Z>-31.9</Z>
+          <R00>0.7622153549597315</R00>
+          <R01>0.609345903873093</R01>
+          <R02>0.21846125994485613</R02>
+          <R10>-0.6473235301328158</R10>
+          <R11>0.7174971753592719</R11>
+          <R12>0.25723539936769135</R12>
+          <R20>0.0</R20>
+          <R21>-0.33748388522202016</R21>
+          <R22>0.9413313057661741</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAACJA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX348">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>5.333587998774617</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-31.375</X>
+          <Y>88.91341716182545</Y>
+          <Z>-31.9</Z>
+          <R00>0.7622153549597315</R00>
+          <R01>0.609345903873093</R01>
+          <R02>0.21846125994485613</R02>
+          <R10>-0.6473235301328158</R10>
+          <R11>0.7174971753592719</R11>
+          <R12>0.25723539936769135</R12>
+          <R20>0.0</R20>
+          <R21>-0.33748388522202016</R21>
+          <R22>0.9413313057661741</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAACJA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX349">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>5.8350279284724</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-28.125</X>
+          <Y>92.44895106775819</Y>
+          <Z>-31.0</Z>
+          <R00>0.7064786318755728</R00>
+          <R01>0.5569810530197145</R01>
+          <R02>-0.4366463663884869</R02>
+          <R10>-0.7077343729841152</R10>
+          <R11>0.5559927952331002</R11>
+          <R12>-0.43587161979838174</R12>
+          <R20>0.0</R20>
+          <R21>0.6169636279602987</R21>
+          <R22>0.7869916656318959</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAACRA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX350">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>5.8350279284724</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-28.125</X>
+          <Y>92.44895106775819</Y>
+          <Z>-31.0</Z>
+          <R00>0.7064786318755728</R00>
+          <R01>0.5569810530197145</R01>
+          <R02>-0.4366463663884869</R02>
+          <R10>-0.7077343729841152</R10>
+          <R11>0.5559927952331002</R11>
+          <R12>-0.43587161979838174</R12>
+          <R20>0.0</R20>
+          <R21>0.6169636279602987</R21>
+          <R22>0.7869916656318959</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAACRA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX351">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>5.312395182183808</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-24.875</X>
+          <Y>95.15493156848918</Y>
+          <Z>-31.0</Z>
+          <R00>0.5548881797600143</R00>
+          <R01>0.6117767764904863</R01>
+          <R02>0.5637626129050486</R02>
+          <R10>-0.8319249413033715</R10>
+          <R11>0.4080508770351483</R11>
+          <R12>0.37602576213369765</R12>
+          <R20>0.0</R20>
+          <R21>-0.6776604293433075</R21>
+          <R22>0.7353749672801245</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAACZA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX352">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>5.312395182183808</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-24.875</X>
+          <Y>95.15493156848918</Y>
+          <Z>-31.0</Z>
+          <R00>0.5548881797600143</R00>
+          <R01>0.6117767764904863</R01>
+          <R02>0.5637626129050486</R02>
+          <R10>-0.8319249413033715</R10>
+          <R11>0.4080508770351483</R11>
+          <R12>0.37602576213369765</R12>
+          <R20>0.0</R20>
+          <R21>-0.6776604293433075</R21>
+          <R22>0.7353749672801245</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAACZA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX353">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>4.909371910649059</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-21.625</X>
+          <Y>96.61939766255644</Y>
+          <Z>-31.0</Z>
+          <R00>0.22804533059717083</R00>
+          <R01>0.6619991435055739</R01>
+          <R02>-0.7139695099867457</R02>
+          <R10>-0.9736505159413346</R10>
+          <R11>0.15505133624852788</R11>
+          <R12>-0.1672236703780864</R12>
+          <R20>0.0</R20>
+          <R21>0.7332913589600198</R21>
+          <R22>0.6799145408612521</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAAChA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX354">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>4.909371910649059</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-21.625</X>
+          <Y>96.61939766255644</Y>
+          <Z>-31.0</Z>
+          <R00>0.22804533059717083</R00>
+          <R01>0.6619991435055739</R01>
+          <R02>-0.7139695099867457</R02>
+          <R10>-0.9736505159413346</R10>
+          <R11>0.15505133624852788</R11>
+          <R12>-0.1672236703780864</R12>
+          <R20>0.0</R20>
+          <R21>0.7332913589600198</R21>
+          <R22>0.6799145408612521</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAAChA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX355">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>4.909371910649059</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-18.375</X>
+          <Y>96.61939766255644</Y>
+          <Z>-31.0</Z>
+          <R00>-0.22804533059717083</R00>
+          <R01>0.6619991435055739</R01>
+          <R02>0.7139695099867457</R02>
+          <R10>-0.9736505159413346</R10>
+          <R11>-0.15505133624852788</R11>
+          <R12>-0.1672236703780864</R12>
+          <R20>0.0</R20>
+          <R21>-0.7332913589600198</R21>
+          <R22>0.6799145408612521</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAACpA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX356">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>4.909371910649059</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-18.375</X>
+          <Y>96.61939766255644</Y>
+          <Z>-31.0</Z>
+          <R00>-0.22804533059717083</R00>
+          <R01>0.6619991435055739</R01>
+          <R02>0.7139695099867457</R02>
+          <R10>-0.9736505159413346</R10>
+          <R11>-0.15505133624852788</R11>
+          <R12>-0.1672236703780864</R12>
+          <R20>0.0</R20>
+          <R21>-0.7332913589600198</R21>
+          <R22>0.6799145408612521</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAACpA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX357">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>5.312395182183808</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-15.125</X>
+          <Y>95.15493156848918</Y>
+          <Z>-31.0</Z>
+          <R00>-0.5548881797600143</R00>
+          <R01>0.6117767764904863</R01>
+          <R02>-0.5637626129050486</R02>
+          <R10>-0.8319249413033715</R10>
+          <R11>-0.4080508770351483</R11>
+          <R12>0.37602576213369765</R12>
+          <R20>0.0</R20>
+          <R21>0.6776604293433075</R21>
+          <R22>0.7353749672801245</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAACxA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX358">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>5.312395182183808</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-15.125</X>
+          <Y>95.15493156848918</Y>
+          <Z>-31.0</Z>
+          <R00>-0.5548881797600143</R00>
+          <R01>0.6117767764904863</R01>
+          <R02>-0.5637626129050486</R02>
+          <R10>-0.8319249413033715</R10>
+          <R11>-0.4080508770351483</R11>
+          <R12>0.37602576213369765</R12>
+          <R20>0.0</R20>
+          <R21>0.6776604293433075</R21>
+          <R22>0.7353749672801245</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAACxA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX359">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>5.8350279284724</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-11.875</X>
+          <Y>92.44895106775819</Y>
+          <Z>-31.0</Z>
+          <R00>-0.7064786318755728</R00>
+          <R01>0.5569810530197145</R01>
+          <R02>0.4366463663884869</R02>
+          <R10>-0.7077343729841152</R10>
+          <R11>-0.5559927952331002</R11>
+          <R12>-0.43587161979838174</R12>
+          <R20>0.0</R20>
+          <R21>-0.6169636279602987</R21>
+          <R22>0.7869916656318959</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAAC5A</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX360">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>5.8350279284724</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-11.875</X>
+          <Y>92.44895106775819</Y>
+          <Z>-31.0</Z>
+          <R00>-0.7064786318755728</R00>
+          <R01>0.5569810530197145</R01>
+          <R02>0.4366463663884869</R02>
+          <R10>-0.7077343729841152</R10>
+          <R11>-0.5559927952331002</R11>
+          <R12>-0.43587161979838174</R12>
+          <R20>0.0</R20>
+          <R21>-0.6169636279602987</R21>
+          <R22>0.7869916656318959</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAAC5A</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX361">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>5.333587998774617</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-8.625</X>
+          <Y>88.91341716182545</Y>
+          <Z>-31.9</Z>
+          <R00>-0.7622153549597315</R00>
+          <R01>0.609345903873093</R01>
+          <R02>-0.21846125994485613</R02>
+          <R10>-0.6473235301328158</R10>
+          <R11>-0.7174971753592719</R11>
+          <R12>0.25723539936769135</R12>
+          <R20>0.0</R20>
+          <R21>0.33748388522202016</R21>
+          <R22>0.9413313057661741</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAADBA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX362">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>5.333587998774617</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-8.625</X>
+          <Y>88.91341716182545</Y>
+          <Z>-31.9</Z>
+          <R00>-0.7622153549597315</R00>
+          <R01>0.609345903873093</R01>
+          <R02>-0.21846125994485613</R02>
+          <R10>-0.6473235301328158</R10>
+          <R11>-0.7174971753592719</R11>
+          <R12>0.25723539936769135</R12>
+          <R20>0.0</R20>
+          <R21>0.33748388522202016</R21>
+          <R22>0.9413313057661741</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAADBA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX363">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>5.333587998774617</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>23.625</X>
+          <Y>93.91341716182545</Y>
+          <Z>-31.9</Z>
+          <R00>0.7622153549597315</R00>
+          <R01>0.609345903873093</R01>
+          <R02>0.21846125994485613</R02>
+          <R10>-0.6473235301328158</R10>
+          <R11>0.7174971753592719</R11>
+          <R12>0.25723539936769135</R12>
+          <R20>0.0</R20>
+          <R21>-0.33748388522202016</R21>
+          <R22>0.9413313057661741</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAADFA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX364">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>5.333587998774617</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>23.625</X>
+          <Y>93.91341716182545</Y>
+          <Z>-31.9</Z>
+          <R00>0.7622153549597315</R00>
+          <R01>0.609345903873093</R01>
+          <R02>0.21846125994485613</R02>
+          <R10>-0.6473235301328158</R10>
+          <R11>0.7174971753592719</R11>
+          <R12>0.25723539936769135</R12>
+          <R20>0.0</R20>
+          <R21>-0.33748388522202016</R21>
+          <R22>0.9413313057661741</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAADFA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX365">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>5.8350279284724</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>26.875</X>
+          <Y>97.44895106775819</Y>
+          <Z>-31.0</Z>
+          <R00>0.7064786318755728</R00>
+          <R01>0.5569810530197145</R01>
+          <R02>-0.4366463663884869</R02>
+          <R10>-0.7077343729841152</R10>
+          <R11>0.5559927952331002</R11>
+          <R12>-0.43587161979838174</R12>
+          <R20>0.0</R20>
+          <R21>0.6169636279602987</R21>
+          <R22>0.7869916656318959</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAADJA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX366">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>5.8350279284724</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>26.875</X>
+          <Y>97.44895106775819</Y>
+          <Z>-31.0</Z>
+          <R00>0.7064786318755728</R00>
+          <R01>0.5569810530197145</R01>
+          <R02>-0.4366463663884869</R02>
+          <R10>-0.7077343729841152</R10>
+          <R11>0.5559927952331002</R11>
+          <R12>-0.43587161979838174</R12>
+          <R20>0.0</R20>
+          <R21>0.6169636279602987</R21>
+          <R22>0.7869916656318959</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAADJA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX367">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>5.312395182183808</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>30.125</X>
+          <Y>100.15493156848918</Y>
+          <Z>-31.0</Z>
+          <R00>0.5548881797600143</R00>
+          <R01>0.6117767764904863</R01>
+          <R02>0.5637626129050486</R02>
+          <R10>-0.8319249413033715</R10>
+          <R11>0.4080508770351483</R11>
+          <R12>0.37602576213369765</R12>
+          <R20>0.0</R20>
+          <R21>-0.6776604293433075</R21>
+          <R22>0.7353749672801245</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAADNA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX368">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>5.312395182183808</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>30.125</X>
+          <Y>100.15493156848918</Y>
+          <Z>-31.0</Z>
+          <R00>0.5548881797600143</R00>
+          <R01>0.6117767764904863</R01>
+          <R02>0.5637626129050486</R02>
+          <R10>-0.8319249413033715</R10>
+          <R11>0.4080508770351483</R11>
+          <R12>0.37602576213369765</R12>
+          <R20>0.0</R20>
+          <R21>-0.6776604293433075</R21>
+          <R22>0.7353749672801245</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAADNA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX369">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>4.909371910649059</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>33.375</X>
+          <Y>101.61939766255644</Y>
+          <Z>-31.0</Z>
+          <R00>0.22804533059717083</R00>
+          <R01>0.6619991435055739</R01>
+          <R02>-0.7139695099867457</R02>
+          <R10>-0.9736505159413346</R10>
+          <R11>0.15505133624852788</R11>
+          <R12>-0.1672236703780864</R12>
+          <R20>0.0</R20>
+          <R21>0.7332913589600198</R21>
+          <R22>0.6799145408612521</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAADRA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX370">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>4.909371910649059</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>33.375</X>
+          <Y>101.61939766255644</Y>
+          <Z>-31.0</Z>
+          <R00>0.22804533059717083</R00>
+          <R01>0.6619991435055739</R01>
+          <R02>-0.7139695099867457</R02>
+          <R10>-0.9736505159413346</R10>
+          <R11>0.15505133624852788</R11>
+          <R12>-0.1672236703780864</R12>
+          <R20>0.0</R20>
+          <R21>0.7332913589600198</R21>
+          <R22>0.6799145408612521</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAADRA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX371">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>4.909371910649059</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>36.625</X>
+          <Y>101.61939766255644</Y>
+          <Z>-31.0</Z>
+          <R00>-0.22804533059717083</R00>
+          <R01>0.6619991435055739</R01>
+          <R02>0.7139695099867457</R02>
+          <R10>-0.9736505159413346</R10>
+          <R11>-0.15505133624852788</R11>
+          <R12>-0.1672236703780864</R12>
+          <R20>0.0</R20>
+          <R21>-0.7332913589600198</R21>
+          <R22>0.6799145408612521</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAADVA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX372">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>4.909371910649059</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>36.625</X>
+          <Y>101.61939766255644</Y>
+          <Z>-31.0</Z>
+          <R00>-0.22804533059717083</R00>
+          <R01>0.6619991435055739</R01>
+          <R02>0.7139695099867457</R02>
+          <R10>-0.9736505159413346</R10>
+          <R11>-0.15505133624852788</R11>
+          <R12>-0.1672236703780864</R12>
+          <R20>0.0</R20>
+          <R21>-0.7332913589600198</R21>
+          <R22>0.6799145408612521</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAADVA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX373">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>5.312395182183808</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>39.875</X>
+          <Y>100.15493156848918</Y>
+          <Z>-31.0</Z>
+          <R00>-0.5548881797600143</R00>
+          <R01>0.6117767764904863</R01>
+          <R02>-0.5637626129050486</R02>
+          <R10>-0.8319249413033715</R10>
+          <R11>-0.4080508770351483</R11>
+          <R12>0.37602576213369765</R12>
+          <R20>0.0</R20>
+          <R21>0.6776604293433075</R21>
+          <R22>0.7353749672801245</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAADZA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX374">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>5.312395182183808</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>39.875</X>
+          <Y>100.15493156848918</Y>
+          <Z>-31.0</Z>
+          <R00>-0.5548881797600143</R00>
+          <R01>0.6117767764904863</R01>
+          <R02>-0.5637626129050486</R02>
+          <R10>-0.8319249413033715</R10>
+          <R11>-0.4080508770351483</R11>
+          <R12>0.37602576213369765</R12>
+          <R20>0.0</R20>
+          <R21>0.6776604293433075</R21>
+          <R22>0.7353749672801245</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAADZA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX375">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>5.8350279284724</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>43.125</X>
+          <Y>97.44895106775819</Y>
+          <Z>-31.0</Z>
+          <R00>-0.7064786318755728</R00>
+          <R01>0.5569810530197145</R01>
+          <R02>0.4366463663884869</R02>
+          <R10>-0.7077343729841152</R10>
+          <R11>-0.5559927952331002</R11>
+          <R12>-0.43587161979838174</R12>
+          <R20>0.0</R20>
+          <R21>-0.6169636279602987</R21>
+          <R22>0.7869916656318959</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAADdA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX376">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>5.8350279284724</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>43.125</X>
+          <Y>97.44895106775819</Y>
+          <Z>-31.0</Z>
+          <R00>-0.7064786318755728</R00>
+          <R01>0.5569810530197145</R01>
+          <R02>0.4366463663884869</R02>
+          <R10>-0.7077343729841152</R10>
+          <R11>-0.5559927952331002</R11>
+          <R12>-0.43587161979838174</R12>
+          <R20>0.0</R20>
+          <R21>-0.6169636279602987</R21>
+          <R22>0.7869916656318959</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAADdA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX377">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>5.333587998774617</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>46.375</X>
+          <Y>93.91341716182545</Y>
+          <Z>-31.9</Z>
+          <R00>-0.7622153549597315</R00>
+          <R01>0.609345903873093</R01>
+          <R02>-0.21846125994485613</R02>
+          <R10>-0.6473235301328158</R10>
+          <R11>-0.7174971753592719</R11>
+          <R12>0.25723539936769135</R12>
+          <R20>0.0</R20>
+          <R21>0.33748388522202016</R21>
+          <R22>0.9413313057661741</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAADhA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX378">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>5.333587998774617</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>46.375</X>
+          <Y>93.91341716182545</Y>
+          <Z>-31.9</Z>
+          <R00>-0.7622153549597315</R00>
+          <R01>0.609345903873093</R01>
+          <R02>-0.21846125994485613</R02>
+          <R10>-0.6473235301328158</R10>
+          <R11>-0.7174971753592719</R11>
+          <R12>0.25723539936769135</R12>
+          <R20>0.0</R20>
+          <R21>0.33748388522202016</R21>
+          <R22>0.9413313057661741</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAADhA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX379">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>11.216891002532321</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-60.0</X>
+          <Y>114.8268343236509</Y>
+          <Z>31.1</Z>
+          <R00>0.6912931449004374</R00>
+          <R01>0.713210104136157</R01>
+          <R02>0.11595315938668961</R02>
+          <R10>-0.7225744167998636</R10>
+          <R11>0.6823342266207196</R11>
+          <R12>0.11093338256918683</R12>
+          <R20>0.0</R20>
+          <R21>-0.1604722734306354</R21>
+          <R22>0.9870403484457986</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAADlA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX380">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>11.216891002532321</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-60.0</X>
+          <Y>114.8268343236509</Y>
+          <Z>31.1</Z>
+          <R00>0.6912931449004374</R00>
+          <R01>0.713210104136157</R01>
+          <R02>0.11595315938668961</R02>
+          <R10>-0.7225744167998636</R10>
+          <R11>0.6823342266207196</R11>
+          <R12>0.11093338256918683</R12>
+          <R20>0.0</R20>
+          <R21>-0.1604722734306354</R21>
+          <R22>0.9870403484457986</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAADlA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX381">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>10.911471197973793</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-52.0</X>
+          <Y>121.89790213551638</Y>
+          <Z>32.0</Z>
+          <R00>0.6299179582074588</R00>
+          <R01>0.7331733599301954</R01>
+          <R02>-0.25624244421331605</R02>
+          <R10>-0.7766616804811128</R10>
+          <R11>0.5946463917380846</R11>
+          <R12>-0.2078275796546988</R12>
+          <R20>0.0</R20>
+          <R21>0.32992801196858773</R21>
+          <R22>0.9440060947464564</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAADpA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX382">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>10.911471197973793</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-52.0</X>
+          <Y>121.89790213551638</Y>
+          <Z>32.0</Z>
+          <R00>0.6299179582074588</R00>
+          <R01>0.7331733599301954</R01>
+          <R02>-0.25624244421331605</R02>
+          <R10>-0.7766616804811128</R10>
+          <R11>0.5946463917380846</R11>
+          <R12>-0.2078275796546988</R12>
+          <R20>0.0</R20>
+          <R21>0.32992801196858773</R21>
+          <R22>0.9440060947464564</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAADpA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX383">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>9.785508177236325</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-44.0</X>
+          <Y>127.30986313697835</Y>
+          <Z>32.0</Z>
+          <R00>0.476463416916848</R00>
+          <R01>0.8175354672545379</R01>
+          <R02>0.3234476342792237</R02>
+          <R10>-0.8791942972630804</R10>
+          <R11>0.4430485313558075</R11>
+          <R12>0.17528658398046396</R12>
+          <R20>0.0</R20>
+          <R21>-0.3678909602645418</R21>
+          <R22>0.9298689377302768</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAADtA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX384">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>9.785508177236325</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-44.0</X>
+          <Y>127.30986313697835</Y>
+          <Z>32.0</Z>
+          <R00>0.476463416916848</R00>
+          <R01>0.8175354672545379</R01>
+          <R02>0.3234476342792237</R02>
+          <R10>-0.8791942972630804</R10>
+          <R11>0.4430485313558075</R11>
+          <R12>0.17528658398046396</R12>
+          <R20>0.0</R20>
+          <R21>-0.3678909602645418</R21>
+          <R22>0.9298689377302768</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAADtA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX385">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>8.903804255950377</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-36.0</X>
+          <Y>130.23879532511287</Y>
+          <Z>32.0</Z>
+          <R00>0.1869461887193363</R00>
+          <R01>0.8984923488916137</R01>
+          <R02>-0.39719343084515535</R02>
+          <R10>-0.9823701555540633</R10>
+          <R11>0.17098414408165252</R11>
+          <R12>-0.07558637409844707</R12>
+          <R20>0.0</R20>
+          <R21>0.4043215570012259</R21>
+          <R22>0.914616902612293</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAADxA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX386">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>8.903804255950377</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-36.0</X>
+          <Y>130.23879532511287</Y>
+          <Z>32.0</Z>
+          <R00>0.1869461887193363</R00>
+          <R01>0.8984923488916137</R01>
+          <R02>-0.39719343084515535</R02>
+          <R10>-0.9823701555540633</R10>
+          <R11>0.17098414408165252</R11>
+          <R12>-0.07558637409844707</R12>
+          <R20>0.0</R20>
+          <R21>0.4043215570012259</R21>
+          <R22>0.914616902612293</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAADxA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX387">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>8.903804255950377</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-28.0</X>
+          <Y>130.23879532511287</Y>
+          <Z>32.0</Z>
+          <R00>-0.1869461887193363</R00>
+          <R01>0.8984923488916137</R01>
+          <R02>0.39719343084515535</R02>
+          <R10>-0.9823701555540633</R10>
+          <R11>-0.17098414408165252</R11>
+          <R12>-0.07558637409844707</R12>
+          <R20>0.0</R20>
+          <R21>-0.4043215570012259</R21>
+          <R22>0.914616902612293</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAAD1A</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX388">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>8.903804255950377</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-28.0</X>
+          <Y>130.23879532511287</Y>
+          <Z>32.0</Z>
+          <R00>-0.1869461887193363</R00>
+          <R01>0.8984923488916137</R01>
+          <R02>0.39719343084515535</R02>
+          <R10>-0.9823701555540633</R10>
+          <R11>-0.17098414408165252</R11>
+          <R12>-0.07558637409844707</R12>
+          <R20>0.0</R20>
+          <R21>-0.4043215570012259</R21>
+          <R22>0.914616902612293</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAAD1A</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX389">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>9.785508177236325</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-20.0</X>
+          <Y>127.30986313697835</Y>
+          <Z>32.0</Z>
+          <R00>-0.476463416916848</R00>
+          <R01>0.8175354672545379</R01>
+          <R02>-0.3234476342792237</R02>
+          <R10>-0.8791942972630804</R10>
+          <R11>-0.4430485313558075</R11>
+          <R12>0.17528658398046396</R12>
+          <R20>0.0</R20>
+          <R21>0.3678909602645418</R21>
+          <R22>0.9298689377302768</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAAD5A</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX390">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>9.785508177236325</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-20.0</X>
+          <Y>127.30986313697835</Y>
+          <Z>32.0</Z>
+          <R00>-0.476463416916848</R00>
+          <R01>0.8175354672545379</R01>
+          <R02>-0.3234476342792237</R02>
+          <R10>-0.8791942972630804</R10>
+          <R11>-0.4430485313558075</R11>
+          <R12>0.17528658398046396</R12>
+          <R20>0.0</R20>
+          <R21>0.3678909602645418</R21>
+          <R22>0.9298689377302768</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAAD5A</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX391">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>10.911471197973793</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-12.0</X>
+          <Y>121.89790213551638</Y>
+          <Z>32.0</Z>
+          <R00>-0.6299179582074588</R00>
+          <R01>0.7331733599301954</R01>
+          <R02>0.25624244421331605</R02>
+          <R10>-0.7766616804811128</R10>
+          <R11>-0.5946463917380846</R11>
+          <R12>-0.2078275796546988</R12>
+          <R20>0.0</R20>
+          <R21>-0.32992801196858773</R21>
+          <R22>0.9440060947464564</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAAD9A</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX392">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>10.911471197973793</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-12.0</X>
+          <Y>121.89790213551638</Y>
+          <Z>32.0</Z>
+          <R00>-0.6299179582074588</R00>
+          <R01>0.7331733599301954</R01>
+          <R02>0.25624244421331605</R02>
+          <R10>-0.7766616804811128</R10>
+          <R11>-0.5946463917380846</R11>
+          <R12>-0.2078275796546988</R12>
+          <R20>0.0</R20>
+          <R21>-0.32992801196858773</R21>
+          <R22>0.9440060947464564</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAAD9A</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX393">
+      <Properties>
+        <string name="Name">LightningHalo</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0.35</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4281128959</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>1.5</X>
+          <Y>11.216891002532321</Y>
+          <Z>1.5</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-4.0</X>
+          <Y>114.8268343236509</Y>
+          <Z>31.1</Z>
+          <R00>-0.6912931449004374</R00>
+          <R01>0.713210104136157</R01>
+          <R02>-0.11595315938668961</R02>
+          <R10>-0.7225744167998636</R10>
+          <R11>-0.6823342266207196</R11>
+          <R12>0.11093338256918683</R12>
+          <R20>0.0</R20>
+          <R21>0.1604722734306354</R21>
+          <R22>0.9870403484457986</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAAEBA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX394">
+      <Properties>
+        <string name="Name">LightningCore</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4292673023</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>0.55</X>
+          <Y>11.216891002532321</Y>
+          <Z>0.55</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-4.0</X>
+          <Y>114.8268343236509</Y>
+          <Z>31.1</Z>
+          <R00>-0.6912931449004374</R00>
+          <R01>0.713210104136157</R01>
+          <R02>-0.11595315938668961</R02>
+          <R10>-0.7225744167998636</R10>
+          <R11>-0.6823342266207196</R11>
+          <R12>0.11093338256918683</R12>
+          <R20>0.0</R20>
+          <R21>0.1604722734306354</R21>
+          <R22>0.9870403484457986</R22>
+        </CoordinateFrame>
+        <BinaryString name="AttributesSerialize">AQAAABAAAABMaWdodG5pbmdTZWdtZW50BgAAAAAAAEBA</BinaryString>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX395">
+      <Properties>
         <string name="Name">ControlFloor</string>
         <bool name="Anchored">true</bool>
         <bool name="CanCollide">true</bool>
@@ -11120,7 +13360,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX332">
+    <Item class="Part" referent="RBX396">
       <Properties>
         <string name="Name">ControlLower</string>
         <bool name="Anchored">true</bool>
@@ -11154,7 +13394,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX333">
+    <Item class="Part" referent="RBX397">
       <Properties>
         <string name="Name">ControlUpperFloor</string>
         <bool name="Anchored">true</bool>
@@ -11188,7 +13428,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX334">
+    <Item class="Part" referent="RBX398">
       <Properties>
         <string name="Name">ControlSidePier</string>
         <bool name="Anchored">true</bool>
@@ -11222,7 +13462,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX335">
+    <Item class="Part" referent="RBX399">
       <Properties>
         <string name="Name">ControlSidePier</string>
         <bool name="Anchored">true</bool>
@@ -11256,7 +13496,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX336">
+    <Item class="Part" referent="RBX400">
       <Properties>
         <string name="Name">ControlWindow</string>
         <bool name="Anchored">true</bool>
@@ -11290,7 +13530,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX337">
+    <Item class="Part" referent="RBX401">
       <Properties>
         <string name="Name">WindowMullion</string>
         <bool name="Anchored">true</bool>
@@ -11324,7 +13564,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX338">
+    <Item class="Part" referent="RBX402">
       <Properties>
         <string name="Name">WindowWarm</string>
         <bool name="Anchored">true</bool>
@@ -11358,7 +13598,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX339">
+    <Item class="Part" referent="RBX403">
       <Properties>
         <string name="Name">ControlWindow</string>
         <bool name="Anchored">true</bool>
@@ -11392,7 +13632,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX340">
+    <Item class="Part" referent="RBX404">
       <Properties>
         <string name="Name">WindowMullion</string>
         <bool name="Anchored">true</bool>
@@ -11426,7 +13666,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX341">
+    <Item class="Part" referent="RBX405">
       <Properties>
         <string name="Name">WindowWarm</string>
         <bool name="Anchored">true</bool>
@@ -11460,7 +13700,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX342">
+    <Item class="Part" referent="RBX406">
       <Properties>
         <string name="Name">ControlWindow</string>
         <bool name="Anchored">true</bool>
@@ -11494,7 +13734,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX343">
+    <Item class="Part" referent="RBX407">
       <Properties>
         <string name="Name">WindowMullion</string>
         <bool name="Anchored">true</bool>
@@ -11528,7 +13768,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX344">
+    <Item class="Part" referent="RBX408">
       <Properties>
         <string name="Name">WindowWarm</string>
         <bool name="Anchored">true</bool>
@@ -11562,7 +13802,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX345">
+    <Item class="Part" referent="RBX409">
       <Properties>
         <string name="Name">ControlWindow</string>
         <bool name="Anchored">true</bool>
@@ -11596,7 +13836,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX346">
+    <Item class="Part" referent="RBX410">
       <Properties>
         <string name="Name">WindowMullion</string>
         <bool name="Anchored">true</bool>
@@ -11630,7 +13870,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX347">
+    <Item class="Part" referent="RBX411">
       <Properties>
         <string name="Name">WindowWarm</string>
         <bool name="Anchored">true</bool>
@@ -11664,7 +13904,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX348">
+    <Item class="Part" referent="RBX412">
       <Properties>
         <string name="Name">ControlWindow</string>
         <bool name="Anchored">true</bool>
@@ -11698,7 +13938,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX349">
+    <Item class="Part" referent="RBX413">
       <Properties>
         <string name="Name">WindowMullion</string>
         <bool name="Anchored">true</bool>
@@ -11732,7 +13972,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX350">
+    <Item class="Part" referent="RBX414">
       <Properties>
         <string name="Name">WindowWarm</string>
         <bool name="Anchored">true</bool>
@@ -11766,7 +14006,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX351">
+    <Item class="Part" referent="RBX415">
       <Properties>
         <string name="Name">ControlWindow</string>
         <bool name="Anchored">true</bool>
@@ -11800,7 +14040,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX352">
+    <Item class="Part" referent="RBX416">
       <Properties>
         <string name="Name">WindowMullion</string>
         <bool name="Anchored">true</bool>
@@ -11834,7 +14074,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX353">
+    <Item class="Part" referent="RBX417">
       <Properties>
         <string name="Name">WindowWarm</string>
         <bool name="Anchored">true</bool>
@@ -11868,7 +14108,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX354">
+    <Item class="Part" referent="RBX418">
       <Properties>
         <string name="Name">ControlRoof</string>
         <bool name="Anchored">true</bool>
@@ -11902,7 +14142,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX355">
+    <Item class="Part" referent="RBX419">
       <Properties>
         <string name="Name">ControlSnow</string>
         <bool name="Anchored">true</bool>
@@ -11936,7 +14176,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX356">
+    <Item class="Part" referent="RBX420">
       <Properties>
         <string name="Name">RoofVent</string>
         <bool name="Anchored">true</bool>
@@ -11970,7 +14210,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX357">
+    <Item class="Part" referent="RBX421">
       <Properties>
         <string name="Name">VentLouvre</string>
         <bool name="Anchored">true</bool>
@@ -12004,7 +14244,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX358">
+    <Item class="Part" referent="RBX422">
       <Properties>
         <string name="Name">VentLouvre</string>
         <bool name="Anchored">true</bool>
@@ -12038,7 +14278,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX359">
+    <Item class="Part" referent="RBX423">
       <Properties>
         <string name="Name">VentLouvre</string>
         <bool name="Anchored">true</bool>
@@ -12072,7 +14312,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX360">
+    <Item class="Part" referent="RBX424">
       <Properties>
         <string name="Name">VentLouvre</string>
         <bool name="Anchored">true</bool>
@@ -12106,7 +14346,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX361">
+    <Item class="Part" referent="RBX425">
       <Properties>
         <string name="Name">VentLouvre</string>
         <bool name="Anchored">true</bool>
@@ -12140,7 +14380,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX362">
+    <Item class="Part" referent="RBX426">
       <Properties>
         <string name="Name">VentSnow</string>
         <bool name="Anchored">true</bool>
@@ -12174,7 +14414,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX363">
+    <Item class="Part" referent="RBX427">
       <Properties>
         <string name="Name">RoofVent</string>
         <bool name="Anchored">true</bool>
@@ -12208,7 +14448,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX364">
+    <Item class="Part" referent="RBX428">
       <Properties>
         <string name="Name">VentLouvre</string>
         <bool name="Anchored">true</bool>
@@ -12242,7 +14482,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX365">
+    <Item class="Part" referent="RBX429">
       <Properties>
         <string name="Name">VentLouvre</string>
         <bool name="Anchored">true</bool>
@@ -12276,7 +14516,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX366">
+    <Item class="Part" referent="RBX430">
       <Properties>
         <string name="Name">VentLouvre</string>
         <bool name="Anchored">true</bool>
@@ -12310,7 +14550,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX367">
+    <Item class="Part" referent="RBX431">
       <Properties>
         <string name="Name">VentLouvre</string>
         <bool name="Anchored">true</bool>
@@ -12344,7 +14584,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX368">
+    <Item class="Part" referent="RBX432">
       <Properties>
         <string name="Name">VentLouvre</string>
         <bool name="Anchored">true</bool>
@@ -12378,7 +14618,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX369">
+    <Item class="Part" referent="RBX433">
       <Properties>
         <string name="Name">VentSnow</string>
         <bool name="Anchored">true</bool>
@@ -12412,7 +14652,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX370">
+    <Item class="Part" referent="RBX434">
       <Properties>
         <string name="Name">RoofVent</string>
         <bool name="Anchored">true</bool>
@@ -12446,7 +14686,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX371">
+    <Item class="Part" referent="RBX435">
       <Properties>
         <string name="Name">VentLouvre</string>
         <bool name="Anchored">true</bool>
@@ -12480,7 +14720,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX372">
+    <Item class="Part" referent="RBX436">
       <Properties>
         <string name="Name">VentLouvre</string>
         <bool name="Anchored">true</bool>
@@ -12514,7 +14754,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX373">
+    <Item class="Part" referent="RBX437">
       <Properties>
         <string name="Name">VentLouvre</string>
         <bool name="Anchored">true</bool>
@@ -12548,7 +14788,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX374">
+    <Item class="Part" referent="RBX438">
       <Properties>
         <string name="Name">VentLouvre</string>
         <bool name="Anchored">true</bool>
@@ -12582,7 +14822,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX375">
+    <Item class="Part" referent="RBX439">
       <Properties>
         <string name="Name">VentLouvre</string>
         <bool name="Anchored">true</bool>
@@ -12616,7 +14856,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX376">
+    <Item class="Part" referent="RBX440">
       <Properties>
         <string name="Name">VentSnow</string>
         <bool name="Anchored">true</bool>
@@ -12650,7 +14890,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX377">
+    <Item class="Part" referent="RBX441">
       <Properties>
         <string name="Name">GridName</string>
         <bool name="Anchored">true</bool>
@@ -12683,7 +14923,7 @@
           <R22>1.0</R22>
         </CoordinateFrame>
       </Properties>
-      <Item class="SurfaceGui" referent="RBX378">
+      <Item class="SurfaceGui" referent="RBX442">
         <Properties>
           <string name="Name">Sign</string>
           <token name="Face">5</token>
@@ -12696,7 +14936,7 @@
           <float name="LightInfluence">0</float>
           <float name="MaxDistance">600</float>
         </Properties>
-        <Item class="TextLabel" referent="RBX379">
+        <Item class="TextLabel" referent="RBX443">
           <Properties>
             <string name="Name">Text</string>
             <string name="Text">GRID</string>
@@ -12718,7 +14958,7 @@
         </Item>
       </Item>
     </Item>
-    <Item class="Part" referent="RBX380">
+    <Item class="Part" referent="RBX444">
       <Properties>
         <string name="Name">GridNumber</string>
         <bool name="Anchored">true</bool>
@@ -12751,7 +14991,7 @@
           <R22>1.0</R22>
         </CoordinateFrame>
       </Properties>
-      <Item class="SurfaceGui" referent="RBX381">
+      <Item class="SurfaceGui" referent="RBX445">
         <Properties>
           <string name="Name">Sign</string>
           <token name="Face">5</token>
@@ -12764,7 +15004,7 @@
           <float name="LightInfluence">0</float>
           <float name="MaxDistance">600</float>
         </Properties>
-        <Item class="TextLabel" referent="RBX382">
+        <Item class="TextLabel" referent="RBX446">
           <Properties>
             <string name="Name">Text</string>
             <string name="Text">13</string>
@@ -12786,7 +15026,7 @@
         </Item>
       </Item>
     </Item>
-    <Item class="Part" referent="RBX383">
+    <Item class="Part" referent="RBX447">
       <Properties>
         <string name="Name">ControlRearDoor</string>
         <bool name="Anchored">true</bool>
@@ -12820,7 +15060,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX384">
+    <Item class="Part" referent="RBX448">
       <Properties>
         <string name="Name">RearLabel</string>
         <bool name="Anchored">true</bool>
@@ -12853,7 +15093,7 @@
           <R22>-1.0</R22>
         </CoordinateFrame>
       </Properties>
-      <Item class="SurfaceGui" referent="RBX385">
+      <Item class="SurfaceGui" referent="RBX449">
         <Properties>
           <string name="Name">Sign</string>
           <token name="Face">5</token>
@@ -12866,7 +15106,7 @@
           <float name="LightInfluence">0</float>
           <float name="MaxDistance">600</float>
         </Properties>
-        <Item class="TextLabel" referent="RBX386">
+        <Item class="TextLabel" referent="RBX450">
           <Properties>
             <string name="Name">Text</string>
             <string name="Text">GRID 13</string>
@@ -12888,7 +15128,7 @@
         </Item>
       </Item>
     </Item>
-    <Item class="Part" referent="RBX387">
+    <Item class="Part" referent="RBX451">
       <Properties>
         <string name="Name">SwitchCabinet</string>
         <bool name="Anchored">true</bool>
@@ -12922,7 +15162,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX388">
+    <Item class="Part" referent="RBX452">
       <Properties>
         <string name="Name">SwitchPanel</string>
         <bool name="Anchored">true</bool>
@@ -12956,7 +15196,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX389">
+    <Item class="Part" referent="RBX453">
       <Properties>
         <string name="Name">SwitchStatus</string>
         <bool name="Anchored">true</bool>
@@ -12990,7 +15230,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX390">
+    <Item class="Part" referent="RBX454">
       <Properties>
         <string name="Name">CabinetHandle</string>
         <bool name="Anchored">true</bool>
@@ -13024,7 +15264,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX391">
+    <Item class="Part" referent="RBX455">
       <Properties>
         <string name="Name">SwitchCabinet</string>
         <bool name="Anchored">true</bool>
@@ -13058,7 +15298,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX392">
+    <Item class="Part" referent="RBX456">
       <Properties>
         <string name="Name">SwitchPanel</string>
         <bool name="Anchored">true</bool>
@@ -13092,7 +15332,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX393">
+    <Item class="Part" referent="RBX457">
       <Properties>
         <string name="Name">SwitchStatus</string>
         <bool name="Anchored">true</bool>
@@ -13126,7 +15366,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX394">
+    <Item class="Part" referent="RBX458">
       <Properties>
         <string name="Name">CabinetHandle</string>
         <bool name="Anchored">true</bool>
@@ -13160,7 +15400,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX395">
+    <Item class="Part" referent="RBX459">
       <Properties>
         <string name="Name">SwitchCabinet</string>
         <bool name="Anchored">true</bool>
@@ -13194,7 +15434,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX396">
+    <Item class="Part" referent="RBX460">
       <Properties>
         <string name="Name">SwitchPanel</string>
         <bool name="Anchored">true</bool>
@@ -13228,7 +15468,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX397">
+    <Item class="Part" referent="RBX461">
       <Properties>
         <string name="Name">SwitchStatus</string>
         <bool name="Anchored">true</bool>
@@ -13262,7 +15502,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX398">
+    <Item class="Part" referent="RBX462">
       <Properties>
         <string name="Name">CabinetHandle</string>
         <bool name="Anchored">true</bool>
@@ -13296,7 +15536,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX399">
+    <Item class="Part" referent="RBX463">
       <Properties>
         <string name="Name">SwitchCabinet</string>
         <bool name="Anchored">true</bool>
@@ -13330,7 +15570,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX400">
+    <Item class="Part" referent="RBX464">
       <Properties>
         <string name="Name">SwitchPanel</string>
         <bool name="Anchored">true</bool>
@@ -13364,7 +15604,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX401">
+    <Item class="Part" referent="RBX465">
       <Properties>
         <string name="Name">SwitchStatus</string>
         <bool name="Anchored">true</bool>
@@ -13398,7 +15638,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX402">
+    <Item class="Part" referent="RBX466">
       <Properties>
         <string name="Name">CabinetHandle</string>
         <bool name="Anchored">true</bool>
@@ -13432,7 +15672,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX403">
+    <Item class="Part" referent="RBX467">
       <Properties>
         <string name="Name">SwitchCabinet</string>
         <bool name="Anchored">true</bool>
@@ -13466,7 +15706,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX404">
+    <Item class="Part" referent="RBX468">
       <Properties>
         <string name="Name">SwitchPanel</string>
         <bool name="Anchored">true</bool>
@@ -13500,7 +15740,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX405">
+    <Item class="Part" referent="RBX469">
       <Properties>
         <string name="Name">SwitchStatus</string>
         <bool name="Anchored">true</bool>
@@ -13534,7 +15774,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX406">
+    <Item class="Part" referent="RBX470">
       <Properties>
         <string name="Name">CabinetHandle</string>
         <bool name="Anchored">true</bool>
@@ -13568,7 +15808,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX407">
+    <Item class="Part" referent="RBX471">
       <Properties>
         <string name="Name">SwitchCabinet</string>
         <bool name="Anchored">true</bool>
@@ -13602,7 +15842,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX408">
+    <Item class="Part" referent="RBX472">
       <Properties>
         <string name="Name">SwitchPanel</string>
         <bool name="Anchored">true</bool>
@@ -13636,7 +15876,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX409">
+    <Item class="Part" referent="RBX473">
       <Properties>
         <string name="Name">SwitchStatus</string>
         <bool name="Anchored">true</bool>
@@ -13670,7 +15910,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX410">
+    <Item class="Part" referent="RBX474">
       <Properties>
         <string name="Name">CabinetHandle</string>
         <bool name="Anchored">true</bool>
@@ -13704,7 +15944,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX411">
+    <Item class="Part" referent="RBX475">
       <Properties>
         <string name="Name">RailPost</string>
         <bool name="Anchored">true</bool>
@@ -13738,7 +15978,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX412">
+    <Item class="Part" referent="RBX476">
       <Properties>
         <string name="Name">RailPost</string>
         <bool name="Anchored">true</bool>
@@ -13772,7 +16012,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX413">
+    <Item class="Part" referent="RBX477">
       <Properties>
         <string name="Name">RailPost</string>
         <bool name="Anchored">true</bool>
@@ -13806,7 +16046,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX414">
+    <Item class="Part" referent="RBX478">
       <Properties>
         <string name="Name">RailPost</string>
         <bool name="Anchored">true</bool>
@@ -13840,7 +16080,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX415">
+    <Item class="Part" referent="RBX479">
       <Properties>
         <string name="Name">RailPost</string>
         <bool name="Anchored">true</bool>
@@ -13874,7 +16114,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX416">
+    <Item class="Part" referent="RBX480">
       <Properties>
         <string name="Name">RailPost</string>
         <bool name="Anchored">true</bool>
@@ -13908,7 +16148,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX417">
+    <Item class="Part" referent="RBX481">
       <Properties>
         <string name="Name">RailPost</string>
         <bool name="Anchored">true</bool>
@@ -13942,7 +16182,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX418">
+    <Item class="Part" referent="RBX482">
       <Properties>
         <string name="Name">FrontRail</string>
         <bool name="Anchored">true</bool>
@@ -13976,7 +16216,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX419">
+    <Item class="Part" referent="RBX483">
       <Properties>
         <string name="Name">EntryStep</string>
         <bool name="Anchored">true</bool>
@@ -14010,7 +16250,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX420">
+    <Item class="Part" referent="RBX484">
       <Properties>
         <string name="Name">EntryStep</string>
         <bool name="Anchored">true</bool>
@@ -14044,7 +16284,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX421">
+    <Item class="Part" referent="RBX485">
       <Properties>
         <string name="Name">EntryStep</string>
         <bool name="Anchored">true</bool>
@@ -14078,7 +16318,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX422">
+    <Item class="Part" referent="RBX486">
       <Properties>
         <string name="Name">EntryStep</string>
         <bool name="Anchored">true</bool>
@@ -14112,7 +16352,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX423">
+    <Item class="Part" referent="RBX487">
       <Properties>
         <string name="Name">EntryStep</string>
         <bool name="Anchored">true</bool>
@@ -14146,7 +16386,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX424">
+    <Item class="Part" referent="RBX488">
       <Properties>
         <string name="Name">EntryStep</string>
         <bool name="Anchored">true</bool>
@@ -14180,7 +16420,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX425">
+    <Item class="Part" referent="RBX489">
       <Properties>
         <string name="Name">EntryStep</string>
         <bool name="Anchored">true</bool>
@@ -14214,7 +16454,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX426">
+    <Item class="Part" referent="RBX490">
       <Properties>
         <string name="Name">EntryStep</string>
         <bool name="Anchored">true</bool>
@@ -14248,7 +16488,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX427">
+    <Item class="Part" referent="RBX491">
       <Properties>
         <string name="Name">EntryStep</string>
         <bool name="Anchored">true</bool>
@@ -14282,7 +16522,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX428">
+    <Item class="Part" referent="RBX492">
       <Properties>
         <string name="Name">EntryStep</string>
         <bool name="Anchored">true</bool>
@@ -14316,7 +16556,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX429">
+    <Item class="Part" referent="RBX493">
       <Properties>
         <string name="Name">EntryStep</string>
         <bool name="Anchored">true</bool>
@@ -14350,7 +16590,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX430">
+    <Item class="Part" referent="RBX494">
       <Properties>
         <string name="Name">StairRail</string>
         <bool name="Anchored">true</bool>
@@ -14384,7 +16624,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX431">
+    <Item class="Part" referent="RBX495">
       <Properties>
         <string name="Name">StairPost</string>
         <bool name="Anchored">true</bool>
@@ -14418,7 +16658,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX432">
+    <Item class="Part" referent="RBX496">
       <Properties>
         <string name="Name">StairPost</string>
         <bool name="Anchored">true</bool>
@@ -14452,7 +16692,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX433">
+    <Item class="Part" referent="RBX497">
       <Properties>
         <string name="Name">StairPost</string>
         <bool name="Anchored">true</bool>
@@ -14486,7 +16726,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX434">
+    <Item class="Part" referent="RBX498">
       <Properties>
         <string name="Name">StairRail</string>
         <bool name="Anchored">true</bool>
@@ -14520,7 +16760,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX435">
+    <Item class="Part" referent="RBX499">
       <Properties>
         <string name="Name">StairPost</string>
         <bool name="Anchored">true</bool>
@@ -14554,7 +16794,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX436">
+    <Item class="Part" referent="RBX500">
       <Properties>
         <string name="Name">StairPost</string>
         <bool name="Anchored">true</bool>
@@ -14588,7 +16828,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX437">
+    <Item class="Part" referent="RBX501">
       <Properties>
         <string name="Name">StairPost</string>
         <bool name="Anchored">true</bool>
@@ -14622,7 +16862,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Script" referent="RBX438">
+    <Item class="Script" referent="RBX502">
       <Properties>
         <string name="Name">GridRuntime</string>
         <ProtectedString name="Source">local function runtimeModule()
@@ -14775,7 +17015,88 @@ return Runtime
 
 end
 local Runtime = runtimeModule()
-Runtime.Attach(script.Parent, {["SchemaVersion"]=1,["AssetId"]="MC-13",["AssetName"]="Grid Substation",["AssetClass"]="Building",["City"]="MegaCity",["EnergyType"]="Electric",["MaxHealth"]=1000000,["PipelinePhase"]=4,["QualityGateA"]="Approved",["QualityGateB"]="Pending",["QualityGateC"]="Pending",["PerformanceBudget"]={["MaxVisibleParts"]=1400,["MaxGameplayHitboxes"]=1,["PermanentLights"]=0,["PermanentParticleEmitters"]=0,["PerPartScripts"]=0},["VisiblePartCount"]=423})
+Runtime.Attach(script.Parent, {["SchemaVersion"]=1,["AssetId"]="MC-13",["AssetName"]="Grid Substation",["AssetClass"]="Building",["City"]="MegaCity",["EnergyType"]="Electric",["MaxHealth"]=1000000,["PipelinePhase"]=4,["QualityGateA"]="Approved",["QualityGateB"]="Pending",["QualityGateC"]="Pending",["PerformanceBudget"]={["MaxVisibleParts"]=1400,["MaxGameplayHitboxes"]=1,["PermanentLights"]=0,["PermanentParticleEmitters"]=0,["PerPartScripts"]=0},["VisiblePartCount"]=487})
+
+local function lightningModule()
+-- Fixed native-Part pool: edit-mode lightning remains visible; Play animates it.
+local Lightning = {}
+function Lightning.Attach(model)
+    local rng = Random.new()
+    local segments = {}
+    for _, p in ipairs(model:GetDescendants()) do
+        if p:IsA("BasePart") and (p.Name == "LightningHalo" or p.Name == "LightningCore") then
+            local id = p:GetAttribute("LightningSegment")
+            if id then
+                segments[id] = segments[id] or {}
+                segments[id][p.Name] = p
+            end
+        end
+    end
+    -- Capture the exported endpoints in model-local space; copies and rotations follow their pivot.
+    local initialPivot = model:GetPivot()
+    local paths = {}
+    for bolt = 0, 3 do
+        local points = {}
+        for node = 1, 8 do
+            local core = segments[bolt * 8 + node].LightningCore
+            points[node] = initialPivot:PointToObjectSpace(core.CFrame:PointToWorldSpace(Vector3.new(0, -core.Size.Y / 2, 0)))
+            if node == 8 then
+                points[9] = initialPivot:PointToObjectSpace(core.CFrame:PointToWorldSpace(Vector3.new(0, core.Size.Y / 2, 0)))
+            end
+        end
+        paths[bolt + 1] = points
+    end
+    local alive = true
+    local function hide()
+        for _, pair in pairs(segments) do
+            for _, p in pairs(pair) do p.Transparency = 1 end
+        end
+    end
+    local changed = model:GetAttributeChangedSignal("Destroyed"):Connect(function()
+        if model:GetAttribute("Destroyed") then hide() end
+    end)
+    model.Destroying:Connect(function()
+        alive = false
+        changed:Disconnect()
+    end)
+    task.spawn(function()
+        while alive and model.Parent do
+            if not model:GetAttribute("Destroyed") then
+                local pivot = model:GetPivot()
+                for bolt = 0, 3 do
+                    local points = {}
+                    for node = 1, 9 do
+                        local base = paths[bolt + 1][node]
+                        points[node] = base
+                        if node &gt; 1 and node &lt; 9 then
+                            points[node] = base + Vector3.new(rng:NextNumber(-0.8, 0.8), rng:NextNumber(-1.4, 1.4), rng:NextNumber(-1.2, 1.2))
+                        end
+                    end
+                    local dim = rng:NextNumber()
+                    for node = 1, 8 do
+                        local pair = segments[bolt * 8 + node]
+                        if pair then
+                            local a, b = pivot:PointToWorldSpace(points[node]), pivot:PointToWorldSpace(points[node + 1])
+                            local cf = CFrame.lookAt((a + b) / 2, b) * CFrame.Angles(math.pi / 2, 0, 0)
+                            for name, p in pairs(pair) do
+                                local halo = name == "LightningHalo"
+                                local width = halo and 1.5 or 0.55
+                                p.Size = Vector3.new(width, (b - a).Magnitude, width)
+                                p.CFrame = cf
+                                p.Transparency = halo and (0.25 + dim * 0.3) or (dim * 0.18)
+                            end
+                        end
+                    end
+                end
+            end
+            task.wait(0.13)
+        end
+    end)
+end
+return Lightning
+
+end
+lightningModule().Attach(script.Parent)
 </ProtectedString>
       </Properties>
     </Item>

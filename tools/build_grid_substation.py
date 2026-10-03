@@ -70,7 +70,7 @@ for n,(x,step) in enumerate([(-75,0),(-20,5),(35,10)],1):
             pipe('CeramicDisc',(x+dx,floor+yy-.6,-31),(x+dx,floor+yy+.6,-31),3.4)
             parts[-1]['color']=list(PALETTE['insulator'])
         trim('BushingBeacon',(2.6,2,2.6),(x+dx,floor+59,-31),'warm')
-    sign('TransformerId',str(n).zfill(2),(8,5,1),(x+15,floor+26,-49.5),'warm')
+    sign('TransformerId',str(n).zfill(2),(12,7,1),(x+13,floor+26,-54),'warm')
     # Individual overhead feed gantry at the same stepped height.
     for dx in [-23,23]:part('GantryPost',(3,64,4),(x+dx,floor+32,-19),'edge')
     part('GantryHeader',(49,5,6),(x,floor+65,-19),'metal')
@@ -115,6 +115,23 @@ for x,step in [(-75,0),(-20,5),(35,10)]:
     target=-72 if x < -40 else 8
     beam('FeedBus',(x,y,-19),(target,94,9),4,'metal')
     p=beam('FeedLight',(x,y,-21.5),(target,94,6.5),1.2,'cyan');p['material']='Neon';p['solid']=False
+# Four discharges with fixed terminals: transformer bushings and coil top terminals.
+PALETTE['arcwhite']=(220,253,255)
+arc_ends=[((x-13,82+step,-31),(x+13,82+step,-31),10)
+          for x,step in [(-75,0),(-20,5),(35,10)]]
+arc_ends.append(((-64,111,32),(0,111,32),20))
+for bolt,(a,b,rise) in enumerate(arc_ends):
+    points=[]
+    for node in range(9):
+        t=node/8
+        points.append((a[0]+(b[0]-a[0])*t,
+                       a[1]+(b[1]-a[1])*t+rise*math.sin(math.pi*t),
+                       a[2]+(b[2]-a[2])*t+(1.8*(-1)**node if 0<node<8 else 0)))
+    for node,(aa,bb) in enumerate(zip(points,points[1:]),1):
+        for name,width,col,alpha in [('LightningHalo',1.5,'cyan',.35),('LightningCore',.55,'arcwhite',0)]:
+            p=beam(name,aa,bb,width,col);p['material']='Neon';p['solid']=False;p['alpha']=alpha
+            p['lightningSegment']=bolt*8+node
+
 # Hollow control room at right; transparent upper window band.
 part('ControlFloor',(52,2,114),(83,24,6),'edge')
 part('ControlLower',(52,31,114),(83,40.5,6),'metal')
@@ -227,8 +244,12 @@ def export():
         else:prop(pr,'token','shape',1)
         vec(pr,'size',size);cf(pr,'CFrame',p['pos'],mat)
         if 'text' in p:add_sign(e,p)
+        if 'lightningSegment' in p:prop(pr,'BinaryString','AttributesSerialize',attrs({'LightningSegment':p['lightningSegment']}))
     runtime=(OUT/'MegaCityBuildingRuntime.lua').read_text()
     e,p=item(model,'Script','GridRuntime');prop(p,'ProtectedString','Source','local function runtimeModule()\n'+runtime+'\nend\nlocal Runtime = runtimeModule()\nRuntime.Attach(script.Parent, '+lua(spec)+')\n')
+    lightning=(OUT/'MegaCityGridLightning.lua').read_text()
+    source=p.find("ProtectedString[@name='Source']")
+    source.text += '\nlocal function lightningModule()\n'+lightning+'\nend\nlightningModule().Attach(script.Parent)\n'
     target=ROOT/'packages/mega-city/13-grid-substation.rbxmx';target.parent.mkdir(parents=True,exist_ok=True)
     ET.indent(root);ET.ElementTree(root).write(target,encoding='utf-8',xml_declaration=True)
     return target
