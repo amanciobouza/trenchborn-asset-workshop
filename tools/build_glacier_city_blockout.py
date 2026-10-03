@@ -83,14 +83,88 @@ block('RearGlacierWall',[5320,1100,200],[0,350,8250],[143,205,229])
 # Elevated railway alignment only: centreline guide, not final rails or station connections.
 for side in [-1,1]:block('RailRouteGuide',[10,8,4650],[side*360,260,3825],[237,82,207],solid=False)
 for z in [1500,6150]:block('RailRouteGuide',[720,8,10],[0,260,z],[237,82,207],solid=False)
+# Warp the draft into a glacier-carved plan; triangles keep joined surfaces coplanar
+# without overlapping faces (avoids texture flicker along the curved shelves).
+def warp(x,y,z):
+ fade=max(0,min(1,(7200-z)/900))
+ bend=300*math.sin(z/1100)*math.sin(math.pi*max(0,z)/8150)*fade
+ scale=1+.10*math.sin(z/740+.5)*fade
+ edge=.065*(x/2400)**3*2400*math.sin(z/390+.7)*fade
+ return [x*scale+bend+edge,y,z]
+def sub(a,b):return [x-y for x,y in zip(a,b)]
+def add(a,b):return [x+y for x,y in zip(a,b)]
+def mul(a,t):return [x*t for x in a]
+def dot(a,b):return sum(x*y for x,y in zip(a,b))
+def cross(a,b):return [a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]
+def norm(a):return math.sqrt(dot(a,a))
+def triangle(name,a,b,c,thick,color,roof=False,solid=True,alpha=0):
+ # Longest side is the base so the perpendicular foot lies inside it.
+ a,b,c=max([(a,b,c),(b,c,a),(c,a,b)],key=lambda t:norm(sub(t[2],t[0])))
+ u=mul(sub(c,a),1/norm(sub(c,a)));foot=add(a,mul(u,dot(sub(b,a),u)))
+ height=norm(sub(b,foot))
+ if height<1e-6:return
+ ey=mul(sub(b,foot),1/height)
+ for end in [a,c]:
+  length=norm(sub(foot,end))
+  if length<1e-6:continue
+  ez=mul(sub(foot,end),1/length);ex=cross(ey,ez)
+  # Offset towards the lower side of a horizontal surface.
+  normal=ex if ex[1]>=0 else mul(ex,-1)
+  center=sub(mul(add(end,b),.5),mul(normal,thick/2))
+  block(name,[thick,height,length],center,color,alpha=alpha,roof=roof,solid=solid)
+  records[-1].update(kind='WedgePart',matrix=[ex[0],ey[0],ez[0],ex[1],ey[1],ez[1],ex[2],ey[2],ez[2]],polygon=[a,b,c])
+def ribbon(p):
+ x,y,z=p['pos'];w,h,d=p['size'];angle=p['rotation']
+ # Existing X-axis ramps rise towards positive Z.
+ count=max(1,math.ceil(d/180))
+ for i in range(count):
+  za=z-d/2+d*i/count;zb=z-d/2+d*(i+1)/count
+  ya=y+h/2-math.sin(angle)*(za-z);yb=y+h/2-math.sin(angle)*(zb-z)
+  corners=[warp(x-w/2,ya,za),warp(x+w/2,ya,za),warp(x+w/2,yb,zb),warp(x-w/2,yb,zb)]
+  triangle(p['name'],*corners[:3],h,p['color'],p['roof'],p['solid'],p['alpha'])
+  triangle(p['name'],corners[0],corners[2],corners[3],h,p['color'],p['roof'],p['solid'],p['alpha'])
+original=records;records=[]
+# Jitter plots independently, then follow the glacier's large-scale curve.
+for i,b in enumerate(buildings):
+ if b['asset']==21:b['yaw']=0;continue
+ x,y,z=b['center'];x+=60*math.sin(i*2.399);z+=45*math.cos(i*1.73)
+ b['center']=warp(x,y,z);b['yaw']=.16*math.sin(i*1.37)
+for p in original:
+ if p['name'].startswith('MC-'):
+  key=p['name'].split(' ')[0];b=next(b for b in buildings if b['id']==key)
+  p['pos'][0]=b['center'][0];p['pos'][2]=b['center'][2]
+  c=math.cos(b['yaw']);s=math.sin(b['yaw']);p['matrix']=[c,0,s,0,1,0,-s,0,c];records.append(p)
+ elif p['name'].startswith('IceColumn'):continue
+ elif p['name'] in ['GuardianLand','GuardianPlaza','FinalApproach','RearGlacierWall','OpenSea']:
+  records.append(p)
+ else:ribbon(p)
+# Faceted, asymmetric ice pillars with tapered shafts and spreading capitals.
+for index,p in enumerate(pillars):
+ oldx,z=p['x'],p['z'];p['x'],_,p['z']=warp(oldx,0,z)
+ x,z=p['x'],p['z'];g=p['ground'];p['radius']=220
+ rings=[]
+ for level,(y,radius) in enumerate([(g,220),(g+130,155),(g+560,125),(g+900,175),(g+1060,310)]):
+  ring=[]
+  for k in range(9):
+   angle=2*math.pi*k/9;rr=radius*(1+.12*math.sin(k*2.3+index))
+   ring.append([x+rr*math.cos(angle)+level*9*math.sin(index),y,z+rr*math.sin(angle)+level*7*math.cos(index)])
+  rings.append(ring)
+ for low,high in zip(rings,rings[1:]):
+  for k in range(9):
+   j=(k+1)%9;col=[119+((k+index)%3)*13,190+((k+index)%3)*10,222+((k+index)%3)*6]
+   triangle('IceColumnFacet',low[k],low[j],high[j],12,col)
+   triangle('IceColumnFacet',low[k],high[j],high[k],12,col)
+ p['footprint']=[[v[0],v[2]] for v in rings[0]]
+def footprint(b):
+ w,h,d=b['size'];c=abs(math.cos(b['yaw']));s=abs(math.sin(b['yaw']));return [w*c+d*s,h,d*c+w*s]
 # Bounds and clearance verification for this coarse layout.
 assert len(buildings)==85
 for i,a in enumerate(buildings):
  for b in buildings[i+1:]:
-  overlap=all(abs(a['center'][j]-b['center'][j])<(a['size'][j]+b['size'][j])/2 for j in [0,2])
+  overlap=all(abs(a['center'][j]-b['center'][j])<(footprint(a)[j]+footprint(b)[j])/2 for j in [0,2])
   assert not overlap,(a['id'],b['id'])
  for p in pillars:
-  dx=max(abs(a['center'][0]-p['x'])-a['size'][0]/2,0);dz=max(abs(a['center'][2]-p['z'])-a['size'][2]/2,0)
+  dx=max(abs(a['center'][0]-p['x'])-footprint(a)[0]/2,0);dz=max(abs(a['center'][2]-p['z'])-footprint(a)[2]/2,0)
   assert math.hypot(dx,dz)>p['radius'],a['id']
  assert a['ground']+a['size'][1]<1050,'Roof clearance'
 # Native rbxmx writer. Proxies are explicitly not KaijuHouse buildings.
@@ -98,12 +172,12 @@ def prop(pr,tag,name,value):E.SubElement(pr,tag,name=name).text=str(value)
 def write_model(path,name,subset):
  root=E.Element('roblox',version='4');model=E.SubElement(root,'Item',{'class':'Model','referent':'M'});mp=E.SubElement(model,'Properties');prop(mp,'string','Name',name)
  for i,p in enumerate(subset):
-  it=E.SubElement(model,'Item',{'class':'Part','referent':f'P{i}'});pr=E.SubElement(it,'Properties');prop(pr,'string','Name',p['name']);prop(pr,'bool','Anchored','true');prop(pr,'bool','CanCollide',str(p['solid']).lower());prop(pr,'bool','CanTouch','false');prop(pr,'float','Transparency',p['alpha']);prop(pr,'token','Material',272)
+  it=E.SubElement(model,'Item',{'class':p.get('kind','Part'),'referent':f'P{i}'});pr=E.SubElement(it,'Properties');prop(pr,'string','Name',p['name']);prop(pr,'bool','Anchored','true');prop(pr,'bool','CanCollide',str(p['solid']).lower());prop(pr,'bool','CanTouch','false');prop(pr,'float','Transparency',p['alpha']);prop(pr,'token','Material',272)
   r,g,b=p['color'];prop(pr,'Color3uint8','Color3uint8',(255<<24)|(r<<16)|(g<<8)|b)
   v=E.SubElement(pr,'Vector3',name='size')
   for k,n in zip('XYZ',p['size']):E.SubElement(v,k).text=str(n)
   c,s=math.cos(p['rotation']),math.sin(p['rotation']);cf=E.SubElement(pr,'CoordinateFrame',name='CFrame')
-  for k,n in zip(['X','Y','Z']+['R'+str(a)+str(b) for a in range(3) for b in range(3)],p['pos']+[1,0,0,0,c,-s,0,s,c]):E.SubElement(cf,k).text=str(n)
+  for k,n in zip(['X','Y','Z']+['R'+str(a)+str(b) for a in range(3) for b in range(3)],p['pos']+p.get('matrix',[1,0,0,0,c,-s,0,s,c])):E.SubElement(cf,k).text=str(n)
   if p['text']:
    gui=E.SubElement(it,'Item',{'class':'SurfaceGui','referent':f'G{i}'});gp=E.SubElement(gui,'Properties');prop(gp,'string','Name','BlockoutLabel');prop(gp,'token','Face',1);prop(gp,'token','SizingMode',0);prop(gp,'bool','AlwaysOnTop','false')
    cv=E.SubElement(gp,'Vector2',name='CanvasSize');E.SubElement(cv,'X').text='600';E.SubElement(cv,'Y').text='200'
