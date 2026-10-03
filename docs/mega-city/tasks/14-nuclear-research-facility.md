@@ -2,7 +2,7 @@
 
 **Stadtteil:** Research Enclave  
 **EnergyType:** `Radiation`  
-**Status:** Konzept und Zielbild bestätigt; Umsetzung offen.
+**Status:** Modell gebaut; Studio-Abnahme offen.
 
 ## Freigegebenes Konzept
 
@@ -35,7 +35,7 @@ Reaktorgehäuse, Laborflügel und Technik gemeinsam.
 - [ ] P6 / Gate C: Energie, Schaden, gemeinsame Zerstörung und Reset in Studio prüfen.
 - [ ] P7: Final Installer und separat importierbares Asset bereitstellen.
 
-Status: Konzept freigegeben; Modellierung NICHT begonnen. Dieser Commit archiviert Planung und Zielbilder und startet keine Modellierung.
+Status: Native Roblox Preview umgesetzt. Vorläufige Abmessungen und HP für Einzelmodell-Abnahme; Stadtplan-Freigabe bleibt offen.
 
 ## GitHub-Task
 

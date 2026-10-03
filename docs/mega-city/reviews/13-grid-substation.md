@@ -26,3 +26,6 @@ Gate B awaits Studio visual acceptance. Gate C awaits gameplay and performance c
 - Added four cyan/white native-Part arcs: three transformer bushing pairs and one between the coil top terminals (64 non-colliding Parts).
 - Static arcs visible in Edit mode; fixed terminals and jittering intermediate nodes in Play, following model pivot. Destroyed hides arcs; reset resumes. Reuses a fixed Part pool.
 - Updated total: 487 visible Parts plus Origin. Export, Lua syntax, label clearance and arc metadata checks passed; Studio visual/Play review pending.
+
+## User acceptance
+2026-10-03: User accepted MC-13 after number visibility correction and added electrical arcs ("passt"). Visual review accepted; dedicated gameplay destruction/reset gate remains pending.
