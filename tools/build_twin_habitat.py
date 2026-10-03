@@ -137,10 +137,12 @@ for tower,(x,count,garden) in enumerate([(-43,16,7),(43,12,5)]):
     for y in [bottom+28,bottom+count*7]:
         pipe('HeatingBridge',(x-8,y,40),(x+8,y,40),1.7)
 # Long sign attached to the taller tower's left front pier.
-part('SignSpine',(12,145,5),(-69,168,-28),'metal')
-sign('HabitatVertical','H\nA\nB\nI\nT\nA\nT',(10,88,1),(-69,180,-31),'pink')
-sign('TowerNumber','09',(10,12,1),(-69,126,-31),'pink')
-for x in [-75.5,-62.5]:trim('SignBorder',(.6,144,.7),(x,168,-31),'pink')
+part('SignSpine',(12,145,5),(-69,168,-41),'metal')
+sign('HabitatVertical','H\nA\nB\nI\nT\nA\nT',(10,88,1),(-69,180,-44),'pink')
+sign('TowerNumber','09',(10,12,1),(-69,126,-44),'pink')
+for x in [-75.5,-62.5]:trim('SignBorder',(.6,144,.7),(x,168,-44),'pink')
+# Attach the sign in front of all balcony and conservatory edges.
+for y in [116,228]:part('SignMount',(4,3,14),(-69,y,-31.5),'edge')
 # Podium rooftop heating units and rear service doors.
 for x in [-66,66]:vent(x,51.5,33,12)
 for x in [-43,43]:

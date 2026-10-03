@@ -5,7 +5,7 @@
       <string name="Name">MegaCityTwinHabitatTowers</string>
       <Ref name="PrimaryPart">RBX2</Ref>
       <BinaryString name="Tags">S2FpanVIb3VzZQ==</BinaryString>
-      <BinaryString name="AttributesSerialize">CQAAAAcAAABBc3NldElkAgUAAABNQy0wOQoAAABFbmVyZ3lUeXBlAgcAAABUaGVybWFsCQAAAE1heEhlYWx0aAYAAAAAgIQuQQYAAABIZWFsdGgGAAAAAICELkEJAAAARGVzdHJveWVkAwAMAAAAUXVhbGl0eUdhdGVCAgcAAABQZW5kaW5nDAAAAFF1YWxpdHlHYXRlQwIHAAAAUGVuZGluZxAAAABWaXNpYmxlUGFydENvdW50BgAAAAAAMJBAEQAAAFZpc2libGVQYXJ0QnVkZ2V0BgAAAAAA4JVA</BinaryString>
+      <BinaryString name="AttributesSerialize">CQAAAAcAAABBc3NldElkAgUAAABNQy0wOQoAAABFbmVyZ3lUeXBlAgcAAABUaGVybWFsCQAAAE1heEhlYWx0aAYAAAAAgIQuQQYAAABIZWFsdGgGAAAAAICELkEJAAAARGVzdHJveWVkAwAMAAAAUXVhbGl0eUdhdGVCAgcAAABQZW5kaW5nDAAAAFF1YWxpdHlHYXRlQwIHAAAAUGVuZGluZxAAAABWaXNpYmxlUGFydENvdW50BgAAAAAAOJBAEQAAAFZpc2libGVQYXJ0QnVkZ2V0BgAAAAAA4JVA</BinaryString>
     </Properties>
     <Item class="Part" referent="RBX2">
       <Properties>
@@ -34363,7 +34363,7 @@
         <CoordinateFrame name="CFrame">
           <X>-69</X>
           <Y>168</Y>
-          <Z>-28</Z>
+          <Z>-41</Z>
           <R00>1.0</R00>
           <R01>-0.0</R01>
           <R02>0.0</R02>
@@ -34397,7 +34397,7 @@
         <CoordinateFrame name="CFrame">
           <X>-69</X>
           <Y>180</Y>
-          <Z>-31</Z>
+          <Z>-44</Z>
           <R00>1.0</R00>
           <R01>-0.0</R01>
           <R02>0.0</R02>
@@ -34471,7 +34471,7 @@ T</string>
         <CoordinateFrame name="CFrame">
           <X>-69</X>
           <Y>126</Y>
-          <Z>-31</Z>
+          <Z>-44</Z>
           <R00>1.0</R00>
           <R01>-0.0</R01>
           <R02>0.0</R02>
@@ -34539,7 +34539,7 @@ T</string>
         <CoordinateFrame name="CFrame">
           <X>-75.5</X>
           <Y>168</Y>
-          <Z>-31</Z>
+          <Z>-44</Z>
           <R00>1.0</R00>
           <R01>-0.0</R01>
           <R02>0.0</R02>
@@ -34573,7 +34573,7 @@ T</string>
         <CoordinateFrame name="CFrame">
           <X>-62.5</X>
           <Y>168</Y>
-          <Z>-31</Z>
+          <Z>-44</Z>
           <R00>1.0</R00>
           <R01>-0.0</R01>
           <R02>0.0</R02>
@@ -34587,6 +34587,74 @@ T</string>
       </Properties>
     </Item>
     <Item class="Part" referent="RBX1028">
+      <Properties>
+        <string name="Name">SignMount</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <bool name="CanQuery">true</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">1088</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4282470238</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>4</X>
+          <Y>3</Y>
+          <Z>14</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-69</X>
+          <Y>116</Y>
+          <Z>-31.5</Z>
+          <R00>1.0</R00>
+          <R01>-0.0</R01>
+          <R02>0.0</R02>
+          <R10>0.0</R10>
+          <R11>1.0</R11>
+          <R12>-0.0</R12>
+          <R20>0.0</R20>
+          <R21>0.0</R21>
+          <R22>1.0</R22>
+        </CoordinateFrame>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX1029">
+      <Properties>
+        <string name="Name">SignMount</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <bool name="CanQuery">true</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">1088</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4282470238</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>4</X>
+          <Y>3</Y>
+          <Z>14</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-69</X>
+          <Y>228</Y>
+          <Z>-31.5</Z>
+          <R00>1.0</R00>
+          <R01>-0.0</R01>
+          <R02>0.0</R02>
+          <R10>0.0</R10>
+          <R11>1.0</R11>
+          <R12>-0.0</R12>
+          <R20>0.0</R20>
+          <R21>0.0</R21>
+          <R22>1.0</R22>
+        </CoordinateFrame>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX1030">
       <Properties>
         <string name="Name">RoofVent</string>
         <bool name="Anchored">true</bool>
@@ -34620,74 +34688,6 @@ T</string>
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX1029">
-      <Properties>
-        <string name="Name">VentLouvre</string>
-        <bool name="Anchored">true</bool>
-        <bool name="CanCollide">false</bool>
-        <bool name="CanQuery">false</bool>
-        <bool name="CanTouch">false</bool>
-        <float name="Transparency">0</float>
-        <token name="Material">1088</token>
-        <token name="TopSurface">0</token>
-        <token name="BottomSurface">0</token>
-        <Color3uint8 name="Color3uint8">4279179042</Color3uint8>
-        <token name="shape">1</token>
-        <Vector3 name="size">
-          <X>10</X>
-          <Y>0.45</Y>
-          <Z>0.45</Z>
-        </Vector3>
-        <CoordinateFrame name="CFrame">
-          <X>-66</X>
-          <Y>49.5</Y>
-          <Z>27.7</Z>
-          <R00>1.0</R00>
-          <R01>-0.0</R01>
-          <R02>0.0</R02>
-          <R10>0.0</R10>
-          <R11>1.0</R11>
-          <R12>-0.0</R12>
-          <R20>0.0</R20>
-          <R21>0.0</R21>
-          <R22>1.0</R22>
-        </CoordinateFrame>
-      </Properties>
-    </Item>
-    <Item class="Part" referent="RBX1030">
-      <Properties>
-        <string name="Name">VentLouvre</string>
-        <bool name="Anchored">true</bool>
-        <bool name="CanCollide">false</bool>
-        <bool name="CanQuery">false</bool>
-        <bool name="CanTouch">false</bool>
-        <float name="Transparency">0</float>
-        <token name="Material">1088</token>
-        <token name="TopSurface">0</token>
-        <token name="BottomSurface">0</token>
-        <Color3uint8 name="Color3uint8">4279179042</Color3uint8>
-        <token name="shape">1</token>
-        <Vector3 name="size">
-          <X>10</X>
-          <Y>0.45</Y>
-          <Z>0.45</Z>
-        </Vector3>
-        <CoordinateFrame name="CFrame">
-          <X>-66</X>
-          <Y>50.5</Y>
-          <Z>27.7</Z>
-          <R00>1.0</R00>
-          <R01>-0.0</R01>
-          <R02>0.0</R02>
-          <R10>0.0</R10>
-          <R11>1.0</R11>
-          <R12>-0.0</R12>
-          <R20>0.0</R20>
-          <R21>0.0</R21>
-          <R22>1.0</R22>
-        </CoordinateFrame>
-      </Properties>
-    </Item>
     <Item class="Part" referent="RBX1031">
       <Properties>
         <string name="Name">VentLouvre</string>
@@ -34708,7 +34708,7 @@ T</string>
         </Vector3>
         <CoordinateFrame name="CFrame">
           <X>-66</X>
-          <Y>51.5</Y>
+          <Y>49.5</Y>
           <Z>27.7</Z>
           <R00>1.0</R00>
           <R01>-0.0</R01>
@@ -34742,7 +34742,7 @@ T</string>
         </Vector3>
         <CoordinateFrame name="CFrame">
           <X>-66</X>
-          <Y>52.5</Y>
+          <Y>50.5</Y>
           <Z>27.7</Z>
           <R00>1.0</R00>
           <R01>-0.0</R01>
@@ -34776,7 +34776,7 @@ T</string>
         </Vector3>
         <CoordinateFrame name="CFrame">
           <X>-66</X>
-          <Y>53.5</Y>
+          <Y>51.5</Y>
           <Z>27.7</Z>
           <R00>1.0</R00>
           <R01>-0.0</R01>
@@ -34791,6 +34791,74 @@ T</string>
       </Properties>
     </Item>
     <Item class="Part" referent="RBX1034">
+      <Properties>
+        <string name="Name">VentLouvre</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">1088</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4279179042</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>10</X>
+          <Y>0.45</Y>
+          <Z>0.45</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-66</X>
+          <Y>52.5</Y>
+          <Z>27.7</Z>
+          <R00>1.0</R00>
+          <R01>-0.0</R01>
+          <R02>0.0</R02>
+          <R10>0.0</R10>
+          <R11>1.0</R11>
+          <R12>-0.0</R12>
+          <R20>0.0</R20>
+          <R21>0.0</R21>
+          <R22>1.0</R22>
+        </CoordinateFrame>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX1035">
+      <Properties>
+        <string name="Name">VentLouvre</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">1088</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4279179042</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>10</X>
+          <Y>0.45</Y>
+          <Z>0.45</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-66</X>
+          <Y>53.5</Y>
+          <Z>27.7</Z>
+          <R00>1.0</R00>
+          <R01>-0.0</R01>
+          <R02>0.0</R02>
+          <R10>0.0</R10>
+          <R11>1.0</R11>
+          <R12>-0.0</R12>
+          <R20>0.0</R20>
+          <R21>0.0</R21>
+          <R22>1.0</R22>
+        </CoordinateFrame>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX1036">
       <Properties>
         <string name="Name">VentSnow</string>
         <bool name="Anchored">true</bool>
@@ -34824,7 +34892,7 @@ T</string>
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX1035">
+    <Item class="Part" referent="RBX1037">
       <Properties>
         <string name="Name">RoofVent</string>
         <bool name="Anchored">true</bool>
@@ -34858,7 +34926,7 @@ T</string>
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX1036">
+    <Item class="Part" referent="RBX1038">
       <Properties>
         <string name="Name">VentLouvre</string>
         <bool name="Anchored">true</bool>
@@ -34892,7 +34960,7 @@ T</string>
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX1037">
+    <Item class="Part" referent="RBX1039">
       <Properties>
         <string name="Name">VentLouvre</string>
         <bool name="Anchored">true</bool>
@@ -34926,7 +34994,7 @@ T</string>
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX1038">
+    <Item class="Part" referent="RBX1040">
       <Properties>
         <string name="Name">VentLouvre</string>
         <bool name="Anchored">true</bool>
@@ -34960,7 +35028,7 @@ T</string>
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX1039">
+    <Item class="Part" referent="RBX1041">
       <Properties>
         <string name="Name">VentLouvre</string>
         <bool name="Anchored">true</bool>
@@ -34994,7 +35062,7 @@ T</string>
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX1040">
+    <Item class="Part" referent="RBX1042">
       <Properties>
         <string name="Name">VentLouvre</string>
         <bool name="Anchored">true</bool>
@@ -35028,7 +35096,7 @@ T</string>
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX1041">
+    <Item class="Part" referent="RBX1043">
       <Properties>
         <string name="Name">VentSnow</string>
         <bool name="Anchored">true</bool>
@@ -35062,7 +35130,7 @@ T</string>
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX1042">
+    <Item class="Part" referent="RBX1044">
       <Properties>
         <string name="Name">HeatExchanger</string>
         <bool name="Anchored">true</bool>
@@ -35096,74 +35164,6 @@ T</string>
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX1043">
-      <Properties>
-        <string name="Name">ThermalLouvre</string>
-        <bool name="Anchored">true</bool>
-        <bool name="CanCollide">false</bool>
-        <bool name="CanQuery">false</bool>
-        <bool name="CanTouch">false</bool>
-        <float name="Transparency">0</float>
-        <token name="Material">288</token>
-        <token name="TopSurface">0</token>
-        <token name="BottomSurface">0</token>
-        <Color3uint8 name="Color3uint8">4294946893</Color3uint8>
-        <token name="shape">1</token>
-        <Vector3 name="size">
-          <X>19</X>
-          <Y>0.7</Y>
-          <Z>0.7</Z>
-        </Vector3>
-        <CoordinateFrame name="CFrame">
-          <X>-43</X>
-          <Y>9</Y>
-          <Z>62</Z>
-          <R00>1.0</R00>
-          <R01>-0.0</R01>
-          <R02>0.0</R02>
-          <R10>0.0</R10>
-          <R11>1.0</R11>
-          <R12>-0.0</R12>
-          <R20>0.0</R20>
-          <R21>0.0</R21>
-          <R22>1.0</R22>
-        </CoordinateFrame>
-      </Properties>
-    </Item>
-    <Item class="Part" referent="RBX1044">
-      <Properties>
-        <string name="Name">ThermalLouvre</string>
-        <bool name="Anchored">true</bool>
-        <bool name="CanCollide">false</bool>
-        <bool name="CanQuery">false</bool>
-        <bool name="CanTouch">false</bool>
-        <float name="Transparency">0</float>
-        <token name="Material">288</token>
-        <token name="TopSurface">0</token>
-        <token name="BottomSurface">0</token>
-        <Color3uint8 name="Color3uint8">4294946893</Color3uint8>
-        <token name="shape">1</token>
-        <Vector3 name="size">
-          <X>19</X>
-          <Y>0.7</Y>
-          <Z>0.7</Z>
-        </Vector3>
-        <CoordinateFrame name="CFrame">
-          <X>-43</X>
-          <Y>13</Y>
-          <Z>62</Z>
-          <R00>1.0</R00>
-          <R01>-0.0</R01>
-          <R02>0.0</R02>
-          <R10>0.0</R10>
-          <R11>1.0</R11>
-          <R12>-0.0</R12>
-          <R20>0.0</R20>
-          <R21>0.0</R21>
-          <R22>1.0</R22>
-        </CoordinateFrame>
-      </Properties>
-    </Item>
     <Item class="Part" referent="RBX1045">
       <Properties>
         <string name="Name">ThermalLouvre</string>
@@ -35184,7 +35184,7 @@ T</string>
         </Vector3>
         <CoordinateFrame name="CFrame">
           <X>-43</X>
-          <Y>17</Y>
+          <Y>9</Y>
           <Z>62</Z>
           <R00>1.0</R00>
           <R01>-0.0</R01>
@@ -35218,7 +35218,7 @@ T</string>
         </Vector3>
         <CoordinateFrame name="CFrame">
           <X>-43</X>
-          <Y>21</Y>
+          <Y>13</Y>
           <Z>62</Z>
           <R00>1.0</R00>
           <R01>-0.0</R01>
@@ -35252,7 +35252,7 @@ T</string>
         </Vector3>
         <CoordinateFrame name="CFrame">
           <X>-43</X>
-          <Y>25</Y>
+          <Y>17</Y>
           <Z>62</Z>
           <R00>1.0</R00>
           <R01>-0.0</R01>
@@ -35267,6 +35267,74 @@ T</string>
       </Properties>
     </Item>
     <Item class="Part" referent="RBX1048">
+      <Properties>
+        <string name="Name">ThermalLouvre</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4294946893</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>19</X>
+          <Y>0.7</Y>
+          <Z>0.7</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-43</X>
+          <Y>21</Y>
+          <Z>62</Z>
+          <R00>1.0</R00>
+          <R01>-0.0</R01>
+          <R02>0.0</R02>
+          <R10>0.0</R10>
+          <R11>1.0</R11>
+          <R12>-0.0</R12>
+          <R20>0.0</R20>
+          <R21>0.0</R21>
+          <R22>1.0</R22>
+        </CoordinateFrame>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX1049">
+      <Properties>
+        <string name="Name">ThermalLouvre</string>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">false</bool>
+        <bool name="CanQuery">false</bool>
+        <bool name="CanTouch">false</bool>
+        <float name="Transparency">0</float>
+        <token name="Material">288</token>
+        <token name="TopSurface">0</token>
+        <token name="BottomSurface">0</token>
+        <Color3uint8 name="Color3uint8">4294946893</Color3uint8>
+        <token name="shape">1</token>
+        <Vector3 name="size">
+          <X>19</X>
+          <Y>0.7</Y>
+          <Z>0.7</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>-43</X>
+          <Y>25</Y>
+          <Z>62</Z>
+          <R00>1.0</R00>
+          <R01>-0.0</R01>
+          <R02>0.0</R02>
+          <R10>0.0</R10>
+          <R11>1.0</R11>
+          <R12>-0.0</R12>
+          <R20>0.0</R20>
+          <R21>0.0</R21>
+          <R22>1.0</R22>
+        </CoordinateFrame>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBX1050">
       <Properties>
         <string name="Name">ServiceDoor</string>
         <bool name="Anchored">true</bool>
@@ -35300,7 +35368,7 @@ T</string>
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX1049">
+    <Item class="Part" referent="RBX1051">
       <Properties>
         <string name="Name">HeatExchanger</string>
         <bool name="Anchored">true</bool>
@@ -35334,7 +35402,7 @@ T</string>
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX1050">
+    <Item class="Part" referent="RBX1052">
       <Properties>
         <string name="Name">ThermalLouvre</string>
         <bool name="Anchored">true</bool>
@@ -35368,7 +35436,7 @@ T</string>
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX1051">
+    <Item class="Part" referent="RBX1053">
       <Properties>
         <string name="Name">ThermalLouvre</string>
         <bool name="Anchored">true</bool>
@@ -35402,7 +35470,7 @@ T</string>
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX1052">
+    <Item class="Part" referent="RBX1054">
       <Properties>
         <string name="Name">ThermalLouvre</string>
         <bool name="Anchored">true</bool>
@@ -35436,7 +35504,7 @@ T</string>
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX1053">
+    <Item class="Part" referent="RBX1055">
       <Properties>
         <string name="Name">ThermalLouvre</string>
         <bool name="Anchored">true</bool>
@@ -35470,7 +35538,7 @@ T</string>
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX1054">
+    <Item class="Part" referent="RBX1056">
       <Properties>
         <string name="Name">ThermalLouvre</string>
         <bool name="Anchored">true</bool>
@@ -35504,7 +35572,7 @@ T</string>
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX1055">
+    <Item class="Part" referent="RBX1057">
       <Properties>
         <string name="Name">ServiceDoor</string>
         <bool name="Anchored">true</bool>
@@ -35538,7 +35606,7 @@ T</string>
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBX1056">
+    <Item class="Part" referent="RBX1058">
       <Properties>
         <string name="Name">RearName</string>
         <bool name="Anchored">true</bool>
@@ -35571,7 +35639,7 @@ T</string>
           <R22>-1.0</R22>
         </CoordinateFrame>
       </Properties>
-      <Item class="SurfaceGui" referent="RBX1057">
+      <Item class="SurfaceGui" referent="RBX1059">
         <Properties>
           <string name="Name">Sign</string>
           <token name="Face">5</token>
@@ -35584,7 +35652,7 @@ T</string>
           <float name="LightInfluence">0</float>
           <float name="MaxDistance">600</float>
         </Properties>
-        <Item class="TextLabel" referent="RBX1058">
+        <Item class="TextLabel" referent="RBX1060">
           <Properties>
             <string name="Name">Text</string>
             <string name="Text">HABITAT 09</string>
@@ -35606,7 +35674,7 @@ T</string>
         </Item>
       </Item>
     </Item>
-    <Item class="Script" referent="RBX1059">
+    <Item class="Script" referent="RBX1061">
       <Properties>
         <string name="Name">TwinRuntime</string>
         <ProtectedString name="Source">local function runtimeModule()
@@ -35759,7 +35827,7 @@ return Runtime
 
 end
 local Runtime = runtimeModule()
-Runtime.Attach(script.Parent, {["SchemaVersion"]=1,["AssetId"]="MC-09",["AssetName"]="Twin Habitat Towers",["AssetClass"]="Building",["City"]="MegaCity",["EnergyType"]="Thermal",["MaxHealth"]=1000000,["PipelinePhase"]=4,["QualityGateA"]="Approved",["QualityGateB"]="Pending",["QualityGateC"]="Pending",["PerformanceBudget"]={["MaxVisibleParts"]=1400,["MaxGameplayHitboxes"]=1,["PermanentLights"]=0,["PermanentParticleEmitters"]=0,["PerPartScripts"]=0},["VisiblePartCount"]=1036})
+Runtime.Attach(script.Parent, {["SchemaVersion"]=1,["AssetId"]="MC-09",["AssetName"]="Twin Habitat Towers",["AssetClass"]="Building",["City"]="MegaCity",["EnergyType"]="Thermal",["MaxHealth"]=1000000,["PipelinePhase"]=4,["QualityGateA"]="Approved",["QualityGateB"]="Pending",["QualityGateC"]="Pending",["PerformanceBudget"]={["MaxVisibleParts"]=1400,["MaxGameplayHitboxes"]=1,["PermanentLights"]=0,["PermanentParticleEmitters"]=0,["PerPartScripts"]=0},["VisiblePartCount"]=1038})
 </ProtectedString>
       </Properties>
     </Item>
