@@ -4913,7 +4913,7 @@
         <Item class="TextLabel" referent="RBX148">
           <Properties>
             <string name="Name">Text</string>
-            <string name="Text">BAO</string>
+            <string name="Text">RÖSTI</string>
             <float name="BackgroundTransparency">1</float>
             <UDim2 name="Size">
               <XS>1</XS>
@@ -8075,7 +8075,7 @@
         <Item class="TextLabel" referent="RBX244">
           <Properties>
             <string name="Name">Text</string>
-            <string name="Text">TEA</string>
+            <string name="Text">RACLETTE</string>
             <float name="BackgroundTransparency">1</float>
             <UDim2 name="Size">
               <XS>1</XS>
@@ -9129,7 +9129,7 @@
         <Item class="TextLabel" referent="RBX276">
           <Properties>
             <string name="Name">Text</string>
-            <string name="Text">TECH</string>
+            <string name="Text">CERVELAT</string>
             <float name="BackgroundTransparency">1</float>
             <UDim2 name="Size">
               <XS>1</XS>

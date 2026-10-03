@@ -55,7 +55,7 @@ for x in [-86,86]:part('LanternEnd',(2,10,39),(x,49,13),'metal')
 part('LanternRoof',(178,3,45),(0,55,13),'metal')
 snow('LanternSnow',178,45,0,56.8,13)
 # Front shops are open service bays with small window panels at the sides.
-shops=[(-94,'NOODLES','pink'),(-66,'BAO','warm'),(-38,'FISH','cyan'),(38,'RAMEN','pink'),(66,'TEA','warm'),(94,'TECH','cyan')]
+shops=[(-94,'NOODLES','pink'),(-66,'RÖSTI','warm'),(-38,'FISH','cyan'),(38,'RAMEN','pink'),(66,'RACLETTE','warm'),(94,'CERVELAT','cyan')]
 for i,(x,label,col) in enumerate(shops):
     roofy=27+[0,3,1,2,0,2][i]
     part('ShopFloor',(27,2,38),(x,6,-43),'edge')
@@ -68,7 +68,7 @@ for i,(x,label,col) in enumerate(shops):
     for dx in [-7,0,7]:
         part('DisplayTray',(5,.5,4),(x+dx,12.25,-55),'dark')
         part('Goods',(3,1.5,2),(x+dx,13.2,-55),col,solid=False)
-        part('ShelfGoods',(3,4,3),(x+dx,19.5,-36),'warm' if label!='TECH' else 'cyan',solid=False)
+        part('ShelfGoods',(3,4,3),(x+dx,19.5,-36),'warm' if label!='CERVELAT' else 'cyan',solid=False)
     for sx in [x-10,x+10]:
         part('ShopSidelight',(3,11,.6),(sx,18,-59),'glass','Glass',alpha=.4)
     part('ShopCanopy',(28,2,26),(x,roofy,-51),'edge')

@@ -2,7 +2,7 @@
 
 Concept: ../images/07-waterfront-market-hall.png. Task: #21.
 
-Low, broad food hall with six open front service bays (NOODLES, BAO, FISH, RAMEN, TEA, TECH), staggered snowy canopies, striped awnings, warm lamps, counters and goods. Open central entrance with MARKET HALL header and two vertical signs. Interior market tables flank a clear centre route. Raised glazed roof lantern, three large kitchen exhaust housings with orange louvers, flat-roof vents and rear refrigeration/service equipment. Promenade, sea and city furniture are excluded.
+Low, broad food hall with six open front service bays (NOODLES, RÖSTI, FISH, RAMEN, RACLETTE, CERVELAT), staggered snowy canopies, striped awnings, warm lamps, counters and goods. Open central entrance with MARKET HALL header and two vertical signs. Interior market tables flank a clear centre route. Raised glazed roof lantern, three large kitchen exhaust housings with orange louvers, flat-roof vents and rear refrigeration/service equipment. Promenade, sea and city furniture are excluded.
 
 ## Technical breakdown (provisional)
 
