@@ -19,7 +19,7 @@ On feat/mega-city-harbor-gate: git pull --ff-only; stop previous Rojo server; ro
 
 XML parse, unique references, PrimaryPart, 740 anchored Parts including Origin, positive dimensions, orthonormal matrices, integer UDim offsets, metadata round-trip and Lua syntax passed. Front, oblique and rear geometry views inspected. The offline renderer does not reproduce Studio glass, text or neon appearance and can incorrectly occlude details in oblique views.
 
-Gate B awaits user visual acceptance in Studio. Gate C awaits in-engine gameplay and performance checks. MC-12 has not been started.
+Gate B visually accepted by user on 2026-10-03, including animated lightning. Gate C awaits in-engine gameplay and performance checks. MC-12 authorized as the next building.
 
 ## Visible lightning update
 
