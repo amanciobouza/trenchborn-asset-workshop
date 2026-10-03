@@ -16,3 +16,6 @@ Export XML, metadata round-trip, integer GUI offsets, orthonormal matrices and L
 Gate B: pending Studio visual acceptance. Gate C: Studio damage, energy payout, collapse and reset checks pending.
 
 Preview: `rojo serve mega-city-robotics.project.json` on port 34873. Native package: `packages/mega-city/16-guardian-robotics-lab.rbxmx`.
+
+## User acceptance
+2026-10-03: User accepted MC-16 visually ("passt"). Dedicated gameplay verification remains pending.
