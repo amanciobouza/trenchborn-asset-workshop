@@ -136,13 +136,16 @@ for y in [40,63,87,111,135,158]:
         a=2*math.pi*i/24;b=2*math.pi*(i+1)/24
         p=beam('CoreRing',(13*math.cos(a),y,13*math.sin(a)),(13*math.cos(b),y,13*math.sin(b)),.9,'cyan');p['material']='Neon';p['solid']=False
 for x in [-17,17]:part('CoreShield',(.6,119,37),(x,99,0),'glass','Glass',alpha=.65)
-# Large irregular static energy paths, distinct from the structural cage.
-for phase in [0,math.pi]:
-    points=[]
-    for i in range(17):
-        a=phase+i*.85;points.append((9*math.cos(a),40+i*7.3,9*math.sin(a)))
-    for aa,bb in zip(points,points[1:]):
-        p=beam('EnergyArc',aa,bb,.75,'cyan');p['material']='Neon';p['solid']=False
+# Prominent angular discharges, visible in Edit mode and animated in Play.
+PALETTE['arcwhite']=(220,253,255)
+for bolt in range(4):
+    z=-20 if bolt<2 else 20
+    side=-1 if bolt%2==0 else 1
+    points=[(side*(3 if i%2==0 else 13),41+i*14.4,z) for i in range(9)]
+    for node,(aa,bb) in enumerate(zip(points,points[1:]),1):
+        for name,width,col,alpha in [('LightningHalo',1.5,'cyan',.35),('LightningCore',.55,'arcwhite',0)]:
+            p=beam(name,aa,bb,width,col);p['material']='Neon';p['solid']=False;p['alpha']=alpha
+            p['lightningSegment']=bolt*8+node
 for y in [76,125]:
     for z in [-27,27]:
         part('TowerCrossbar',(43,4,5),(0,y,z),'edge')
@@ -263,8 +266,12 @@ def export():
         else:prop(pr,'token','shape',1)
         vec(pr,'size',size);cf(pr,'CFrame',p['pos'],mat)
         if 'text' in p:add_sign(e,p)
+        if 'lightningSegment' in p:prop(pr,'BinaryString','AttributesSerialize',attrs({'LightningSegment':p['lightningSegment']}))
     runtime=(OUT/'MegaCityBuildingRuntime.lua').read_text()
     e,p=item(model,'Script','PowerRuntime');prop(p,'ProtectedString','Source','local function runtimeModule()\n'+runtime+'\nend\nlocal Runtime = runtimeModule()\nRuntime.Attach(script.Parent, '+lua(spec)+')\n')
+    lightning=(OUT/'MegaCityPowerLightning.lua').read_text()
+    source=p.find("ProtectedString[@name='Source']")
+    source.text += '\nlocal function lightningModule()\n'+lightning+'\nend\nlightningModule().Attach(script.Parent)\n'
     target=ROOT/'packages/mega-city/11-major-power-station.rbxmx';target.parent.mkdir(parents=True,exist_ok=True)
     ET.indent(root);ET.ElementTree(root).write(target,encoding='utf-8',xml_declaration=True)
     return target
