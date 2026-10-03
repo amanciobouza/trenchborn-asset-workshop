@@ -16,3 +16,6 @@ XML package, matrices, metadata round-trip, integer GUI offsets and Lua syntax p
 Gate B: pending user Studio acceptance. Gate C: damage, energy payout, whole-model collapse and reset require Studio playtest.
 
 Preview: `rojo serve mega-city-data.project.json`, port 34873. Package: `packages/mega-city/15-data-center.rbxmx`.
+
+## User acceptance
+2026-10-03: User accepted MC-15 visually ("passt"). Dedicated gameplay gate remains pending.
