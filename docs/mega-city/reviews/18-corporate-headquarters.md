@@ -12,6 +12,6 @@ Approved reference: docs/mega-city/images/18-corporate-headquarters.png, blob fe
 ## Validation
 XML, unique referents, anchored Parts, positive sizes, orthonormal matrices, integer GUI offsets, gameplay attribute round-trip and Lua syntax passed (43 sources including embedded runtime). Offline front, oblique and rear geometry views inspected. Added continuous plinths after first inspection; corrected upper window/roof intersection and separated the entrance text plates.
 
-Offline renderer does not reproduce Studio transparency, Neon, text or lighting. Gate B remains pending user visual acceptance; Gate C damage, energy payout, collapse and reset require Studio Play testing.
+Offline renderer does not reproduce Studio transparency, Neon, text or lighting. Gate B visually accepted by Amancio on 2026-10-03; Gate C damage, energy payout, collapse and reset require Studio Play testing.
 
 Preview: `rojo serve mega-city-headquarters.project.json` on port 34873. Native import: `packages/mega-city/18-corporate-headquarters.rbxmx`. Default project also points at MC-18, on port 34872.
