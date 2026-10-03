@@ -56,12 +56,14 @@ for i in range(16):
     trim('ContainmentBeacon',(2,3,2),(58*math.sin(a),112,58*math.cos(a)+14),'warm')
 # Dome is built from concentric tapered bands; no opaque cylinder behind viewing slots.
 for band,(r0,y0,r1,y1) in enumerate([(59,108,54,119),(54,119,42,131),(42,131,24,140),(24,140,3,144)]):
-    for i in range(32):
-        a=2*math.pi*(i+.5)/32;rad=(r0+r1)/2
+    for i in range(24):
+        a=2*math.pi*(i+.5)/24;rad=(r0+r1)/2
         slope=math.degrees(math.atan2(r0-r1,y1-y0))
         length=math.hypot(r0-r1,y1-y0)
-        part('DomeSegment',(2*rad*math.tan(math.pi/32)+.3,length+1,3),(rad*math.sin(a),(y0+y1)/2,14+rad*math.cos(a)),'metal',rotation=(slope,-math.degrees(a),0))
-        part('DomeSnow',(2*rad*math.tan(math.pi/32)-1,length*.72,.5),((rad+1.8)*math.sin(a),(y0+y1)/2+1,14+(rad+1.8)*math.cos(a)),'snow','SmoothPlastic',rotation=(slope,-math.degrees(a),0),solid=False)
+        part('DomeSegment',(2*rad*math.tan(math.pi/24)+.3,length+1,3),(rad*math.sin(a),(y0+y1)/2,14+rad*math.cos(a)),'metal',rotation=(slope,-math.degrees(a),0))
+        # Front-facing sectors 11 and 12 stay white; sector 13 starts the dark interval.
+        if i%3!=1:
+            part('DomeSnow',(2*rad*math.tan(math.pi/24)-1,length*.72,.5),((rad+1.8)*math.sin(a),(y0+y1)/2+1,14+(rad+1.8)*math.cos(a)),'snow','SmoothPlastic',rotation=(slope,-math.degrees(a),0),solid=False)
 pipe('DomeCap',(0,142,14),(0,146,14),8)
 # Lab wings: real hollow observation floors and two-sided glass.
 for side in [-1,1]:
