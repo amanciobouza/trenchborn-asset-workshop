@@ -39,6 +39,7 @@ def pipe(name,a,b,r=1.2):
 
 # MC-12: open cooling tower shells, common pump hall and twin steam outlets.
 PALETTE['insulation']=(104,125,142)
+PALETTE['radiation']=(123,255,47)
 part('Foundation',(246,4,150),(0,2,0),'concrete','Concrete')
 part('PumpFloor',(180,2,111),(0,5,-6.5),'edge')
 part('PumpRear',(180,42,4),(0,27,51),'metal')
@@ -88,7 +89,8 @@ for tower,(cx,height) in enumerate([(-48,85),(48,100)]):
     ring('TowerFootRing',base+4,40.2,3,'edge')
     ring('TowerRim',top,32.5,3.5,'edge')
     ring('RimSnow',top+2,32.5,.7,'snow')
-    ring('CyanRing',top-7,33,1,'cyan',True)
+    ring('RadiationRing',top-7,33,1.7,'radiation',True)
+    ring('InnerReactorGlow',top-12,28,2,'radiation',True)
     # No cap across the mouth: one emitter marker sits in each actual opening.
     p=part('SteamMarker',(1,1,1),(cx,top+1,0),'snow','SmoothPlastic',solid=False,alpha=1)
     p['steamOutlet']=True
@@ -97,7 +99,7 @@ for tower,(cx,height) in enumerate([(-48,85),(48,100)]):
         part('RimBracket',(3,10,4),(cx+33*math.cos(t),top-3,33*math.sin(t)),'metal',rotation=(0,-math.degrees(t),0))
     for z in [-35,35]:
         part('TowerAccess',(18,13,5),(cx,60,z),'edge')
-        for dx in [-5,0,5]:trim('AccessLight',(1,8,.7),(cx+dx,60,z+(-3 if z<0 else 3)),'cyan')
+        for dx in [-5,0,5]:trim('AccessLight',(1,8,.7),(cx+dx,60,z+(-3 if z<0 else 3)),'radiation')
 # Paired heavy external water mains, with segmented rounded elbows.
 def arc(cx,cy,z,r,a0,a1):
     return [(cx+r*math.cos(math.radians(a0+(a1-a0)*i/10)),cy+r*math.sin(math.radians(a0+(a1-a0)*i/10)),z) for i in range(11)]
@@ -110,6 +112,7 @@ for side in [-1,1]:
         for aa,bb in zip(points,points[1:]):pipe('CoolingMain',aa,bb,6)
         for x in [86,96]:
             pipe('MainCollar',(side*(x-1),49,z),(side*(x+1),49,z),6.7)
+            parts[-1]['color']=list(PALETTE['radiation']);parts[-1]['material']='Neon'
         pipe('MainFootCollar',(side*111,10,z),(side*111,14,z),6.7)
         part('PipePlinth',(18,6,19),(side*111,7,z),'concrete','Concrete')
         for y in [22,34]:beam('PipeSupport',(side*93,y,z),(side*106,y,z),2.5)
@@ -123,12 +126,12 @@ for side in [-1,1]:
 # Rear pump control doors, warmer glazing and independent roof ventilation.
 for x in [-65,65]:
     part('PumpDoor',(22,26,1),(x,19,54),'edge')
-    sign('PumpId','PUMP A' if x<0 else 'PUMP B',(29,7,1),(x,37,54),'cyan',(0,180,0))
+    sign('PumpId','PUMP A' if x<0 else 'PUMP B',(29,7,1),(x,37,54),'radiation',(0,180,0))
 for x in [-22,22]:
     part('ControlCabinet',(22,20,9),(x,16,58),'metal')
     for dx in [-6,6]:
         part('ControlPanel',(8,13,.6),(x+dx,18,63),'dark')
-        trim('PanelLight',(5,1,.7),(x+dx,21,63.7),'cyan')
+        trim('PanelLight',(5,1,.7),(x+dx,21,63.7),'radiation')
 for x in [-64,0,64]:vent(x,55,44,16)
 # Roof service route at the front, clear of both tower shells.
 part('RoofWalkway',(162,1,11),(0,53.5,-49),'metal')
@@ -138,6 +141,18 @@ for x in [-24,24]:
     part('RoofPump',(18,8,12),(x,57,-43),'edge')
     for dx in [-6,-3,0,3,6]:part('PumpLouvre',(1,5,.6),(x+dx,57,-49.5),'dark')
     snow('PumpSnow',18,12,x,61.3,-43)
+# Native geometry trefoil avoids relying on font support for warning symbols.
+part('RadiationPlaque',(21,21,1),(-73,40,-63.3),'dark')
+pipe('RadiationCentre',(-73,40,-64),(-73,40,-64.6),1.8)
+parts[-1]['color']=list(PALETTE['radiation']);parts[-1]['material']='Neon';parts[-1]['solid']=False
+for lobe in range(3):
+    for segment in range(6):
+        angle=math.radians(30+lobe*120+segment*10)
+        trim('RadiationTrefoil',(1.55,5.2,.6),(-73+6.2*math.cos(angle),40+6.2*math.sin(angle),-64.3),'radiation',(0,0,math.degrees(angle)-90))
+# Green coolant inspection strips on the large downpipes.
+for side in [-1,1]:
+    for z in [-24,23]:
+        trim('CoolantWindow',(1.8,17,.8),(side*111,27,z-6.3),'radiation')
 
 def matrix(p):
     if "basis" in p:return p["basis"]
