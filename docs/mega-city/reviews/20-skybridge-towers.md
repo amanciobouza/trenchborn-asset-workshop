@@ -12,6 +12,6 @@ Approved reference: docs/mega-city/images/20-skybridge-towers.png, blob 1860da77
 ## Validation
 XML export, unique referents, positive dimensions, orthonormal matrices, anchored Parts, integer GUI offsets, attribute round-trip and Lua syntax passed (47 sources including embedded runtime). Front, oblique and rear geometry views inspected offline.
 
-Renderer does not reproduce Studio glass, Neon, lighting or labels. Painter sorting can show interior lights over larger roof polygons; actual chandeliers are at y=256 below the roof underside at y=260. Gate B awaits visual acceptance. Gate C damage, energy payout, collapse and reset require Studio Play testing.
+Renderer does not reproduce Studio glass, Neon, lighting or labels. Painter sorting can show interior lights over larger roof polygons; actual chandeliers are at y=256 below the roof underside at y=260. Gate B visually accepted by Amancio on 2026-10-03. Gate C damage, energy payout, collapse and reset require Studio Play testing.
 
 Preview: `rojo serve mega-city-skybridge.project.json`, port 34873. Native import: `packages/mega-city/20-skybridge-towers.rbxmx`. Default project also points to MC-20 on port 34872.
