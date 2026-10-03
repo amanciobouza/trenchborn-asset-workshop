@@ -12,6 +12,6 @@ Approved reference: docs/mega-city/images/19-financial-spire.png, blob 8cb2af63e
 ## Validation
 Export XML, unique referents, positive geometry sizes, orthonormal matrices, anchored Parts, integer GUI offsets, gameplay attribute round-trip and Lua syntax passed (45 sources including embedded runtime). Front/oblique/rear offline geometry views inspected. Narrow shaft lighting dimensions corrected after validation; solid face added behind upper emblem/number.
 
-Offline rendering does not reproduce Studio glass, lights, Neon or text. Gate B pending user visual acceptance. Gate C damage, energy release, collapse and reset require Studio Play testing.
+Offline rendering does not reproduce Studio glass, lights, Neon or text. Gate B visually accepted by Amancio on 2026-10-03. Gate C damage, energy release, collapse and reset require Studio Play testing.
 
 Preview: `rojo serve mega-city-financial.project.json`, port 34873. Native import: `packages/mega-city/19-financial-spire.rbxmx`. Default project also points to MC-19, port 34872.
