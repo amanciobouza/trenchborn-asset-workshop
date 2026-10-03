@@ -167,7 +167,7 @@ def add_sign(parent,p):
     lab,l=item(gui,'TextLabel','Text');prop(l,'string','Text',p['text']);prop(l,'float','BackgroundTransparency',1)
     size=ET.SubElement(l,'UDim2',name='Size')
     for tag,n in [('XS',1),('XO',0),('YS',1),('YO',0)]:ET.SubElement(size,tag).text=str(n)
-    prop(l,'bool','TextScaled','true');prop(l,'token','Font',4)
+    prop(l,'bool','TextScaled','true');prop(l,'token','Font',12) # Enum.Font.SciFi
     col=ET.SubElement(l,'Color3',name='TextColor3')
     for k,v in zip('RGB',p['textColor']):ET.SubElement(col,k).text=str(v/255)
 

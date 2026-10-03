@@ -4555,7 +4555,7 @@ E</string>
               <YO>0</YO>
             </UDim2>
             <bool name="TextScaled">true</bool>
-            <token name="Font">4</token>
+            <token name="Font">12</token>
             <Color3 name="TextColor3">
               <R>0.9450980392156862</R>
               <G>0.22745098039215686</G>
@@ -5164,7 +5164,7 @@ E</string>
               <YO>0</YO>
             </UDim2>
             <bool name="TextScaled">true</bool>
-            <token name="Font">4</token>
+            <token name="Font">12</token>
             <Color3 name="TextColor3">
               <R>0.17254901960784313</R>
               <G>0.8431372549019608</G>
@@ -5232,7 +5232,7 @@ E</string>
               <YO>0</YO>
             </UDim2>
             <bool name="TextScaled">true</bool>
-            <token name="Font">4</token>
+            <token name="Font">12</token>
             <Color3 name="TextColor3">
               <R>0.17254901960784313</R>
               <G>0.8431372549019608</G>
@@ -7371,7 +7371,7 @@ E</string>
               <YO>0</YO>
             </UDim2>
             <bool name="TextScaled">true</bool>
-            <token name="Font">4</token>
+            <token name="Font">12</token>
             <Color3 name="TextColor3">
               <R>0.17254901960784313</R>
               <G>0.8431372549019608</G>

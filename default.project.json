@@ -1,5 +1,5 @@
 {
-  "name": "MegaCityCargoReview",
+  "name": "MegaCityHarborReview",
   "servePort": 34872,
   "tree": {
     "$className": "DataModel",
@@ -9,8 +9,8 @@
         "$className": "Folder",
         "$ignoreUnknownInstances": false
       },
-      "MegaCityCargoLogisticsHub": {
-        "$path": "packages/mega-city/02-cargo-logistics-hub.rbxmx"
+      "MegaCityHarborGateTerminal": {
+        "$path": "packages/mega-city/01-harbor-gate-terminal.rbxmx"
       }
     },
     "ReplicatedStorage": {

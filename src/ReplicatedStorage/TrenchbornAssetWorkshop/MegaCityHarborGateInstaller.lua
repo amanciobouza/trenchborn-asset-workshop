@@ -53,7 +53,7 @@ function Installer.Install(parent, options)
             text.Size = UDim2.fromScale(1, 1)
             text.BackgroundTransparency = 1
             text.TextScaled = true
-            text.Font = Enum.Font.SourceSansBold
+            text.Font = Enum.Font.SciFi
             text.TextColor3 = Color3.fromRGB(d.textColor[1], d.textColor[2], d.textColor[3])
             text.Text = d.text
             text.Parent = gui
