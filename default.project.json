@@ -7,7 +7,7 @@
       "$className": "Workspace",
       "TrenchbornAssetWorkshop": {
         "$className": "Folder",
-        "$path": "src/Workspace/TrenchbornAssetWorkshop"
+        "$ignoreUnknownInstances": false
       },
       "MegaCityHarborGateTerminal": {
         "$path": "packages/mega-city/01-harbor-gate-terminal.rbxmx"
@@ -17,14 +17,14 @@
       "$className": "ReplicatedStorage",
       "TrenchbornAssetWorkshop": {
         "$className": "Folder",
-        "$path": "src/ReplicatedStorage/TrenchbornAssetWorkshop"
+        "$ignoreUnknownInstances": false
       }
     },
     "ServerScriptService": {
       "$className": "ServerScriptService",
       "TrenchbornAssetWorkshop": {
         "$className": "Folder",
-        "$path": "src/ServerScriptService/TrenchbornAssetWorkshop"
+        "$ignoreUnknownInstances": false
       }
     }
   }
