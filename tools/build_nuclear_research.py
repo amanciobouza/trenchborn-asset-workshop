@@ -96,7 +96,7 @@ for x in [-13,13]:
 for x in [-30,30]:
     beam('EntryArmour',(x*1.18,14,-83),(x,49,-83),6,'edge')
     trim('DoorLamp',(2,7,1),(x,32,-86),'warm')
-sign('FacilityName','NUCLEAR RESEARCH',(74,8,1),(0,48,-82),'snow')
+sign('FacilityName','NUCLEAR RESEARCH',(74,8,1),(0,48,-88),'snow')
 sign('FacilityNumber','14',(16,21,1),(44,31,-81),'snow')
 sign('ReactorNumber','14',(17,19,1),(0,77,-58),'snow')
 # Radiation trefoil, made from native Parts on its own front plaque.

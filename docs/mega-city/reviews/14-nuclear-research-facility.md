@@ -15,3 +15,6 @@ Export XML, orthonormal geometry matrices, metadata round-trip, integer GUI offs
 Gate B: pending user Studio review. Gate C: Studio damage, payout, collapse and reset verification pending.
 
 Preview: `rojo serve mega-city-nuclear.project.json`, port 34873. Importable package: `packages/mega-city/14-nuclear-research-facility.rbxmx`.
+
+## Sign clearance correction
+Moved NUCLEAR RESEARCH plate from Z -82 to -88. Its rear surface now clears the entrance pillars (front Z -86) by 1.5 studs. Maximum fitted SciFi text retained.
