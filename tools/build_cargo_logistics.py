@@ -198,12 +198,17 @@ def attrs(d):
         else:b+=b'\x06'+struct.pack('<d',v)
     return base64.b64encode(b).decode()
 def add_sign(parent,p):
-    gui,g=item(parent,'SurfaceGui','Sign');prop(g,'token','Face',5);prop(g,'float','PixelsPerStud',30);prop(g,'token','SizingMode',1)
+    gui,g=item(parent,'SurfaceGui','Sign');prop(g,'token','Face',5);prop(g,'token','SizingMode',0)
+    # Keep each text row within TextScaled's font-size ceiling.
+    height = 100 * (p['text'].count('\n') + 1)
+    canvas = ET.SubElement(g,'Vector2',name='CanvasSize')
+    ET.SubElement(canvas,'X').text = str(height * p['size'][0] / p['size'][1])
+    ET.SubElement(canvas,'Y').text = str(height)
     prop(g,'bool','AlwaysOnTop','false');prop(g,'float','LightInfluence',0);prop(g,'float','MaxDistance',600)
     lab,l=item(gui,'TextLabel','Text');prop(l,'string','Text',p['text']);prop(l,'float','BackgroundTransparency',1)
     size=ET.SubElement(l,'UDim2',name='Size')
     for tag,n in [('XS',1),('XO',0),('YS',1),('YO',0)]:ET.SubElement(size,tag).text=str(n)
-    prop(l,'bool','TextScaled','true');prop(l,'token','Font',4)
+    prop(l,'bool','TextScaled','true');prop(l,'token','Font',12) # Enum.Font.SciFi
     col=ET.SubElement(l,'Color3',name='TextColor3')
     for k,v in zip('RGB',p['textColor']):ET.SubElement(col,k).text=str(v/255)
 

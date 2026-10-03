@@ -379,8 +379,11 @@
         <Properties>
           <string name="Name">Sign</string>
           <token name="Face">5</token>
-          <float name="PixelsPerStud">30</float>
-          <token name="SizingMode">1</token>
+          <token name="SizingMode">0</token>
+          <Vector2 name="CanvasSize">
+            <X>90.0</X>
+            <Y>100</Y>
+          </Vector2>
           <bool name="AlwaysOnTop">false</bool>
           <float name="LightInfluence">0</float>
           <float name="MaxDistance">600</float>
@@ -397,7 +400,7 @@
               <YO>0</YO>
             </UDim2>
             <bool name="TextScaled">true</bool>
-            <token name="Font">4</token>
+            <token name="Font">12</token>
             <Color3 name="TextColor3">
               <R>0.17254901960784313</R>
               <G>0.8431372549019608</G>
@@ -444,8 +447,11 @@
         <Properties>
           <string name="Name">Sign</string>
           <token name="Face">5</token>
-          <float name="PixelsPerStud">30</float>
-          <token name="SizingMode">1</token>
+          <token name="SizingMode">0</token>
+          <Vector2 name="CanvasSize">
+            <X>640.0</X>
+            <Y>100</Y>
+          </Vector2>
           <bool name="AlwaysOnTop">false</bool>
           <float name="LightInfluence">0</float>
           <float name="MaxDistance">600</float>
@@ -462,7 +468,7 @@
               <YO>0</YO>
             </UDim2>
             <bool name="TextScaled">true</bool>
-            <token name="Font">4</token>
+            <token name="Font">12</token>
             <Color3 name="TextColor3">
               <R>1.0</R>
               <G>0.6901960784313725</G>
@@ -2991,8 +2997,11 @@
         <Properties>
           <string name="Name">Sign</string>
           <token name="Face">5</token>
-          <float name="PixelsPerStud">30</float>
-          <token name="SizingMode">1</token>
+          <token name="SizingMode">0</token>
+          <Vector2 name="CanvasSize">
+            <X>90.0</X>
+            <Y>100</Y>
+          </Vector2>
           <bool name="AlwaysOnTop">false</bool>
           <float name="LightInfluence">0</float>
           <float name="MaxDistance">600</float>
@@ -3009,7 +3018,7 @@
               <YO>0</YO>
             </UDim2>
             <bool name="TextScaled">true</bool>
-            <token name="Font">4</token>
+            <token name="Font">12</token>
             <Color3 name="TextColor3">
               <R>0.17254901960784313</R>
               <G>0.8431372549019608</G>
@@ -3056,8 +3065,11 @@
         <Properties>
           <string name="Name">Sign</string>
           <token name="Face">5</token>
-          <float name="PixelsPerStud">30</float>
-          <token name="SizingMode">1</token>
+          <token name="SizingMode">0</token>
+          <Vector2 name="CanvasSize">
+            <X>640.0</X>
+            <Y>100</Y>
+          </Vector2>
           <bool name="AlwaysOnTop">false</bool>
           <float name="LightInfluence">0</float>
           <float name="MaxDistance">600</float>
@@ -3074,7 +3086,7 @@
               <YO>0</YO>
             </UDim2>
             <bool name="TextScaled">true</bool>
-            <token name="Font">4</token>
+            <token name="Font">12</token>
             <Color3 name="TextColor3">
               <R>1.0</R>
               <G>0.6901960784313725</G>
@@ -5603,8 +5615,11 @@
         <Properties>
           <string name="Name">Sign</string>
           <token name="Face">5</token>
-          <float name="PixelsPerStud">30</float>
-          <token name="SizingMode">1</token>
+          <token name="SizingMode">0</token>
+          <Vector2 name="CanvasSize">
+            <X>90.0</X>
+            <Y>100</Y>
+          </Vector2>
           <bool name="AlwaysOnTop">false</bool>
           <float name="LightInfluence">0</float>
           <float name="MaxDistance">600</float>
@@ -5621,7 +5636,7 @@
               <YO>0</YO>
             </UDim2>
             <bool name="TextScaled">true</bool>
-            <token name="Font">4</token>
+            <token name="Font">12</token>
             <Color3 name="TextColor3">
               <R>0.17254901960784313</R>
               <G>0.8431372549019608</G>
@@ -5668,8 +5683,11 @@
         <Properties>
           <string name="Name">Sign</string>
           <token name="Face">5</token>
-          <float name="PixelsPerStud">30</float>
-          <token name="SizingMode">1</token>
+          <token name="SizingMode">0</token>
+          <Vector2 name="CanvasSize">
+            <X>640.0</X>
+            <Y>100</Y>
+          </Vector2>
           <bool name="AlwaysOnTop">false</bool>
           <float name="LightInfluence">0</float>
           <float name="MaxDistance">600</float>
@@ -5686,7 +5704,7 @@
               <YO>0</YO>
             </UDim2>
             <bool name="TextScaled">true</bool>
-            <token name="Font">4</token>
+            <token name="Font">12</token>
             <Color3 name="TextColor3">
               <R>1.0</R>
               <G>0.6901960784313725</G>
@@ -9031,8 +9049,11 @@
         <Properties>
           <string name="Name">Sign</string>
           <token name="Face">5</token>
-          <float name="PixelsPerStud">30</float>
-          <token name="SizingMode">1</token>
+          <token name="SizingMode">0</token>
+          <Vector2 name="CanvasSize">
+            <X>168.75</X>
+            <Y>900</Y>
+          </Vector2>
           <bool name="AlwaysOnTop">false</bool>
           <float name="LightInfluence">0</float>
           <float name="MaxDistance">600</float>
@@ -9057,7 +9078,7 @@ S</string>
               <YO>0</YO>
             </UDim2>
             <bool name="TextScaled">true</bool>
-            <token name="Font">4</token>
+            <token name="Font">12</token>
             <Color3 name="TextColor3">
               <R>0.9450980392156862</R>
               <G>0.22745098039215686</G>
@@ -10668,8 +10689,11 @@ S</string>
         <Properties>
           <string name="Name">Sign</string>
           <token name="Face">5</token>
-          <float name="PixelsPerStud">30</float>
-          <token name="SizingMode">1</token>
+          <token name="SizingMode">0</token>
+          <Vector2 name="CanvasSize">
+            <X>282.3529411764706</X>
+            <Y>200</Y>
+          </Vector2>
           <bool name="AlwaysOnTop">false</bool>
           <float name="LightInfluence">0</float>
           <float name="MaxDistance">600</float>
@@ -10687,7 +10711,7 @@ LOGISTICS</string>
               <YO>0</YO>
             </UDim2>
             <bool name="TextScaled">true</bool>
-            <token name="Font">4</token>
+            <token name="Font">12</token>
             <Color3 name="TextColor3">
               <R>0.17254901960784313</R>
               <G>0.8431372549019608</G>
@@ -12842,8 +12866,11 @@ LOGISTICS</string>
         <Properties>
           <string name="Name">Sign</string>
           <token name="Face">5</token>
-          <float name="PixelsPerStud">30</float>
-          <token name="SizingMode">1</token>
+          <token name="SizingMode">0</token>
+          <Vector2 name="CanvasSize">
+            <X>316.6666666666667</X>
+            <Y>200</Y>
+          </Vector2>
           <bool name="AlwaysOnTop">false</bool>
           <float name="LightInfluence">0</float>
           <float name="MaxDistance">600</float>
@@ -12861,7 +12888,7 @@ LOGISTICS</string>
               <YO>0</YO>
             </UDim2>
             <bool name="TextScaled">true</bool>
-            <token name="Font">4</token>
+            <token name="Font">12</token>
             <Color3 name="TextColor3">
               <R>0.17254901960784313</R>
               <G>0.8431372549019608</G>

@@ -44,6 +44,8 @@ Hauptachse: Waterfront/Transit Nexus → Neon Quarter → Corporate Heights. Meg
 
 ## Gemeinsame Umsetzungsvorgaben
 
+- **Verbindliche Typografie für MC-01 bis MC-21 (2026-10-03): futuristische Schrift `Enum.Font.SciFi`, maximal gross innerhalb der jeweiligen Schildfläche.** Gilt für Gebäudenamen, vertikale Reklamen, Nummern und Informationstafeln. Text vollständig sichtbar, ohne Abschneiden oder unnötige Leerzeilen. `TextScaled` nutzt die gesamte Schildfläche; SurfaceGui-Canvas passend zum Seitenverhältnis und zur Zeilenzahl dimensionieren, damit das Schriftgrössenlimit nicht zu kleiner Schrift führt. MC-01 ist die vom Nutzer abgenommene Referenz.
+
 - 21 Grundmodelle; Anzahl der platzierten Gebäude, Kopien, Abmessungen und HP noch offen.
 - Jedes Gebäude kollabiert als eine Einheit, einschliesslich zugehöriger Türme, Brücken, Technik und Sockel. Kai, Promenaden, Strassen und weiterführende Hochbahn bleiben separate Stadtumgebung.
 - **Cooling Plant: Beide oberen Kühlturmöffnungen müssen kontinuierlich sichtbar animierte weisse Dampffahnen emittieren, leicht vom Wind versetzt.** Dies ist eine verbindliche Laufzeitanforderung, keine reine Bilddekoration.
