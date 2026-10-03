@@ -2,7 +2,7 @@
 
 **Stadtteil:** Neon Quarter  
 **EnergyType:** `Electric`  
-**Status:** Konzept und Zielbild bestätigt; Umsetzung offen.
+**Status:** Modell zur Studio-Abnahme erstellt; Gate B und Gate C offen.
 
 ## Freigegebenes Konzept
 
@@ -35,7 +35,7 @@ Ringetagen und Bildschirm gehören zur Einheit.
 - [ ] P6 / Gate C: Energie, Schaden, gemeinsame Zerstörung und Reset in Studio prüfen.
 - [ ] P7: Final Installer und separat importierbares Asset bereitstellen.
 
-Status: Konzept freigegeben; Modellierung NICHT begonnen. Dieser Commit archiviert Planung und Zielbilder und startet keine Modellierung.
+Umsetzung und technische Prüfungen: [Studio-Review MC-06](../reviews/06-holo-entertainment-tower.md). Fertiges Modell direkt über Rojo importierbar, ohne Installer. Visuelle Abnahme und Playtest bleiben offen.
 
 ## GitHub-Task
 
