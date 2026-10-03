@@ -2,7 +2,13 @@
 
 ## Freigabestand
 
-Alle **21 Gebäudekonzepte und Zielbilder** sind bestätigt und als native Roblox-Vorschauen gebaut und gepusht. Gesamtstadtintegration, finale Dimensionierung/HP und Gameplay-Abnahme bleiben offen. Am 3. Oktober 2026 wurden Gletscherhöhle, Meereszugang per Kanagawa-Welle und 85 Gebäudeinstanzen als Planungsrahmen vereinbart.
+Alle **21 Gebäudekonzepte und Zielbilder** sind bestätigt und als native Roblox-Vorschauen gebaut und gepusht. Die native Stadtzusammenstellung mit 85 echten Gebäuden, durchmischten Quartieren, Strassennetz und Terrain-Markierungen ist gebaut. Terrain-Arbeit in Studio, finale Dimensionierung/HP und Gameplay-Abnahme bleiben offen. Am 3. Oktober 2026 wurden Gletscherhöhle, Meereszugang per Kanagawa-Welle und 85 Gebäudeinstanzen als Planungsrahmen vereinbart.
+
+## Zusammengesetzte Stadt
+
+`rojo serve mega-city-final.project.json` öffnet die gesamte Stadt auf Port 34873. Gebäude, Strassen, Rissdetails, Terrain-Markierungen und temporäre Landschaft liegen in getrennten Gruppen. Die vorhandenen Gebäudeskripte und Schriften bleiben erhalten. Native Terrain-Daten werden nicht überschrieben.
+
+[Studio- und Terrain-Anleitung](reviews/00-mega-city-final-assembly.md) · [Draufsicht](plans/00-mega-city-final-layout.svg) · [Platzierungen](plans/00-mega-city-final-layout.json)
 
 ## Stadtidentität
 
@@ -60,3 +66,4 @@ Hauptachse: Waterfront/Transit Nexus → Neon Quarter → Corporate Heights. Meg
 ## Bildprovenienz
 
 Die PNGs unter `images/` sind die **unveränderten Original-Zielbilder aus dieser Konzeptserie**. [manifest.json](manifest.json) ordnet IDs, Dateipfade, Tasks und Git-Blob-Prüfsummen zu. Bilder zeigen keine bereits implementierte Funktion. Freigabe umfasst die visuelle Richtung; Massstab und technische Machbarkeit werden in P3/P4 konkretisiert.
+
