@@ -1,0 +1,874 @@
+[
+  {
+    "id": "B01",
+    "branch": "largecity-waterfront-resort-l3",
+    "prefix": "LargeCityWaterfrontResort",
+    "commit": "57a1a9c692f8462174bee016143df11cd6cf24cd",
+    "files": [
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityWaterfrontResortDressing.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "64baba8ff815afaa58c99cd794078f122e736827",
+        "size": 12301,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/64baba8ff815afaa58c99cd794078f122e736827"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityWaterfrontResortDressingRefinement.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "601c75cf5741bce70b9179480f4670cb9d1392a1",
+        "size": 6648,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/601c75cf5741bce70b9179480f4670cb9d1392a1"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityWaterfrontResortGoldenMaster.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9586df371b15d8c7d336ede884c19d73e35e389f",
+        "size": 16621,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/9586df371b15d8c7d336ede884c19d73e35e389f"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityWaterfrontResortInstaller.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5b1bf66bf0e4f52eda0a085b1d0e06a2268d53a8",
+        "size": 6338,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/5b1bf66bf0e4f52eda0a085b1d0e06a2268d53a8"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityWaterfrontResortPoolFacade.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "bd04677aedd97f3ada5eaa7c91a38c66056c0d89",
+        "size": 5359,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/bd04677aedd97f3ada5eaa7c91a38c66056c0d89"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityWaterfrontResortSignDressing.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "25b659c9d39d41767483f214128d7691094f76be",
+        "size": 2703,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/25b659c9d39d41767483f214128d7691094f76be"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityWaterfrontResortSpecification.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0919f06e3f4a137719c54975de0800215c681e26",
+        "size": 2402,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/0919f06e3f4a137719c54975de0800215c681e26"
+      }
+    ]
+  },
+  {
+    "id": "B02",
+    "branch": "largecity-central-hospital-l3",
+    "prefix": "LargeCityCentralHospital",
+    "commit": "5da44f0ec7ba1175066e816f6260e1824be41a15",
+    "files": [
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityCentralHospitalDressing.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5ed32aa2b051fec2546e6f5475da22a605727e38",
+        "size": 9076,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/5ed32aa2b051fec2546e6f5475da22a605727e38"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityCentralHospitalGeometryRefinement.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2272247d49eaf89948f5a52463a5b7d0616ee39c",
+        "size": 4340,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/2272247d49eaf89948f5a52463a5b7d0616ee39c"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityCentralHospitalGoldenMaster.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d65d942775b6ca50addc23e7dc57b85e26dee90d",
+        "size": 12621,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/d65d942775b6ca50addc23e7dc57b85e26dee90d"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityCentralHospitalInstaller.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "311ab9f4a5fd337477d3e403708d9ac0af9f63ad",
+        "size": 5881,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/311ab9f4a5fd337477d3e403708d9ac0af9f63ad"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityCentralHospitalRoofFix.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "bef983154ccf4c090a211c5c0c1eaeb52de4edd3",
+        "size": 4683,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/bef983154ccf4c090a211c5c0c1eaeb52de4edd3"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityCentralHospitalSpecification.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4b234bd2afc022f2b24daf6f07a4e80b387b8cba",
+        "size": 8343,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/4b234bd2afc022f2b24daf6f07a4e80b387b8cba"
+      }
+    ]
+  },
+  {
+    "id": "B03",
+    "branch": "largecity-stadium-l3",
+    "prefix": "LargeCityStadium",
+    "commit": "34a7b72098fdae43e88f83e891b46a72e33ca0f7",
+    "files": [
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityStadiumDressing.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "cb75e2d6834568d2c7ca1666733a118e69604f73",
+        "size": 15266,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/cb75e2d6834568d2c7ca1666733a118e69604f73"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityStadiumGoldenMaster.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4ec5d5ccc0f0dcbcf1faa43bc400a0510fa99151",
+        "size": 14644,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/4ec5d5ccc0f0dcbcf1faa43bc400a0510fa99151"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityStadiumInstaller.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5b51815c701aec16dd73eab47651860fdf9618a5",
+        "size": 6043,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/5b51815c701aec16dd73eab47651860fdf9618a5"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityStadiumPong.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0decc3ad7afb7014ac06a0fe9d86e7e72a2168e9",
+        "size": 5359,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/0decc3ad7afb7014ac06a0fe9d86e7e72a2168e9"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityStadiumSpecification.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "632797f4f62195898d2c941934435ab18c98af71",
+        "size": 9689,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/632797f4f62195898d2c941934435ab18c98af71"
+      }
+    ]
+  },
+  {
+    "id": "B04",
+    "branch": "largecity-uptown-arena-l3",
+    "prefix": "LargeCityUptownArena",
+    "commit": "5b7d9fb212f8a1c350c6616ab5914a22c51c6fba",
+    "files": [
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityUptownArenaDressing.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b8e2d2570d93a13a1a8a3742954154afd17c8277",
+        "size": 11677,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/b8e2d2570d93a13a1a8a3742954154afd17c8277"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityUptownArenaGoldenMaster.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "da26a500b0f906422c5a9ab1626e34cb0993df5a",
+        "size": 10273,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/da26a500b0f906422c5a9ab1626e34cb0993df5a"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityUptownArenaInstaller.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e37d3284f84e7ae200b8f76652b7b5bb6372059d",
+        "size": 5727,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/e37d3284f84e7ae200b8f76652b7b5bb6372059d"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityUptownArenaSpecification.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "139bd137f30541176df0a2c462a973ba6a27c82e",
+        "size": 8980,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/139bd137f30541176df0a2c462a973ba6a27c82e"
+      }
+    ]
+  },
+  {
+    "id": "B05",
+    "branch": "largecity-summit-tower-l3",
+    "prefix": "LargeCitySummitTower",
+    "commit": "0a3c51e66548e6b8ddb6dd6218388d3d0860f55e",
+    "files": [
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCitySummitTowerDressing.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ed2ebf22e086028ec86787a17ff44adf5be3a2a5",
+        "size": 7466,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/ed2ebf22e086028ec86787a17ff44adf5be3a2a5"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCitySummitTowerGoldenMaster.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c71fed3ebfb7e3b1aee8c6f53900ba1b712c85db",
+        "size": 15237,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/c71fed3ebfb7e3b1aee8c6f53900ba1b712c85db"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCitySummitTowerInstaller.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dfdc5fe85cca112875237ff5422d5ff5789617f4",
+        "size": 5746,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/dfdc5fe85cca112875237ff5422d5ff5789617f4"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCitySummitTowerSpecification.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "79408f5fb5d12da2c10984d87ddcb62701649d60",
+        "size": 9474,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/79408f5fb5d12da2c10984d87ddcb62701649d60"
+      }
+    ]
+  },
+  {
+    "id": "B06",
+    "branch": "largecity-uptown-residences-l3",
+    "prefix": "LargeCityUptownResidences",
+    "commit": "3b471141258d6205fc20f5d910d389f596aaea58",
+    "files": [
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityUptownResidencesDressing.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2a0047c0c59288619b949e27ef9d06a227de333b",
+        "size": 7700,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/2a0047c0c59288619b949e27ef9d06a227de333b"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityUptownResidencesGoldenMaster.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "245f2262af21b5de3f0d798a9a1dadcd6d06eeb5",
+        "size": 16666,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/245f2262af21b5de3f0d798a9a1dadcd6d06eeb5"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityUptownResidencesInstaller.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "938ebfe0434ee44583dea898ece307cee5a4294a",
+        "size": 5826,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/938ebfe0434ee44583dea898ece307cee5a4294a"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityUptownResidencesSpecification.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0cc7d5028214590d309035bb54c9b3c517044300",
+        "size": 11936,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/0cc7d5028214590d309035bb54c9b3c517044300"
+      }
+    ]
+  },
+  {
+    "id": "B07",
+    "branch": "largecity-stadium-hotel-l3",
+    "prefix": "LargeCityStadiumHotel",
+    "commit": "25cba67a9c4af191e16d8bc6482ee9f1cb86f2c3",
+    "files": [
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityStadiumHotelDressing.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a75f2377165f3088c026554ba32c9ac2d6984f4a",
+        "size": 8541,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/a75f2377165f3088c026554ba32c9ac2d6984f4a"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityStadiumHotelGoldenMaster.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c2f59061c2c04cbb6412c2520aa889a4f14c9cdc",
+        "size": 17299,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/c2f59061c2c04cbb6412c2520aa889a4f14c9cdc"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityStadiumHotelInstaller.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "746359ba104d972a1cb4649419231221b370b4d8",
+        "size": 5762,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/746359ba104d972a1cb4649419231221b370b4d8"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityStadiumHotelSpecification.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1b86bdd1c252a980b407c2a78c68ff03394e60eb",
+        "size": 11785,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/1b86bdd1c252a980b407c2a78c68ff03394e60eb"
+      }
+    ]
+  },
+  {
+    "id": "B08",
+    "branch": "largecity-uptown-parking-l3",
+    "prefix": "LargeCityUptownParking",
+    "commit": "1432c4c6d6f24720191c5f84ecc8f7b471ab94fa",
+    "files": [
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityUptownParkingDressing.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e89c99b68c0aeaee5359242ae3df9809bcc436e9",
+        "size": 7389,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/e89c99b68c0aeaee5359242ae3df9809bcc436e9"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityUptownParkingGoldenMaster.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2fd1582350342b3ba69f5f534c31d87803323578",
+        "size": 13376,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/2fd1582350342b3ba69f5f534c31d87803323578"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityUptownParkingInstaller.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8b79b3b35fd874067232a239cd04ae1711106cb0",
+        "size": 5778,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/8b79b3b35fd874067232a239cd04ae1711106cb0"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityUptownParkingSpecification.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "41e080dc4470af1ba5bd57258da878a0dc23292d",
+        "size": 11451,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/41e080dc4470af1ba5bd57258da878a0dc23292d"
+      }
+    ]
+  },
+  {
+    "id": "B09",
+    "branch": "largecity-meridian-pharma-l3",
+    "prefix": "LargeCityMeridianPharma",
+    "commit": "1b6c6149b0c1db8fad8233187282b7390401c7fe",
+    "files": [
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityMeridianPharmaDressing.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7427eea4039fe880852df2b5ffce4b8cd5c3830d",
+        "size": 10036,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/7427eea4039fe880852df2b5ffce4b8cd5c3830d"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityMeridianPharmaGoldenMaster.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8b27ca7fc6e44b0bc3770f64346751da262a1ec2",
+        "size": 17172,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/8b27ca7fc6e44b0bc3770f64346751da262a1ec2"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityMeridianPharmaInstaller.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "de6abb9acd6e84cbf7e3938488a2d62832d66ef5",
+        "size": 5794,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/de6abb9acd6e84cbf7e3938488a2d62832d66ef5"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityMeridianPharmaSpecification.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2ffb68c67f650c11db7625cac0fb508f8ebfbf3d",
+        "size": 13387,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/2ffb68c67f650c11db7625cac0fb508f8ebfbf3d"
+      }
+    ]
+  },
+  {
+    "id": "B10",
+    "branch": "largecity-power-utility-l3",
+    "prefix": "LargeCityPowerUtility",
+    "commit": "842add856f5a61e2f507e5fc3cd912d9213eba18",
+    "files": [
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityPowerUtilityDressing.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "87868c1c4eeb6be517c31f8854868534dc7c2eec",
+        "size": 10876,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/87868c1c4eeb6be517c31f8854868534dc7c2eec"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityPowerUtilityGoldenMaster.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e7af2edbdae6da0b7c4a792707c31fdb03a052d2",
+        "size": 20994,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/e7af2edbdae6da0b7c4a792707c31fdb03a052d2"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityPowerUtilitySpecification.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "19ee35fdbed2f2fdc7c9386edee91dd7adf23270",
+        "size": 16244,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/19ee35fdbed2f2fdc7c9386edee91dd7adf23270"
+      }
+    ]
+  },
+  {
+    "id": "N01",
+    "branch": "largecity-technology-fire-station-l3",
+    "prefix": "LargeCityEmberline",
+    "commit": "ce411797de5cda317093240a8a7824c71de3e0cf",
+    "files": [
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityEmberlineDressing.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9797e42435837db5f6451c3d235d894419e54048",
+        "size": 23654,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/9797e42435837db5f6451c3d235d894419e54048"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityEmberlineGoldenMaster.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "666a07da29fd8d33f2cd4d593c94d61fc3db6439",
+        "size": 23486,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/666a07da29fd8d33f2cd4d593c94d61fc3db6439"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityEmberlineInstaller.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "256ecf441b379fee1a2bd8b53b74ea91952004ac",
+        "size": 9212,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/256ecf441b379fee1a2bd8b53b74ea91952004ac"
+      }
+    ]
+  },
+  {
+    "id": "N02",
+    "branch": "largecity-police-hq-l3",
+    "prefix": "LargeCityPolice",
+    "commit": "05baf82e0af7561aee26ac941026069d561a4041",
+    "files": [
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityPoliceDressing.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2e1cbacffab2de2ef7578b36b811860e813b7504",
+        "size": 48709,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/2e1cbacffab2de2ef7578b36b811860e813b7504"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityPoliceGoldenMaster.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e8665b5e9c5af5afd44d6bb7ffa93bd3f6d1ce72",
+        "size": 31846,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/e8665b5e9c5af5afd44d6bb7ffa93bd3f6d1ce72"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityPoliceInstaller.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4ed7c56e3ac539f36e20a8055f32a25e5c4ffc3b",
+        "size": 7704,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/4ed7c56e3ac539f36e20a8055f32a25e5c4ffc3b"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityPoliceSpecification.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "facbd2a617adece9e0f584eda4144cf4286921b1",
+        "size": 598,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/facbd2a617adece9e0f584eda4144cf4286921b1"
+      }
+    ]
+  },
+  {
+    "id": "N03",
+    "branch": "largecity-residential-tower-l3",
+    "prefix": "LargeCityResidential",
+    "commit": "881e0c6b1d5a27343864b0b4f5ada371afb6804c",
+    "files": [
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityResidentialDressing.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7c9f2bcd24854b8b47400794e9209674d8221291",
+        "size": 70913,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/7c9f2bcd24854b8b47400794e9209674d8221291"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityResidentialGoldenMaster.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5ad3f7fa6c8d54f36c5c8f04bbd3e460bcaaec15",
+        "size": 90117,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/5ad3f7fa6c8d54f36c5c8f04bbd3e460bcaaec15"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityResidentialInstaller.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4f06742f8de3b8fe599ebd5fc3ff1157e28c6b3a",
+        "size": 8107,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/4f06742f8de3b8fe599ebd5fc3ff1157e28c6b3a"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityResidentialSpecification.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "77407069de925770bd6c9fc84e613f93bb72e76e",
+        "size": 688,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/77407069de925770bd6c9fc84e613f93bb72e76e"
+      }
+    ]
+  },
+  {
+    "id": "N04",
+    "branch": "largecity-office-tower-l3",
+    "prefix": "LargeCityOffice",
+    "commit": "e27fa0a48c5644931085e411516b0616165c0c7e",
+    "files": [
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityOfficeDressing.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5d1acbbaae35e1c40978f7e6bd34c6f5caddd68c",
+        "size": 4916,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/5d1acbbaae35e1c40978f7e6bd34c6f5caddd68c"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityOfficeGoldenMaster.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b7a2f71fc946a73f2635e774ff286985607f1737",
+        "size": 126702,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/b7a2f71fc946a73f2635e774ff286985607f1737"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityOfficeInstaller.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e8b43ac30da6d9e5ebc2c72a6620735aadfd54c2",
+        "size": 7932,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/e8b43ac30da6d9e5ebc2c72a6620735aadfd54c2"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityOfficeSpecification.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7f37733e35187415c6283cee2eb2a9a5be30ef5a",
+        "size": 581,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/7f37733e35187415c6283cee2eb2a9a5be30ef5a"
+      }
+    ]
+  },
+  {
+    "id": "N05",
+    "branch": "largecity-city-hotel-l3",
+    "prefix": "LargeCityHotel",
+    "commit": "fdeb0af977c40a23e59fe719e0a093e394f8c4dc",
+    "files": [
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityHotelDressing.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "83da8d3e0248acea9ba0c71cce90135dd7bc06af",
+        "size": 5490,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/83da8d3e0248acea9ba0c71cce90135dd7bc06af"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityHotelGoldenMaster.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5b16bba2f2577d2b0e52ad3ab073fd4f8db0fe02",
+        "size": 394456,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/5b16bba2f2577d2b0e52ad3ab073fd4f8db0fe02"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityHotelInstaller.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "904de634c78aa5f972a77b5e65c6e1c6043c0622",
+        "size": 7831,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/904de634c78aa5f972a77b5e65c6e1c6043c0622"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityHotelSpecification.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7e96bad970532ba0ba222817dfc9ff1c70f1b3a6",
+        "size": 675,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/7e96bad970532ba0ba222817dfc9ff1c70f1b3a6"
+      }
+    ]
+  },
+  {
+    "id": "N06",
+    "branch": "largecity-courthouse-l3",
+    "prefix": "LargeCityCourthouse",
+    "commit": "cb62e7a4c2151a92902fbf175ff4fc08ba24469b",
+    "files": [
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityCourthouseDressing.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a5bd5482ebc078686dc90ecb891f4ba50d738d62",
+        "size": 6211,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/a5bd5482ebc078686dc90ecb891f4ba50d738d62"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityCourthouseGoldenMaster.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ba0d3c165787d6d3dbb5f8122435418c43ba91a0",
+        "size": 120880,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/ba0d3c165787d6d3dbb5f8122435418c43ba91a0"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityCourthouseInstaller.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7cf519a166424c04c19b0ec08f21569bb6093324",
+        "size": 7977,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/7cf519a166424c04c19b0ec08f21569bb6093324"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityCourthouseSpecification.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "02426447652d161f9f732ee2361f4a07a33fd6b7",
+        "size": 689,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/02426447652d161f9f732ee2361f4a07a33fd6b7"
+      }
+    ]
+  },
+  {
+    "id": "N07",
+    "branch": "largecity-central-station-l3",
+    "prefix": "LargeCityCentralStation",
+    "commit": "3690f3138a2f8823a0111fce7a3a7fcbda867dcf",
+    "files": [
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityCentralStationDressing.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4c11c960e668ff18468fb30dc9afeefb1d4ffe3a",
+        "size": 5771,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/4c11c960e668ff18468fb30dc9afeefb1d4ffe3a"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityCentralStationGoldenMaster.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0eecabbcc8212189c516f89ffa0667b7db54c5b4",
+        "size": 105715,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/0eecabbcc8212189c516f89ffa0667b7db54c5b4"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityCentralStationInstaller.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3433fcbf0b6d56f624f369e62541f8051f7b9c63",
+        "size": 8917,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/3433fcbf0b6d56f624f369e62541f8051f7b9c63"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityCentralStationSpecification.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "098413dc653d2b5736c5ea5f2e906e9bc48b0a7b",
+        "size": 707,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/098413dc653d2b5736c5ea5f2e906e9bc48b0a7b"
+      }
+    ]
+  },
+  {
+    "id": "N08",
+    "branch": "largecity-ocean-galleria-l3",
+    "prefix": "LargeCityOceanGalleria",
+    "commit": "9d106aa234e5670c76f2a29a47bf9f6aca2de26a",
+    "files": [
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityOceanGalleriaDressing.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f3c88be361d08059b669dc459ed25ce3baec477e",
+        "size": 6302,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/f3c88be361d08059b669dc459ed25ce3baec477e"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityOceanGalleriaGoldenMaster.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8312b78f5bd3e2dd29b8833febab1dadf7c1a4e6",
+        "size": 176633,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/8312b78f5bd3e2dd29b8833febab1dadf7c1a4e6"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityOceanGalleriaInstaller.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2ee25c2f5a72bbdeaa4621c980efbb342af0c7f5",
+        "size": 7889,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/2ee25c2f5a72bbdeaa4621c980efbb342af0c7f5"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityOceanGalleriaSpecification.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d6b943e8596860c2ccc8b2044ca39c96a8eb5f65",
+        "size": 635,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/d6b943e8596860c2ccc8b2044ca39c96a8eb5f65"
+      }
+    ]
+  },
+  {
+    "id": "N09",
+    "branch": "largecity-coast-convention-centre-l3",
+    "prefix": "LargeCityCoastConventionCentre",
+    "commit": "a7107df5c408846aff2f92c2e4d90a17da79e43a",
+    "files": [
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityCoastConventionCentreDressing.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "761a38b0180a880f763f2cf0f97511caaed12915",
+        "size": 6060,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/761a38b0180a880f763f2cf0f97511caaed12915"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityCoastConventionCentreGoldenMaster.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "850eb111d92003503bcf2626173f0420b6d8488d",
+        "size": 67458,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/850eb111d92003503bcf2626173f0420b6d8488d"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityCoastConventionCentreInstaller.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "032725741538f31f78918315ad256e71b194c902",
+        "size": 9356,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/032725741538f31f78918315ad256e71b194c902"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityCoastConventionCentreSpecification.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a4df0128db477b153bfebed0d3c4081a9a1156a7",
+        "size": 714,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/a4df0128db477b153bfebed0d3c4081a9a1156a7"
+      }
+    ]
+  },
+  {
+    "id": "N10",
+    "branch": "largecity-tropical-signal-tower-l3",
+    "prefix": "LargeCityTropicalSignalTower",
+    "commit": "899d3b236717237c741fbb76d9aa1c2aa93ea430",
+    "files": [
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityTropicalSignalTowerDressing.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5d2c0ca438e456284b8c282371ed3053626078e6",
+        "size": 4691,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/5d2c0ca438e456284b8c282371ed3053626078e6"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityTropicalSignalTowerGoldenMaster.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "27b24ec12d09b67bcc85b49c5e0a62e1de0bffda",
+        "size": 200194,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/27b24ec12d09b67bcc85b49c5e0a62e1de0bffda"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityTropicalSignalTowerInstaller.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "29e04ef1fedf9be38d7f2c49755142401c923f96",
+        "size": 8250,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/29e04ef1fedf9be38d7f2c49755142401c923f96"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityTropicalSignalTowerSpecification.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f4b1f3ae6e805b193f43b0a6ccf17b7580178fd0",
+        "size": 735,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/f4b1f3ae6e805b193f43b0a6ccf17b7580178fd0"
+      }
+    ]
+  },
+  {
+    "id": "N11",
+    "branch": "largecity-tropical-high-rise-l3",
+    "prefix": "LargeCityTropicalHighRise",
+    "commit": "884088e85117469b1b897f5a2b18c790b869e3dc",
+    "files": [
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityTropicalHighRiseDressing.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "fee8ac5297ea3ae7833522929541b802b99f6287",
+        "size": 5288,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/fee8ac5297ea3ae7833522929541b802b99f6287"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityTropicalHighRiseGoldenMaster.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "81f4e3ad0abae40e0909e18e9adbb3a3e07954b9",
+        "size": 303751,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/81f4e3ad0abae40e0909e18e9adbb3a3e07954b9"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityTropicalHighRiseInstaller.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "375d108879ac6fe8ca9f7e2c462d66fdccd31af0",
+        "size": 8330,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/375d108879ac6fe8ca9f7e2c462d66fdccd31af0"
+      },
+      {
+        "path": "src/ReplicatedStorage/TrenchbornAssetWorkshop/LargeCityTropicalHighRiseSpecification.lua",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "04c0690a1341876df3caafc4821022cb309d6dbf",
+        "size": 709,
+        "url": "https://api.github.com/repos/amanciobouza/trenchborn-asset-workshop/git/blobs/04c0690a1341876df3caafc4821022cb309d6dbf"
+      }
+    ]
+  }
+]

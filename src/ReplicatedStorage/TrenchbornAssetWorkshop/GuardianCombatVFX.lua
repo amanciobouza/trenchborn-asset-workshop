@@ -23,6 +23,42 @@ local function targetPosition(model, target, distance)
 	return root.Position + root.CFrame.LookVector * distance
 end
 
+-- Wie weit das Fangnetz aufgespannt wird.
+--
+-- Hier stand ein fester Halbmesser von 5 Studs. Das passte zu einem Ziel von Menschengroesse
+-- und zu gar nichts sonst: gegen einen skalierten Kaiju -- rund 142 Studs breit -- fiel das
+-- Netz als winziger Ring zu dessen Fuessen zu Boden. Man sah, dass etwas geworfen wurde, aber
+-- nicht, dass es den Gegner faengt.
+--
+-- Deshalb wird das Ziel jetzt gemessen. Ability.Radius ueberschreibt die Messung, falls eine
+-- Szene einen festen Wert braucht; MIN_NET_RADIUS haelt das Netz bei kleinen Zielen sichtbar.
+local MIN_NET_RADIUS = 5
+local NET_RADIUS_MARGIN = 1.15 -- etwas weiter als das Ziel -- ein Netz auf Kante wirkt knapp
+
+local function targetRadius(target, ability)
+	if ability and ability.Radius then
+		return ability.Radius
+	end
+	if typeof(target) == "Instance" then
+		local ok, size = pcall(function()
+			if target:IsA("Model") then
+				local _, extents = target:GetBoundingBox()
+				return extents
+			elseif target:IsA("BasePart") then
+				return target.Size
+			end
+			return nil
+		end)
+		if ok and size then
+			-- Die breitere der beiden Grundflaechenkanten: der Kaiju ist mit ausgestreckten
+			-- Gliedmassen deutlich breiter als tief, und umrahmen soll das Netz ihn ganz.
+			local halfWidth = math.max(size.X, size.Z) * 0.5
+			return math.max(halfWidth * NET_RADIUS_MARGIN, MIN_NET_RADIUS)
+		end
+	end
+	return MIN_NET_RADIUS
+end
+
 local function lockedWarning(target, enabled)
 	if not target or not target:IsA("BasePart") then return end
 	local gui = target:FindFirstChild("GuardianEnemyLocked")
@@ -126,13 +162,19 @@ function VFX.ContainmentNet(model, target, ability)
 		source.Parent = mouth
 		Debris:AddItem(source, (ability.Duration or 4) + 2)
 
+		-- Halbmesser und Knotengroesse haengen ab jetzt am Ziel (siehe targetRadius). Die
+		-- Knoten wachsen mit, sonst verloeren sich Murmeln von 1,4 Studs auf einem Ring von
+		-- achtzig -- sichtbar waere dann nur noch das Seil dazwischen.
+		local radius = targetRadius(target, ability)
+		local nodeSize = math.clamp(radius * 0.09, 1.4, 9)
+
 		local count = ability.NodeCount or 5
 		local nodes = {}
 		for index = 1, count do
 			local node = Instance.new("Part")
 			node.Name = "ContainmentNetNode" .. index
 			node.Shape = Enum.PartType.Ball
-			node.Size = Vector3.new(1.4, 1.4, 1.4)
+			node.Size = Vector3.new(nodeSize, nodeSize, nodeSize)
 			node.Position = mouth.Position
 			node.Anchored = true
 			node.CanCollide = false
@@ -163,13 +205,24 @@ function VFX.ContainmentNet(model, target, ability)
 			for index, node in ipairs(nodes) do
 				if node.Parent then
 					local angle = (index - 1) / count * math.pi * 2
-					local landing = ground + Vector3.new(math.cos(angle) * 5, ((index % 2) * 4) - 1, math.sin(angle) * 5)
+					-- Die abwechselnde Hoehe war fest bei 4 Studs -- bei einem Netz dieser
+					-- Groesse ginge das unter. Sie skaliert deshalb mit, bleibt aber ein
+					-- Bruchteil des Halbmessers: das Netz soll umschliessen, nicht wehen.
+					local stagger = radius * 0.16
+					local landing = ground + Vector3.new(
+						math.cos(angle) * radius,
+						((index % 2) * stagger) - stagger * 0.25,
+						math.sin(angle) * radius
+					)
 					local apex = (mouth.Position + landing) * 0.5 + Vector3.new(0, 27 + index * 1.2, 0)
 					node.Position = inverse * inverse * mouth.Position + 2 * inverse * alpha * apex + alpha * alpha * landing
 				end
 			end
 			if alpha >= 1 then
 				connection:Disconnect()
+				-- Auch die Seile wachsen mit dem Netz: eine Breite von 0,22 Studs verschwindet
+				-- ueber achtzig Studs Spannweite zu nichts.
+				local beamWidth = math.clamp(radius * 0.014, 0.22, 1.4)
 				for index, node in ipairs(nodes) do
 					local nextNode = nodes[index % count + 1]
 					if node.Parent and nextNode and nextNode.Parent then
@@ -181,16 +234,32 @@ function VFX.ContainmentNet(model, target, ability)
 						beam.Attachment0 = a0
 						beam.Attachment1 = a1
 						beam.Color = ColorSequence.new(Color3.fromRGB(63, 226, 255))
-						beam.Width0 = 0.22
-						beam.Width1 = 0.22
+						beam.Width0 = beamWidth
+						beam.Width1 = beamWidth
 						beam.LightEmission = 0.85
 						beam.FaceCamera = true
 						beam.Parent = node
 					end
 				end
+
+				-- ===== Der Moment, in dem das Netz zugeht =====
+				-- Dieses Modul ist die OPTIK und bleibt es: was ein gefangener Gegner
+				-- aushaelt, entscheidet das Spiel, nicht der Werkstatt-Effekt. Es sagt aber
+				-- jetzt Bescheid, WANN gefangen ist -- vorher konnte das aufrufende Spiel
+				-- diesen Augenblick nur raten, weil Telegrafierdauer und Flugzeit hier
+				-- stehen und nirgends sonst.
+				--
+				-- Ohne OnClosed verhaelt sich alles wie bisher.
+				if ability.OnClosed then
+					task.spawn(ability.OnClosed, ability.Duration or 4)
+				end
+
 				task.delay(ability.Duration or 4, function()
 					for _, node in ipairs(nodes) do if node.Parent then node:Destroy() end end
 					if source.Parent then source:Destroy() end
+					if ability.OnOpened then
+						task.spawn(ability.OnOpened)
+					end
 				end)
 			end
 		end)
