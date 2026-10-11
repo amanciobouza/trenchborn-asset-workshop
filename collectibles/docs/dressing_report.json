@@ -1,0 +1,27 @@
+[
+  {
+    "model": "01_GoldenFruit",
+    "visible_parts": 265,
+    "stage": "P5_Dressing"
+  },
+  {
+    "model": "02_Emberstone",
+    "visible_parts": 288,
+    "stage": "P5_Dressing"
+  },
+  {
+    "model": "03_EnergyCell",
+    "visible_parts": 212,
+    "stage": "P5_Dressing"
+  },
+  {
+    "model": "04_AncientEggshell",
+    "visible_parts": 264,
+    "stage": "P5_Dressing"
+  },
+  {
+    "model": "05_AncestorFang",
+    "visible_parts": 266,
+    "stage": "P5_Dressing"
+  }
+]

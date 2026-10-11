@@ -1,9 +1,10 @@
-# Kapitel 1 – Sammelobjekte / Gate B
+# Kapitel 1 – Sammelobjekte / P5 Dressing
 
 Fünf native, editierbare Geometriemodelle: Frucht, Glutstein, Energiezelle,
 Eierschale und Ur-Kaiju-Zahn. Design und technische Aufteilung sind freigegeben.
-Gate B (Sichtprüfung in Roblox Studio) ist offen. Materialien, VFX und
-Sammellogik folgen in späteren Phasen. Kein finaler Installer.
+Gate B (Form) ist freigegeben. P5 umfasst Farben, Materialien, Licht und
+Partikel. Die Dressing-Sichtprüfung und Gameplay-Anbindung stehen noch aus.
+Kein finaler Installer.
 
 ## Git und Rojo
 
@@ -63,7 +64,7 @@ Nur für Änderungen am Generator, nicht für normalen Rojo-Sync:
 
 ```powershell
 python -m pip install -r collectibles/tools/requirements.txt
-python collectibles/tools/build_geometry.py
+python collectibles/tools/build_dressing.py
 ```
 
 Anschliessend die geänderten Modelle, Prüfszene, Vorschau und den Report
@@ -72,7 +73,7 @@ und prüft Referenzen, positive Grössen und Rotationsmatrizen.
 
 ## Struktur und Gate-B-Prüfung
 
-Jedes Modell hat `Geometry`, den vorerst leeren Ordner `Effects` sowie
+Jedes Modell hat `Geometry`, einen separaten Ordner `Effects` sowie
 `Root` als unsichtbare PrimaryPart am Boden. Darunter liegt
 `PickupAttachment`. Attribute: `ItemId`, `CityId`, `Need`, `BuildStage`,
 `Version`. Alle Teile sind verankert, ohne physische Kollision und ohne
@@ -88,11 +89,45 @@ Bitte prüfen:
 
 `docs/Geometry_Preview.png` ist eine lokale Konstruktionsvorschau, kein
 Studio-Screenshot. Massangaben und Teilezahlen: `docs/geometry_report.json`.
-Die Modelle haben 196–288 sichtbare Parts und sind für einzelne aktive
+Die Modelle haben 212–288 sichtbare Parts und sind für einzelne aktive
 Fundstücke vorgesehen. Grössere Mengen benötigen eine Performanceprüfung.
 
 Validiert mit Rojo 7.6.1: Place-Build und Model-Build. Roblox Studio und die
-Live-Verbindung wurden hier nicht ausgeführt; Gate B bleibt bis zur
-Sichtprüfung offen.
+Live-Verbindung wurden hier nicht ausgeführt. Gate B wurde vom Benutzer
+freigegeben; die neue P5-Dressing-Sichtprüfung steht noch aus.
 
 Rojo-Referenz: https://rojo.space/docs/v7/sync-details/
+
+
+## P5 – Farben und Effekte testen
+
+- Frucht: goldorange, grüne Blätter, brauner Holzstiel, dezente Fundpartikel.
+- Glutstein: dunkles Gestein, orange Neon-Glut in Fugen, Funken.
+- Energiezelle: dunkles Metall, cyanfarbener Kern und Leuchtringe.
+- Eierschale: cremefarbene Schale, dünne türkise Aussenmarkierungen.
+- Zahn: elfenbeinfarben, dunkle Wurzel, goldene Leuchtadern.
+
+Farben, Neon, Lichter und vorbereitete Partikelemitter sind im Modell
+enthalten. Die clientseitige Lichtpulsation läuft erst im Play-Modus.
+Zum zuverlässigen Prüfen der Partikel ebenfalls Play starten.
+`collectibles.project.json` synchronisiert den Effekt-Controller nach
+`StarterPlayer > StarterPlayerScripts > TrenchbornCollectibleEffects`.
+
+Im Play-Modus am jeweiligen Modell das boolesche Attribut `EffectsEnabled`
+auf false setzen: Licht, Partikel und Neon werden abgeschaltet. Der Kern
+bleibt als dunkler Körper sichtbar. true schaltet die Effekte wieder ein.
+Die Einstellung betrifft nur kosmetische Effekte, nicht die Sammellogik.
+
+Das reine .rbxmx-Modellpaket enthält statische Effekte. Für Pulsation und
+EffectsEnabled in einem anderen Projekt zusätzlich
+`runtime/CollectibleEffects.client.lua` nach StarterPlayerScripts übernehmen.
+Der Controller erkennt P5-Modelle im Workspace anhand von BuildStage.
+
+`docs/Dressing_Preview.png` zeigt die serialisierte Geometrie mit Farben;
+Studio-Licht, Materialtexturen und Partikel sind in diesem lokalen Render
+nicht simuliert. Der alte Gate-B-Datei- und Szenenname bleibt aus
+Kompatibilitätsgründen erhalten. BuildStage ist jetzt P5_Dressing.
+
+Neu generieren immer mit build_dressing.py: Dieser führt zuerst den
+Geometriegenerator aus und setzt danach das Dressing auf. Ein separater
+Aufruf von build_geometry.py stellt bewusst nur den grauen P4-Stand her.

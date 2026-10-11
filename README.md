@@ -2,12 +2,12 @@
 
 Synchronized Roblox Studio workspace for specification-driven Trenchborn asset development and automated quality gates.
 
-## Chapter 1 collectibles — Gate B geometry
+## Chapter 1 collectibles — P5 dressing
 
 Run `rojo serve collectibles.project.json` to review the five collectible
 models on port 34872. The dedicated project syncs a Workspace review scene
 and individual models to ReplicatedStorage. See [collectibles/README.md](collectibles/README.md)
-for Git, import, rebuild and review instructions. Geometry review is pending.
+for Git, import, rebuild and review instructions. Geometry is approved; P5 colours and effects are ready for Studio review.
 
 ## Marshal-II Roadblock final installer
 

@@ -17,6 +17,17 @@
       "TrenchbornCollectibles": {
         "$path": "collectibles/models"
       }
+    },
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "$ignoreUnknownInstances": true,
+      "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
+        "$ignoreUnknownInstances": true,
+        "TrenchbornCollectibleEffects": {
+          "$path": "collectibles/runtime/CollectibleEffects.client.lua"
+        }
+      }
     }
   }
 }
