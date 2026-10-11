@@ -29,6 +29,13 @@ local pharma = installer.Install(workspace, {
 
 This is a Phase 6 integration package. It is ready for use by the target project's shared damage and collapse system, but Quality Gate C remains pending until that external gameplay test passes. It must not be treated as the final Phase 7 release yet.
 
+## Chapter 1 collectibles — P5 dressing
+
+Run `rojo serve collectibles.project.json` to review the five collectible
+models on port 34872. The dedicated project syncs a Workspace review scene
+and individual models to ReplicatedStorage. See [collectibles/README.md](collectibles/README.md)
+for Git, import, rebuild and review instructions. Geometry is approved; P5 colours and effects are ready for Studio review.
+
 ## Marshal-II Roadblock final installer
 
 `MarshalRoadblockInstaller` is the Phase 7 production API. It installs the approved model, dressing, fleet rig, gameplay, animations, combat VFX, and spatial sound pass. It does not install the workshop HUD, test buttons, or test targets.
