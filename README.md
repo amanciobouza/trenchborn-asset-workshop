@@ -2,6 +2,13 @@
 
 Synchronized Roblox Studio workspace for specification-driven Trenchborn asset development and automated quality gates.
 
+## Chapter 1 collectibles — Gate B geometry
+
+Run `rojo serve collectibles.project.json` to review the five collectible
+models on port 34872. The dedicated project syncs a Workspace review scene
+and individual models to ReplicatedStorage. See [collectibles/README.md](collectibles/README.md)
+for Git, import, rebuild and review instructions. Geometry review is pending.
+
 ## Marshal-II Roadblock final installer
 
 `MarshalRoadblockInstaller` is the Phase 7 production API. It installs the approved model, dressing, fleet rig, gameplay, animations, combat VFX, and spatial sound pass. It does not install the workshop HUD, test buttons, or test targets.

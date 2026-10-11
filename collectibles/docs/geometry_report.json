@@ -1,0 +1,47 @@
+[
+  {
+    "model": "01_GoldenFruit",
+    "visible_parts": 265,
+    "bounds_studs": [
+      4.742,
+      5.556,
+      4.661
+    ]
+  },
+  {
+    "model": "02_Emberstone",
+    "visible_parts": 288,
+    "bounds_studs": [
+      4.831,
+      3.856,
+      4.831
+    ]
+  },
+  {
+    "model": "03_EnergyCell",
+    "visible_parts": 196,
+    "bounds_studs": [
+      3.842,
+      6.045,
+      3.842
+    ]
+  },
+  {
+    "model": "04_AncientEggshell",
+    "visible_parts": 216,
+    "bounds_studs": [
+      7.024,
+      5.105,
+      5.924
+    ]
+  },
+  {
+    "model": "05_AncestorFang",
+    "visible_parts": 256,
+    "bounds_studs": [
+      3.75,
+      8.045,
+      2.543
+    ]
+  }
+]

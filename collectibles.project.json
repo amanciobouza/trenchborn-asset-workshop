@@ -1,0 +1,22 @@
+{
+  "name": "TrenchbornCollectiblesGateB",
+  "servePort": 34872,
+  "tree": {
+    "$className": "DataModel",
+    "$ignoreUnknownInstances": true,
+    "Workspace": {
+      "$className": "Workspace",
+      "$ignoreUnknownInstances": true,
+      "Trenchborn_Collectibles_GateB": {
+        "$path": "collectibles/preview/Trenchborn_Collectibles_GateB.rbxmx"
+      }
+    },
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "$ignoreUnknownInstances": true,
+      "TrenchbornCollectibles": {
+        "$path": "collectibles/models"
+      }
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "TrenchbornCollectibles",
+  "tree": {
+    "$path": "collectibles/models"
+  }
+}
